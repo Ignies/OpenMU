@@ -1,3 +1,7 @@
+# Fork goal
+Deploy an OpenMU instance for S21 servers.
+
+
 # OpenMU Project
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
