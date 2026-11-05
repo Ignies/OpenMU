@@ -57,7 +57,12 @@ every number:
   master class grade needs a star.
 - **Stars**: a reset needs the third class; it gives the class's points per level times 100 (50 after star 5), the
   quest points, and 20 master tree points. Each star takes 6% experience (down to 40%).
-- Without a configuration (no row yet) the plugin does nothing. `AddProgressionUpdatePlugIn` turns it on in the stars
+- A plugin without a configuration does nothing: a database gets the row (off, stars) at initialization or startup,
+  and the update adds it when it's missing. `AddProgressionUpdatePlugIn` turns it on in the stars
   mode and the reset feature with the star costs, keeping operator values.
 
-Not yet applied: the power bonus against monsters and the power level for item requirements.
+- **Star power**: 1% more damage against monsters and 1% less damage from them per star, up to 10%
+  (`Stats.FinalDamageIncreasePvm`, `Stats.FinalDamageReceiveDecrementPvm`); with `StarPowerInPvp` it applies to all
+  damage instead. **Items** check the power level E (capped at 400) against their level requirement in Stars.
+- **Turning the plugin off** puts the stored caps back at once and takes the monster and star numbers off
+  (`IDeactivationAwareFeaturePlugIn`).

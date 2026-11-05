@@ -27,7 +27,7 @@ using MUnique.OpenMU.PlugIns;
 [PlugIn]
 [Display(Name = nameof(PlugInResources.ProgressionFeaturePlugIn_Name), Description = nameof(PlugInResources.ProgressionFeaturePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("624489AB-4623-4AF2-B4CD-4F0482AD05D9")]
-public class ProgressionFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfiguration<ProgressionConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault,
+public class ProgressionFeaturePlugIn : IDeactivationAwareFeaturePlugIn, ISupportCustomConfiguration<ProgressionConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault,
     IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn, IExperienceCalculationPlugIn, IPeriodicTaskPlugIn
 {
     private static readonly AttributeDefinition[] ShapedStats =
@@ -42,6 +42,8 @@ public class ProgressionFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
     private readonly ConcurrentDictionary<MonsterDefinition, SimpleElement[]> _shapes = new();
 
     private readonly ConditionalWeakTable<AttackableNpcBase, SimpleElement[]> _shapedMonsters = [];
+
+    private readonly ConditionalWeakTable<Player, PowerElement[]> _poweredPlayers = [];
 
     private readonly object _lock = new();
 
@@ -101,7 +103,42 @@ public class ProgressionFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
             }
 
             this._world = new WorldEntry(gameConfiguration, world);
+            foreach (var player in this._poweredPlayers.Select(p => p.Key).ToList())
+            {
+                this.RemovePower(player);
+                this.ApplyPower(player, world);
+            }
+
             return world;
+        }
+    }
+
+    /// <inheritdoc />
+    /// <remarks>Puts the stored caps back and takes the monster and star numbers off, so the game is the original again.</remarks>
+    public void OnDeactivated()
+    {
+        lock (this._lock)
+        {
+            foreach (var (gameConfiguration, stored) in this._storedCaps)
+            {
+                gameConfiguration.MaximumLevel = stored.MaximumLevel;
+                gameConfiguration.MaximumMasterLevel = stored.MaximumMasterLevel;
+            }
+
+            this._storedCaps.Clear();
+
+            foreach (var (definition, elements) in this._shapes)
+            {
+                SetFactors(null, definition, elements);
+            }
+
+            foreach (var player in this._poweredPlayers.Select(p => p.Key).ToList())
+            {
+                this.RemovePower(player);
+            }
+
+            this._world = null;
+            this._walkedWorld = null;
         }
     }
 
@@ -110,7 +147,12 @@ public class ProgressionFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
     {
         if (addedObject is Player player)
         {
-            this.GetWorld(player.GameContext.Configuration);
+            var world = this.GetWorld(player.GameContext.Configuration);
+            lock (this._lock)
+            {
+                this.RemovePower(player);
+                this.ApplyPower(player, world);
+            }
         }
         else if (addedObject is AttackableNpcBase monster)
         {
@@ -131,6 +173,13 @@ public class ProgressionFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
             }
 
             this._shapedMonsters.Remove(monster);
+        }
+        else if (removedObject is Player player)
+        {
+            lock (this._lock)
+            {
+                this.RemovePower(player);
+            }
         }
 
         return ValueTask.CompletedTask;
@@ -194,6 +243,49 @@ public class ProgressionFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
         }
     }
 
+    /// <summary>
+    /// Gives a player the power of its stars: more damage against monsters and less damage from them, capped; against
+    /// players too when <see cref="ProgressionConfiguration.StarPowerInPvp"/> is set.
+    /// </summary>
+    private void ApplyPower(Player player, ProgressionWorld? world)
+    {
+        if (world is not { Configuration: { Mode: ProgressionMode.Stars } configuration } || player.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        var bonus = StarRules.GetPowerBonusPercent((int)attributes[Stats.Resets], false, configuration) / 100f;
+        if (bonus <= 0)
+        {
+            return;
+        }
+
+        PowerElement[] elements = configuration.StarPowerInPvp
+            ? [new(Stats.AttackDamageIncrease, new SimpleElement(bonus, AggregateType.AddRaw)), new(Stats.DamageReceiveDecrement, new SimpleElement(1 - bonus, AggregateType.Multiplicate))]
+            : [new(Stats.FinalDamageIncreasePvm, new SimpleElement(bonus, AggregateType.AddRaw)), new(Stats.FinalDamageReceiveDecrementPvm, new SimpleElement(bonus, AggregateType.AddRaw))];
+        foreach (var element in elements)
+        {
+            attributes.AddElement(element.Element, element.Target);
+        }
+
+        this._poweredPlayers.AddOrUpdate(player, elements);
+    }
+
+    private void RemovePower(Player player)
+    {
+        if (!this._poweredPlayers.TryGetValue(player, out var elements))
+        {
+            return;
+        }
+
+        foreach (var element in elements)
+        {
+            player.Attributes?.RemoveElement(element.Element, element.Target);
+        }
+
+        this._poweredPlayers.Remove(player);
+    }
+
     private void Shape(AttackableNpcBase monster)
     {
         if (this._world?.World is not { } world
@@ -238,4 +330,9 @@ public class ProgressionFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
     /// The world built for a game configuration.
     /// </summary>
     private sealed record WorldEntry(GameConfiguration GameConfiguration, ProgressionWorld? World);
+
+    /// <summary>
+    /// An element of the star power on a player attribute.
+    /// </summary>
+    private sealed record PowerElement(AttributeDefinition Target, SimpleElement Element);
 }

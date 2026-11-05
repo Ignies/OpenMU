@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.GameLogic.Progression;
 
+using MUnique.OpenMU.GameLogic.Attributes;
+
 /// <summary>
-/// The effective requirements and costs of warp list entries and gates, with the progression of the Season 21 maps.
+/// The effective requirements and costs of warp list entries, gates and items, with the progression of the Season 21 maps.
 /// </summary>
 public static class ProgressionMoveExtensions
 {
@@ -40,5 +42,24 @@ public static class ProgressionMoveExtensions
     public static int GetLevelRequirement(this EnterGate gate, IGameContext gameContext)
     {
         return ProgressionFeaturePlugIn.GetWorld(gameContext)?.GetMoveLevelRequirement(gate.TargetGate?.Map, gate.LevelRequirement) ?? gate.LevelRequirement;
+    }
+
+    /// <summary>
+    /// Gets the level which the level requirement of an item is checked against, when the progression decides it: the
+    /// power level (level plus the worth of the stars, capped) in the stars mode.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The level, or <c>null</c> when the normal level applies.</returns>
+    public static int? GetItemRequirementLevel(this Player player)
+    {
+        if (ProgressionFeaturePlugIn.GetWorld(player.GameContext) is not { } world || player.Attributes is not { } attributes)
+        {
+            return null;
+        }
+
+        var key = ProgressionMapping.GetItemLevelRequirementKey(world.Configuration);
+        return key == ProgressionLevelKey.Level
+            ? null
+            : StarRules.GetRequirementLevel(key, (int)attributes[Stats.Level], (int)attributes[Stats.MasterLevel], (int)attributes[Stats.Resets], world.Configuration);
     }
 }

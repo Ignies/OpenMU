@@ -11,6 +11,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.Progression;
+using MUnique.OpenMU.PlugIns;
 using AttributeRequirement = MUnique.OpenMU.Persistence.BasicModel.AttributeRequirement;
 using ExitGate = MUnique.OpenMU.Persistence.BasicModel.ExitGate;
 using GameConfiguration = MUnique.OpenMU.Persistence.BasicModel.GameConfiguration;
@@ -204,6 +205,86 @@ public class ProgressionWorldTest
 
         await plugIn.ObjectRemovedFromMapAsync(map, monster).ConfigureAwait(false);
         Assert.That(monster.Attributes[Stats.MaximumHealth], Is.EqualTo(1_415_000));
+    }
+
+    /// <summary>
+    /// Turning the plugin off puts the stored caps back at once; turning it on again applies the mode again.
+    /// </summary>
+    [Test]
+    public void DeactivationRestoresTheCapsAtOnce()
+    {
+        var plugInConfiguration = new PlugInConfiguration { TypeId = typeof(ProgressionFeaturePlugIn).GUID, IsActive = true };
+        plugInConfiguration.SetConfiguration(new ProgressionConfiguration { Mode = ProgressionMode.Stars }, null);
+        var gameContext = GameContextTestHelper.CreateGameContext([plugInConfiguration], maximumLevel: 400);
+        gameContext.Configuration.MaximumMasterLevel = 1350;
+
+        Assert.That(ProgressionFeaturePlugIn.GetWorld(gameContext), Is.Not.Null);
+        Assert.That(gameContext.Configuration.MaximumMasterLevel, Is.Zero);
+
+        gameContext.PlugInManager.DeactivatePlugIn<ProgressionFeaturePlugIn>();
+        Assert.That(gameContext.Configuration.MaximumMasterLevel, Is.EqualTo(1350));
+        Assert.That(ProgressionFeaturePlugIn.GetWorld(gameContext), Is.Null);
+
+        gameContext.PlugInManager.ActivatePlugIn<ProgressionFeaturePlugIn>();
+        ProgressionFeaturePlugIn.GetWorld(gameContext);
+        Assert.That(gameContext.Configuration.MaximumMasterLevel, Is.Zero);
+    }
+
+    /// <summary>
+    /// The stars give 1 % more damage against monsters and 1 % less damage from them per star, capped at 10 %, and
+    /// nothing against players by default; it goes away with the map or the plugin.
+    /// </summary>
+    [Test]
+    public async Task StarPowerIsCappedAndPvmOnlyAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var plugIn = new ProgressionFeaturePlugIn { Configuration = new ProgressionConfiguration { Mode = ProgressionMode.Stars } };
+        player.GameContext.FeaturePlugIns.AddPlugIn(plugIn, true);
+        var damageIncrease = player.Attributes![Stats.AttackDamageIncrease];
+        player.Attributes[Stats.Resets] = 3;
+
+        await plugIn.ObjectAddedToMapAsync(player.CurrentMap!, player).ConfigureAwait(false);
+        Assert.That(player.Attributes[Stats.FinalDamageIncreasePvm], Is.EqualTo(0.03f).Within(1e-6));
+        Assert.That(player.Attributes[Stats.FinalDamageReceiveDecrementPvm], Is.EqualTo(0.03f).Within(1e-6));
+        Assert.That(player.Attributes[Stats.AttackDamageIncrease], Is.EqualTo(damageIncrease));
+
+        player.Attributes[Stats.Resets] = 15;
+        await plugIn.ObjectAddedToMapAsync(player.CurrentMap!, player).ConfigureAwait(false);
+        Assert.That(player.Attributes[Stats.FinalDamageIncreasePvm], Is.EqualTo(0.10f).Within(1e-6));
+
+        plugIn.OnDeactivated();
+        Assert.That(player.Attributes[Stats.FinalDamageIncreasePvm], Is.Zero);
+
+        plugIn.Configuration = new ProgressionConfiguration { Mode = ProgressionMode.Stars, StarPowerInPvp = true };
+        await plugIn.ObjectAddedToMapAsync(player.CurrentMap!, player).ConfigureAwait(false);
+        Assert.That(player.Attributes[Stats.FinalDamageIncreasePvm], Is.Zero);
+        Assert.That(player.Attributes[Stats.AttackDamageIncrease], Is.EqualTo(damageIncrease + 0.10f).Within(1e-6));
+
+        await plugIn.ObjectRemovedFromMapAsync(player.CurrentMap!, player).ConfigureAwait(false);
+        Assert.That(player.Attributes[Stats.AttackDamageIncrease], Is.EqualTo(damageIncrease).Within(1e-6));
+    }
+
+    /// <summary>
+    /// In the stars mode, item level requirements check the power level: a one star level 300 character wears level
+    /// 400 gear, a fresh one star level 10 character does not.
+    /// </summary>
+    [Test]
+    public async Task ItemsCheckThePowerLevelInStarsAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var plugIn = new ProgressionFeaturePlugIn { Configuration = new ProgressionConfiguration { Mode = ProgressionMode.Stars } };
+        player.Attributes![Stats.Level] = 300;
+        player.Attributes[Stats.Resets] = 1;
+
+        Assert.That(player.GetItemRequirementLevel(), Is.Null, "the feature is off");
+
+        player.GameContext.FeaturePlugIns.AddPlugIn(plugIn, true);
+        Assert.That(player.GetItemRequirementLevel(), Is.EqualTo(400));
+        player.Attributes[Stats.Level] = 10;
+        Assert.That(player.GetItemRequirementLevel(), Is.EqualTo(110));
+
+        plugIn.Configuration = new ProgressionConfiguration { Mode = ProgressionMode.Normalized };
+        Assert.That(player.GetItemRequirementLevel(), Is.Null);
     }
 
     private static SetMonster Row(MonsterDefinition monster) => new(monster.Number, monster.Designation, ProgressionWorld.GetSourceRow(monster), true);

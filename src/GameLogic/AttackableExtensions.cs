@@ -225,6 +225,11 @@ public static class AttackableExtensions
             dmg = (int)(dmg * defender.Attributes[Stats.DamageReceiveDecrement]);
         }
 
+        if (!isPvp)
+        {
+            dmg = (int)(dmg * (1 + attacker.Attributes[Stats.FinalDamageIncreasePvm]) * (1 - defender.Attributes[Stats.FinalDamageReceiveDecrementPvm]));
+        }
+
         if (skill != null)
         {
             var multiplier = attacker.Attributes[Stats.SkillMultiplier];

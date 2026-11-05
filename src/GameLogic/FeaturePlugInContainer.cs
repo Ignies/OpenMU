@@ -60,6 +60,7 @@ public class FeaturePlugInContainer : PlugInContainerBase<IFeaturePlugIn>, ICust
     {
         base.DeactivatePlugIn(plugIn);
         this._currentlyEffectivePlugIns.TryRemove(plugIn.GetType(), out _);
+        (plugIn as IDeactivationAwareFeaturePlugIn)?.OnDeactivated();
     }
 
     /// <inheritdoc/>
@@ -73,4 +74,4 @@ public class FeaturePlugInContainer : PlugInContainerBase<IFeaturePlugIn>, ICust
             this.AddPlugIn((IFeaturePlugIn)Activator.CreateInstance(plugInType)!, true);
         }
     }
-}
+}

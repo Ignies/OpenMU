@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic;
 
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Progression;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Persistence;
 
@@ -23,9 +25,11 @@ public static class PlayerItemExtensions
     {
         item.ThrowNotInitializedProperty(item.Definition is null, nameof(item.Definition));
 
+        var progressionLevel = player.GetItemRequirementLevel();
         foreach (var requirement in item.GetRequirements(player.GameContext.Configuration))
         {
-            if (player.Attributes![requirement.Attr] < requirement.Value)
+            var value = requirement.Attr == Stats.Level && progressionLevel is { } level ? level : player.Attributes![requirement.Attr];
+            if (value < requirement.Value)
             {
                 return false;
             }

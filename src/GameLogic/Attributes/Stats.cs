@@ -897,6 +897,18 @@ public class Stats
     public static AttributeDefinition DamageReceiveDecrement { get; } = new(new Guid("9D9761EF-EF47-4E5C-8106-EBC555786F20"), "Damage Receive Multiplier", string.Empty);
 
     /// <summary>
+    /// Gets the final damage increase attribute definition against monsters, as a fraction (0.05 is 5 % more).
+    /// </summary>
+    /// <remarks>E.g. the power of the stars of the progression; it doesn't apply in PvP.</remarks>
+    public static AttributeDefinition FinalDamageIncreasePvm { get; } = new(new Guid("3854B655-A831-42D7-98EA-A09A98DAEB46"), "Final Damage Increase (PvM)", "The fraction by which the final damage against monsters increases.");
+
+    /// <summary>
+    /// Gets the final damage decrement attribute definition for the damage of monsters, as a fraction (0.05 is 5 % less).
+    /// </summary>
+    /// <remarks>E.g. the power of the stars of the progression; it doesn't apply in PvP.</remarks>
+    public static AttributeDefinition FinalDamageReceiveDecrementPvm { get; } = new(new Guid("D7B1F149-494F-4047-9723-48E80CCA9258"), "Final Damage Receive Decrement (PvM)", "The fraction by which the final damage of monsters decreases.");
+
+    /// <summary>
     /// Gets the damage receive decrement from dark horse attribute definition.
     /// </summary>
     public static AttributeDefinition DamageReceiveHorseDecrement { get; } = new(new Guid("041B2811-05C0-49DE-B083-4D1FBD7E6286"), "Damage Receive From Dark Horse Multiplier", string.Empty);
