@@ -1983,4 +1983,10 @@
   <data name="ProgressionConfiguration_StarExperienceFloorPercent_Name" xml:space="preserve">
     <value>Lowest experience after the star penalty (%)</value>
   </data>
+  <data name="PartyExperienceBonusPlugIn_Name" xml:space="preserve">
+    <value>Party experience bonus</value>
+  </data>
+  <data name="PartyExperienceBonusPlugIn_Description" xml:space="preserve">
+    <value>The factor by which a party multiplies the experience of a kill, by its number of members and, for a party of different classes, a higher one.</value>
+  </data>
 </root>

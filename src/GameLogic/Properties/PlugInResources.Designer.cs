@@ -5484,5 +5484,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ProgressionConfiguration_StarExperienceFloorPercent_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Party experience bonus.
+        /// </summary>
+        public static string PartyExperienceBonusPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PartyExperienceBonusPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The factor by which a party multiplies the experience of a kill, by its number of members and, for a party of different classes, a higher one..
+        /// </summary>
+        public static string PartyExperienceBonusPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PartyExperienceBonusPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

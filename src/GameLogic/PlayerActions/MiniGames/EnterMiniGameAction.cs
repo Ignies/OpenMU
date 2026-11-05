@@ -48,7 +48,7 @@ public class EnterMiniGameAction
         }
 
         var isSpecialCharacter = player.SelectedCharacter.IsSpecialCharacter();
-        var characterLevel = player.Attributes![Stats.Level];
+        var characterLevel = miniGameDefinition.GetBracketLevel(player, isSpecialCharacter);
         var minLevel = isSpecialCharacter ? miniGameDefinition.MinimumSpecialCharacterLevel : miniGameDefinition.MinimumCharacterLevel;
         var maxLevel = isSpecialCharacter ? miniGameDefinition.MaximumSpecialCharacterLevel : miniGameDefinition.MaximumCharacterLevel;
         var requiresMasterLevel = miniGameDefinition.RequiresMasterClass;

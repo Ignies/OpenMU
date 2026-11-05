@@ -54,13 +54,49 @@ public static class MiniGameDefinitionExtensions
         }
 
         var isSpecialCharacter = player.SelectedCharacter!.IsSpecialCharacter();
+        var level = definition.GetBracketLevel(player, isSpecialCharacter);
         if (isSpecialCharacter)
         {
-            return player.Level >= definition.MinimumSpecialCharacterLevel
-                   && player.Level <= definition.MaximumSpecialCharacterLevel;
+            return level >= definition.MinimumSpecialCharacterLevel
+                   && level <= definition.MaximumSpecialCharacterLevel;
         }
 
-        return player.Level >= definition.MinimumCharacterLevel
-               && player.Level <= definition.MaximumCharacterLevel;
+        return level >= definition.MinimumCharacterLevel
+               && level <= definition.MaximumCharacterLevel;
+    }
+
+    /// <summary>
+    /// Gets the level which the level bracket of the mini game checks for a player, see
+    /// <see cref="GetBracketLevel(MiniGameDefinition, int, int, short, bool)"/>.
+    /// </summary>
+    /// <param name="definition">The definition of the mini game.</param>
+    /// <param name="player">The player.</param>
+    /// <param name="isSpecialCharacter">Whether the character is a special character, which has its own bracket.</param>
+    /// <returns>The level which the bracket checks.</returns>
+    public static int GetBracketLevel(this MiniGameDefinition definition, Player player, bool isSpecialCharacter)
+    {
+        var attributes = player.Attributes;
+        return definition.GetBracketLevel(
+            (int)(attributes?[Stats.Level] ?? 0),
+            (int)(attributes?[Stats.MasterLevel] ?? 0),
+            player.GameContext.Configuration.MaximumLevel,
+            isSpecialCharacter);
+    }
+
+    /// <summary>
+    /// Gets the level which the level bracket of the mini game checks for a character: the normal level for a
+    /// bracket within the maximum normal level (Season 6), the total level (level and master level) for a bracket
+    /// which reaches above it (the grades of Season 21).
+    /// </summary>
+    /// <param name="definition">The definition of the mini game.</param>
+    /// <param name="level">The normal level of the character.</param>
+    /// <param name="masterLevel">The master level of the character.</param>
+    /// <param name="maximumLevel">The maximum normal level of the game configuration.</param>
+    /// <param name="isSpecialCharacter">Whether the character is a special character, which has its own bracket.</param>
+    /// <returns>The level which the bracket checks.</returns>
+    public static int GetBracketLevel(this MiniGameDefinition definition, int level, int masterLevel, short maximumLevel, bool isSpecialCharacter = false)
+    {
+        var maximum = isSpecialCharacter ? definition.MaximumSpecialCharacterLevel : definition.MaximumCharacterLevel;
+        return maximum > maximumLevel ? level + masterLevel : level;
     }
 }

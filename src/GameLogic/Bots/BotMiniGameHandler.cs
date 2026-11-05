@@ -75,8 +75,6 @@ internal static class BotMiniGameHandler
     /// <param name="reason">The human-readable reason when the bot does not qualify.</param>
     internal static bool IsEligible(Player bot, MiniGameDefinition definition, out string reason)
     {
-        var level = (int)(bot.Attributes?[Stats.Level] ?? 0);
-
         // The special characters (Magic Gladiator, Dark Lord, Rage Fighter, Summoner) enter the events in
         // their own level bracket - the same distinction EnterMiniGameAction makes for a player. Judging
         // them by the regular bracket kicked a qualified Magic Gladiator out of its leader's party as
@@ -84,6 +82,7 @@ internal static class BotMiniGameHandler
         var isSpecialCharacter = bot.SelectedCharacter?.IsSpecialCharacter() == true;
         var minimumLevel = isSpecialCharacter ? definition.MinimumSpecialCharacterLevel : definition.MinimumCharacterLevel;
         var maximumLevel = isSpecialCharacter ? definition.MaximumSpecialCharacterLevel : definition.MaximumCharacterLevel;
+        var level = definition.GetBracketLevel(bot, isSpecialCharacter);
 
         if (level < minimumLevel)
         {

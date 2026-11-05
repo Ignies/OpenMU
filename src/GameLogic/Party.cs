@@ -343,7 +343,7 @@ public sealed class Party : AsyncDisposable
         var averageLevel = totalLevel / memberCount;
         var baseExperience = killed.CalculateBaseExperience(averageLevel);
 
-        var partyBonusMultiplier = Math.Pow(1.05, memberCount - 1);
+        var partyBonusMultiplier = GetPartyBonus(recipients);
         var mapExperienceMultiplier = killed.CurrentMap?.Definition.ExpMultiplier ?? 1;
         var totalBaseExperience = baseExperience * memberCount * partyBonusMultiplier * mapExperienceMultiplier;
 
@@ -353,6 +353,29 @@ public sealed class Party : AsyncDisposable
         var totalExperience = CalculateTotalExperience(totalBaseExperience, randomMinMultiplier, randomMaxMultiplier);
 
         return (float)totalExperience / totalLevel;
+    }
+
+    private static double GetPartyBonus(List<Player> recipients)
+    {
+        var gameContext = recipients[0].GameContext;
+        if (gameContext.FeaturePlugIns.GetPlugIn<PartyExperienceBonusPlugIn>()?.Configuration is not { } configuration)
+        {
+            return Math.Pow(1.05, recipients.Count - 1);
+        }
+
+        var classCount = recipients.Select(p => GetFirstClass(p.SelectedCharacter?.CharacterClass, gameContext.Configuration)).Distinct().Count();
+        return configuration.GetBonus(recipients.Count, classCount);
+    }
+
+    private static CharacterClass? GetFirstClass(CharacterClass? characterClass, GameConfiguration configuration)
+    {
+        while (characterClass is not null
+               && configuration.CharacterClasses.FirstOrDefault(c => c.NextGenerationClass == characterClass) is { } previous)
+        {
+            characterClass = previous;
+        }
+
+        return characterClass;
     }
 
     private static int CalculateTotalExperience(double totalBaseExperience, float randomMinMultiplier, float randomMaxMultiplier)
