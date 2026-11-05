@@ -89,7 +89,7 @@ missing dependency doesn't stop the creation of a new database.
 ## Maps of the later seasons
 
 A Season 6 server can add the maps which came after Season 6, up to Season 20,
-and the gear of Season 21 with three optional updates. A new database leaves them pending, so a server
+the gear and the event rules of Season 21 with four optional updates. A new database leaves them pending, so a server
 changes only when you apply them:
 
 * **Add the maps of the later seasons (Season 21 data)** adds Acheron (with
@@ -99,6 +99,8 @@ changes only when you apply them:
   Vulcanus, Blood Tarkan, Tormenta Island, Twisted Karutan, the Kardamahal
   Underground Temple, the Swamp of Doom and Atlans Abyss 1-3, with their
   monsters, spawns, gates, entrances on the existing maps and warp list entries.
+  Each monster drops its list of the Season 21 data (one drop group of the
+  monster per drop weight, sharing the 30 % chance of a random item).
   Each map requires the total level (level and master level) of Season 21, for
   example 850 for Kubera Mine. The gates and the warp list check the normal level,
   which is capped at the maximum level. The game servers which host a map's
@@ -108,7 +110,17 @@ changes only when you apply them:
   are applied in that order.
 * **Set the level caps of Season 21** raises the maximum master level to 1350
   and continues the master experience curve: as in Season 6 up to master level
-  400, and twice its step above.
+  400, and twice its step above. A higher master level cap and your own master
+  experience formula are kept.
+* **Set the event grades and party bonus of Season 21** gives Blood Castle, Devil
+  Square and Chaos Castle the seven grades of Season 21 (50-399, 400-799,
+  800-999, 1000-1199, 1200-1399, 1400-1599, 1600+) and Illusion Temple its five,
+  by total level and the same for every class; the eighth Blood Castle and the
+  sixth Illusion Temple close. A grade which reaches above the maximum level is
+  checked against the total level. It also sets the plugin **Party experience
+  bonus** to the Season 21 values (1.0 to 3.2 by party size, 1.5 to 6.4 for a
+  party of at least three classes); without the update a party keeps 1.05 per
+  member.
 * **Add the gear of Season 21 (Season 21 data)** adds the items of Season 21
   which the Season 6 character classes can use: rings and pendants, socket
   weapons and shields, the blessed archangel weapons, socket armor sets, the

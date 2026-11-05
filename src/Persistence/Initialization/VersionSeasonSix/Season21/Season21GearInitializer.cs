@@ -54,19 +54,25 @@ internal class Season21GearInitializer
     }
 
     /// <summary>
-    /// Adds the items which don't exist yet, and puts every item into the monster drops and the boxes of the data.
+    /// Adds the items which don't exist yet, with the monster drop switch of the data, and puts every item into the
+    /// boxes of the data. An existing item keeps its drop switch.
     /// </summary>
     public void Initialize()
     {
         foreach (var row in Season21GearData.Items)
         {
-            var item = this.Find(row.Group, row.Number) ?? this.Create(row);
+            var item = this.Find(row.Group, row.Number);
             if (item is null)
             {
-                continue;
+                item = this.Create(row);
+                if (item is null)
+                {
+                    continue;
+                }
+
+                item.DropsFromMonsters = row.Drops;
             }
 
-            item.DropsFromMonsters = row.Drops;
             foreach (var (boxGroup, boxNumber) in row.Boxes)
             {
                 if (this.Find(boxGroup, boxNumber)?.DropItems.FirstOrDefault(d => d.ItemType == SpecialItemType.Excellent) is { } excellent

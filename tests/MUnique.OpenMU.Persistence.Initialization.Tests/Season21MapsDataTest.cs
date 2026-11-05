@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -154,7 +155,7 @@ internal class Season21MapsDataTest
         {
             foreach (var map in gameConfiguration.Maps.Where(m => set.Maps.Any(s => s.Number == m.Number)))
             {
-                Assert.That(map.MapRequirements.Single(r => r.Attribute == Stats.TotalLevel).MinimumValue, Is.EqualTo(set.EntryLevel), map.Name.ValueInNeutralLanguage);
+                Assert.That(map.MapRequirements.Single(r => r.Attribute == Stats.TotalLevel).MinimumValue, Is.EqualTo(set.Maps.Single(s => s.Number == map.Number).EntryLevel ?? set.EntryLevel), map.Name.ValueInNeutralLanguage);
             }
 
             foreach (var row in set.Monsters)
@@ -190,6 +191,150 @@ internal class Season21MapsDataTest
         Assert.That(Evaluate(gameConfiguration.MasterExperienceFormula!, 400), Is.EqualTo(82918600000));
         Assert.That(Evaluate(gameConfiguration.MasterExperienceFormula!, 401), Is.EqualTo(83840498100));
         Assert.That(Evaluate(gameConfiguration.MasterExperienceFormula!, 1350), Is.EqualTo(3328536125000));
+    }
+
+    /// <summary>
+    /// The floors of Deep Dungeon ask the levels of their gates (Gate.xml 541-565: 730, 750, 770, 780, 780), not the
+    /// 770 of Move.txt; Atlans Abyss 2 asks 925 (Gate.xml 618, Webzen), not 935.
+    /// </summary>
+    /// <param name="mapNumber">The map number.</param>
+    /// <param name="level">The expected total level.</param>
+    [TestCase(116, 730)]
+    [TestCase(117, 750)]
+    [TestCase(118, 770)]
+    [TestCase(119, 780)]
+    [TestCase(120, 780)]
+    [TestCase(129, 925)]
+    public async Task MapAsksTheLevelOfItsGateAsync(byte mapNumber, int level)
+    {
+        var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
+
+        var map = gameConfiguration.Maps.Single(m => m.Number == mapNumber);
+        Assert.That(map.MapRequirements.Single(r => r.Attribute == Stats.TotalLevel).MinimumValue, Is.EqualTo(level));
+    }
+
+    /// <summary>
+    /// Old Kethotum (700) spawns only its Lv195 monsters; the 13 elite spots of the data are Old Crimson Minos. The
+    /// same 13 spots of Blaze Kethotum hold its own Crimson Minos instead of the Old one.
+    /// </summary>
+    [Test]
+    public async Task KethotumSpotsAreNotSwappedAsync()
+    {
+        var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
+
+        var old = SpawnsOf(gameConfiguration, 135);
+        var blaze = SpawnsOf(gameConfiguration, 136);
+        Assert.That(old.Keys, Is.EquivalentTo(new short[] { 892, 893, 894 }));
+        Assert.That(blaze.Keys, Has.None.EqualTo((short)893));
+        Assert.That(blaze[896], Is.EqualTo(59 + 13));
+    }
+
+    /// <summary>
+    /// The placeholder spawn file of Arenil Temple spreads elites over the whole map; they belong to an elite zone,
+    /// which doesn't exist, so only the normal monsters spawn.
+    /// </summary>
+    [Test]
+    public async Task ArenilTempleSpawnsNoElitesAsync()
+    {
+        var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
+
+        Assert.That(SpawnsOf(gameConfiguration, 133).Keys, Has.None.InRange((short)870, (short)872));
+        Assert.That(SpawnsOf(gameConfiguration, 133).Values.Sum(), Is.GreaterThan(0));
+    }
+
+    /// <summary>
+    /// Kubera Mine uses the newer "Kubera Mine" spawn set, which spawns all seven monsters, the Dead Shoveler too.
+    /// </summary>
+    /// <param name="mapNumber">The map number.</param>
+    /// <param name="total">The expected number of monsters.</param>
+    [TestCase(123, 86)]
+    [TestCase(124, 84)]
+    [TestCase(125, 86)]
+    [TestCase(126, 86)]
+    [TestCase(127, 86)]
+    public async Task KuberaFloorsSpawnTheNewerSetAsync(byte mapNumber, int total)
+    {
+        var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
+
+        var spawns = SpawnsOf(gameConfiguration, mapNumber);
+        Assert.That(spawns[815], Is.EqualTo(12));
+        Assert.That(spawns.Values.Sum(), Is.EqualTo(total));
+    }
+
+    /// <summary>
+    /// The data swapped the rows of the Scorched Assassin and the Scorched Wizard: the ranged magic row with the
+    /// broken maximum damage (6325, its defense) is the wizard's.
+    /// </summary>
+    [Test]
+    public async Task ScorchedAssassinAndWizardHaveTheirRowsAsync()
+    {
+        var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
+
+        var assassin = gameConfiguration.Monsters.Single(m => m.Number == 846);
+        var wizard = gameConfiguration.Monsters.Single(m => m.Number == 847);
+        Assert.That(ValueOf(assassin, Stats.MaximumHealth), Is.EqualTo(2248000));
+        Assert.That(ValueOf(assassin, Stats.MaximumPhysBaseDmg), Is.EqualTo(13500));
+        Assert.That(assassin.AttackRange, Is.EqualTo(2));
+        Assert.That(ValueOf(wizard, Stats.MaximumHealth), Is.EqualTo(2145700));
+        Assert.That(ValueOf(wizard, Stats.MinimumPhysBaseDmg), Is.EqualTo(7000));
+        Assert.That(ValueOf(wizard, Stats.MaximumPhysBaseDmg), Is.EqualTo(7300));
+        Assert.That(wizard.AttackRange, Is.EqualTo(4));
+    }
+
+    /// <summary>
+    /// The monsters of the new maps drop their items of the Season 21 data (per-map drop lists): Kubera Mine drops
+    /// e.g. the Dark Soul Armor, through a drop group of the monster, so the level rule of the map groups
+    /// (monster level above 255) doesn't filter it out.
+    /// </summary>
+    [Test]
+    public async Task NewMonstersDropTheirListsAsync()
+    {
+        var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
+
+        var digger = gameConfiguration.Monsters.Single(m => m.Number == MineDiggerNumber);
+        var items = digger.DropItemGroups.SelectMany(g => g.PossibleItems).ToList();
+        Assert.That(items, Has.Some.Matches<ItemDefinition>(i => i.Group == 8 && i.Number == 22));
+        Assert.That(digger.DropItemGroups.Sum(g => g.Chance), Is.EqualTo(0.3).Within(0.0001));
+        Assert.That(gameConfiguration.DropItemGroups, Is.SupersetOf(digger.DropItemGroups));
+        var listed = VersionSeasonSix.Season21.Season21DropData.All.SelectMany(list => list.Monsters).ToHashSet();
+        var own = VersionSeasonSix.Season21.Season21MapData.All.SelectMany(set => set.Monsters).Select(row => row.Number).ToHashSet();
+        foreach (var monster in gameConfiguration.Monsters.Where(m => listed.Contains(m.Number) && own.Contains(m.Number)))
+        {
+            Assert.That(monster.DropItemGroups, Is.Not.Empty, monster.Designation.ValueInNeutralLanguage);
+        }
+
+        var seasonSixGroups = gameConfiguration.Monsters.Where(m => !own.Contains(m.Number)).SelectMany(m => m.DropItemGroups);
+        Assert.That(seasonSixGroups, Has.None.Matches<DropItemGroup>(g => g.Description.ValueInNeutralLanguage == Properties.DropGroupDescriptions.Season21MonsterDrops), "a Season 6 monster keeps its drops");
+    }
+
+    private static Dictionary<short, int> SpawnsOf(GameConfiguration gameConfiguration, byte mapNumber)
+        => gameConfiguration.Maps.Single(m => m.Number == mapNumber).MonsterSpawns
+            .Where(s => s.MonsterDefinition?.ObjectKind == NpcObjectKind.Monster)
+            .GroupBy(s => s.MonsterDefinition!.Number)
+            .ToDictionary(g => (short)g.Key, g => g.Sum(s => (int)s.Quantity));
+
+    private static async Task<GameConfiguration> CreateWithSeason21MapsAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        await new AddSeason21LevelCapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        return gameConfiguration;
+    }
+
+    /// <summary>
+    /// The level caps update keeps a higher master level cap and a master experience formula of the operator.
+    /// </summary>
+    [Test]
+    public async Task LevelCapsUpdateKeepsTheSettingsOfTheOperatorAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        gameConfiguration.MaximumMasterLevel = 2000;
+        gameConfiguration.MasterExperienceFormula = "level * 1000";
+
+        await new AddSeason21LevelCapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(gameConfiguration.MaximumMasterLevel, Is.EqualTo(2000));
+        Assert.That(gameConfiguration.MasterExperienceFormula, Is.EqualTo("level * 1000"));
     }
 
     private static long Evaluate(string formula, int level)

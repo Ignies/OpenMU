@@ -1069,5 +1069,16 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddSeason21GearUpdatePlugIn_Description text.</summary>
         public static string AddSeason21GearUpdatePlugIn_Description => ResourceManager.GetString("AddSeason21GearUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddSeason21EventRulesUpdatePlugIn_Name text.</summary>
+        public static string AddSeason21EventRulesUpdatePlugIn_Name => ResourceManager.GetString("AddSeason21EventRulesUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSeason21EventRulesUpdatePlugIn_Description text.</summary>
+        public static string AddSeason21EventRulesUpdatePlugIn_Description => ResourceManager.GetString("AddSeason21EventRulesUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized FixZombieFighterHealthUpdatePlugIn_Name text.</summary>
+        public static string FixZombieFighterHealthUpdatePlugIn_Name => ResourceManager.GetString("FixZombieFighterHealthUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixZombieFighterHealthUpdatePlugIn_Description text.</summary>
+        public static string FixZombieFighterHealthUpdatePlugIn_Description => ResourceManager.GetString("FixZombieFighterHealthUpdatePlugIn_Description", resourceCulture)!;
     }
 }

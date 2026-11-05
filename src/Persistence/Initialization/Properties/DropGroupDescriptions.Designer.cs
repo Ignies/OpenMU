@@ -559,5 +559,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FlameOfCondor", resourceCulture);
             }
         }
+
+        /// <summary>Gets Season21MonsterDrops from the configuration name resources.</summary>
+        public static string Season21MonsterDrops {
+            get {
+                return ResourceManager.GetString("Season21MonsterDrops", resourceCulture);
+            }
+        }
     }
 }

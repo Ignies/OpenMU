@@ -67,7 +67,7 @@ internal class Season21MapInitializer(IContext context, GameConfiguration gameCo
     /// <inheritdoc/>
     protected override void CreateMapAttributeRequirements()
     {
-        this.CreateRequirement(Stats.TotalLevel, this._set.EntryLevel);
+        this.CreateRequirement(Stats.TotalLevel, this._map.EntryLevel ?? this._set.EntryLevel);
     }
 
     /// <summary>

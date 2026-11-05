@@ -231,4 +231,7 @@
   <data name="FlameOfCondor" xml:space="preserve">
     <value>Flame of Condor</value>
   </data>
+  <data name="Season21MonsterDrops" xml:space="preserve">
+    <value>The items which a monster of a later map drops (Season 21 data)</value>
+  </data>
 </root>

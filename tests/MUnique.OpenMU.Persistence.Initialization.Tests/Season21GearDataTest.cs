@@ -146,7 +146,7 @@ internal class Season21GearDataTest
     }
 
     /// <summary>
-    /// A new database contains David's refinery, which refines a lucky armor into a jewel of extension or elevation.
+    /// A new database contains David's refinery, which refines a lucky armor into a jewel of extension.
     /// </summary>
     [Test]
     public async Task NewDatabaseContainsTheLuckyItemRefineryAsync()
@@ -172,6 +172,26 @@ internal class Season21GearDataTest
         AssertRefinery(gameConfiguration);
     }
 
+    /// <summary>
+    /// The Ring of Block (13/174) doesn't drop: the Season 21 client has no row for it, so it couldn't show it. A second
+    /// run of the update keeps the drop switch an operator set.
+    /// </summary>
+    [Test]
+    public async Task RingOfBlockDoesNotDropAndTheDropSwitchIsKeptAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        await new AddSeason21GearUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var ring = Item(gameConfiguration, 13, 174);
+        var symbol = Item(gameConfiguration, 13, 173);
+        var dropsBefore = symbol.DropsFromMonsters;
+        symbol.DropsFromMonsters = !dropsBefore;
+
+        await new AddSeason21GearUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(ring.DropsFromMonsters, Is.False);
+        Assert.That(symbol.DropsFromMonsters, Is.EqualTo(!dropsBefore));
+    }
+
     private static void AssertRefinery(GameConfiguration gameConfiguration)
     {
         var david = gameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.CombineLuckyItem);
@@ -179,7 +199,8 @@ internal class Season21GearDataTest
         var refinery = david.ItemCraftings.Single(c => c.Number == 52);
         Assert.That(refinery.ItemCraftingHandlerClassName, Is.EqualTo("MUnique.OpenMU.GameLogic.PlayerActions.Craftings.LuckyItemRefineryCrafting"));
         Assert.That(refinery.SimpleCraftingSettings!.RequiredItems.Single().PossibleItems, Is.EquivalentTo(exchange.ResultItems.Select(r => r.ItemDefinition)));
-        Assert.That(refinery.SimpleCraftingSettings.ResultItems.Select(r => r.ItemDefinition!.Number), Is.EqualTo(new short[] { 160, 161 }));
+        Assert.That(refinery.SimpleCraftingSettings.ResultItems.Select(r => r.ItemDefinition!.Number), Is.EqualTo(new short[] { 160 }));
+        Assert.That(refinery.SimpleCraftingSettings.SuccessPercent, Is.EqualTo(60));
     }
 
     private static ItemDefinition Item(GameConfiguration gameConfiguration, byte group, short number)

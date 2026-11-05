@@ -1,11 +1,13 @@
-// <copyright file="Season21MapsInitializer.cs" company="MUnique">
+﻿// <copyright file="Season21MapsInitializer.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.Interfaces;
 
 /// <summary>
 /// Adds the <see cref="Season21MapData"/> to a game configuration: the monsters, the maps, the gates and the warp list
@@ -13,6 +15,17 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// </summary>
 internal class Season21MapsInitializer
 {
+    /// <summary>
+    /// The chance of a random item drop of a monster, which the drop list of a monster shares, as the common random
+    /// item drop group of the Season 6 data.
+    /// </summary>
+    private const double RandomItemDropChance = 0.3;
+
+    /// <summary>
+    /// The offset of the parent numbers of the guids of the drop groups, beyond the numbers of the Season 6 groups.
+    /// </summary>
+    private const short DropGroupNumberOffset = 2100;
+
     private readonly IContext _context;
 
     private readonly GameConfiguration _gameConfiguration;
@@ -56,6 +69,8 @@ internal class Season21MapsInitializer
             this.CreateMaps(set);
             this.CreateGates(set);
         }
+
+        this.CreateDropGroups();
     }
 
     /// <summary>
@@ -69,6 +84,9 @@ internal class Season21MapsInitializer
             .ToList();
         return maps.Count > 0 ? maps.Min() : set.IntroducedIn;
     }
+
+    private static int EntryLevelOf(Season21MapSet set, short mapNumber)
+        => set.Maps.FirstOrDefault(map => map.Number == mapNumber)?.EntryLevel ?? set.EntryLevel;
 
     private void CreateMonsters(Season21MapSet set)
     {
@@ -142,9 +160,54 @@ internal class Season21MapsInitializer
         }
     }
 
+    /// <summary>
+    /// Gives each monster of the data its drop list, as drop groups of the monster: one per drop weight, whose chances
+    /// share the chance of a random item drop by their weights. Being groups of the monster, they aren't filtered by
+    /// the monster level, which is above any drop level on the later maps. Only the monsters of the data get them,
+    /// so a Season 6 monster which a later map spawns keeps its drops. Items which the configuration doesn't have are
+    /// left out.
+    /// </summary>
+    private void CreateDropGroups()
+    {
+        var items = this._gameConfiguration.Items.ToDictionary(item => (short)((item.Group * 512) + item.Number));
+        var ownMonsters = Season21MapData.All.SelectMany(set => set.Monsters).Select(row => row.Number).ToHashSet();
+        short listNumber = 0;
+        foreach (var list in Season21DropData.All)
+        {
+            listNumber++;
+            var monsters = this._gameConfiguration.Monsters.Where(m => ownMonsters.Contains(m.Number) && list.Monsters.Contains(m.Number)).ToList();
+            var buckets = list.Buckets
+                .Select(bucket => (bucket.Weight, Items: bucket.Items.Select(i => items.GetValueOrDefault(i)).OfType<ItemDefinition>().ToList()))
+                .Where(bucket => bucket.Items.Count > 0)
+                .ToList();
+            var totalWeight = buckets.Sum(bucket => (double)bucket.Weight * bucket.Items.Count);
+            short bucketNumber = 0;
+            foreach (var (weight, bucketItems) in buckets)
+            {
+                bucketNumber++;
+                var guid = GuidHelper.CreateGuid<DropItemGroup>((short)(DropGroupNumberOffset + listNumber), bucketNumber);
+                var group = this._gameConfiguration.DropItemGroups.FirstOrDefault(g => g is IIdentifiable identifiable && identifiable.Id == guid);
+                if (group is null)
+                {
+                    group = this._context.CreateNew<DropItemGroup>();
+                    group.SetGuid(guid);
+                    group.Description = LocalizedString.FromResource(() => DropGroupDescriptions.Season21MonsterDrops);
+                    group.Chance = RandomItemDropChance * weight * bucketItems.Count / totalWeight;
+                    group.ItemType = SpecialItemType.RandomItem;
+                    bucketItems.ForEach(group.PossibleItems.Add);
+                    this._gameConfiguration.DropItemGroups.Add(group);
+                }
+
+                foreach (var monster in monsters.Where(m => !m.DropItemGroups.Contains(group)))
+                {
+                    monster.DropItemGroups.Add(group);
+                }
+            }
+        }
+    }
+
     private void CreateGates(Season21MapSet set)
     {
-        var normalLevel = (short)GetNormalLevel(set.EntryLevel, this._gameConfiguration.MaximumLevel);
         var targets = new Dictionary<short, ExitGate>();
         foreach (var gate in set.Gates.Where(gate => gate.Kind != Season21GateKind.Entrance))
         {
@@ -179,7 +242,7 @@ internal class Season21MapsInitializer
             var entrance = this._context.CreateNew<EnterGate>();
             entrance.Number = gate.Number;
             entrance.TargetGate = target;
-            entrance.LevelRequirement = normalLevel;
+            entrance.LevelRequirement = this.NormalLevelOf(set, target);
             (entrance.X1, entrance.Y1, entrance.X2, entrance.Y2) = (gate.X1, gate.Y1, gate.X2, gate.Y2);
             map.EnterGates.Add(entrance);
         }
@@ -195,11 +258,14 @@ internal class Season21MapsInitializer
             warp.Index = row.Index;
             warp.Name = row.Name;
             warp.Costs = set.EntryMoney;
-            warp.LevelRequirement = normalLevel;
+            warp.LevelRequirement = this.NormalLevelOf(set, target);
             warp.Gate = target;
             this._gameConfiguration.WarpList.Add(warp);
         }
     }
+
+    private short NormalLevelOf(Season21MapSet set, ExitGate target)
+        => (short)GetNormalLevel(EntryLevelOf(set, target.Map?.Number ?? 0), this._gameConfiguration.MaximumLevel);
 
     private GameMapDefinition? FindMap(byte number)
         => this._gameConfiguration.Maps.FirstOrDefault(map => map.Number == number && map.Discriminator == 0);

@@ -37,6 +37,11 @@ public class AddSeason21LevelCapsUpdatePlugIn : UpdatePlugInBase
     /// </remarks>
     private const string MasterExperienceFormula = "if(level > 400, 2 * ((505 * level * level * level) + (35278500 * level) + (228045 * level * level)) - 82918600000, (505 * level * level * level) + (35278500 * level) + (228045 * level * level))";
 
+    /// <summary>
+    /// The master experience formula of Season 6, which the update replaces; a formula of the operator is kept.
+    /// </summary>
+    private const string SeasonSixMasterExperienceFormula = "(505 * level * level * level) + (35278500 * level) + (228045 * level * level)";
+
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
@@ -58,8 +63,16 @@ public class AddSeason21LevelCapsUpdatePlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        gameConfiguration.MaximumMasterLevel = MaximumMasterLevel;
-        gameConfiguration.MasterExperienceFormula = MasterExperienceFormula;
+        if (gameConfiguration.MaximumMasterLevel < MaximumMasterLevel)
+        {
+            gameConfiguration.MaximumMasterLevel = MaximumMasterLevel;
+        }
+
+        if (gameConfiguration.MasterExperienceFormula is null or SeasonSixMasterExperienceFormula)
+        {
+            gameConfiguration.MasterExperienceFormula = MasterExperienceFormula;
+        }
+
         return ValueTask.CompletedTask;
     }
 }

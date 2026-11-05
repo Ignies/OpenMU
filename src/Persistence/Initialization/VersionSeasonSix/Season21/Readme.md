@@ -31,7 +31,19 @@ were corrected:
 * a single monster spawns anywhere within its range of its tile, because many
   tiles of the data are not walkable,
 * the gate of Nixie Lake in Raklion is moved to walkable ground of the Season 6
-  Raklion.
+  Raklion,
+* where the data contradicts itself, the gates (`Gate.xml`) win over the move
+  list (`Move.txt`): Deep Dungeon 1-5 ask 730, 750, 770, 780 and 780, Atlans
+  Abyss 2 asks 925 (`Season21Map.EntryLevel` overrides the level of a set),
+* Old Kethotum spawns only its Lv195 monsters: the 16 elite spots of its file are
+  the Old Crimson Minos which the file of Blaze Kethotum holds on the same
+  points, and these points of Blaze Kethotum hold its own Crimson Minos,
+* the elites of the whole-map placeholder file of Arenil Temple are left out
+  (they belong to an elite zone),
+* Kubera Mine uses the newer of the two spawn sets of the data ("Kubera Mine N",
+  with the Dead Shoveler),
+* the rows of the Scorched Assassin and the Scorched Wizard are swapped back (the
+  ranged magic row, whose maximum damage was its defense, is the wizard's).
 
 The versions (`IntroducedIn`) are the ones in which the maps were added
 according to the [MU Online history](https://github.com/Khdoop/mu-online-history).
@@ -45,7 +57,12 @@ according to the [MU Online history](https://github.com/Khdoop/mu-online-history
   list entries check the normal level, so they require the total level capped at
   the maximum level: master levels are gained only at the maximum level, so a
   character with the total level always has that level.
-* A map drops what its safezone map drops.
+* A map drops what its safezone map drops. Each monster drops its list of the
+  per-map drop files of the data (`Season21DropData`, generated from
+  `Item/MonsterDropManager`): one drop group of the monster per drop weight,
+  whose chances share the 30 % of a random item drop by their weights. As groups
+  of the monster, they aren't filtered by the monster level, which is above any
+  drop level here. Items which the configuration doesn't have are left out.
 * The game servers which host a map's safezone map host the map too.
 
 ## What is left out
@@ -79,6 +96,10 @@ mastery socket sets, Season 8 Part 2 for the new rings and pendants, Season 11
 for the blessed archangel weapons and the socket items of the Rage Fighter);
 what the history doesn't list (the [Bound] copies, the decoration rings, the
 Wings of Conqueror) counts as Season 21 Part 1, the version of the data.
+
+The Ring of Block (13/174) doesn't drop, although the data lets it: the Season 21
+client has no row for it, so it couldn't show it. A second run of the update keeps
+the drop switch of an existing item.
 
 Left out, because Season 6 has nothing to hold them: the items of the fourth
 and fifth classes and their wings, the 2.5 wings, the event wings, the timed
