@@ -1,0 +1,17 @@
+{
+  "fork": "Ignies/OpenMU",
+  "line": "master of Ignies/OpenMU",
+  "markerVersion": 1,
+  "repository": "https://github.com/Ignies/OpenMU",
+  "features": [
+    "s21_maps",
+    "level_caps",
+    "s21_gear",
+    "s21_drops",
+    "s21_event_grades",
+    "party_bonus",
+    "lucky_items",
+    "lucky_refinery_s21",
+    "progression"
+  ]
+}
