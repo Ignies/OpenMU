@@ -51,7 +51,7 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
     private static async ValueTask<(bool Success, ItemDefinition? Definition)> TryParseArgumentsAsync(Player gameMaster, ItemChatCommandArgs arguments)
     {
         var itemDefinition = gameMaster.GameContext.Configuration.Items
-            .FirstOrDefault(def => def.Group == arguments.Group && def.Number == arguments.Number);
+            .FirstOrDefault(def => def.Group == arguments.Group && def.Number == arguments.Number && def.IsActive);
         if (itemDefinition is null)
         {
             await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemGroupNumberNotExists), arguments.Group, arguments.Number).ConfigureAwait(false);

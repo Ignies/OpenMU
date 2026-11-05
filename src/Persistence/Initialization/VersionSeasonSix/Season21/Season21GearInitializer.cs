@@ -84,9 +84,12 @@ internal class Season21GearInitializer
         }
     }
 
-    private static Guid OptionTypeOf(ItemOptionDefinition option) => option.PossibleOptions.FirstOrDefault()?.OptionType?.Id ?? Guid.Empty;
-
-    private static CharacterClasses ToClasses(int[] ranks)
+    /// <summary>
+    /// Gets the classes of the ranks of the Season 6 classes: 1 or 2 any class of the kind, 3 its master class.
+    /// </summary>
+    /// <param name="ranks">The ranks of the wizard, knight, elf, magic gladiator, dark lord, summoner and rage fighter.</param>
+    /// <returns>The classes.</returns>
+    internal static CharacterClasses ToClasses(int[] ranks)
     {
         (CharacterClasses All, CharacterClasses Master)[] classes =
         [
@@ -111,6 +114,58 @@ internal class Season21GearInitializer
 
         return result;
     }
+
+    /// <summary>
+    /// Creates the item of a row and adds it to the configuration, with the drop switch of the configuration's default.
+    /// </summary>
+    /// <param name="row">The row.</param>
+    /// <returns>The item, or <c>null</c> when the configuration lacks its template.</returns>
+    internal ItemDefinition? Create(Season21GearItem row)
+    {
+        var (templateGroup, templateNumber) = TemplateOf(row);
+        if (this.Find(templateGroup, templateNumber) is not { } template)
+        {
+            return null;
+        }
+
+        var item = this._context.CreateNew<ItemDefinition>();
+        item.SetGuid(row.Group, row.Number);
+        item.Group = row.Group;
+        item.Number = row.Number;
+        item.Name = row.Name;
+        item.IntroducedIn = row.IntroducedIn;
+        item.ItemSlot = template.ItemSlot;
+        item.DropLevel = row.DropLevel;
+        item.Durability = row.Durability;
+        item.IsTradable = !row.Bans.HasFlag(Season21ItemBans.Trade);
+        item.IsDroppable = !row.Bans.HasFlag(Season21ItemBans.Drop);
+        item.IsStorable = !row.Bans.HasFlag(Season21ItemBans.Store);
+        item.IsPersonalStoreSellable = !row.Bans.HasFlag(Season21ItemBans.Shop);
+        item.IsSellableToNpc = !row.Bans.HasFlag(Season21ItemBans.Sell);
+        item.IsRepairable = !row.Bans.HasFlag(Season21ItemBans.Repair);
+        if (row.Stats is { } stats)
+        {
+            this.CopyGear(item, row, stats, template);
+        }
+        else
+        {
+            this.CopyJewelry(item, row, template);
+        }
+
+        this._gameConfiguration.Items.Add(item);
+        return item;
+    }
+
+    private static bool Takes(Season21OptionKinds kinds, Guid optionType)
+    {
+        var kind = optionType == ItemOptionTypes.Luck.Id ? Season21OptionKinds.Luck
+            : optionType == ItemOptionTypes.Option.Id ? Season21OptionKinds.Option
+            : optionType == ItemOptionTypes.Excellent.Id ? Season21OptionKinds.Excellent
+            : Season21OptionKinds.None;
+        return kind == Season21OptionKinds.None || kinds.HasFlag(kind);
+    }
+
+    private static Guid OptionTypeOf(ItemOptionDefinition option) => option.PossibleOptions.FirstOrDefault()?.OptionType?.Id ?? Guid.Empty;
 
     private static (byte Group, short Number) TemplateOf(Season21GearItem row) => row.Stats?.Template ?? row.Excellent switch
     {
@@ -156,42 +211,6 @@ internal class Season21GearInitializer
 
     private ItemDefinition? Find(byte group, short number)
         => this._gameConfiguration.Items.FirstOrDefault(i => i.Group == group && i.Number == number);
-
-    private ItemDefinition? Create(Season21GearItem row)
-    {
-        var (templateGroup, templateNumber) = TemplateOf(row);
-        if (this.Find(templateGroup, templateNumber) is not { } template)
-        {
-            return null;
-        }
-
-        var item = this._context.CreateNew<ItemDefinition>();
-        item.SetGuid(row.Group, row.Number);
-        item.Group = row.Group;
-        item.Number = row.Number;
-        item.Name = row.Name;
-        item.IntroducedIn = row.IntroducedIn;
-        item.ItemSlot = template.ItemSlot;
-        item.DropLevel = row.DropLevel;
-        item.Durability = row.Durability;
-        item.IsTradable = !row.Bans.HasFlag(Season21ItemBans.Trade);
-        item.IsDroppable = !row.Bans.HasFlag(Season21ItemBans.Drop);
-        item.IsStorable = !row.Bans.HasFlag(Season21ItemBans.Store);
-        item.IsPersonalStoreSellable = !row.Bans.HasFlag(Season21ItemBans.Shop);
-        item.IsSellableToNpc = !row.Bans.HasFlag(Season21ItemBans.Sell);
-        item.IsRepairable = !row.Bans.HasFlag(Season21ItemBans.Repair);
-        if (row.Stats is { } stats)
-        {
-            this.CopyGear(item, row, stats, template);
-        }
-        else
-        {
-            this.CopyJewelry(item, row, template);
-        }
-
-        this._gameConfiguration.Items.Add(item);
-        return item;
-    }
 
     private void CopyJewelry(ItemDefinition item, Season21GearItem row, ItemDefinition template)
     {
@@ -245,7 +264,7 @@ internal class Season21GearInitializer
             item.QualifiedCharacters.Add(characterClass);
         }
 
-        var options = template.PossibleItemOptions.Where(o => stats.TakesOptions && !TemplateOnlyOptionTypes.Contains(OptionTypeOf(o)));
+        var options = template.PossibleItemOptions.Where(o => stats.TakesOptions && !TemplateOnlyOptionTypes.Contains(OptionTypeOf(o)) && Takes(stats.Options, OptionTypeOf(o)));
         foreach (var option in options.Concat(this.SocketOptions(row, stats)))
         {
             item.PossibleItemOptions.Add(option);

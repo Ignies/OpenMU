@@ -89,7 +89,7 @@ missing dependency doesn't stop the creation of a new database.
 ## Maps of the later seasons
 
 A Season 6 server can add the maps which came after Season 6, up to Season 20,
-the gear, the event rules and the progression of Season 21 with five optional updates. A new database leaves them pending, so a server
+the gear, every other item, the event rules and the progression of Season 21 with six optional updates. A new database leaves them pending, so a server
 changes only when you apply them:
 
 * **Add the maps of the later seasons (Season 21 data)** adds Acheron (with
@@ -130,6 +130,17 @@ changes only when you apply them:
   the red and blue chocolate boxes hold its rings. Each item carries the season
   which introduced it (Season 21 Part 1 where the history doesn't say), so
   Content activation can switch the gear off by season too.
+* **Add every item of Season 21 (Season 21 data)** defines every other item of
+  the Season 21 data, in all item groups: weapons, armor sets, wings, jewelry,
+  pets, jewels, boxes and the rest, with their values, requirements and classes.
+  Gear takes the options and level tables of the Season 6 item of its kind.
+  Items you already have are kept as they are. What a Season 6 client can't show
+  yet (item groups 16 to 21, earrings, pentagrams, errtels, the fourth and fifth
+  wings, muuns, timed items, quivers, seed spheres above level 5) is defined but
+  inactive: it doesn't drop and can't be made. The new items don't join the random
+  drops of the Season 6 maps; the monsters of the later maps drop them by their
+  drop lists, which the update fills. Items for the classes after Season 6 have
+  no class yet that can wear them. It depends on **Add the gear of Season 21**.
 * **Turn on the progression of the Season 21 maps (stars)** turns on the plugin
   **Progression (Season 21 maps)** in its stars mode and the reset feature with
   the star costs (10 stars, level 400, 5,000,000 zen times the star, a Jewel of

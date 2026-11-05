@@ -13,10 +13,10 @@ public static class GameMasterItemFactory
     /// <summary>Validates item options against their configured definitions.</summary>
     /// <param name="definition">The configured item definition.</param>
     /// <param name="item">The requested item.</param>
-    /// <returns>Whether every requested option can be represented by the definition.</returns>
+    /// <returns>Whether the definition is active and every requested option can be represented by it.</returns>
     public static bool IsValid(ItemDefinition definition, ItemSpecification item)
     {
-        if (item.Level > definition.MaximumItemLevel || (item.Skill && definition.Skill is null))
+        if (!definition.IsActive || item.Level > definition.MaximumItemLevel || (item.Skill && definition.Skill is null))
         {
             return false;
         }

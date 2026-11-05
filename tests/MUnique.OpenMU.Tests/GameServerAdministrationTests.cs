@@ -99,6 +99,16 @@ public sealed class GameServerAdministrationTests
         Assert.That(this._player.Inventory!.Items, Is.Empty);
     }
 
+    /// <summary>An inactive item isn't available in the game, so it isn't given either.</summary>
+    [Test]
+    public async Task RejectsInactiveItemsAsync()
+    {
+        this.AddItemDefinition().IsActive = false;
+        var result = await this._administration.GiveItemAsync("Hero", this._player.SelectedCharacter!.Id, new(0, 1), CancellationToken.None).ConfigureAwait(false);
+        Assert.That(result.Succeeded, Is.False);
+        Assert.That(this._player.Inventory!.Items, Is.Empty);
+    }
+
     /// <summary>Reads filter before paging and never substitute persisted state for a disconnected character.</summary>
     [Test]
     public async Task FiltersAndRejectsUnstableSessionsAsync()

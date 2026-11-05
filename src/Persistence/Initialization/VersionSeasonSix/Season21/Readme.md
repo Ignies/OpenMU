@@ -6,7 +6,8 @@ them, as optional updates of a Season 6 database:
 * `AddSeason21MapsUpdatePlugIn` adds them (`Season21MapsInitializer`),
 * `AddSeason21LevelCapsUpdatePlugIn` sets the level caps of Season 21, which the
   maps depend on: their entry levels and monsters keep the numbers of Season 21,
-* `AddSeason21GearUpdatePlugIn` adds the gear of Season 21 (`Season21GearInitializer`).
+* `AddSeason21GearUpdatePlugIn` adds the gear of Season 21 (`Season21GearInitializer`),
+* `AddSeason21ItemCatalogUpdatePlugIn` defines every other item of the data (`Season21ItemCatalogInitializer`).
 
 They run on a new database too (`RunsOnNewDatabase`), but as they are optional,
 a new database leaves them pending. So a Season 6 server only changes when its
@@ -58,11 +59,14 @@ according to the [MU Online history](https://github.com/Khdoop/mu-online-history
   the maximum level: master levels are gained only at the maximum level, so a
   character with the total level always has that level.
 * A map drops what its safezone map drops. Each monster drops its list of the
-  per-map drop files of the data (`Season21DropData`, generated from
+  per-map drop files of the data (`Season21DropGroups`, `Season21DropData`, generated from
   `Item/MonsterDropManager`): one drop group of the monster per drop weight,
   whose chances share the 30 % of a random item drop by their weights. As groups
   of the monster, they aren't filtered by the monster level, which is above any
-  drop level here. Items which the configuration doesn't have are left out.
+  drop level here. Items which the configuration doesn't have are left out;
+  when the item catalog defines more, it adds them to the groups. A group's
+  chance counts its active items; it's set again when items join, unless the
+  operator changed it.
 * The game servers which host a map's safezone map host the map too.
 
 ## What is left out
@@ -107,3 +111,52 @@ items, quivers and pentagrams. The wing look for other players needs no server
 change for the open source client, whose extended appearance carries the item
 group and number of each slot; the appearance of the original Season 6 client
 names wings by an enumeration which doesn't know the new ones.
+
+## Item catalog
+
+`Resources/Season21/Items.json` holds every item of the Season 21 server data, 4,701 in the groups 0-21, one per
+line (`Season21CatalogItem`, loaded by `Season21ItemCatalog`): every column of `Item.xml` (fields left out are 0),
+and per item what the option files say: `ItemOption - Settings/ItemOption.xml` (options as type, index and value),
+`Socket - Settings/SocketItemType.xml` (sockets), `380 Items - Setting/380ItemType.txt` (guardian option),
+`Mastery - Settings/MasteryItem.txt` (mastery group and tier), `Lucky Item - Settings/LuckySystem.xml`,
+`SetItem - Settings/SetItemType.xml` (ancient sets) and `ItemValue.txt` (value, highest level). The names are in
+`Properties/Season21CatalogItemNames.resx`, by the key of each row.
+
+Generated, never edited by hand:
+
+```
+node Generator/season21-items.mjs --data <S21 server Data/Item> --history <mu-online-history source.md> [--log <file>]
+```
+
+`--history` is `source.md` of the [MU Online history](https://github.com/Khdoop/mu-online-history). An item takes
+the version of the first section of the history which names it, its set ("Nightwing set") or, for mastery items,
+its tier ("Mastery Set - Bloodangel"); a section maps to the episode of the same season, the nearest one where
+`GameVersion` has none. What the history doesn't name counts as Season 21 Part 1, the version of the data
+(`versionFromHistory` is false; the generator prints their number and `--log <file>` writes the list, the Season 6
+items included).
+
+`AddSeason21ItemCatalogUpdatePlugIn` defines every row the configuration lacks; defined items, Season 6 or
+changed by the operator, stay as they are, so a number which Season 6 uses keeps its Season 6 item (2/22 is the
+Mace of the King, not the Bloodangel Scepter). It runs after the gear update, whose items keep the templates
+chosen for them by hand:
+
+* gear (groups 0-12, slots 0-7) copies the defined item of the same group and slot whose row matches its kind,
+  two-handedness, sub kind and skill best, then the nearest drop level, with `Season21GearInitializer`; it takes
+  luck, the option and the excellent options of the template only where `ItemOption.xml` gives it them,
+* rings and pendants copy the Season 6 ring or pendant of their options,
+* pets get the pet slot, everything else the values of its row only (size, durability or stack, level, value,
+  bans, skill, requirements, classes).
+
+The class ranks of the Season 6 classes (1 and 2 any class, 3 the master class) give the qualified classes; ranks
+4 and 5 (fourth and fifth class) and the nine later classes stay in the catalog until those classes exist.
+No new item drops by the random drops (`DropsFromMonsters`), which would change every Season 6 map; they drop by
+the drop lists of the later maps.
+
+An item which the Season 6 item format can't carry (`WaitsFor`) is defined, but inactive, so it doesn't drop, isn't
+sold and a game master can't make it: groups 16-21 (`group`), pentagrams (`pentagram`), earrings (`earring`), the
+fourth and fifth wings (`wing grade`), errtels (`errtel`), muuns (`muun`), quivers (`quiver`), timed items
+(`expiry`) and seed spheres above level 5 (`sphere level`). They wait for the wide item format.
+
+Kept in the catalog only, as the configuration has no place for them yet: the mastery options, the ancient sets
+of the new items, the options of the special types (10-15) other than the fixed jewelry bonuses, the resistances,
+the elemental and legendary columns and the buy prices.

@@ -20,7 +20,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 /// <param name="Requirements">The required level, strength, agility, energy, vitality and command.</param>
 /// <param name="Classes">The class rank which each of the wizard, knight, elf, magic gladiator, dark lord, summoner and rage fighter needs (0 none, 1 or 2 from the first class, 3 the master class).</param>
 /// <param name="Sockets">The number of sockets.</param>
-/// <param name="TakesOptions">Whether it takes luck, the option and excellent options.</param>
+/// <param name="TakesOptions">Whether it takes the options of its template.</param>
+/// <param name="Options">Which of luck, the option and the excellent options of its template it takes.</param>
 internal sealed record Season21GearStats(
     (byte Group, short Number) Template,
     int Skill,
@@ -35,4 +36,5 @@ internal sealed record Season21GearStats(
     int[] Requirements,
     int[] Classes,
     int Sockets,
-    bool TakesOptions);
+    bool TakesOptions,
+    Season21OptionKinds Options = Season21OptionKinds.All);
