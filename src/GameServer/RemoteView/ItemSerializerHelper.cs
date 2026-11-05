@@ -138,20 +138,32 @@ public static class ItemSerializerHelper
 
         byte GetSocketByte(int socketSlot)
         {
-            var optionLink = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.SocketOption && o.Index == socketSlot);
-            if (optionLink is null)
+            if (GetSocketOption(item, socketSlot) is not (var optionIndex, var level))
             {
                 return EmptySocket;
             }
 
             // A level outside of the supported range would wrap around the byte and crash the client.
-            var sphereLevel = Math.Clamp(optionLink.Level - 1, 0, MaximumSphereLevelIndex);
-            var elementType = optionLink.ItemOption!.SubOptionType;
-            var elementOption = optionLink.ItemOption.Number;
-            var optionIndex = SocketOptionIndexOffsets[elementType] + elementOption;
-
+            var sphereLevel = Math.Clamp(level - 1, 0, MaximumSphereLevelIndex);
             return (byte)((sphereLevel * MaximumSocketOptions) + optionIndex);
         }
+    }
+
+    /// <summary>
+    /// Gets the socket option of a socket slot of an item.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    /// <param name="socketSlot">The socket slot.</param>
+    /// <returns>The option index over all elements and the sphere level, or <c>null</c> when the slot is empty.</returns>
+    public static (byte OptionIndex, int Level)? GetSocketOption(Item item, int socketSlot)
+    {
+        var optionLink = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == ItemOptionTypes.SocketOption && o.Index == socketSlot);
+        if (optionLink?.ItemOption is not { } option)
+        {
+            return null;
+        }
+
+        return ((byte)(SocketOptionIndexOffsets[option.SubOptionType] + option.Number), optionLink.Level);
     }
 
     /// <summary>
@@ -200,27 +212,38 @@ public static class ItemSerializerHelper
                 continue;
             }
 
-            var sphereLevel = (socketByte / MaximumSocketOptions) + 1;
-            var optionIndex = socketByte % MaximumSocketOptions;
-            var indexOffset = SocketOptionIndexOffsets.Last(offset => offset <= optionIndex);
-            var elementType = Array.IndexOf(SocketOptionIndexOffsets, indexOffset);
-            var optionNumber = optionIndex - indexOffset;
-
-            var socketOption = item.Definition.PossibleItemOptions
-                                   .SelectMany(o => o.PossibleOptions
-                                       .Where(p => p.OptionType == ItemOptionTypes.SocketOption
-                                                   && p.SubOptionType == elementType
-                                                   && p.Number == optionNumber))
-                                   .FirstOrDefault()
-                               ?? throw new ArgumentException($"The socket option {socketByte} was set, but the option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
-            var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
-            optionLink.ItemOption = socketOption;
-            optionLink.Level = sphereLevel;
-            optionLink.Index = i;
-            item.ItemOptions.Add(optionLink);
+            AddSocketOption(socketByte % MaximumSocketOptions, (socketByte / MaximumSocketOptions) + 1, i, persistenceContext, item);
         }
 
         item.SocketCount = numberOfSockets;
+    }
+
+    /// <summary>
+    /// Adds a socket option to a socket slot of an item.
+    /// </summary>
+    /// <param name="optionIndex">The option index over all elements.</param>
+    /// <param name="sphereLevel">The sphere level.</param>
+    /// <param name="socketSlot">The socket slot.</param>
+    /// <param name="persistenceContext">The persistence context.</param>
+    /// <param name="item">The item.</param>
+    public static void AddSocketOption(int optionIndex, int sphereLevel, int socketSlot, IContext persistenceContext, Item item)
+    {
+        var indexOffset = SocketOptionIndexOffsets.Last(offset => offset <= optionIndex);
+        var elementType = Array.IndexOf(SocketOptionIndexOffsets, indexOffset);
+        var optionNumber = optionIndex - indexOffset;
+
+        var socketOption = item.Definition!.PossibleItemOptions
+                               .SelectMany(o => o.PossibleOptions
+                                   .Where(p => p.OptionType == ItemOptionTypes.SocketOption
+                                               && p.SubOptionType == elementType
+                                               && p.Number == optionNumber))
+                               .FirstOrDefault()
+                           ?? throw new ArgumentException($"The socket option {optionIndex} was set, but the option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
+        var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
+        optionLink.ItemOption = socketOption;
+        optionLink.Level = sphereLevel;
+        optionLink.Index = socketSlot;
+        item.ItemOptions.Add(optionLink);
     }
 
     /// <summary>

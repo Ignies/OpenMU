@@ -270,6 +270,12 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public Views.Login.LoginResult? LoginResultOverride { get; set; }
 
     /// <summary>
+    /// Gets or sets the features of the fork (<see cref="GameLogic.ForkFeatures"/>) which are active for the
+    /// connection of this player. It's 0 unless the Babylon client negotiated them.
+    /// </summary>
+    public uint ForkFeatures { get; set; }
+
+    /// <summary>
     /// Gets the point in time (UTC) when the client of this player reported the last time that it's alive,
     /// e.g. by its periodic ping, while the player is in the world. It's <c>null</c>, if the client didn't report
     /// it since the player entered the world, e.g. because it doesn't support it, or because this player has no

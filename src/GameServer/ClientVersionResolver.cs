@@ -17,6 +17,14 @@ public static class ClientVersionResolver
     private static readonly IDictionary<ClientVersion, byte[]> VersionBytes = new Dictionary<ClientVersion, byte[]>();
 
     /// <summary>
+    /// Initializes static members of the <see cref="ClientVersionResolver"/> class.
+    /// </summary>
+    static ClientVersionResolver()
+    {
+        Register(BabylonClient.VersionBytes.ToArray(), BabylonClient.Version);
+    }
+
+    /// <summary>
     /// Gets or sets the default version.
     /// </summary>
     public static ClientVersion DefaultVersion { get; set; } = new(6, 3, ClientLanguage.English);

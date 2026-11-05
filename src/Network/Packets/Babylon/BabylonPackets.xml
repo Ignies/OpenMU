@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
+  <Description>This file contains the packet definitions of the Babylon protocol: packets of the Ignies/OpenMU fork, exchanged only with the Babylon client after it announced the fork protocol. All of them use the head code 0xEE (0xFB is the ping relay of the Babylon proxy) and a sub code; the sub code ranges are reserved per system (see docs/babylon.md).</Description>
+  <Structures>
+  </Structures>
+  <Packets>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>F0</SubCode>
+      <Name>ForkHello</Name>
+      <Length>12</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>After the login succeeded, when the client logged in with the version of the Babylon client.</SentWhen>
+      <CausedReaction>The server answers with the ForkWelcome which tells the client the wire format and the features which are active.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ClientWire</Name>
+          <Description>The version of the Babylon protocol which the client speaks.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>WantedFeatures</Name>
+          <Description>A bit per feature (see docs/babylon.md) which the client wants to use on this world.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ClientBuild</Name>
+          <Description>The build number of the client, for the logs.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>F1</SubCode>
+      <Name>ForkWelcome</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the client sent the ForkHello.</SentWhen>
+      <CausedReaction>The client switches to the wire formats and features of the fork. When it does not arrive, the client reconnects with the Season 6 protocol.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ServerWire</Name>
+          <Description>The version of the Babylon protocol which the server speaks.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ActiveFeatures</Name>
+          <Description>The wanted features which the server supports and uses for this connection.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>ItemFormat</Name>
+          <Description>The item data format of every item of this connection: 0 = Season 6 (12 bytes), 1 = W32 (32 bytes).</Description>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Byte</Type>
+          <Name>ClassEncoding</Name>
+          <Description>The class encoding of the Babylon packets: 0 = Season 6 (5 bits), 1 = class code (base class times 8 plus evolution).</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumLevel</Name>
+          <Description>The normal level cap of the world.</Description>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MaximumStars</Name>
+          <Description>The maximum number of stars of the world, 0 when it has none.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>F2</SubCode>
+      <Name>ForkFeaturesChanged</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the active features of the connection changed while the client is connected.</SentWhen>
+      <CausedReaction>The client turns the features on or off.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ActiveFeatures</Name>
+          <Description>The features which are active from now on.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+  </Packets>
+</PacketDefinitions>

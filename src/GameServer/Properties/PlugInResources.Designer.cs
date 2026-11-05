@@ -8017,5 +8017,41 @@ namespace MUnique.OpenMU.GameServer.Properties {
 
         /// <summary>Gets the localized PingHandlerPlugIn_Description text.</summary>
         public static string PingHandlerPlugIn_Description => ResourceManager.GetString("PingHandlerPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized BabylonGroupHandlerPlugIn_Name text.</summary>
+        public static string BabylonGroupHandlerPlugIn_Name => ResourceManager.GetString("BabylonGroupHandlerPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized BabylonGroupHandlerPlugIn_Description text.</summary>
+        public static string BabylonGroupHandlerPlugIn_Description => ResourceManager.GetString("BabylonGroupHandlerPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized ForkHelloHandlerPlugIn_Name text.</summary>
+        public static string ForkHelloHandlerPlugIn_Name => ResourceManager.GetString("ForkHelloHandlerPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ForkHelloHandlerPlugIn_Description text.</summary>
+        public static string ForkHelloHandlerPlugIn_Description => ResourceManager.GetString("ForkHelloHandlerPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized ForkWelcomePlugIn_Name text.</summary>
+        public static string ForkWelcomePlugIn_Name => ResourceManager.GetString("ForkWelcomePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ForkWelcomePlugIn_Description text.</summary>
+        public static string ForkWelcomePlugIn_Description => ResourceManager.GetString("ForkWelcomePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized ItemSerializerW32_Name text.</summary>
+        public static string ItemSerializerW32_Name => ResourceManager.GetString("ItemSerializerW32_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ItemSerializerW32_Description text.</summary>
+        public static string ItemSerializerW32_Description => ResourceManager.GetString("ItemSerializerW32_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized ShowShopItemListW32PlugIn_Name text.</summary>
+        public static string ShowShopItemListW32PlugIn_Name => ResourceManager.GetString("ShowShopItemListW32PlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ShowShopItemListW32PlugIn_Description text.</summary>
+        public static string ShowShopItemListW32PlugIn_Description => ResourceManager.GetString("ShowShopItemListW32PlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized PlayerShopBuyRequestResultW32PlugIn_Name text.</summary>
+        public static string PlayerShopBuyRequestResultW32PlugIn_Name => ResourceManager.GetString("PlayerShopBuyRequestResultW32PlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized PlayerShopBuyRequestResultW32PlugIn_Description text.</summary>
+        public static string PlayerShopBuyRequestResultW32PlugIn_Description => ResourceManager.GetString("PlayerShopBuyRequestResultW32PlugIn_Description", resourceCulture)!;
     }
 }

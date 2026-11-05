@@ -123,6 +123,8 @@ complexity and effort). Complexity 0 means we wont implement it.
 |   - *Leave gens request* | 0xF803            |      |          |                                               |
 |   - *Gens reward request* | 0xF809            |      |          |                                               |
 |   - *Gens ranking request* | 0xF80B            |      |          | Answered with the gens info of the player (0xF807) |
+| Babylon protocol (fork)     | 0xEE              |          |            | Only the Babylon client in fork mode (docs/babylon.md) |
+|   - *Fork hello*            | 0xEEF0            | 100%     | 2          | Answered with the fork welcome (0xEEF1)       |
 | *Hit*                         | 0x11      | 100%     | 10         |                                               |
 | *Teleport*                    | 0x15 | 100%     | 2          |                                               |
 | *Walk*                        | 0xD4     | 100%     | 10         |                                               |

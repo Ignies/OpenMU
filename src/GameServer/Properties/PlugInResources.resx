@@ -2771,4 +2771,40 @@
   <data name="ShowItemCraftingPreviewExtendedPlugIn_Description" xml:space="preserve">
     <value>The extended implementation of the IShowItemCraftingPreviewPlugIn which is forwarding everything to the game client with specific data packets.</value>
   </data>
+  <data name="BabylonGroupHandlerPlugIn_Name" xml:space="preserve">
+    <value>Babylon Group Handler</value>
+  </data>
+  <data name="BabylonGroupHandlerPlugIn_Description" xml:space="preserve">
+    <value>Packet handler for the packets of the Babylon protocol (0xEE identifier), which only the Babylon client sends.</value>
+  </data>
+  <data name="ForkHelloHandlerPlugIn_Name" xml:space="preserve">
+    <value>Fork Hello Handler</value>
+  </data>
+  <data name="ForkHelloHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the hello of the Babylon client and negotiates the features of the fork.</value>
+  </data>
+  <data name="ForkWelcomePlugIn_Name" xml:space="preserve">
+    <value>Fork Welcome</value>
+  </data>
+  <data name="ForkWelcomePlugIn_Description" xml:space="preserve">
+    <value>Answers the hello of the Babylon client with the item format and the features which are active for its connection.</value>
+  </data>
+  <data name="ItemSerializerW32_Name" xml:space="preserve">
+    <value>Item Serializer (W32)</value>
+  </data>
+  <data name="ItemSerializerW32_Description" xml:space="preserve">
+    <value>Serializes items in the 32 byte layout of the Babylon client in fork mode, which carries the item groups, numbers and options of later seasons.</value>
+  </data>
+  <data name="ShowShopItemListW32PlugIn_Name" xml:space="preserve">
+    <value>Show Shop Item List (W32)</value>
+  </data>
+  <data name="ShowShopItemListW32PlugIn_Description" xml:space="preserve">
+    <value>Shows the items of a player shop to the Babylon client, in the extended packet whose items have the W32 size.</value>
+  </data>
+  <data name="PlayerShopBuyRequestResultW32PlugIn_Name" xml:space="preserve">
+    <value>Player Shop Buy Result (W32)</value>
+  </data>
+  <data name="PlayerShopBuyRequestResultW32PlugIn_Description" xml:space="preserve">
+    <value>Shows the result of a player shop purchase to the Babylon client, in the extended packet whose item has the W32 size.</value>
+  </data>
 </root>

@@ -45,6 +45,16 @@ public class ItemSerializerTests : ItemSerializerTests<ItemSerializer>
 public class ItemSerializerExtendedTests : ItemSerializerTests<ItemSerializerExtended>;
 
 /// <summary>
+/// Unit tests for the <see cref="ItemSerializerW32"/>; its layout tests are in <see cref="Babylon.ItemSerializerW32Tests"/>.
+/// </summary>
+[TestFixture]
+public class ItemSerializerW32GenericTests : ItemSerializerTests<ItemSerializerW32>
+{
+    /// <inheritdoc />
+    protected override int MaximumSphereLevel => 15;
+}
+
+/// <summary>
 /// Generic unit tests for the <see cref="IItemSerializer"/>s.
 /// </summary>
 [Ignore("Generic test")]
@@ -54,6 +64,21 @@ public class ItemSerializerTests<T>
     private GameConfiguration _gameConfiguration = null!;
     private IPersistenceContextProvider _contextProvider = null!;
     private IItemSerializer _itemSerializer = null!;
+
+    /// <summary>
+    /// Gets the highest sphere level which the serializer carries.
+    /// </summary>
+    protected virtual int MaximumSphereLevel => ItemSerializerHelper.MaximumSphereLevelIndex + 1;
+
+    /// <summary>
+    /// Gets the game configuration of the tests.
+    /// </summary>
+    protected GameConfiguration GameConfiguration => this._gameConfiguration;
+
+    /// <summary>
+    /// Gets the context provider of the tests.
+    /// </summary>
+    protected IPersistenceContextProvider ContextProvider => this._contextProvider;
 
     /// <summary>
     /// Sets up the test environment by initializing configuration data and a <see cref="IPersistenceContextProvider"/>.
@@ -77,6 +102,32 @@ public class ItemSerializerTests<T>
         var item = tuple.Item1;
         var deserializedItem = tuple.Item2;
         Assert.That(deserializedItem.Definition, Is.EqualTo(item.Definition));
+    }
+
+    /// <summary>
+    /// Tests if the high bit of an item number above 255 is correctly (de)serialized.
+    /// </summary>
+    [Test]
+    public void HighItemNumber()
+    {
+        using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
+        var definition = context.CreateNew<ItemDefinition>();
+        definition.Group = 14;
+        definition.Number = 300;
+        this._gameConfiguration.Items.Add(definition);
+        try
+        {
+            var item = context.CreateNew<Item>();
+            item.Definition = definition;
+            var array = new byte[this._itemSerializer.NeededSpace];
+            this._itemSerializer.SerializeItem(array, item);
+
+            Assert.That(this._itemSerializer.DeserializeItem(array, this._gameConfiguration, context).Definition, Is.SameAs(definition));
+        }
+        finally
+        {
+            this._gameConfiguration.Items.Remove(definition);
+        }
     }
 
     /// <summary>
@@ -267,7 +318,7 @@ public class ItemSerializerTests<T>
 
         var deserializedOptionLink = deserializedItem.ItemOptions.Single(link => link.ItemOption!.OptionType == ItemOptionTypes.SocketOption);
         Assert.That(deserializedOptionLink.ItemOption, Is.SameAs(socketOption.ItemOption));
-        Assert.That(deserializedOptionLink.Level, Is.EqualTo(ItemSerializerHelper.MaximumSphereLevelIndex + 1));
+        Assert.That(deserializedOptionLink.Level, Is.EqualTo(Math.Min(socketOption.Level, this.MaximumSphereLevel)));
     }
 
     /// <summary>

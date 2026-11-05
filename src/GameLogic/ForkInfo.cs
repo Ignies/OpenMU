@@ -39,6 +39,9 @@ public static class ForkInfo
         "lucky_items",
         "lucky_refinery_s21",
         "progression",
+        "fork_protocol",
+        "wire_w32",
+        "class_codes",
     ];
 
     /// <summary>
