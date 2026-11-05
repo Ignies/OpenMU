@@ -16,7 +16,8 @@ namespace MUnique.OpenMU.DataModel.Configuration;
 ///   <item>The versions before Season 1 (also known as Season 0) are numbered by their version number
 ///   <c>major.minor.patch</c> as <c>major * 10000 + minor * 100 + patch</c>. The patch is the number of the letter
 ///   of the version, e.g. 0.95d is 0.95.4 and 0.99G+ is 0.99.33.</item>
-///   <item>The seasons are numbered as <c>season * 100000 + episode * 1000</c>.</item>
+///   <item>The seasons are numbered as <c>season * 100000 + episode * 1000</c>. From Season 7 on, the episodes
+///   are called parts; a part which came in several steps (e.g. Part 1-1 and 1-2) counts as one episode.</item>
 /// </list>
 /// The version numbers and their content are the ones of the original Korean game, as listed by https://github.com/Khdoop/mu-online-history.
 /// Content of patches without a known version number is attributed to the next version with a known number.
@@ -209,4 +210,139 @@ public enum GameVersion
     /// The Season 6 Episode 3.
     /// </summary>
     Season6Episode3 = 603000,
+
+    /// <summary>
+    /// The Season 7, also known as eX700, e.g. Acheron.
+    /// </summary>
+    Season7 = 700000,
+
+    /// <summary>
+    /// The Season 7 Part 1, also known as eX701, e.g. the mastery socket weapons.
+    /// </summary>
+    Season7Episode1 = 701000,
+
+    /// <summary>
+    /// The Season 7 Part 2, also known as eX702, e.g. the mastery socket armor sets.
+    /// </summary>
+    Season7Episode2 = 702000,
+
+    /// <summary>
+    /// The Season 8 Part 1, e.g. Deventer in Acheron.
+    /// </summary>
+    Season8Episode1 = 801000,
+
+    /// <summary>
+    /// The Season 8 Part 2, e.g. the Necklace of Agony and the Ring of Ultimatum.
+    /// </summary>
+    Season8Episode2 = 802000,
+
+    /// <summary>
+    /// The Season 9 Part 1, e.g. Urk Mountain in Acheron.
+    /// </summary>
+    Season9Episode1 = 901000,
+
+    /// <summary>
+    /// The Season 10 (also known as Season X) Part 2, e.g. Nars in Acheron.
+    /// </summary>
+    Season10Episode2 = 1002000,
+
+    /// <summary>
+    /// The Season 11 Part 1, e.g. Ferea.
+    /// </summary>
+    Season11Episode1 = 1101000,
+
+    /// <summary>
+    /// The Season 11 Part 2, e.g. the socket items of the Rage Fighter.
+    /// </summary>
+    Season11Episode2 = 1102000,
+
+    /// <summary>
+    /// The Season 12 Part 1, e.g. Nixie Lake.
+    /// </summary>
+    Season12Episode1 = 1201000,
+
+    /// <summary>
+    /// The Season 12 Part 2, e.g. Deep Dungeon 1 to 5.
+    /// </summary>
+    Season12Episode2 = 1202000,
+
+    /// <summary>
+    /// The Season 13 Part 1, e.g. the Swamp of Darkness.
+    /// </summary>
+    Season13Episode1 = 1301000,
+
+    /// <summary>
+    /// The Season 14 Part 1, e.g. Kubera Mine.
+    /// </summary>
+    Season14Episode1 = 1401000,
+
+    /// <summary>
+    /// The Season 14 Part 2, e.g. Atlans Abyss 1 to 3.
+    /// </summary>
+    Season14Episode2 = 1402000,
+
+    /// <summary>
+    /// The Season 15 Part 1, e.g. Scorched Canyon.
+    /// </summary>
+    Season15Episode1 = 1501000,
+
+    /// <summary>
+    /// The Season 15 Part 2, e.g. Crimson Flame's Icarus.
+    /// </summary>
+    Season15Episode2 = 1502000,
+
+    /// <summary>
+    /// The Season 16 Part 1, e.g. the Temple of Arnil.
+    /// </summary>
+    Season16Episode1 = 1601000,
+
+    /// <summary>
+    /// The Season 16 Part 2, e.g. Gray (Ashen) Aida.
+    /// </summary>
+    Season16Episode2 = 1602000,
+
+    /// <summary>
+    /// The Season 17 Part 1, e.g. Old Kethotum and Burning (Blaze) Kethotum.
+    /// </summary>
+    Season17Episode1 = 1701000,
+
+    /// <summary>
+    /// The Season 17 Part 2, e.g. Kanturu Underground.
+    /// </summary>
+    Season17Episode2 = 1702000,
+
+    /// <summary>
+    /// The Season 18 Part 1, e.g. Ignis Vulcanus.
+    /// </summary>
+    Season18Episode1 = 1801000,
+
+    /// <summary>
+    /// The Season 18 Part 2, e.g. Bloody Tarkan.
+    /// </summary>
+    Season18Episode2 = 1802000,
+
+    /// <summary>
+    /// The Season 19 Part 1, e.g. Tormenta Island.
+    /// </summary>
+    Season19Episode1 = 1901000,
+
+    /// <summary>
+    /// The Season 19 Part 2, e.g. Twisted Karutan.
+    /// </summary>
+    Season19Episode2 = 1902000,
+
+    /// <summary>
+    /// The Season 20 Part 1, e.g. the Kardamahal Underground Temple.
+    /// </summary>
+    Season20Episode1 = 2001000,
+
+    /// <summary>
+    /// The Season 20 Part 2, e.g. the Swamp of Destruction (Doom).
+    /// </summary>
+    Season20Episode2 = 2002000,
+
+    /// <summary>
+    /// The Season 21 Part 1, the version of the Season 21 server data, e.g. the Wings of Conqueror.
+    /// </summary>
+    Season21Episode1 = 2101000,
 }

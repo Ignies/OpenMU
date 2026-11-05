@@ -36,7 +36,7 @@ public class GameVersionTest
         var versions = Enum.GetValues<GameVersion>().Where(v => v != GameVersion.Unknown).ToList();
         Assert.That(versions.Where(v => v.ToString().StartsWith("Version", StringComparison.Ordinal)), Is.All.LessThan(GameVersion.Season1));
         Assert.That(GameVersion.Version100s, Is.LessThan(GameVersion.Season1));
-        Assert.That(GameVersion.Season6Episode3, Is.EqualTo(versions.Max()));
+        Assert.That(GameVersion.Season21Episode1, Is.EqualTo(versions.Max()));
     }
 
     private static int CalculateValue(string name)
