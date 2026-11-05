@@ -253,8 +253,10 @@ introduced later, and activate it again when you want to offer it.
 Each entry knows in which version of the original game it was introduced, from
 the early version numbers before Season 1 (like 0.34, 0.95k or 0.99G+, as listed
 by the [MU Online history](https://github.com/Khdoop/mu-online-history)) up to
-Season 6 Episode 3. Content of patches without a known version number counts
-as introduced in the next version with a known number.
+Season 6 Episode 3, and the later seasons and their parts up to Season 21 for the
+maps of the [later seasons](configuration-updates.md#maps-of-the-later-seasons).
+Content of patches without a known version number counts as introduced in the
+next version with a known number.
 Select a version at the top and click **Restrict to game version** to activate
 all content up to this version and to deactivate everything which was
 introduced later — for example *Season 2* for a server without Summoners,

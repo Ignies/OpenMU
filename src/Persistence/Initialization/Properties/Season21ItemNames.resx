@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="DecorationRing" xml:space="preserve"><value>Decoration Ring</value></data>
+  <data name="BlessedDecorationRing" xml:space="preserve"><value>Blessed Decoration Ring</value></data>
+  <data name="NecklaceOfAgony" xml:space="preserve"><value>Necklace of Agony</value></data>
+  <data name="SolidSymbol" xml:space="preserve"><value>Solid Symbol</value></data>
+  <data name="RingOfUltimatum" xml:space="preserve"><value>Ring of Ultimatum</value></data>
+  <data name="RingOfBlock" xml:space="preserve"><value>Ring of Block</value></data>
+  <data name="ProtectionRingI" xml:space="preserve"><value>Protection Ring I</value></data>
+  <data name="ProtectionRingII" xml:space="preserve"><value>Protection Ring II</value></data>
+  <data name="BoundPendantOfAbility" xml:space="preserve"><value>[Bound] Pendant of Ability</value></data>
+  <data name="SonicBlade" xml:space="preserve"><value>Sonic Blade</value></data>
+  <data name="Asura" xml:space="preserve"><value>Asura</value></data>
+  <data name="CycloneSword" xml:space="preserve"><value>Cyclone Sword</value></data>
+  <data name="BlastBreak" xml:space="preserve"><value>Blast Break</value></data>
+  <data name="BlessedDivineSwordOfTheArchangel" xml:space="preserve"><value>Blessed Divine Sword of the Archangel</value></data>
+  <data name="PanteraClaw" xml:space="preserve"><value>Pantera Claw</value></data>
+  <data name="DevastClaw" xml:space="preserve"><value>Devast Claw</value></data>
+  <data name="DivineClawOfArchangel" xml:space="preserve"><value>Divine Claw of Archangel</value></data>
+  <data name="BlessedDivineClawOfTheArchangel" xml:space="preserve"><value>Blessed Divine Claw of the Archangel</value></data>
+  <data name="Thunderbolt" xml:space="preserve"><value>Thunderbolt</value></data>
+  <data name="HornOfSteal" xml:space="preserve"><value>Horn of Steal</value></data>
+  <data name="BlessedDivineScepterOfTheArchangel" xml:space="preserve"><value>Blessed Divine Scepter of the Archangel</value></data>
+  <data name="MagmuSpear" xml:space="preserve"><value>Magmu Spear</value></data>
+  <data name="AngelicBow" xml:space="preserve"><value>Angelic Bow</value></data>
+  <data name="DevilCrossbow" xml:space="preserve"><value>Devil Crossbow</value></data>
+  <data name="BlessedDivineCrossbowOfTheArchangel" xml:space="preserve"><value>Blessed Divine Crossbow of the Archangel</value></data>
+  <data name="MiracleStaff" xml:space="preserve"><value>Miracle Staff</value></data>
+  <data name="SpiteStaff" xml:space="preserve"><value>Spite Staff</value></data>
+  <data name="BlessedDivineStaffOfTheArchangel" xml:space="preserve"><value>Blessed Divine Staff of the Archangel</value></data>
+  <data name="BlessedDivineStickOfTheArchangel" xml:space="preserve"><value>Blessed Divine Stick of the Archangel</value></data>
+  <data name="LazyWindShield" xml:space="preserve"><value>Lazy Wind Shield</value></data>
+  <data name="LightLordShield" xml:space="preserve"><value>Light Lord Shield</value></data>
+  <data name="DarkDevilShield" xml:space="preserve"><value>Dark Devil Shield</value></data>
+  <data name="MagicKnightShield" xml:space="preserve"><value>Magic Knight Shield</value></data>
+  <data name="AmbitionShield" xml:space="preserve"><value>Ambition Shield</value></data>
+  <data name="LazyWindHelm" xml:space="preserve"><value>Lazy Wind Helm</value></data>
+  <data name="DarkDevilHelm" xml:space="preserve"><value>Dark Devil Helm</value></data>
+  <data name="StickyHelm" xml:space="preserve"><value>Sticky Helm</value></data>
+  <data name="AmbitionMask" xml:space="preserve"><value>Ambition Mask</value></data>
+  <data name="StormwingHelm" xml:space="preserve"><value>Stormwing Helm</value></data>
+  <data name="LightLordHelm" xml:space="preserve"><value>Light Lord Helm</value></data>
+  <data name="TigrisHelm" xml:space="preserve"><value>Tigris Helm</value></data>
+  <data name="CrimsonSkullHelm" xml:space="preserve"><value>Crimson Skull Helm</value></data>
+  <data name="LazyWindArmor" xml:space="preserve"><value>Lazy Wind Armor</value></data>
+  <data name="DarkDevilArmor" xml:space="preserve"><value>Dark Devil Armor</value></data>
+  <data name="StickyArmor" xml:space="preserve"><value>Sticky Armor</value></data>
+  <data name="HellNightArmor" xml:space="preserve"><value>Hell Night Armor</value></data>
+  <data name="AmbitionArmor" xml:space="preserve"><value>Ambition Armor</value></data>
+  <data name="StormwingArmor" xml:space="preserve"><value>Stormwing Armor</value></data>
+  <data name="LightLordArmor" xml:space="preserve"><value>Light Lord Armor</value></data>
+  <data name="MagicKnightArmor" xml:space="preserve"><value>Magic Knight Armor</value></data>
+  <data name="TigrisArmor" xml:space="preserve"><value>Tigris Armor</value></data>
+  <data name="CrimsonSkullArmor" xml:space="preserve"><value>Crimson Skull Armor</value></data>
+  <data name="LazyWindPants" xml:space="preserve"><value>Lazy Wind Pants</value></data>
+  <data name="DarkDevilPants" xml:space="preserve"><value>Dark Devil Pants</value></data>
+  <data name="StickyPants" xml:space="preserve"><value>Sticky Pants</value></data>
+  <data name="HellNightPants" xml:space="preserve"><value>Hell Night Pants</value></data>
+  <data name="AmbitionPants" xml:space="preserve"><value>Ambition Pants</value></data>
+  <data name="StormwingPants" xml:space="preserve"><value>Stormwing Pants</value></data>
+  <data name="LightLordPants" xml:space="preserve"><value>Light Lord Pants</value></data>
+  <data name="MagicKnightPants" xml:space="preserve"><value>Magic Knight Pants</value></data>
+  <data name="TigrisPants" xml:space="preserve"><value>Tigris Pants</value></data>
+  <data name="CrimsonSkullPants" xml:space="preserve"><value>Crimson Skull Pants</value></data>
+  <data name="LazyWindGloves" xml:space="preserve"><value>Lazy Wind Gloves</value></data>
+  <data name="DarkDevilGloves" xml:space="preserve"><value>Dark Devil Gloves</value></data>
+  <data name="StickyGloves" xml:space="preserve"><value>Sticky Gloves</value></data>
+  <data name="HellNightGloves" xml:space="preserve"><value>Hell Night Gloves</value></data>
+  <data name="AmbitionGloves" xml:space="preserve"><value>Ambition Gloves</value></data>
+  <data name="StormwingGloves" xml:space="preserve"><value>Stormwing Gloves</value></data>
+  <data name="LightLordGloves" xml:space="preserve"><value>Light Lord Gloves</value></data>
+  <data name="MagicKnightGloves" xml:space="preserve"><value>Magic Knight Gloves</value></data>
+  <data name="LazyWindBoots" xml:space="preserve"><value>Lazy Wind Boots</value></data>
+  <data name="DarkDevilBoots" xml:space="preserve"><value>Dark Devil Boots</value></data>
+  <data name="StickyBoots" xml:space="preserve"><value>Sticky Boots</value></data>
+  <data name="HellNightBoots" xml:space="preserve"><value>Hell Night Boots</value></data>
+  <data name="AmbitionBoots" xml:space="preserve"><value>Ambition Boots</value></data>
+  <data name="StormwingBoots" xml:space="preserve"><value>Stormwing Boots</value></data>
+  <data name="LightLordBoots" xml:space="preserve"><value>Light Lord Boots</value></data>
+  <data name="MagicKnightBoots" xml:space="preserve"><value>Magic Knight Boots</value></data>
+  <data name="TigrisBoots" xml:space="preserve"><value>Tigris Boots</value></data>
+  <data name="CrimsonSkullBoots" xml:space="preserve"><value>Crimson Skull Boots</value></data>
+  <data name="BoundSwordOfDestruction" xml:space="preserve"><value>[Bound] Sword of Destruction</value></data>
+  <data name="BoundThunderBlade" xml:space="preserve"><value>[Bound] Thunder Blade</value></data>
+  <data name="BoundHolyStormClaw" xml:space="preserve"><value>[Bound] Holy Storm Claw</value></data>
+  <data name="BoundLordSScepter" xml:space="preserve"><value>[Bound] Lord's Scepter</value></data>
+  <data name="BoundCelestialBow" xml:space="preserve"><value>[Bound] Celestial Bow</value></data>
+  <data name="BoundLegendaryStaff" xml:space="preserve"><value>[Bound] Legendary Staff</value></data>
+  <data name="BoundRedWingStick" xml:space="preserve"><value>[Bound] Red Wing Stick</value></data>
+  <data name="BoundBookOfLagle" xml:space="preserve"><value>[Bound] Book of Lagle</value></data>
+  <data name="BoundStaffOfDestruction" xml:space="preserve"><value>[Bound] Staff of Destruction</value></data>
+  <data name="BoundLegendaryShield" xml:space="preserve"><value>[Bound] Legendary Shield</value></data>
+  <data name="BoundCrossShield" xml:space="preserve"><value>[Bound] Cross Shield</value></data>
+  <data name="BoundDragonHelm" xml:space="preserve"><value>[Bound] Dragon Helm</value></data>
+  <data name="BoundLegendaryHelm" xml:space="preserve"><value>[Bound] Legendary Helm</value></data>
+  <data name="BoundGuardianHelm" xml:space="preserve"><value>[Bound] Guardian Helm</value></data>
+  <data name="BoundAdamantineMask" xml:space="preserve"><value>[Bound] Adamantine Mask</value></data>
+  <data name="BoundRedWingHelm" xml:space="preserve"><value>[Bound] Red Wing Helm</value></data>
+  <data name="BoundStormJahadHelm" xml:space="preserve"><value>[Bound] Storm Jahad Helm</value></data>
+  <data name="BoundDragonArmor" xml:space="preserve"><value>[Bound] Dragon Armor</value></data>
+  <data name="BoundLegendaryArmor" xml:space="preserve"><value>[Bound] Legendary Armor</value></data>
+  <data name="BoundGuardianArmor" xml:space="preserve"><value>[Bound] Guardian Armor</value></data>
+  <data name="BoundStormCrowArmor" xml:space="preserve"><value>[Bound] Storm Crow Armor</value></data>
+  <data name="BoundAdamantineArmor" xml:space="preserve"><value>[Bound] Adamantine Armor</value></data>
+  <data name="BoundRedWingArmor" xml:space="preserve"><value>[Bound] Red Wing Armor</value></data>
+  <data name="BoundStormJahadArmor" xml:space="preserve"><value>[Bound] Storm Jahad Armor</value></data>
+  <data name="BoundDragonPants" xml:space="preserve"><value>[Bound] Dragon Pants</value></data>
+  <data name="BoundLegendaryPants" xml:space="preserve"><value>[Bound] Legendary Pants</value></data>
+  <data name="BoundGuardianPants" xml:space="preserve"><value>[Bound] Guardian Pants</value></data>
+  <data name="BoundStormCrowPants" xml:space="preserve"><value>[Bound] Storm Crow Pants</value></data>
+  <data name="BoundAdamantinePants" xml:space="preserve"><value>[Bound] Adamantine Pants</value></data>
+  <data name="BoundRedWingPants" xml:space="preserve"><value>[Bound] Red Wing Pants</value></data>
+  <data name="BoundStormJahadPants" xml:space="preserve"><value>[Bound] Storm Jahad Pants</value></data>
+  <data name="BoundDragonGloves" xml:space="preserve"><value>[Bound] Dragon Gloves</value></data>
+  <data name="BoundLegendaryGloves" xml:space="preserve"><value>[Bound] Legendary Gloves</value></data>
+  <data name="BoundGuardianGloves" xml:space="preserve"><value>[Bound] Guardian Gloves</value></data>
+  <data name="BoundStormCrowGloves" xml:space="preserve"><value>[Bound] Storm Crow Gloves</value></data>
+  <data name="BoundAdamantineGloves" xml:space="preserve"><value>[Bound] Adamantine Gloves</value></data>
+  <data name="BoundRedWingGloves" xml:space="preserve"><value>[Bound] Red Wing Gloves</value></data>
+  <data name="BoundDragonBoots" xml:space="preserve"><value>[Bound] Dragon Boots</value></data>
+  <data name="BoundLegendaryBoots" xml:space="preserve"><value>[Bound] Legendary Boots</value></data>
+  <data name="BoundGuardianBoots" xml:space="preserve"><value>[Bound] Guardian Boots</value></data>
+  <data name="BoundStormCrowBoots" xml:space="preserve"><value>[Bound] Storm Crow Boots</value></data>
+  <data name="BoundAdamantineBoots" xml:space="preserve"><value>[Bound] Adamantine Boots</value></data>
+  <data name="BoundRedWingBoots" xml:space="preserve"><value>[Bound] Red Wing Boots</value></data>
+  <data name="BoundStormJahadBoots" xml:space="preserve"><value>[Bound] Storm Jahad Boots</value></data>
+  <data name="WingsOfConqueror" xml:space="preserve"><value>Wings of Conqueror</value></data>
+  <data name="BoundWingsOfSoul" xml:space="preserve"><value>[Bound] Wings of Soul</value></data>
+  <data name="BoundWingsOfDragon" xml:space="preserve"><value>[Bound] Wings of Dragon</value></data>
+  <data name="BoundWingsOfSpirits" xml:space="preserve"><value>[Bound] Wings of Spirits</value></data>
+  <data name="BoundWingsOfDarkness" xml:space="preserve"><value>[Bound] Wings of Darkness</value></data>
+  <data name="BoundCapeOfLord" xml:space="preserve"><value>[Bound] Cape of Lord</value></data>
+  <data name="BoundWingsOfDespair" xml:space="preserve"><value>[Bound] Wings of Despair</value></data>
+  <data name="BoundCapeOfFighter" xml:space="preserve"><value>[Bound] Cape of Fighter</value></data>
+  <data name="BoundWingsOfEternal" xml:space="preserve"><value>[Bound] Wings of Eternal</value></data>
+  <data name="BoundWingsOfStorm" xml:space="preserve"><value>[Bound] Wings of Storm</value></data>
+  <data name="BoundWingsOfIllusion" xml:space="preserve"><value>[Bound] Wings of Illusion</value></data>
+  <data name="BoundWingsOfRuin" xml:space="preserve"><value>[Bound] Wings of Ruin</value></data>
+  <data name="BoundCapeOfEmperor" xml:space="preserve"><value>[Bound] Cape of Emperor</value></data>
+  <data name="BoundWingsOfDimension" xml:space="preserve"><value>[Bound] Wings of Dimension</value></data>
+  <data name="BoundCapeOfOverrule" xml:space="preserve"><value>[Bound] Cape of Overrule</value></data>
+</root>

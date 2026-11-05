@@ -86,6 +86,48 @@ The same goes for the updates which would be applied and depend on it. Their
 dependencies are checked when you apply them, so an optional plugin update with a
 missing dependency doesn't stop the creation of a new database.
 
+## Maps of the later seasons
+
+A Season 6 server can add the maps which came after Season 6, up to Season 20,
+and the gear of Season 21 with three optional updates. A new database leaves them pending, so a server
+changes only when you apply them:
+
+* **Add the maps of the later seasons (Season 21 data)** adds Acheron (with
+  Deventer, Urk Mountain and Nars), Ferea, Nixie Lake, Deep Dungeon 1-5, the
+  Swamp of Darkness, Kubera Mine 1-5, Scorched Canyon, Crimson Icarus, Arenil
+  Temple, Ashen Aida, Old and Blaze Kethotum, Kanturu Underground, Ignis
+  Vulcanus, Blood Tarkan, Tormenta Island, Twisted Karutan, the Kardamahal
+  Underground Temple, the Swamp of Doom and Atlans Abyss 1-3, with their
+  monsters, spawns, gates, entrances on the existing maps and warp list entries.
+  Each map requires the total level (level and master level) of Season 21, for
+  example 850 for Kubera Mine. The gates and the warp list check the normal level,
+  which is capped at the maximum level. The game servers which host a map's
+  safezone map host the new map too. The maps keep the entry levels and
+  monsters of Season 21, so the update depends on the level caps of Season 21:
+  keep **Set the level caps of Season 21** selected (it is by default), and both
+  are applied in that order.
+* **Set the level caps of Season 21** raises the maximum master level to 1350
+  and continues the master experience curve: as in Season 6 up to master level
+  400, and twice its step above.
+* **Add the gear of Season 21 (Season 21 data)** adds the items of Season 21
+  which the Season 6 character classes can use: rings and pendants, socket
+  weapons and shields, the blessed archangel weapons, socket armor sets, the
+  *[Bound]* copies of Season 6 gear and wings, and the Wings of Conqueror. Each
+  item takes the options and level tables of the Season 6 item of its kind, with
+  the values of Season 21. Monsters drop the ones the data lets them drop, and
+  the red and blue chocolate boxes hold its rings. Each item carries the season
+  which introduced it (Season 21 Part 1 where the history doesn't say), so
+  Content activation can switch the gear off by season too.
+
+Afterwards, every value can be changed in the game configuration: the warp costs
+and level requirements in the warp list, the entry level in the requirements of
+each map, the monsters in their definitions. To switch the maps off again, use
+[Content activation](game-configuration.md#content-activation): they are marked
+with the season which introduced them.
+
+Older clients don't know these maps. They are meant for clients which do, for
+example a client of a later season or a custom one.
+
 ## Preconditions
 
 If the database is not installed yet, or a schema update is pending, this page

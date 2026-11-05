@@ -851,4 +851,138 @@
   <data name="IllusionSorcererSpirit" xml:space="preserve">
     <value>Illusion Sorc. Spirit</value>
   </data>
+  <data name="MineDigger" xml:space="preserve"><value>Mine Digger</value></data>
+  <data name="MineCarrier" xml:space="preserve"><value>Mine Carrier</value></data>
+  <data name="MinePorter" xml:space="preserve"><value>Mine Porter</value></data>
+  <data name="MineDriller" xml:space="preserve"><value>Mine Driller</value></data>
+  <data name="DeadDigger" xml:space="preserve"><value>Dead Digger</value></data>
+  <data name="DeadShoveler" xml:space="preserve"><value>Dead Shoveler</value></data>
+  <data name="DeadPorter" xml:space="preserve"><value>Dead Porter</value></data>
+  <data name="Paraca" xml:space="preserve"><value>Paraca</value></data>
+  <data name="Bass" xml:space="preserve"><value>Bass</value></data>
+  <data name="Vasuki" xml:space="preserve"><value>Vasuki</value></data>
+  <data name="Nix" xml:space="preserve"><value>Nix</value></data>
+  <data name="TheSpiritOfNixie" xml:space="preserve"><value>The Spirit of Nixie</value></data>
+  <data name="Swarmface" xml:space="preserve"><value>Swarmface</value></data>
+  <data name="WoodenBeast" xml:space="preserve"><value>Wooden Beast</value></data>
+  <data name="SwampWizard" xml:space="preserve"><value>Swamp Wizard</value></data>
+  <data name="MuttonTile" xml:space="preserve"><value>Mutton Tile</value></data>
+  <data name="ScorchedWarrior" xml:space="preserve"><value>Scorched Warrior</value></data>
+  <data name="ScorchedAssassin" xml:space="preserve"><value>Scorched Assassin</value></data>
+  <data name="ScorchedWizard" xml:space="preserve"><value>Scorched Wizard</value></data>
+  <data name="EliteScorchedWarrior" xml:space="preserve"><value>(Elite) Scorched Warrior</value></data>
+  <data name="EliteScorchedAssassin" xml:space="preserve"><value>(Elite) Scorched Assassin</value></data>
+  <data name="EliteScorchedWizard" xml:space="preserve"><value>(Elite) Scorched Wizard</value></data>
+  <data name="DevilFairy" xml:space="preserve"><value>Devil Fairy</value></data>
+  <data name="ElementalBeast" xml:space="preserve"><value>Elemental Beast</value></data>
+  <data name="ElementalKnight" xml:space="preserve"><value>Elemental Knight</value></data>
+  <data name="UbaidDevilFairy" xml:space="preserve"><value>Ubaid Devil Fairy</value></data>
+  <data name="UbaidElementalBeast" xml:space="preserve"><value>Ubaid Elemental Beast</value></data>
+  <data name="UbaidElementalKnight" xml:space="preserve"><value>Ubaid Elemental Knight</value></data>
+  <data name="Undine" xml:space="preserve"><value>Undine</value></data>
+  <data name="Salamander" xml:space="preserve"><value>Salamander</value></data>
+  <data name="Sylphid" xml:space="preserve"><value>Sylphid</value></data>
+  <data name="Gnome" xml:space="preserve"><value>Gnome</value></data>
+  <data name="Hellraiser" xml:space="preserve"><value>Hellraiser</value></data>
+  <data name="DeventerDevilFairy" xml:space="preserve"><value>Deventer Devil Fairy</value></data>
+  <data name="DeventerElementalBeast" xml:space="preserve"><value>Deventer Elemental Beast</value></data>
+  <data name="DeventerElementalKnight" xml:space="preserve"><value>Deventer Elemental Knight</value></data>
+  <data name="Sellihoden" xml:space="preserve"><value>Sellihoden</value></data>
+  <data name="Ukanva" xml:space="preserve"><value>Ukanva</value></data>
+  <data name="Silla" xml:space="preserve"><value>Silla</value></data>
+  <data name="Normus" xml:space="preserve"><value>Normus</value></data>
+  <data name="Muff" xml:space="preserve"><value>Muff</value></data>
+  <data name="UrkDevilFairy" xml:space="preserve"><value>Urk Devil Fairy</value></data>
+  <data name="UrkElementalBeast" xml:space="preserve"><value>Urk Elemental Beast</value></data>
+  <data name="UrkElementalKnight" xml:space="preserve"><value>Urk Elemental Knight</value></data>
+  <data name="LordSilvester" xml:space="preserve"><value>Lord Silvester</value></data>
+  <data name="NarsDevilFairy" xml:space="preserve"><value>Nars Devil Fairy</value></data>
+  <data name="NarsElementalBeast" xml:space="preserve"><value>Nars Elemental Beast</value></data>
+  <data name="NarsElementalKnight" xml:space="preserve"><value>Nars Elemental Knight</value></data>
+  <data name="CoreMagriffy" xml:space="preserve"><value>Core Magriffy</value></data>
+  <data name="FereaKnight" xml:space="preserve"><value>Ferea Knight</value></data>
+  <data name="FereaArcher" xml:space="preserve"><value>Ferea Archer</value></data>
+  <data name="FereaFighter" xml:space="preserve"><value>Ferea Fighter</value></data>
+  <data name="DeepDungeonSkeletonWarrior" xml:space="preserve"><value>Deep Dungeon Skeleton Warrior</value></data>
+  <data name="DeepDungeonChiefSkeletonArcher" xml:space="preserve"><value>Deep Dungeon Chief Skeleton Archer</value></data>
+  <data name="DeepDungeonEliteSkeletonWarrior" xml:space="preserve"><value>Deep Dungeon Elite Skeleton Warrior</value></data>
+  <data name="DeepDungeonLarva" xml:space="preserve"><value>Deep Dungeon Larva</value></data>
+  <data name="DeepDungeonCyclops" xml:space="preserve"><value>Deep Dungeon Cyclops</value></data>
+  <data name="DeepDungeonGhost" xml:space="preserve"><value>Deep Dungeon Ghost</value></data>
+  <data name="DeepDungeonHellHound" xml:space="preserve"><value>Deep Dungeon Hell Hound</value></data>
+  <data name="DeepDungeonHellSpider" xml:space="preserve"><value>Deep Dungeon Hell Spider</value></data>
+  <data name="DeepDungeonThunderLich" xml:space="preserve"><value>Deep Dungeon Thunder Lich</value></data>
+  <data name="DeepDungeonPoisonBullFighter" xml:space="preserve"><value>Deep Dungeon Poison Bull Fighter</value></data>
+  <data name="DeepDungeonDarkKnight" xml:space="preserve"><value>Deep Dungeon Dark Knight</value></data>
+  <data name="DeepDungeonGorgon" xml:space="preserve"><value>Deep Dungeon Gorgon</value></data>
+  <data name="RedAlcamos" xml:space="preserve"><value>Red Alcamos</value></data>
+  <data name="RedMegacrust" xml:space="preserve"><value>Red Megacrust</value></data>
+  <data name="RedQueenRaynor" xml:space="preserve"><value>Red Queen Raynor</value></data>
+  <data name="RedAlphaCrust" xml:space="preserve"><value>Red Alpha Crust</value></data>
+  <data name="RedPhantomKnight" xml:space="preserve"><value>Red Phantom Knight</value></data>
+  <data name="EliteGreatDrakan" xml:space="preserve"><value>(Elite) Great Drakan</value></data>
+  <data name="ElitePhoenixOfDarkness" xml:space="preserve"><value>(Elite) Phoenix of Darkness</value></data>
+  <data name="TempleOgre" xml:space="preserve"><value>Temple Ogre</value></data>
+  <data name="TempleGremlin" xml:space="preserve"><value>Temple Gremlin</value></data>
+  <data name="TempleGargoyle" xml:space="preserve"><value>Temple Gargoyle</value></data>
+  <data name="EliteTempleOgre" xml:space="preserve"><value>(Elite) Temple Ogre</value></data>
+  <data name="EliteTempleGremlin" xml:space="preserve"><value>(Elite) Temple Gremlin</value></data>
+  <data name="EliteTempleGargoyle" xml:space="preserve"><value>(Elite) Temple Gargoyle</value></data>
+  <data name="AshenDeathTree" xml:space="preserve"><value>Ashen Death Tree</value></data>
+  <data name="AshenForestOrc" xml:space="preserve"><value>Ashen Forest Orc</value></data>
+  <data name="AshenDeathrider" xml:space="preserve"><value>Ashen Deathrider</value></data>
+  <data name="AshenWitchQueen" xml:space="preserve"><value>Ashen Witch Queen</value></data>
+  <data name="EliteAshenGolem" xml:space="preserve"><value>(Elite) Ashen Golem</value></data>
+  <data name="EliteAshenBloodyWitchQueen" xml:space="preserve"><value>(Elite) Ashen Bloody Witch Queen</value></data>
+  <data name="OldCrimsonLycan" xml:space="preserve"><value>Old Crimson Lycan</value></data>
+  <data name="OldCrimsonMinos" xml:space="preserve"><value>Old Crimson Minos</value></data>
+  <data name="OldCrimsonHarpy" xml:space="preserve"><value>Old Crimson Harpy</value></data>
+  <data name="CrimsonLycanElite" xml:space="preserve"><value>Crimson Lycan (Elite)</value></data>
+  <data name="CrimsonMinosElite" xml:space="preserve"><value>Crimson Minos (Elite)</value></data>
+  <data name="CrimsonHarpyElite" xml:space="preserve"><value>Crimson Harpy (Elite)</value></data>
+  <data name="CrimsonLycan" xml:space="preserve"><value>Crimson Lycan</value></data>
+  <data name="CrimsonMinos" xml:space="preserve"><value>Crimson Minos</value></data>
+  <data name="CrimsonHarpy" xml:space="preserve"><value>Crimson Harpy</value></data>
+  <data name="UnderPersona" xml:space="preserve"><value>Under Persona</value></data>
+  <data name="UnderTwinTale" xml:space="preserve"><value>Under Twin Tale</value></data>
+  <data name="UnderDreadfear" xml:space="preserve"><value>Under Dreadfear</value></data>
+  <data name="UnderPersonaElite" xml:space="preserve"><value>Under Persona (Elite)</value></data>
+  <data name="UnderTwinTaleElite" xml:space="preserve"><value>Under Twin Tale (Elite)</value></data>
+  <data name="UnderDreadfearElite" xml:space="preserve"><value>Under Dreadfear (Elite)</value></data>
+  <data name="MagmaGladiator" xml:space="preserve"><value>Magma Gladiator</value></data>
+  <data name="MagmaHook" xml:space="preserve"><value>Magma Hook</value></data>
+  <data name="MagmaShaman" xml:space="preserve"><value>Magma Shaman</value></data>
+  <data name="GoreMutant" xml:space="preserve"><value>Gore Mutant</value></data>
+  <data name="GoreBloodWolf" xml:space="preserve"><value>Gore Blood Wolf</value></data>
+  <data name="GoreBeamKnight" xml:space="preserve"><value>Gore Beam Knight</value></data>
+  <data name="GoreTantalos" xml:space="preserve"><value>Gore Tantalos</value></data>
+  <data name="EliteGoreBloodWolf" xml:space="preserve"><value>(Elite) Gore Blood Wolf</value></data>
+  <data name="EliteGoreKnight" xml:space="preserve"><value>(Elite) Gore Knight</value></data>
+  <data name="EliteGoreTantalos" xml:space="preserve"><value>(Elite) Gore Tantalos</value></data>
+  <data name="StormGuard" xml:space="preserve"><value>Storm Guard</value></data>
+  <data name="StormReaper" xml:space="preserve"><value>Storm Reaper</value></data>
+  <data name="StormFiend" xml:space="preserve"><value>Storm Fiend</value></data>
+  <data name="EliteStormGuard" xml:space="preserve"><value>(Elite) Storm Guard</value></data>
+  <data name="EliteStormReaper" xml:space="preserve"><value>(Elite) Storm Reaper</value></data>
+  <data name="EliteStormFiend" xml:space="preserve"><value>(Elite) Storm Fiend</value></data>
+  <data name="TwistedCrypta" xml:space="preserve"><value>Twisted Crypta</value></data>
+  <data name="TwistedGollock" xml:space="preserve"><value>Twisted Gollock</value></data>
+  <data name="TwistedCondra" xml:space="preserve"><value>Twisted Condra</value></data>
+  <data name="EliteTwistedCrypta" xml:space="preserve"><value>(Elite) Twisted Crypta</value></data>
+  <data name="EliteTwistedGollock" xml:space="preserve"><value>(Elite) Twisted Gollock</value></data>
+  <data name="EliteTwistedCondra" xml:space="preserve"><value>(Elite) Twisted Condra</value></data>
+  <data name="DevilSword" xml:space="preserve"><value>Devil Sword</value></data>
+  <data name="DevilScythe" xml:space="preserve"><value>Devil Scythe</value></data>
+  <data name="DevilSorcerer" xml:space="preserve"><value>Devil Sorcerer</value></data>
+  <data name="ShadowMasterOfDoom" xml:space="preserve"><value>Shadow Master of Doom</value></data>
+  <data name="NapinOfDoom" xml:space="preserve"><value>Napin of Doom</value></data>
+  <data name="SapiQueenOfDoom" xml:space="preserve"><value>Sapi Queen of Doom</value></data>
+  <data name="BahamutOfAbyss" xml:space="preserve"><value>Bahamut of Abyss</value></data>
+  <data name="VeparOfAbyss" xml:space="preserve"><value>Vepar of Abyss</value></data>
+  <data name="MediumBahamutOfAbyss" xml:space="preserve"><value>Medium Bahamut of Abyss</value></data>
+  <data name="SilverValkyrieOfAbyss" xml:space="preserve"><value>Silver Valkyrie of Abyss</value></data>
+  <data name="GreatBahamutOfAbyss" xml:space="preserve"><value>Great Bahamut of Abyss</value></data>
+  <data name="LizardKingOfAbyss" xml:space="preserve"><value>Lizard King of Abyss</value></data>
+  <data name="EliteGreatBahamutOfAbyss" xml:space="preserve"><value>(Elite) Great Bahamut of Abyss</value></data>
+  <data name="EliteLizardKingOfAbyss" xml:space="preserve"><value>(Elite) Lizard King of Abyss</value></data>
 </root>

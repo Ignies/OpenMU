@@ -1049,5 +1049,25 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixKanturuRuins3LandingUpdatePlugIn_Description text.</summary>
         public static string FixKanturuRuins3LandingUpdatePlugIn_Description => ResourceManager.GetString("FixKanturuRuins3LandingUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddSeason21MapsUpdatePlugIn_Name text.</summary>
+        public static string AddSeason21MapsUpdatePlugIn_Name => ResourceManager.GetString("AddSeason21MapsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSeason21MapsUpdatePlugIn_Description text.</summary>
+        public static string AddSeason21MapsUpdatePlugIn_Description => ResourceManager.GetString("AddSeason21MapsUpdatePlugIn_Description", resourceCulture)!;
+
+
+
+        /// <summary>Gets the localized AddSeason21LevelCapsUpdatePlugIn_Name text.</summary>
+        public static string AddSeason21LevelCapsUpdatePlugIn_Name => ResourceManager.GetString("AddSeason21LevelCapsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSeason21LevelCapsUpdatePlugIn_Description text.</summary>
+        public static string AddSeason21LevelCapsUpdatePlugIn_Description => ResourceManager.GetString("AddSeason21LevelCapsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSeason21GearUpdatePlugIn_Name text.</summary>
+        public static string AddSeason21GearUpdatePlugIn_Name => ResourceManager.GetString("AddSeason21GearUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSeason21GearUpdatePlugIn_Description text.</summary>
+        public static string AddSeason21GearUpdatePlugIn_Description => ResourceManager.GetString("AddSeason21GearUpdatePlugIn_Description", resourceCulture)!;
+
     }
 }

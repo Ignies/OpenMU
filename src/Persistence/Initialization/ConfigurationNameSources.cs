@@ -48,6 +48,7 @@ public static class ConfigurationNameSources
         RegisterIfNeeded(nameof(QuestNames), QuestNames.ResourceManager);
         RegisterIfNeeded(nameof(SkillComboNames), SkillComboNames.ResourceManager);
         RegisterIfNeeded(nameof(WarpNames), WarpNames.ResourceManager);
+        RegisterIfNeeded(nameof(Season21ItemNames), Season21ItemNames.ResourceManager);
     }
 
     /// <summary>

@@ -83,4 +83,37 @@
   <data name="SantaVillage" xml:space="preserve">
     <value>Santa Village</value>
   </data>
+  <data name="KuberaMine1" xml:space="preserve"><value>Kubera Mine 1</value></data>
+  <data name="KuberaMine2" xml:space="preserve"><value>Kubera Mine 2</value></data>
+  <data name="KuberaMine3" xml:space="preserve"><value>Kubera Mine 3</value></data>
+  <data name="KuberaMine4" xml:space="preserve"><value>Kubera Mine 4</value></data>
+  <data name="KuberaMine5" xml:space="preserve"><value>Kubera Mine 5</value></data>
+  <data name="NixieLake" xml:space="preserve"><value>Nixie Lake</value></data>
+  <data name="SwampOfDarkness" xml:space="preserve"><value>Swamp of Darkness</value></data>
+  <data name="ScorchedCanyon" xml:space="preserve"><value>Scorched Canyon</value></data>
+  <data name="Acheron" xml:space="preserve"><value>Acheron</value></data>
+  <data name="Deventer" xml:space="preserve"><value>Deventer</value></data>
+  <data name="UrkMountain" xml:space="preserve"><value>Urk Mountain</value></data>
+  <data name="Nars" xml:space="preserve"><value>Nars</value></data>
+  <data name="Ferea" xml:space="preserve"><value>Ferea</value></data>
+  <data name="DeepDungeon1" xml:space="preserve"><value>Deep Dungeon 1</value></data>
+  <data name="DeepDungeon2" xml:space="preserve"><value>Deep Dungeon 2</value></data>
+  <data name="DeepDungeon3" xml:space="preserve"><value>Deep Dungeon 3</value></data>
+  <data name="DeepDungeon4" xml:space="preserve"><value>Deep Dungeon 4</value></data>
+  <data name="DeepDungeon5" xml:space="preserve"><value>Deep Dungeon 5</value></data>
+  <data name="CrimsonIcarus" xml:space="preserve"><value>Crimson Icarus</value></data>
+  <data name="ArenilTemple" xml:space="preserve"><value>Arenil Temple</value></data>
+  <data name="AshenAida" xml:space="preserve"><value>Ashen Aida</value></data>
+  <data name="OldKethotum" xml:space="preserve"><value>Old Kethotum</value></data>
+  <data name="BlazeKethotum" xml:space="preserve"><value>Blaze Kethotum</value></data>
+  <data name="KanturuUnderground" xml:space="preserve"><value>Kanturu Underground</value></data>
+  <data name="IgnisVulcanus" xml:space="preserve"><value>Ignis Vulcanus</value></data>
+  <data name="BloodTarkan" xml:space="preserve"><value>Blood Tarkan</value></data>
+  <data name="TormentaIsland" xml:space="preserve"><value>Tormenta Island</value></data>
+  <data name="TwistedKarutan" xml:space="preserve"><value>Twisted Karutan</value></data>
+  <data name="KardamahalUndergroundTemple" xml:space="preserve"><value>Kardamahal Underground Temple</value></data>
+  <data name="SwampOfDoom" xml:space="preserve"><value>Swamp of Doom</value></data>
+  <data name="AtlansAbyss1" xml:space="preserve"><value>Atlans Abyss 1</value></data>
+  <data name="AtlansAbyss2" xml:space="preserve"><value>Atlans Abyss 2</value></data>
+  <data name="AtlansAbyss3" xml:space="preserve"><value>Atlans Abyss 3</value></data>
 </root>

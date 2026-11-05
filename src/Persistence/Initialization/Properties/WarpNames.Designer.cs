@@ -328,5 +328,187 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("Devias2", resourceCulture);
             }
         }
+
+        /// <summary>Gets KuberaMine from the configuration name resources.</summary>
+        public static string KuberaMine {
+            get {
+                return ResourceManager.GetString("KuberaMine", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets NixieLake from the configuration name resources.</summary>
+        public static string NixieLake {
+            get {
+                return ResourceManager.GetString("NixieLake", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SwampOfDarkness from the configuration name resources.</summary>
+        public static string SwampOfDarkness {
+            get {
+                return ResourceManager.GetString("SwampOfDarkness", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ScorchedCanyon from the configuration name resources.</summary>
+        public static string ScorchedCanyon {
+            get {
+                return ResourceManager.GetString("ScorchedCanyon", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets Acheron from the configuration name resources.</summary>
+        public static string Acheron {
+            get {
+                return ResourceManager.GetString("Acheron", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets Ferea from the configuration name resources.</summary>
+        public static string Ferea {
+            get {
+                return ResourceManager.GetString("Ferea", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets DeepDungeon1 from the configuration name resources.</summary>
+        public static string DeepDungeon1 {
+            get {
+                return ResourceManager.GetString("DeepDungeon1", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets DeepDungeon2 from the configuration name resources.</summary>
+        public static string DeepDungeon2 {
+            get {
+                return ResourceManager.GetString("DeepDungeon2", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets DeepDungeon3 from the configuration name resources.</summary>
+        public static string DeepDungeon3 {
+            get {
+                return ResourceManager.GetString("DeepDungeon3", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets DeepDungeon4 from the configuration name resources.</summary>
+        public static string DeepDungeon4 {
+            get {
+                return ResourceManager.GetString("DeepDungeon4", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets DeepDungeon5 from the configuration name resources.</summary>
+        public static string DeepDungeon5 {
+            get {
+                return ResourceManager.GetString("DeepDungeon5", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets CrimsonIcarus from the configuration name resources.</summary>
+        public static string CrimsonIcarus {
+            get {
+                return ResourceManager.GetString("CrimsonIcarus", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets ArenilTemple from the configuration name resources.</summary>
+        public static string ArenilTemple {
+            get {
+                return ResourceManager.GetString("ArenilTemple", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AshenAida from the configuration name resources.</summary>
+        public static string AshenAida {
+            get {
+                return ResourceManager.GetString("AshenAida", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets OldKethotum from the configuration name resources.</summary>
+        public static string OldKethotum {
+            get {
+                return ResourceManager.GetString("OldKethotum", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BlazeKethotum from the configuration name resources.</summary>
+        public static string BlazeKethotum {
+            get {
+                return ResourceManager.GetString("BlazeKethotum", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets KanturuUnderground from the configuration name resources.</summary>
+        public static string KanturuUnderground {
+            get {
+                return ResourceManager.GetString("KanturuUnderground", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets IgnisVulcanus from the configuration name resources.</summary>
+        public static string IgnisVulcanus {
+            get {
+                return ResourceManager.GetString("IgnisVulcanus", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BloodTarkan from the configuration name resources.</summary>
+        public static string BloodTarkan {
+            get {
+                return ResourceManager.GetString("BloodTarkan", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets TormentaIsland from the configuration name resources.</summary>
+        public static string TormentaIsland {
+            get {
+                return ResourceManager.GetString("TormentaIsland", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets TwistedKarutan from the configuration name resources.</summary>
+        public static string TwistedKarutan {
+            get {
+                return ResourceManager.GetString("TwistedKarutan", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets KardamahalUndergroundTemple from the configuration name resources.</summary>
+        public static string KardamahalUndergroundTemple {
+            get {
+                return ResourceManager.GetString("KardamahalUndergroundTemple", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets SwampOfDoom from the configuration name resources.</summary>
+        public static string SwampOfDoom {
+            get {
+                return ResourceManager.GetString("SwampOfDoom", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AtlansAbyss1 from the configuration name resources.</summary>
+        public static string AtlansAbyss1 {
+            get {
+                return ResourceManager.GetString("AtlansAbyss1", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AtlansAbyss2 from the configuration name resources.</summary>
+        public static string AtlansAbyss2 {
+            get {
+                return ResourceManager.GetString("AtlansAbyss2", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AtlansAbyss3 from the configuration name resources.</summary>
+        public static string AtlansAbyss3 {
+            get {
+                return ResourceManager.GetString("AtlansAbyss3", resourceCulture);
+            }
+        }
     }
 }

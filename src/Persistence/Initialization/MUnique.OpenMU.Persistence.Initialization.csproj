@@ -102,6 +102,7 @@
     <EmbeddedResource Include="Resources\075_Terrain4.att" />
     <EmbeddedResource Include="Resources\075_Terrain5.att" />
     <EmbeddedResource Include="Resources\075_Terrain8.att" />
+    <EmbeddedResource Include="Resources\Season21\*.att" />
     <EmbeddedResource Include="Resources\Terrain1.att" />
     <EmbeddedResource Include="Resources\Terrain10_4.att" />
     <EmbeddedResource Include="Resources\Terrain10_3.att" />
@@ -444,6 +445,15 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>SkillComboNames.resx</DependentUpon>
+    </Compile>
+    <EmbeddedResource Update="Properties\Season21ItemNames.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Season21ItemNames.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Compile Update="Properties\Season21ItemNames.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Season21ItemNames.resx</DependentUpon>
     </Compile>
     <EmbeddedResource Update="Properties\WarpNames.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
