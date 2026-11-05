@@ -1869,4 +1869,118 @@
   <data name="LuckyItemWearPlugIn_Description" xml:space="preserve">
     <value>Equipped lucky items lose a point of durability each time they were worn for the configured interval.</value>
   </data>
+  <data name="ProgressionFeaturePlugIn_Name" xml:space="preserve">
+    <value>Progression (Season 21 maps)</value>
+  </data>
+  <data name="ProgressionFeaturePlugIn_Description" xml:space="preserve">
+    <value>How a world with the Season 21 maps progresses: the original Season 21 numbers, normalized into level 400 plus master level, or stars (resets) above the first band.</value>
+  </data>
+  <data name="ProgressionConfiguration_Mode_Name" xml:space="preserve">
+    <value>Progression mode</value>
+  </data>
+  <data name="ProgressionConfiguration_LevelCap_Name" xml:space="preserve">
+    <value>Level cap</value>
+  </data>
+  <data name="ProgressionConfiguration_MasterLevelCap_Name" xml:space="preserve">
+    <value>Master level cap (empty: the mode's default)</value>
+  </data>
+  <data name="ProgressionConfiguration_Anchor400_Name" xml:space="preserve">
+    <value>Normalized level of Season 21 level 400</value>
+  </data>
+  <data name="ProgressionConfiguration_Anchor1000_Name" xml:space="preserve">
+    <value>Normalized level of Season 21 level 1000</value>
+  </data>
+  <data name="ProgressionConfiguration_RequirementRounding_Name" xml:space="preserve">
+    <value>Requirement rounding step</value>
+  </data>
+  <data name="ProgressionConfiguration_ClassicMapEntryLevels_Name" xml:space="preserve">
+    <value>Classic map entry levels</value>
+  </data>
+  <data name="ProgressionConfiguration_EntryZenPerLevel_Name" xml:space="preserve">
+    <value>Warp zen per entry level</value>
+  </data>
+  <data name="ProgressionConfiguration_EntryZenFlat_Name" xml:space="preserve">
+    <value>Flat warp zen (empty: per entry level)</value>
+  </data>
+  <data name="ProgressionConfiguration_MonsterHealthPercent_Name" xml:space="preserve">
+    <value>Monster health (%)</value>
+  </data>
+  <data name="ProgressionConfiguration_MonsterDamagePercent_Name" xml:space="preserve">
+    <value>Monster damage (%)</value>
+  </data>
+  <data name="ProgressionConfiguration_MonsterDefensePercent_Name" xml:space="preserve">
+    <value>Monster defense and rates (%)</value>
+  </data>
+  <data name="ProgressionConfiguration_EliteHealthMinimum_Name" xml:space="preserve">
+    <value>Elite health, minimum factor</value>
+  </data>
+  <data name="ProgressionConfiguration_EliteHealthMaximum_Name" xml:space="preserve">
+    <value>Elite health, maximum factor</value>
+  </data>
+  <data name="ProgressionConfiguration_EliteDamageMinimum_Name" xml:space="preserve">
+    <value>Elite damage, minimum factor</value>
+  </data>
+  <data name="ProgressionConfiguration_EliteDamageMaximum_Name" xml:space="preserve">
+    <value>Elite damage, maximum factor</value>
+  </data>
+  <data name="ProgressionConfiguration_BossHealthMultiplier_Name" xml:space="preserve">
+    <value>Boss health factor</value>
+  </data>
+  <data name="ProgressionConfiguration_BossDamageMultiplier_Name" xml:space="preserve">
+    <value>Boss damage factor</value>
+  </data>
+  <data name="ProgressionConfiguration_OverCapStrengthPercent_Name" xml:space="preserve">
+    <value>Strength of sets above power level 400 (%, normalized)</value>
+  </data>
+  <data name="ProgressionConfiguration_MonsterDropLevelCap_Name" xml:space="preserve">
+    <value>Monster drop level cap (0: off)</value>
+  </data>
+  <data name="ProgressionConfiguration_EventBracketKey_Name" xml:space="preserve">
+    <value>Event bracket level (empty: the mode's default)</value>
+  </data>
+  <data name="ProgressionConfiguration_ItemLevelRequirementKey_Name" xml:space="preserve">
+    <value>Item level requirement level (empty: the mode's default)</value>
+  </data>
+  <data name="ProgressionConfiguration_StarRequiresMasterClass_Name" xml:space="preserve">
+    <value>A star requires the third class</value>
+  </data>
+  <data name="ProgressionConfiguration_StarBandStart_Name" xml:space="preserve">
+    <value>First star band starts above</value>
+  </data>
+  <data name="ProgressionConfiguration_StarBandWidth_Name" xml:space="preserve">
+    <value>Star band width</value>
+  </data>
+  <data name="ProgressionConfiguration_StarFirstTierSize_Name" xml:space="preserve">
+    <value>Stars of the first reward tier</value>
+  </data>
+  <data name="ProgressionConfiguration_StarWorthFirstTier_Name" xml:space="preserve">
+    <value>Power levels per star, first tier</value>
+  </data>
+  <data name="ProgressionConfiguration_StarWorthSecondTier_Name" xml:space="preserve">
+    <value>Power levels per star, after the first tier</value>
+  </data>
+  <data name="ProgressionConfiguration_StarPointsFirstTier_Name" xml:space="preserve">
+    <value>Levels' worth of stat points per star, first tier</value>
+  </data>
+  <data name="ProgressionConfiguration_StarPointsSecondTier_Name" xml:space="preserve">
+    <value>Levels' worth of stat points per star, after the first tier</value>
+  </data>
+  <data name="ProgressionConfiguration_StarTreePoints_Name" xml:space="preserve">
+    <value>Master tree points per star</value>
+  </data>
+  <data name="ProgressionConfiguration_StarPowerPercent_Name" xml:space="preserve">
+    <value>Power against monsters per star (%)</value>
+  </data>
+  <data name="ProgressionConfiguration_StarPowerCapPercent_Name" xml:space="preserve">
+    <value>Power per star cap (%)</value>
+  </data>
+  <data name="ProgressionConfiguration_StarPowerInPvp_Name" xml:space="preserve">
+    <value>Star power counts against players</value>
+  </data>
+  <data name="ProgressionConfiguration_StarExperiencePenaltyPercent_Name" xml:space="preserve">
+    <value>Experience penalty per star (%)</value>
+  </data>
+  <data name="ProgressionConfiguration_StarExperienceFloorPercent_Name" xml:space="preserve">
+    <value>Lowest experience after the star penalty (%)</value>
+  </data>
 </root>

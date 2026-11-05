@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -129,6 +131,77 @@ public class ResetCharacterActionTest
 
         Assert.That((int)player.Attributes[Stats.Resets], Is.EqualTo(1));
         Assert.That(player.SelectedCharacter!.LevelUpPoints, Is.EqualTo(1_800));
+    }
+
+    /// <summary>
+    /// Verifies that a reset which resets the stats keeps the level-up points of the finished quests (10 + 10 + 20 + 10 + 30
+    /// in Season 6), and that it keeps the items and the quest progress.
+    /// </summary>
+    [Test]
+    public async Task StatResetKeepsQuestPointsItemsAndQuestsAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Attributes![Stats.Level] = 400;
+        player.Attributes[Stats.BaseStrength] = 500;
+        player.Money = 1_000;
+
+        var requiredItem = new ItemDefinition { Name = "Jewel of Creation", Group = 14, Number = 22, Width = 1, Height = 1 };
+        var configuration = this.CreateConfiguration(requiredItem);
+        configuration.ResetStats = true;
+        player.GameContext.FeaturePlugIns.AddPlugIn(new ResetFeaturePlugIn { Configuration = configuration }, true);
+        var questState = SetUpFinishedLegacyQuests(player);
+
+        await AddRequiredItemsAsync(player, requiredItem, 3).ConfigureAwait(false);
+        var action = new ResetCharacterAction(player, await CreateResetNpcAsync(player).ConfigureAwait(false));
+
+        await action.ResetCharacterAsync().ConfigureAwait(false);
+
+        Assert.That((int)player.Attributes[Stats.Resets], Is.EqualTo(1));
+        Assert.That(player.SelectedCharacter!.LevelUpPoints, Is.EqualTo(800 + 80));
+        Assert.That((int)player.Attributes[Stats.BaseStrength], Is.EqualTo(28));
+        Assert.That(player.Inventory!.Items.Count(i => i.Definition == requiredItem), Is.EqualTo(1));
+        Assert.That(player.SelectedCharacter.QuestStates, Has.Member(questState));
+        Assert.That(questState.LastFinishedQuest?.Number, Is.EqualTo(6));
+    }
+
+    private static CharacterQuestState SetUpFinishedLegacyQuests(Player player)
+    {
+        var quests = new List<QuestDefinition>
+        {
+            CreateQuest(0, 10),
+            CreateQuest(0, 10),
+            CreateQuest(1, 10),
+            CreateQuest(2, 0),
+            CreateQuest(3, 0),
+            CreateQuest(4, 20),
+            CreateQuest(5, 10),
+            CreateQuest(6, 30),
+            CreateQuest(7, 500, repeatable: true),
+        };
+        var questGiver = new Mock<MonsterDefinition>();
+        questGiver.Setup(m => m.Quests).Returns(quests);
+        Mock.Get(player.GameContext.Configuration).Setup(c => c.Monsters).Returns(new List<MonsterDefinition> { questGiver.Object });
+
+        var questState = new CharacterQuestState { Group = 0, LastFinishedQuest = quests.First(q => q.Number == 6) };
+        Mock.Get(player.SelectedCharacter!).Setup(c => c.QuestStates).Returns(new List<CharacterQuestState> { questState });
+        return questState;
+    }
+
+    private static QuestDefinition CreateQuest(short number, int levelUpPoints, bool repeatable = false)
+    {
+        var rewards = new List<QuestReward>();
+        if (levelUpPoints > 0)
+        {
+            rewards.Add(new QuestReward { RewardType = QuestRewardType.LevelUpPoints, Value = levelUpPoints });
+        }
+
+        var quest = new Mock<QuestDefinition>();
+        quest.SetupAllProperties();
+        quest.Setup(q => q.Rewards).Returns(rewards);
+        quest.Object.Group = 0;
+        quest.Object.Number = number;
+        quest.Object.Repeatable = repeatable;
+        return quest.Object;
     }
 
     private static async ValueTask AddRequiredItemsAsync(Player player, ItemDefinition requiredItem, int count)

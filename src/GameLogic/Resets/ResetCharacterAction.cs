@@ -84,7 +84,7 @@ public class ResetCharacterAction
         this._player.Attributes[Stats.Resets] = resetProgression.NextResetCount;
         this._player.Attributes[Stats.Level] = configuration.LevelAfterReset;
         this._player.SelectedCharacter.Experience = 0;
-        this.UpdateStats(configuration, resetProgression);
+        this._player.ApplyResetPoints(configuration, resetProgression);
         if (configuration.MoveHome)
         {
             await this.MoveHomeAsync().ConfigureAwait(false);
@@ -175,25 +175,6 @@ public class ResetCharacterAction
         }
 
         return requiredItems;
-    }
-
-    private void UpdateStats(ResetConfiguration configuration, ResetProgression resetProgression)
-    {
-        if (configuration.ResetStats)
-        {
-            this._player.SelectedCharacter!.CharacterClass!.StatAttributes
-                .Where(s => s.IncreasableByPlayer)
-                .ForEach(s => this._player.Attributes![s.Attribute] = s.BaseValue);
-        }
-
-        if (configuration.ReplacePointsPerReset)
-        {
-            this._player.SelectedCharacter!.LevelUpPoints = resetProgression.TotalPointsAfterReset;
-        }
-        else
-        {
-            this._player.SelectedCharacter!.LevelUpPoints += resetProgression.PointsForReset;
-        }
     }
 
     private async ValueTask MoveHomeAsync()

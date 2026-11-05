@@ -5142,5 +5142,347 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("LuckyItemWearPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Progression (Season 21 maps).
+        /// </summary>
+        public static string ProgressionFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("ProgressionFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to How a world with the Season 21 maps progresses: the original Season 21 numbers, normalized into level 400 plus master level, or stars (resets) above the first band..
+        /// </summary>
+        public static string ProgressionFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("ProgressionFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Progression mode.
+        /// </summary>
+        public static string ProgressionConfiguration_Mode_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_Mode_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level cap.
+        /// </summary>
+        public static string ProgressionConfiguration_LevelCap_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_LevelCap_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Master level cap (empty: the mode's default).
+        /// </summary>
+        public static string ProgressionConfiguration_MasterLevelCap_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_MasterLevelCap_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Normalized level of Season 21 level 400.
+        /// </summary>
+        public static string ProgressionConfiguration_Anchor400_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_Anchor400_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Normalized level of Season 21 level 1000.
+        /// </summary>
+        public static string ProgressionConfiguration_Anchor1000_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_Anchor1000_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Requirement rounding step.
+        /// </summary>
+        public static string ProgressionConfiguration_RequirementRounding_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_RequirementRounding_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Classic map entry levels.
+        /// </summary>
+        public static string ProgressionConfiguration_ClassicMapEntryLevels_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_ClassicMapEntryLevels_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warp zen per entry level.
+        /// </summary>
+        public static string ProgressionConfiguration_EntryZenPerLevel_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_EntryZenPerLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flat warp zen (empty: per entry level).
+        /// </summary>
+        public static string ProgressionConfiguration_EntryZenFlat_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_EntryZenFlat_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster health (%).
+        /// </summary>
+        public static string ProgressionConfiguration_MonsterHealthPercent_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_MonsterHealthPercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster damage (%).
+        /// </summary>
+        public static string ProgressionConfiguration_MonsterDamagePercent_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_MonsterDamagePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster defense and rates (%).
+        /// </summary>
+        public static string ProgressionConfiguration_MonsterDefensePercent_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_MonsterDefensePercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elite health, minimum factor.
+        /// </summary>
+        public static string ProgressionConfiguration_EliteHealthMinimum_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_EliteHealthMinimum_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elite health, maximum factor.
+        /// </summary>
+        public static string ProgressionConfiguration_EliteHealthMaximum_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_EliteHealthMaximum_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elite damage, minimum factor.
+        /// </summary>
+        public static string ProgressionConfiguration_EliteDamageMinimum_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_EliteDamageMinimum_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elite damage, maximum factor.
+        /// </summary>
+        public static string ProgressionConfiguration_EliteDamageMaximum_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_EliteDamageMaximum_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Boss health factor.
+        /// </summary>
+        public static string ProgressionConfiguration_BossHealthMultiplier_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_BossHealthMultiplier_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Boss damage factor.
+        /// </summary>
+        public static string ProgressionConfiguration_BossDamageMultiplier_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_BossDamageMultiplier_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Strength of sets above power level 400 (%, normalized).
+        /// </summary>
+        public static string ProgressionConfiguration_OverCapStrengthPercent_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_OverCapStrengthPercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster drop level cap (0: off).
+        /// </summary>
+        public static string ProgressionConfiguration_MonsterDropLevelCap_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_MonsterDropLevelCap_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event bracket level (empty: the mode's default).
+        /// </summary>
+        public static string ProgressionConfiguration_EventBracketKey_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_EventBracketKey_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item level requirement level (empty: the mode's default).
+        /// </summary>
+        public static string ProgressionConfiguration_ItemLevelRequirementKey_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_ItemLevelRequirementKey_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A star requires the third class.
+        /// </summary>
+        public static string ProgressionConfiguration_StarRequiresMasterClass_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_StarRequiresMasterClass_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to First star band starts above.
+        /// </summary>
+        public static string ProgressionConfiguration_StarBandStart_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_StarBandStart_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star band width.
+        /// </summary>
+        public static string ProgressionConfiguration_StarBandWidth_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_StarBandWidth_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stars of the first reward tier.
+        /// </summary>
+        public static string ProgressionConfiguration_StarFirstTierSize_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_StarFirstTierSize_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Power levels per star, first tier.
+        /// </summary>
+        public static string ProgressionConfiguration_StarWorthFirstTier_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_StarWorthFirstTier_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Power levels per star, after the first tier.
+        /// </summary>
+        public static string ProgressionConfiguration_StarWorthSecondTier_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_StarWorthSecondTier_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Levels' worth of stat points per star, first tier.
+        /// </summary>
+        public static string ProgressionConfiguration_StarPointsFirstTier_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_StarPointsFirstTier_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Levels' worth of stat points per star, after the first tier.
+        /// </summary>
+        public static string ProgressionConfiguration_StarPointsSecondTier_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_StarPointsSecondTier_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Master tree points per star.
+        /// </summary>
+        public static string ProgressionConfiguration_StarTreePoints_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_StarTreePoints_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Power against monsters per star (%).
+        /// </summary>
+        public static string ProgressionConfiguration_StarPowerPercent_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_StarPowerPercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Power per star cap (%).
+        /// </summary>
+        public static string ProgressionConfiguration_StarPowerCapPercent_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_StarPowerCapPercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star power counts against players.
+        /// </summary>
+        public static string ProgressionConfiguration_StarPowerInPvp_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_StarPowerInPvp_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience penalty per star (%).
+        /// </summary>
+        public static string ProgressionConfiguration_StarExperiencePenaltyPercent_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_StarExperiencePenaltyPercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lowest experience after the star penalty (%).
+        /// </summary>
+        public static string ProgressionConfiguration_StarExperienceFloorPercent_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_StarExperienceFloorPercent_Name", resourceCulture);
+            }
+        }
     }
 }

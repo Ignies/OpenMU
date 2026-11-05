@@ -117,21 +117,7 @@ internal static class BotResetHandler
         attributes[Stats.Level] = configuration.LevelAfterReset;
         character.Experience = 0;
 
-        if (configuration.ResetStats)
-        {
-            character.CharacterClass!.StatAttributes
-                .Where(s => s.IncreasableByPlayer)
-                .ForEach(s => attributes[s.Attribute] = s.BaseValue);
-        }
-
-        if (configuration.ReplacePointsPerReset)
-        {
-            character.LevelUpPoints = resetProgression.TotalPointsAfterReset;
-        }
-        else
-        {
-            character.LevelUpPoints += resetProgression.PointsForReset;
-        }
+        player.ApplyResetPoints(configuration, resetProgression);
 
         player.Logger.LogDebug(
             "Bot '{Name}' performed reset {ResetCount} and got {Points} points to invest.",
