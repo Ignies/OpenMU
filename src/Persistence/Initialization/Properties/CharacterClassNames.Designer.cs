@@ -221,5 +221,527 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("Summoner", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Soul Wizard.
+        /// </summary>
+        public static string SoulWizard {
+            get {
+                return ResourceManager.GetString("SoulWizard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Darkness Wizard.
+        /// </summary>
+        public static string DarknessWizard {
+            get {
+                return ResourceManager.GetString("DarknessWizard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dragon Knight.
+        /// </summary>
+        public static string DragonKnight {
+            get {
+                return ResourceManager.GetString("DragonKnight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ignition Knight.
+        /// </summary>
+        public static string IgnitionKnight {
+            get {
+                return ResourceManager.GetString("IgnitionKnight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Noble Elf.
+        /// </summary>
+        public static string NobleElf {
+            get {
+                return ResourceManager.GetString("NobleElf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Royal Elf.
+        /// </summary>
+        public static string RoyalElf {
+            get {
+                return ResourceManager.GetString("RoyalElf", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Magic Knight.
+        /// </summary>
+        public static string MagicKnight {
+            get {
+                return ResourceManager.GetString("MagicKnight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duple Knight.
+        /// </summary>
+        public static string DupleKnight {
+            get {
+                return ResourceManager.GetString("DupleKnight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Empire Lord.
+        /// </summary>
+        public static string EmpireLord {
+            get {
+                return ResourceManager.GetString("EmpireLord", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Force Empire.
+        /// </summary>
+        public static string ForceEmpire {
+            get {
+                return ResourceManager.GetString("ForceEmpire", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Dimension Summoner.
+        /// </summary>
+        public static string DimensionSummoner {
+            get {
+                return ResourceManager.GetString("DimensionSummoner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Endless Summoner.
+        /// </summary>
+        public static string EndlessSummoner {
+            get {
+                return ResourceManager.GetString("EndlessSummoner", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fist Blazer.
+        /// </summary>
+        public static string FistBlazer {
+            get {
+                return ResourceManager.GetString("FistBlazer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bloody Fighter.
+        /// </summary>
+        public static string BloodyFighter {
+            get {
+                return ResourceManager.GetString("BloodyFighter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Grow Lancer.
+        /// </summary>
+        public static string GrowLancer {
+            get {
+                return ResourceManager.GetString("GrowLancer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mirage Lancer.
+        /// </summary>
+        public static string MirageLancer {
+            get {
+                return ResourceManager.GetString("MirageLancer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shining Lancer.
+        /// </summary>
+        public static string ShiningLancer {
+            get {
+                return ResourceManager.GetString("ShiningLancer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Arcane Lancer.
+        /// </summary>
+        public static string ArcaneLancer {
+            get {
+                return ResourceManager.GetString("ArcaneLancer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rune Wizard.
+        /// </summary>
+        public static string RuneWizard {
+            get {
+                return ResourceManager.GetString("RuneWizard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rune Spell Master.
+        /// </summary>
+        public static string RuneSpellMaster {
+            get {
+                return ResourceManager.GetString("RuneSpellMaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rune Grand Master.
+        /// </summary>
+        public static string RuneGrandMaster {
+            get {
+                return ResourceManager.GetString("RuneGrandMaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Majestic Rune Mage.
+        /// </summary>
+        public static string MajesticRuneMage {
+            get {
+                return ResourceManager.GetString("MajesticRuneMage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Infinity Rune Wizard.
+        /// </summary>
+        public static string InfinityRuneWizard {
+            get {
+                return ResourceManager.GetString("InfinityRuneWizard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Slayer.
+        /// </summary>
+        public static string Slayer {
+            get {
+                return ResourceManager.GetString("Slayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Royal Slayer.
+        /// </summary>
+        public static string RoyalSlayer {
+            get {
+                return ResourceManager.GetString("RoyalSlayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Master Slayer.
+        /// </summary>
+        public static string MasterSlayer {
+            get {
+                return ResourceManager.GetString("MasterSlayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Slaughterer.
+        /// </summary>
+        public static string Slaughterer {
+            get {
+                return ResourceManager.GetString("Slaughterer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rogue Slayer.
+        /// </summary>
+        public static string RogueSlayer {
+            get {
+                return ResourceManager.GetString("RogueSlayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gun Crusher.
+        /// </summary>
+        public static string GunCrusher {
+            get {
+                return ResourceManager.GetString("GunCrusher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gun Breaker.
+        /// </summary>
+        public static string GunBreaker {
+            get {
+                return ResourceManager.GetString("GunBreaker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Master Gun Breaker.
+        /// </summary>
+        public static string MasterGunBreaker {
+            get {
+                return ResourceManager.GetString("MasterGunBreaker", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Heist Gun Crusher.
+        /// </summary>
+        public static string HeistGunCrusher {
+            get {
+                return ResourceManager.GetString("HeistGunCrusher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Magnus Gun Crusher.
+        /// </summary>
+        public static string MagnusGunCrusher {
+            get {
+                return ResourceManager.GetString("MagnusGunCrusher", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Light Wizard.
+        /// </summary>
+        public static string LightWizard {
+            get {
+                return ResourceManager.GetString("LightWizard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Light Master.
+        /// </summary>
+        public static string LightMaster {
+            get {
+                return ResourceManager.GetString("LightMaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shine Wizard.
+        /// </summary>
+        public static string ShineWizard {
+            get {
+                return ResourceManager.GetString("ShineWizard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Luminous Wizard.
+        /// </summary>
+        public static string LuminousWizard {
+            get {
+                return ResourceManager.GetString("LuminousWizard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Glory Wizard.
+        /// </summary>
+        public static string GloryWizard {
+            get {
+                return ResourceManager.GetString("GloryWizard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lemuria Mage.
+        /// </summary>
+        public static string LemuriaMage {
+            get {
+                return ResourceManager.GetString("LemuriaMage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to War Mage.
+        /// </summary>
+        public static string WarMage {
+            get {
+                return ResourceManager.GetString("WarMage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Archmage.
+        /// </summary>
+        public static string Archmage {
+            get {
+                return ResourceManager.GetString("Archmage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mystic Mage.
+        /// </summary>
+        public static string MysticMage {
+            get {
+                return ResourceManager.GetString("MysticMage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Battle Mage.
+        /// </summary>
+        public static string BattleMage {
+            get {
+                return ResourceManager.GetString("BattleMage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Illusion Knight.
+        /// </summary>
+        public static string IllusionKnight {
+            get {
+                return ResourceManager.GetString("IllusionKnight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mirage Knight.
+        /// </summary>
+        public static string MirageKnight {
+            get {
+                return ResourceManager.GetString("MirageKnight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Illusion Master.
+        /// </summary>
+        public static string IllusionMaster {
+            get {
+                return ResourceManager.GetString("IllusionMaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mystic Knight.
+        /// </summary>
+        public static string MysticKnight {
+            get {
+                return ResourceManager.GetString("MysticKnight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Phantom Pain Knight.
+        /// </summary>
+        public static string PhantomPainKnight {
+            get {
+                return ResourceManager.GetString("PhantomPainKnight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alchemist.
+        /// </summary>
+        public static string Alchemist {
+            get {
+                return ResourceManager.GetString("Alchemist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alchemist Mage.
+        /// </summary>
+        public static string AlchemistMage {
+            get {
+                return ResourceManager.GetString("AlchemistMage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alchemist Master.
+        /// </summary>
+        public static string AlchemistMaster {
+            get {
+                return ResourceManager.GetString("AlchemistMaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alchemist Force.
+        /// </summary>
+        public static string AlchemistForce {
+            get {
+                return ResourceManager.GetString("AlchemistForce", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alchemist Creator.
+        /// </summary>
+        public static string AlchemistCreator {
+            get {
+                return ResourceManager.GetString("AlchemistCreator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Crusader.
+        /// </summary>
+        public static string Crusader {
+            get {
+                return ResourceManager.GetString("Crusader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Impact Crusader.
+        /// </summary>
+        public static string ImpactCrusader {
+            get {
+                return ResourceManager.GetString("ImpactCrusader", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Master Paladin.
+        /// </summary>
+        public static string MasterPaladin {
+            get {
+                return ResourceManager.GetString("MasterPaladin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sacred Paladin.
+        /// </summary>
+        public static string SacredPaladin {
+            get {
+                return ResourceManager.GetString("SacredPaladin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Templar Commander.
+        /// </summary>
+        public static string TemplarCommander {
+            get {
+                return ResourceManager.GetString("TemplarCommander", resourceCulture);
+            }
+        }
     }
 }

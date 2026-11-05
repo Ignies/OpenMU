@@ -17,6 +17,8 @@
     "wire_w32",
     "class_codes",
     "s21_items_all",
-    "config_api"
+    "config_api",
+    "classes_s21",
+    "evolutions_45"
   ]
 }

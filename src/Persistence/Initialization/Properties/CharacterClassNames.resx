@@ -20,4 +20,62 @@
   <data name="DimensionMaster" xml:space="preserve"><value>Dimension Master</value></data>
   <data name="RageFighter" xml:space="preserve"><value>Rage Fighter</value></data>
   <data name="FistMaster" xml:space="preserve"><value>Fist Master</value></data>
+  <data name="SoulWizard" xml:space="preserve"><value>Soul Wizard</value></data>
+  <data name="DarknessWizard" xml:space="preserve"><value>Darkness Wizard</value></data>
+  <data name="DragonKnight" xml:space="preserve"><value>Dragon Knight</value></data>
+  <data name="IgnitionKnight" xml:space="preserve"><value>Ignition Knight</value></data>
+  <data name="NobleElf" xml:space="preserve"><value>Noble Elf</value></data>
+  <data name="RoyalElf" xml:space="preserve"><value>Royal Elf</value></data>
+  <data name="MagicKnight" xml:space="preserve"><value>Magic Knight</value></data>
+  <data name="DupleKnight" xml:space="preserve"><value>Duple Knight</value></data>
+  <data name="EmpireLord" xml:space="preserve"><value>Empire Lord</value></data>
+  <data name="ForceEmpire" xml:space="preserve"><value>Force Empire</value></data>
+  <data name="DimensionSummoner" xml:space="preserve"><value>Dimension Summoner</value></data>
+  <data name="EndlessSummoner" xml:space="preserve"><value>Endless Summoner</value></data>
+  <data name="FistBlazer" xml:space="preserve"><value>Fist Blazer</value></data>
+  <data name="BloodyFighter" xml:space="preserve"><value>Bloody Fighter</value></data>
+  <data name="GrowLancer" xml:space="preserve"><value>Grow Lancer</value></data>
+  <data name="MirageLancer" xml:space="preserve"><value>Mirage Lancer</value></data>
+  <data name="ShiningLancer" xml:space="preserve"><value>Shining Lancer</value></data>
+  <data name="ArcaneLancer" xml:space="preserve"><value>Arcane Lancer</value></data>
+  <data name="RuneWizard" xml:space="preserve"><value>Rune Wizard</value></data>
+  <data name="RuneSpellMaster" xml:space="preserve"><value>Rune Spell Master</value></data>
+  <data name="RuneGrandMaster" xml:space="preserve"><value>Rune Grand Master</value></data>
+  <data name="MajesticRuneMage" xml:space="preserve"><value>Majestic Rune Mage</value></data>
+  <data name="InfinityRuneWizard" xml:space="preserve"><value>Infinity Rune Wizard</value></data>
+  <data name="Slayer" xml:space="preserve"><value>Slayer</value></data>
+  <data name="RoyalSlayer" xml:space="preserve"><value>Royal Slayer</value></data>
+  <data name="MasterSlayer" xml:space="preserve"><value>Master Slayer</value></data>
+  <data name="Slaughterer" xml:space="preserve"><value>Slaughterer</value></data>
+  <data name="RogueSlayer" xml:space="preserve"><value>Rogue Slayer</value></data>
+  <data name="GunCrusher" xml:space="preserve"><value>Gun Crusher</value></data>
+  <data name="GunBreaker" xml:space="preserve"><value>Gun Breaker</value></data>
+  <data name="MasterGunBreaker" xml:space="preserve"><value>Master Gun Breaker</value></data>
+  <data name="HeistGunCrusher" xml:space="preserve"><value>Heist Gun Crusher</value></data>
+  <data name="MagnusGunCrusher" xml:space="preserve"><value>Magnus Gun Crusher</value></data>
+  <data name="LightWizard" xml:space="preserve"><value>Light Wizard</value></data>
+  <data name="LightMaster" xml:space="preserve"><value>Light Master</value></data>
+  <data name="ShineWizard" xml:space="preserve"><value>Shine Wizard</value></data>
+  <data name="LuminousWizard" xml:space="preserve"><value>Luminous Wizard</value></data>
+  <data name="GloryWizard" xml:space="preserve"><value>Glory Wizard</value></data>
+  <data name="LemuriaMage" xml:space="preserve"><value>Lemuria Mage</value></data>
+  <data name="WarMage" xml:space="preserve"><value>War Mage</value></data>
+  <data name="Archmage" xml:space="preserve"><value>Archmage</value></data>
+  <data name="MysticMage" xml:space="preserve"><value>Mystic Mage</value></data>
+  <data name="BattleMage" xml:space="preserve"><value>Battle Mage</value></data>
+  <data name="IllusionKnight" xml:space="preserve"><value>Illusion Knight</value></data>
+  <data name="MirageKnight" xml:space="preserve"><value>Mirage Knight</value></data>
+  <data name="IllusionMaster" xml:space="preserve"><value>Illusion Master</value></data>
+  <data name="MysticKnight" xml:space="preserve"><value>Mystic Knight</value></data>
+  <data name="PhantomPainKnight" xml:space="preserve"><value>Phantom Pain Knight</value></data>
+  <data name="Alchemist" xml:space="preserve"><value>Alchemist</value></data>
+  <data name="AlchemistMage" xml:space="preserve"><value>Alchemist Mage</value></data>
+  <data name="AlchemistMaster" xml:space="preserve"><value>Alchemist Master</value></data>
+  <data name="AlchemistForce" xml:space="preserve"><value>Alchemist Force</value></data>
+  <data name="AlchemistCreator" xml:space="preserve"><value>Alchemist Creator</value></data>
+  <data name="Crusader" xml:space="preserve"><value>Crusader</value></data>
+  <data name="ImpactCrusader" xml:space="preserve"><value>Impact Crusader</value></data>
+  <data name="MasterPaladin" xml:space="preserve"><value>Master Paladin</value></data>
+  <data name="SacredPaladin" xml:space="preserve"><value>Sacred Paladin</value></data>
+  <data name="TemplarCommander" xml:space="preserve"><value>Templar Commander</value></data>
 </root>
