@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Character;
 
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Character;
 
@@ -70,6 +71,12 @@ public class CreateCharacterAction
             return null;
         }
 
+        if (!MeetsCreationLevel(account, characterClass))
+        {
+            player.Logger.LogDebug("CreateCharacter: {0} requires a character of level {1}.", characterClass, characterClass.LevelRequirementByCreation);
+            return null;
+        }
+
         var character = player.PersistenceContext.CreateNew<DataModel.Entities.Character>();
         character.Name = name;
         character.CharacterSlot = freeSlot.Value;
@@ -96,5 +103,21 @@ public class CreateCharacterAction
 
         player.Logger.LogDebug("Creating Character Complete.");
         return character;
+    }
+
+    /// <summary>
+    /// Determines whether the account may create a character of the class by its <see cref="CharacterClass.LevelRequirementByCreation"/>.
+    /// </summary>
+    /// <remarks>
+    /// A class with a <see cref="CharacterClass.CreationAllowedFlag"/> is unlocked for the client, which checks it, like
+    /// in the original game. A class without one (the classes after Season 6) is checked here: another character of the
+    /// account has the level, or the account has unlocked the class.
+    /// </remarks>
+    private static bool MeetsCreationLevel(Account account, CharacterClass characterClass)
+    {
+        return characterClass.LevelRequirementByCreation <= 0
+               || characterClass.CreationAllowedFlag != 0
+               || account.UnlockedCharacterClasses.Any(c => c.Number == characterClass.Number)
+               || account.Characters.Any(c => c.Attributes.FirstOrDefault(a => a.Definition == Stats.Level)?.Value >= characterClass.LevelRequirementByCreation);
     }
 }

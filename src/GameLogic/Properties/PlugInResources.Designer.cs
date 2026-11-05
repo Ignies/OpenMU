@@ -5502,5 +5502,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("PartyExperienceBonusPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Evolve command.
+        /// </summary>
+        public static string EvolveChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("EvolveChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Evolves a character into its next class: /evolve [character]. For game masters; the level rules of the fourth and fifth evolution don't apply..
+        /// </summary>
+        public static string EvolveChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("EvolveChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

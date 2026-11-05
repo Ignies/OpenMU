@@ -1989,4 +1989,10 @@
   <data name="PartyExperienceBonusPlugIn_Description" xml:space="preserve">
     <value>The factor by which a party multiplies the experience of a kill, by its number of members and, for a party of different classes, a higher one.</value>
   </data>
+  <data name="EvolveChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Evolve command</value>
+  </data>
+  <data name="EvolveChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Evolves a character into its next class: /evolve [character]. For game masters; the level rules of the fourth and fifth evolution don't apply.</value>
+  </data>
 </root>

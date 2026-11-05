@@ -32,6 +32,21 @@ public class AppearanceSerializerTest
         Assert.That(data, Is.EquivalentTo(expected));
     }
 
+    /// <summary>
+    /// A fourth evolution of a Season 6 class is sent as its third, as the Season 6 class field has 5 bits.
+    /// </summary>
+    [Test]
+    public void FourthEvolutionIsSentAsTheThird()
+    {
+        var serializer = new AppearanceSerializer();
+        var appearanceData = new Mock<IAppearanceData>();
+        appearanceData.Setup(a => a.CharacterClass).Returns(new CharacterClass { Number = 128 + 11 }); // Dragon Knight
+        appearanceData.Setup(a => a.EquippedItems).Returns(this.GetSmallAxeEquipped());
+        var data = new byte[serializer.NeededSpace];
+        serializer.WriteAppearanceData(data, appearanceData.Object, false);
+        Assert.That(data[0], Is.EqualTo(7 << 3)); // Blade Master
+    }
+
     private IEnumerable<ItemAppearance> GetSmallAxeEquipped()
     {
         yield return new ItemAppearance { Definition = new ItemDefinition { Group = 1 } };

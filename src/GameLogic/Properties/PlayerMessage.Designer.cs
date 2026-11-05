@@ -3198,5 +3198,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ResetRequiresMasterClass", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} evolved into {1}..
+        /// </summary>
+        public static string CharacterEvolved {
+            get {
+                return ResourceManager.GetString("CharacterEvolved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has no next evolution..
+        /// </summary>
+        public static string CharacterCannotEvolve {
+            get {
+                return ResourceManager.GetString("CharacterCannotEvolve", resourceCulture);
+            }
+        }
     }
 }

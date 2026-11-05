@@ -2010,4 +2010,10 @@
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin, das den Verbrauch des mittleren Elite-Heiltranks verarbeitet. Er stellt einen Teil der Lebenspunkte sofort wieder her.</value>
   </data>
+  <data name="EvolveChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Befehl Entwickeln</value>
+  </data>
+  <data name="EvolveChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Entwickelt einen Charakter zu seiner nächsten Klasse: /evolve [Charakter]. Für Gamemaster; die Levelregeln der vierten und fünften Entwicklung gelten nicht.</value>
+  </data>
 </root>

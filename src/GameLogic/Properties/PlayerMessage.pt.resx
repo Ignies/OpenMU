@@ -1174,4 +1174,10 @@ Extensões de inventário: {18}</value>
   <data name="ResetRequiresMasterClass" xml:space="preserve">
     <value>Uma estrela requer a terceira classe.</value>
   </data>
+  <data name="CharacterEvolved" xml:space="preserve">
+    <value>{0} evoluiu para {1}.</value>
+  </data>
+  <data name="CharacterCannotEvolve" xml:space="preserve">
+    <value>{0} não tem próxima evolução.</value>
+  </data>
 </root>

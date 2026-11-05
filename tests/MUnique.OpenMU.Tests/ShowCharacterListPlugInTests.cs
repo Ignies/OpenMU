@@ -1,4 +1,4 @@
-// <copyright file="ShowCharacterListPlugInTests.cs" company="MUnique">
+﻿// <copyright file="ShowCharacterListPlugInTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -82,7 +82,27 @@ public class ShowCharacterListPlugInTests
         }
     }
 
-    private static (RemotePlayer Player, System.IO.MemoryStream Output) CreatePlayerWithCharacters(ClientVersion clientVersion)
+    /// <summary>
+    /// A Season 6 client doesn't get the characters of the classes after Season 6, and sees a fourth or fifth evolution
+    /// of a Season 6 class as its third.
+    /// </summary>
+    [Test]
+    public async ValueTask Season6CharacterListShowsOnlySeason6ClassesAsync()
+    {
+        var classes = new Dictionary<string, byte> { ["SlotThree"] = 184, ["SlotOne"] = 131 }; // Grow Lancer, Soul Wizard
+        var (player, output) = CreatePlayerWithCharacters(new ClientVersion(6, 3, ClientLanguage.Invariant), classes);
+
+        await new ShowCharacterListPlugIn(player).ShowCharacterListAsync().ConfigureAwait(false);
+
+        var packet = new CharacterList(output.ToArray());
+        Assert.That(packet.CharacterCount, Is.EqualTo(StoredCharacters.Length - 1));
+        var names = Enumerable.Range(0, packet.CharacterCount).Select(i => packet[i].Name).ToList();
+        Assert.That(names, Does.Not.Contain("SlotThree"));
+        var soulWizard = Enumerable.Range(0, packet.CharacterCount).Select(i => packet[i]).Single(c => c.Name == "SlotOne");
+        Assert.That(soulWizard.Appearance[0] >> 3, Is.EqualTo(3), "shown as grand master");
+    }
+
+    private static (RemotePlayer Player, System.IO.MemoryStream Output) CreatePlayerWithCharacters(ClientVersion clientVersion, IReadOnlyDictionary<string, byte>? classNumbers = null)
     {
         var account = new BasicAccount { LoginName = "test" };
         var positions = new Dictionary<Guid, GuildPosition>();
@@ -93,7 +113,7 @@ public class ShowCharacterListPlugInTests
                 Id = Guid.NewGuid(),
                 Name = name,
                 CharacterSlot = slot,
-                CharacterClass = new BasicCharacterClass(),
+                CharacterClass = new BasicCharacterClass { Number = classNumbers?.GetValueOrDefault(name) ?? 0 },
             };
             account.Characters.Add(character);
             positions[character.Id] = position;

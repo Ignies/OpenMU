@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Character;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameServer.RemoteView.Guild;
 using MUnique.OpenMU.Interfaces;
@@ -62,7 +63,10 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
     private async ValueTask SendCharacterListAsync(IConnection connection, Account account, CharacterCreationUnlockFlags unlockFlags)
     {
         // The positions are written by index, so both loops go through the same list in slot order.
-        var characters = account.Characters.OrderBy(c => c.CharacterSlot).ToList();
+        var characters = account.Characters
+            .Where(c => c.CharacterClass is null || ClassCodes.GetSeason6Number(c.CharacterClass.Number) is not null)
+            .OrderBy(c => c.CharacterSlot)
+            .ToList();
         var guildPositions = new GuildPosition?[characters.Count];
         int i = 0;
         foreach (var character in characters)
@@ -74,12 +78,12 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
         var appearanceSerializer = this._player.AppearanceSerializer;
         int Write()
         {
-            var size = CharacterListRef.GetRequiredSize(account.Characters.Count);
+            var size = CharacterListRef.GetRequiredSize(characters.Count);
             var span = connection.Output.GetSpan(size)[..size];
             var packet = new CharacterListRef(span)
             {
                 UnlockFlags = unlockFlags,
-                CharacterCount = (byte)account.Characters.Count,
+                CharacterCount = (byte)characters.Count,
                 IsVaultExtended = account.IsVaultExtended,
             };
 

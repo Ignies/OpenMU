@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
@@ -119,7 +120,8 @@ public class AppearanceSerializer : IAppearanceSerializer
 
         if (appearanceData.CharacterClass is not null)
         {
-            target[0] = (byte)(appearanceData.CharacterClass.Number << 3 & 0xF8);
+            var classNumber = appearanceData.CharacterClass.Number;
+            target[0] = (byte)((ClassCodes.GetSeason6Number(classNumber) ?? classNumber) << 3 & 0xF8);
         }
 
         target[0] |= (byte)appearanceData.Pose;

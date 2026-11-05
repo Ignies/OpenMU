@@ -1021,4 +1021,10 @@ Inventarerweiterungen: {18}</value>
   <data name="ResetRequiresMasterClass" xml:space="preserve">
     <value>Ein Stern erfordert die dritte Klasse.</value>
   </data>
+  <data name="CharacterEvolved" xml:space="preserve">
+    <value>{0} hat sich zu {1} weiterentwickelt.</value>
+  </data>
+  <data name="CharacterCannotEvolve" xml:space="preserve">
+    <value>{0} hat keine weitere Entwicklung.</value>
+  </data>
 </root>
