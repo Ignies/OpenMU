@@ -36,6 +36,12 @@ internal class LuckyItems : InitializerBase
     internal const byte RefineryCraftingNumber = 52;
 
     /// <summary>
+    /// The success chance in percent of the refinery for a piece at its full durability, the one of the Season 21
+    /// server data (LuckyItemRefineMixRate1).
+    /// </summary>
+    private const byte RefinerySuccessPercent = 60;
+
+    /// <summary>
     /// The level requirement of the lucky armors of the first tier.
     /// </summary>
     private const int FirstTierLevelRequirement = 1;
@@ -169,8 +175,8 @@ internal class LuckyItems : InitializerBase
     }
 
     /// <summary>
-    /// Creates the crafting of the lucky item refinery, which refines a lucky armor into a jewel of extension or a
-    /// jewel of elevation, see <see cref="LuckyItemRefineryCrafting"/>.
+    /// Creates the crafting of the lucky item refinery, which refines a lucky armor into a jewel of extension,
+    /// see <see cref="LuckyItemRefineryCrafting"/>.
     /// </summary>
     /// <returns>The crafting.</returns>
     internal ItemCrafting CreateRefineryCrafting()
@@ -181,7 +187,7 @@ internal class LuckyItems : InitializerBase
         crafting.ItemCraftingHandlerClassName = typeof(LuckyItemRefineryCrafting).FullName!;
         var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
         crafting.SimpleCraftingSettings = craftingSettings;
-        craftingSettings.SuccessPercent = 100;
+        craftingSettings.SuccessPercent = RefinerySuccessPercent;
 
         var luckyArmor = this.Context.CreateNew<ItemCraftingRequiredItem>();
         foreach (var armor in this.GameConfiguration.Items.Where(IsLuckyArmor).OrderBy(item => item.Group).ThenBy(item => item.Number))
@@ -195,12 +201,9 @@ internal class LuckyItems : InitializerBase
         luckyArmor.FailResult = MixResult.Disappear;
         craftingSettings.RequiredItems.Add(luckyArmor);
 
-        foreach (var jewelNumber in new short[] { 160, 161 })
-        {
-            var result = this.Context.CreateNew<ItemCraftingResultItem>();
-            result.ItemDefinition = this.GameConfiguration.Items.First(item => item.Group == 14 && item.Number == jewelNumber);
-            craftingSettings.ResultItems.Add(result);
-        }
+        var result = this.Context.CreateNew<ItemCraftingResultItem>();
+        result.ItemDefinition = this.GameConfiguration.Items.First(item => item.Group == 14 && item.Number == 160);
+        craftingSettings.ResultItems.Add(result);
 
         return crafting;
     }

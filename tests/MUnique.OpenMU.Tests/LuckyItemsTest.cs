@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Tests;
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
@@ -77,7 +78,7 @@ public class LuckyItemsTest
 
             Assert.That(player.TemporaryStorage.Items.Where(x => x.Definition!.Group == 8), Is.Empty);
             Assert.That(result, Is.AnyOf(CraftingResult.Success, CraftingResult.Failed));
-            Assert.That(item?.Definition?.Number, result == CraftingResult.Success ? Is.AnyOf((short)160, (short)161) : Is.Null);
+            Assert.That(item?.Definition?.Number, result == CraftingResult.Success ? Is.EqualTo((short)160) : Is.Null);
             results.Add(item?.Definition?.Number);
         }
 
@@ -179,11 +180,142 @@ public class LuckyItemsTest
         var luckyDurability = lucky.Durability;
         var otherDurability = other.Durability;
 
-        await LuckyItemWearPlugIn.WearAsync(player).ConfigureAwait(false);
+        await new LuckyItemWearPlugIn().WearAsync(player, TimeSpan.FromMinutes(40)).ConfigureAwait(false);
 
         Assert.That(lucky.Durability, Is.EqualTo(luckyDurability - 1));
         Assert.That(other.Durability, Is.EqualTo(otherDurability));
     }
+
+    /// <summary>
+    /// The refinery succeeds with 60 % for a piece at full durability and with 10 % otherwise (S21 rule).
+    /// </summary>
+    /// <param name="fullDurability">Whether the piece has its full durability.</param>
+    /// <param name="expectedRate">The expected success rate.</param>
+    [TestCase(true, 60)]
+    [TestCase(false, 10)]
+    public async ValueTask RefineryChanceDependsOnFullDurabilityAsync(bool fullDurability, int expectedRate)
+    {
+        var player = await this.CreatePlayerAsync().ConfigureAwait(false);
+        var armor = this.CreateItem(player, 8, 62);
+        if (!fullDurability)
+        {
+            armor.Durability -= 1;
+        }
+
+        await player.TemporaryStorage!.AddItemAsync(armor).ConfigureAwait(false);
+
+        var error = new LuckyItemRefineryCrafting(this.RefinerySettings()).TryGetRequiredItems(player, out _, out var successRate);
+
+        Assert.That(error, Is.Null);
+        Assert.That(successRate, Is.EqualTo(expectedRate));
+    }
+
+    /// <summary>
+    /// A successful refinery always gives a jewel of extension, picked by its identity, whatever the order of the
+    /// result items of the configuration is.
+    /// </summary>
+    [Test]
+    public async ValueTask RefineryGivesAJewelOfExtensionWhateverTheResultOrderAsync()
+    {
+        var settings = this.RefinerySettings();
+        var reversed = new MUnique.OpenMU.Persistence.BasicModel.SimpleCraftingSettings { SuccessPercent = settings.SuccessPercent };
+        foreach (var required in settings.RequiredItems)
+        {
+            reversed.RequiredItems.Add(required);
+        }
+
+        foreach (var result in settings.ResultItems.Reverse())
+        {
+            reversed.ResultItems.Add(result);
+        }
+
+        reversed.ResultItems.Add(new MUnique.OpenMU.Persistence.BasicModel.ItemCraftingResultItem { ItemDefinition = this.Definition(14, 161) });
+        for (var i = 0; i < 20; i++)
+        {
+            var player = await this.CreatePlayerAsync().ConfigureAwait(false);
+            await player.TemporaryStorage!.AddItemAsync(this.CreateItem(player, 8, 62)).ConfigureAwait(false);
+
+            var (result, item) = await new LuckyItemRefineryCrafting(reversed).DoMixAsync(player, 0).ConfigureAwait(false);
+
+            Assert.That(item?.Definition?.Number, result == CraftingResult.Success ? Is.EqualTo((short)160) : Is.Null);
+        }
+    }
+
+    /// <summary>
+    /// A failed refinery clears the backup inventory, so a disconnect can't bring the lost piece back.
+    /// </summary>
+    [Test]
+    public async ValueTask FailedRefineryClearsTheBackupInventoryAsync()
+    {
+        for (var i = 0; i < 100; i++)
+        {
+            var player = await this.CreatePlayerAsync().ConfigureAwait(false);
+            var armor = this.CreateItem(player, 8, 62);
+            armor.Durability = 1;
+            await player.TemporaryStorage!.AddItemAsync(armor).ConfigureAwait(false);
+            player.BackupInventory = new BackupItemStorage(player.Inventory!.ItemStorage);
+
+            var (result, _) = await new LuckyItemRefineryCrafting(this.RefinerySettings()).DoMixAsync(player, 0).ConfigureAwait(false);
+
+            Assert.That(player.BackupInventory, Is.Null);
+            Assert.That(player.TemporaryStorage.Items.Where(x => x.Definition!.Group == 8), Is.Empty);
+            if (result == CraftingResult.Failed)
+            {
+                return;
+            }
+        }
+
+        Assert.Fail("The refinery never failed at 10 % in 100 tries.");
+    }
+
+    /// <summary>
+    /// The wear goes through the durability path of the player, so the stats are recalculated when a worn piece breaks.
+    /// </summary>
+    [Test]
+    public async ValueTask WearRecalculatesTheStatsOfABrokenPieceAsync()
+    {
+        var player = await this.CreatePlayerAsync().ConfigureAwait(false);
+        var lucky = this.CreateItem(player, 8, 62);
+        lucky.Durability = 1;
+        await player.Inventory!.AddItemAsync(InventoryConstants.ArmorSlot, lucky).ConfigureAwait(false);
+        var raised = 0;
+        player.Inventory.EquippedItemsChanged += _ =>
+        {
+            raised++;
+            return ValueTask.CompletedTask;
+        };
+
+        await new LuckyItemWearPlugIn().WearAsync(player, TimeSpan.FromMinutes(40)).ConfigureAwait(false);
+
+        Assert.That(lucky.Durability, Is.Zero);
+        Assert.That(raised, Is.GreaterThan(0));
+    }
+
+    /// <summary>
+    /// The wear time is counted per piece, only while it's equipped: a piece put on just before a tick doesn't wear.
+    /// </summary>
+    [Test]
+    public async ValueTask WearTimeIsCountedPerEquippedPieceAsync()
+    {
+        var player = await this.CreatePlayerAsync().ConfigureAwait(false);
+        var first = this.CreateItem(player, 9, 62);
+        await player.Inventory!.AddItemAsync(InventoryConstants.PantsSlot, first).ConfigureAwait(false);
+        var second = this.CreateItem(player, 7, 62);
+        await player.Inventory.AddItemAsync(20, second).ConfigureAwait(false);
+        var full = first.Durability;
+        var plugIn = new LuckyItemWearPlugIn();
+
+        await plugIn.WearAsync(player, TimeSpan.FromMinutes(39)).ConfigureAwait(false);
+        await player.Inventory.RemoveItemAsync(second).ConfigureAwait(false);
+        await player.Inventory.AddItemAsync(InventoryConstants.HelmSlot, second).ConfigureAwait(false);
+        await plugIn.WearAsync(player, TimeSpan.FromMinutes(1)).ConfigureAwait(false);
+
+        Assert.That(first.Durability, Is.EqualTo(full - 1));
+        Assert.That(second.Durability, Is.EqualTo(full));
+    }
+
+    private SimpleCraftingSettings RefinerySettings()
+        => this._gameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.CombineLuckyItem).ItemCraftings.Single(c => c.Number == RefineryCraftingNumber).SimpleCraftingSettings!;
 
     private async ValueTask<Player> CreatePlayerAsync()
     {

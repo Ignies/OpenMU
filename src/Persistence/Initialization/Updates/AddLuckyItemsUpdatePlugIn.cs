@@ -30,7 +30,7 @@ public class AddLuckyItemsUpdatePlugIn : UpdatePlugInBase
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update adds the lucky armor sets, the lucky item tickets and the jewels of extension and elevation. David in Elveland exchanges a ticket for a lucky armor which fits the character class, and refines a lucky armor into a jewel of extension or elevation. The packages of the in-game shop which contain the tickets are put on sale.";
+    internal const string PlugInDescription = "This update adds the lucky armor sets, the lucky item tickets and the jewels of extension and elevation. David in Elveland exchanges a ticket for a lucky armor which fits the character class, and refines a lucky armor into a jewel of extension: with 60 % at full durability, with 10 % otherwise. The packages of the in-game shop which contain the tickets are put on sale.";
 
     /// <summary>
     /// The number of the npc David, who exchanges the lucky item tickets.

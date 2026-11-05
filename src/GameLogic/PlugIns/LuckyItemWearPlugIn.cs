@@ -6,12 +6,12 @@ namespace MUnique.OpenMU.GameLogic.PlugIns;
 
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Wears down the lucky items (<see cref="LuckyItemExtensions.IsLuckyItem"/>) which players have equipped: they lose a
-/// point of durability each time they were worn for the configured interval. Only a jewel of extension repairs them.
+/// Wears down the lucky items (<see cref="LuckyItemExtensions.IsLuckyItem"/>) which players have equipped: each piece
+/// loses a point of durability each time it was worn for the configured interval, counted per piece and only while
+/// it's equipped. Only a jewel of extension repairs them.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.LuckyItemWearPlugIn_Name), Description = nameof(PlugInResources.LuckyItemWearPlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -19,13 +19,13 @@ using MUnique.OpenMU.PlugIns;
 public class LuckyItemWearPlugIn : IPeriodicTaskPlugIn, ISupportCustomConfiguration<LuckyItemWearConfiguration>, ISupportDefaultCustomConfiguration
 {
     /// <summary>
-    /// The time between the checks of the players.
+    /// The time between the checks of the players, which is also the shortest interval of the wear.
     /// </summary>
     private static readonly TimeSpan CheckInterval = TimeSpan.FromMinutes(1);
 
-    private readonly ConditionalWeakTable<Player, StrongBox<DateTime>> _wornSince = new();
+    private readonly ConditionalWeakTable<Item, StrongBox<TimeSpan>> _wornTime = new();
 
-    private DateTime _nextRunUtc = DateTime.UtcNow;
+    private DateTime _lastRunUtc = DateTime.UtcNow;
 
     /// <inheritdoc />
     public LuckyItemWearConfiguration? Configuration { get; set; }
@@ -34,36 +34,36 @@ public class LuckyItemWearPlugIn : IPeriodicTaskPlugIn, ISupportCustomConfigurat
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
         var now = DateTime.UtcNow;
-        if (now < this._nextRunUtc)
+        var elapsed = now - this._lastRunUtc;
+        if (elapsed < CheckInterval)
         {
             return;
         }
 
-        this._nextRunUtc = now + CheckInterval;
-        var configuration = this.Configuration ??= new LuckyItemWearConfiguration();
+        this._lastRunUtc = now;
+        elapsed = elapsed > CheckInterval * 2 ? CheckInterval : elapsed;
         foreach (var player in await gameContext.GetPlayersAsync().ConfigureAwait(false))
         {
             if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
             {
-                this._wornSince.Remove(player);
                 continue;
             }
 
-            var wornSince = this._wornSince.GetValue(player, _ => new StrongBox<DateTime>(now));
-            if (now - wornSince.Value < configuration.Interval)
+            try
             {
-                continue;
+                await this.WearAsync(player, elapsed).ConfigureAwait(false);
             }
-
-            wornSince.Value = now;
-            await WearAsync(player).ConfigureAwait(false);
+            catch (Exception ex)
+            {
+                player.Logger.LogError(ex, "Couldn't wear the lucky items of {player}.", player);
+            }
         }
     }
 
     /// <inheritdoc />
     public void ForceStart()
     {
-        this._nextRunUtc = DateTime.UtcNow;
+        this._lastRunUtc = DateTime.UtcNow - CheckInterval;
     }
 
     /// <inheritdoc />
@@ -73,20 +73,32 @@ public class LuckyItemWearPlugIn : IPeriodicTaskPlugIn, ISupportCustomConfigurat
     }
 
     /// <summary>
-    /// Takes a point of durability from each equipped lucky item of the player.
+    /// Adds the elapsed time to each equipped lucky item of the player, and takes a point of durability from each
+    /// one which was worn for the interval, through <see cref="Player.DecreaseItemDurabilityAsync"/>, so the stats
+    /// are recalculated when a piece breaks.
     /// </summary>
     /// <param name="player">The player.</param>
+    /// <param name="elapsed">The time since the last call.</param>
     /// <returns>The task.</returns>
-    internal static async ValueTask WearAsync(Player player)
+    internal async ValueTask WearAsync(Player player, TimeSpan elapsed)
     {
+        var interval = this.Configuration?.Interval ?? new LuckyItemWearConfiguration().Interval;
+        interval = interval < CheckInterval ? CheckInterval : interval;
         var configuration = player.GameContext.Configuration;
         var items = player.Inventory?.EquippedItems
             .Where(item => item.Durability > 0 && item.Definition?.IsLuckyItem(configuration) is true)
             .ToList() ?? [];
         foreach (var item in items)
         {
-            item.Durability = Math.Max(0, item.Durability - 1);
-            await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, false)).ConfigureAwait(false);
+            var worn = this._wornTime.GetValue(item, _ => new StrongBox<TimeSpan>(TimeSpan.Zero));
+            worn.Value += elapsed;
+            if (worn.Value < interval)
+            {
+                continue;
+            }
+
+            worn.Value -= interval;
+            await player.DecreaseItemDurabilityAsync(item, 1).ConfigureAwait(false);
         }
     }
 }

@@ -9,32 +9,24 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 
 /// <summary>
-/// Crafting which refines a lucky item into a jewel of extension or a jewel of elevation.
+/// Crafting which refines a lucky item into a jewel of extension.
 /// </summary>
 /// <remarks>
-/// The settings require exactly one lucky item (<see cref="LuckyItemExtensions.IsLuckyItem"/>), which always
-/// disappears. The first result item of the settings (the jewel of extension) is given with a chance of
-/// <see cref="FirstResultChance"/>; otherwise the second one (the jewel of elevation) with a chance of
-/// <see cref="SecondResultChance"/>; otherwise nothing.
+/// The settings require exactly one lucky item (<see cref="LuckyItemExtensions.IsLuckyItem"/>), which disappears
+/// whatever the outcome. It succeeds with the <see cref="SimpleCraftingSettings.SuccessPercent"/> of the settings
+/// for a piece at its full durability, and with <see cref="DamagedItemSuccessPercent"/> otherwise. The result is
+/// always a jewel of extension, picked by its identity among the result items of the settings.
 /// </remarks>
 public class LuckyItemRefineryCrafting : SimpleItemCraftingHandler
 {
     /// <summary>
-    /// The chance in percent of the first result item.
+    /// The success chance in percent for a piece which lost durability.
     /// </summary>
     /// <remarks>
-    /// The Season 6 client only says that the material disappears. The value is the one of the Season 21 server data
-    /// (LuckyItemRefineMixRate1). It's a constant, because a result item of a crafting has no chance of its own.
+    /// The value of the Season 21 server data (LuckyItemRefineMixRate2), which the item guides describe as the
+    /// chance of a damaged piece. It's a constant, because the settings of a crafting have one success rate only.
     /// </remarks>
-    internal const int FirstResultChance = 60;
-
-    /// <summary>
-    /// The chance in percent of the second result item, when the first one wasn't given.
-    /// </summary>
-    /// <remarks>
-    /// The value of the Season 21 server data (LuckyItemRefineMixRate2), see <see cref="FirstResultChance"/>.
-    /// </remarks>
-    internal const int SecondResultChance = 10;
+    internal const byte DamagedItemSuccessPercent = 10;
 
     private readonly SimpleCraftingSettings _settings;
 
@@ -56,21 +48,22 @@ public class LuckyItemRefineryCrafting : SimpleItemCraftingHandler
             return error;
         }
 
-        if (items.Sum(link => link.Items.Count()) != 1
-            || items.SelectMany(link => link.Items).Any(item => item.Definition?.IsLuckyItem(player.GameContext.Configuration) is not true))
+        var pieces = items.SelectMany(link => link.Items).ToList();
+        if (pieces.Count != 1 || pieces[0].Definition?.IsLuckyItem(player.GameContext.Configuration) is not true)
         {
             return CraftingResult.IncorrectMixItems;
         }
 
+        var piece = pieces[0];
+        successRate = piece.Durability >= piece.GetMaximumDurabilityOfOnePiece() ? this._settings.SuccessPercent : DamagedItemSuccessPercent;
         return default;
     }
 
     /// <inheritdoc />
     protected override async ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
     {
-        var resultItems = this._settings.ResultItems.ToList();
-        var index = Rand.NextRandomBool(FirstResultChance) ? 0 : Rand.NextRandomBool(SecondResultChance) ? 1 : -1;
-        if (index < 0 || index >= resultItems.Count || resultItems[index].ItemDefinition is not { } definition)
+        var jewel = ItemConstants.JewelOfExtension;
+        if (this._settings.ResultItems.Select(r => r.ItemDefinition).FirstOrDefault(d => d?.Group == jewel.Group && d.Number == jewel.Number) is not { } definition)
         {
             return [];
         }
