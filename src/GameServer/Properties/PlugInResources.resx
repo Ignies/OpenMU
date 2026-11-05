@@ -2825,4 +2825,16 @@
   <data name="ShowCharacterListBabylonPlugIn_Description" xml:space="preserve">
     <value>Shows every character of the account to the Babylon client, followed by the class code of each.</value>
   </data>
+  <data name="NewPlayersInScopeBabylonPlugIn_Name" xml:space="preserve">
+    <value>New Players In Scope (Babylon)</value>
+  </data>
+  <data name="NewPlayersInScopeBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows players in view to the Babylon client with their class code and their gear in the wide item format.</value>
+  </data>
+  <data name="AppearanceChangedBabylonPlugIn_Name" xml:space="preserve">
+    <value>Appearance Changed (Babylon)</value>
+  </data>
+  <data name="AppearanceChangedBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows a changed piece of gear of a player in view to the Babylon client, in the wide item format, with the class code of the player.</value>
+  </data>
 </root>

@@ -186,4 +186,38 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="AppearanceChangedWide" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerId">The player id.</param>
+    /// <param name="slot">The slot.</param>
+    /// <param name="classCode">The class code of the player, so an evolution shows too.</param>
+    /// <param name="itemData">The item data in the item format of the connection, zero filled to 32 bytes; all 0xFF when the slot got empty.</param>
+    /// <remarks>
+    /// Is sent by the server when: A player in the view of a Babylon client put on or took off a piece of gear.
+    /// Causes reaction on client side: The client updates the gear of the player.
+    /// </remarks>
+    public static async ValueTask SendAppearanceChangedWideAsync(this IConnection? connection, ushort @playerId, byte @slot, byte @classCode, Memory<byte> @itemData)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = AppearanceChangedWideRef.Length;
+            var packet = new AppearanceChangedWideRef(connection.Output.GetSpan(length)[..length]);
+            packet.PlayerId = @playerId;
+            packet.Slot = @slot;
+            packet.ClassCode = @classCode;
+            @itemData.Span.CopyTo(packet.ItemData);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

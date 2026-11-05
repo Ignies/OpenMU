@@ -116,6 +116,15 @@ Character packets (characters range 10-1F):
   Season 6 character list, which a Babylon client gets with every character (a Season 6 client gets no
   character of a new class, and a 4th or 5th evolution as its 3rd).
 
+Appearance packets (range 20-2F):
+
+- `C2 EE 20 PlayerAppearanceWide` (server): player id (u16 BE) at 5, class code at 7, item count at 8, then per item
+  slot (u8) + 32 bytes of item data in the connection's item format (W32). Sent right after the Season 6 packet
+  which adds the player to the view (normal and transformed).
+- `C1 EE 21 AppearanceChangedWide` (server, 40): player id at 4, slot at 6, class code at 7, 32 bytes item data at 8
+  (0xFF when the slot got empty). Replaces the Season 6 appearance change for the Babylon client, whose glow byte
+  would overwrite a part of the W32 item number.
+
 ### W32
 
 `GameServer/RemoteView/ItemSerializerW32.cs`, active for the Babylon client (`NeededSpace` 32). Every packet which

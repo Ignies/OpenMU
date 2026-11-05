@@ -57,6 +57,46 @@ public readonly ref struct CharacterClassCodeRef
 
 
 /// <summary>
+/// A piece of gear a player wears, in the W32 item format..
+/// </summary>
+public readonly ref struct EquippedItemWideRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EquippedItemWideRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public EquippedItemWideRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 33;
+
+    /// <summary>
+    /// Gets or sets the inventory slot (0-11 of Season 6, or one of the slots after it).
+    /// </summary>
+    public byte Slot
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the item data in the item format of the connection (see ForkWelcome.ItemFormat), zero filled to 32 bytes.
+    /// </summary>
+    public Span<byte> ItemData
+    {
+        get => this._data.Slice(1, 32);
+    }
+}
+
+
+/// <summary>
 /// Is sent by the client when: After the login succeeded, when the client logged in with the version of the Babylon client.
 /// Causes reaction on server side: The server answers with the ForkWelcome which tells the client the wire format and the features which are active.
 /// </summary>
@@ -666,4 +706,227 @@ public readonly ref struct CharacterClassCodesRef
     /// <param name="charactersCount">The count of <see cref="CharacterClassCodeRef"/> from which the size will be calculated.</param>
         
     public static int GetRequiredSize(int charactersCount) => charactersCount * CharacterClassCodeRef.Length + 5;
+}
+
+
+/// <summary>
+/// Is sent by the server when: Right after the Season 6 packet which adds a player to the view of a Babylon client.
+/// Causes reaction on client side: The client takes the class of the player from its code and its gear from the wide item data, instead of the 5 bit class and the Season 6 appearance.
+/// </summary>
+public readonly ref struct PlayerAppearanceWideRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerAppearanceWideRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public PlayerAppearanceWideRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PlayerAppearanceWideRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private PlayerAppearanceWideRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x20;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the id of the player, as in the Season 6 packet.
+    /// </summary>
+    public ushort PlayerId
+    {
+        get => ReadUInt16BigEndian(this._data[5..]);
+        set => WriteUInt16BigEndian(this._data[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the class code: base class times 8 plus evolution.
+    /// </summary>
+    public byte ClassCode
+    {
+        get => this._data[7];
+        set => this._data[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the item count.
+    /// </summary>
+    public byte ItemCount
+    {
+        get => this._data[8];
+        set => this._data[8] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="EquippedItemWideRef"/> of the specified index.
+    /// </summary>
+        public EquippedItemWideRef this[int index] => new (this._data[(9 + index * EquippedItemWideRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="PlayerAppearanceWide"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator PlayerAppearanceWideRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="PlayerAppearanceWide"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(PlayerAppearanceWideRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="EquippedItemWideRef"/>.
+    /// </summary>
+    /// <param name="itemsCount">The count of <see cref="EquippedItemWideRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int itemsCount) => itemsCount * EquippedItemWideRef.Length + 9;
+}
+
+
+/// <summary>
+/// Is sent by the server when: A player in the view of a Babylon client put on or took off a piece of gear.
+/// Causes reaction on client side: The client updates the gear of the player.
+/// </summary>
+public readonly ref struct AppearanceChangedWideRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppearanceChangedWideRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AppearanceChangedWideRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AppearanceChangedWideRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AppearanceChangedWideRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x21;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 40;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the player id.
+    /// </summary>
+    public ushort PlayerId
+    {
+        get => ReadUInt16BigEndian(this._data[4..]);
+        set => WriteUInt16BigEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the slot.
+    /// </summary>
+    public byte Slot
+    {
+        get => this._data[6];
+        set => this._data[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the class code of the player, so an evolution shows too.
+    /// </summary>
+    public byte ClassCode
+    {
+        get => this._data[7];
+        set => this._data[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the item data in the item format of the connection, zero filled to 32 bytes; all 0xFF when the slot got empty.
+    /// </summary>
+    public Span<byte> ItemData
+    {
+        get => this._data.Slice(8, 32);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="AppearanceChangedWide"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AppearanceChangedWideRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AppearanceChangedWide"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(AppearanceChangedWideRef packet) => packet._data; 
 }

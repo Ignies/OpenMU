@@ -8054,6 +8054,18 @@ namespace MUnique.OpenMU.GameServer.Properties {
         /// <summary>Gets the localized ShowCharacterListBabylonPlugIn_Description text.</summary>
         public static string ShowCharacterListBabylonPlugIn_Description => ResourceManager.GetString("ShowCharacterListBabylonPlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized NewPlayersInScopeBabylonPlugIn_Name text.</summary>
+        public static string NewPlayersInScopeBabylonPlugIn_Name => ResourceManager.GetString("NewPlayersInScopeBabylonPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized NewPlayersInScopeBabylonPlugIn_Description text.</summary>
+        public static string NewPlayersInScopeBabylonPlugIn_Description => ResourceManager.GetString("NewPlayersInScopeBabylonPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AppearanceChangedBabylonPlugIn_Name text.</summary>
+        public static string AppearanceChangedBabylonPlugIn_Name => ResourceManager.GetString("AppearanceChangedBabylonPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AppearanceChangedBabylonPlugIn_Description text.</summary>
+        public static string AppearanceChangedBabylonPlugIn_Description => ResourceManager.GetString("AppearanceChangedBabylonPlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized ItemSerializerW32_Name text.</summary>
         public static string ItemSerializerW32_Name => ResourceManager.GetString("ItemSerializerW32_Name", resourceCulture)!;
 

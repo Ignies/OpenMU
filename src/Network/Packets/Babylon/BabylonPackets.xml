@@ -21,6 +21,26 @@
         </Field>
       </Fields>
     </Structure>
+    <Structure>
+      <Name>EquippedItemWide</Name>
+      <Description>A piece of gear a player wears, in the W32 item format.</Description>
+      <Length>33</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+          <Description>The inventory slot (0-11 of Season 6, or one of the slots after it).</Description>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+          <Description>The item data in the item format of the connection (see ForkWelcome.ItemFormat), zero filled to 32 bytes.</Description>
+          <Length>32</Length>
+        </Field>
+      </Fields>
+    </Structure>
   </Structures>
   <Packets>
     <Packet>
@@ -192,6 +212,76 @@
           <TypeName>CharacterClassCode</TypeName>
           <Name>Characters</Name>
           <ItemCountField>CharacterCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>20</SubCode>
+      <Name>PlayerAppearanceWide</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Right after the Season 6 packet which adds a player to the view of a Babylon client.</SentWhen>
+      <CausedReaction>The client takes the class of the player from its code and its gear from the wide item data, instead of the 5 bit class and the Season 6 appearance.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+          <Description>The id of the player, as in the Season 6 packet.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>ClassCode</Name>
+          <Description>The class code: base class times 8 plus evolution.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>ItemCount</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Structure[]</Type>
+          <TypeName>EquippedItemWide</TypeName>
+          <Name>Items</Name>
+          <ItemCountField>ItemCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>21</SubCode>
+      <Name>AppearanceChangedWide</Name>
+      <Length>40</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A player in the view of a Babylon client put on or took off a piece of gear.</SentWhen>
+      <CausedReaction>The client updates the gear of the player.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>ClassCode</Name>
+          <Description>The class code of the player, so an evolution shows too.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+          <Description>The item data in the item format of the connection, zero filled to 32 bytes; all 0xFF when the slot got empty.</Description>
+          <Length>32</Length>
         </Field>
       </Fields>
     </Packet>

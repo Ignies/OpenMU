@@ -65,6 +65,23 @@ public class EvolutionRulesTest
     }
 
     /// <summary>
+    /// In the stars mode a total of 1200 maps like a map requirement to 2 stars and level 265, and exactly that
+    /// character meets the fifth evolution: the check is level plus the stars' worth, so 465 is reachable under the
+    /// level cap of 400.
+    /// </summary>
+    [Test]
+    public void StarsFifthEvolutionMatchesTheMapMapping()
+    {
+        var configuration = new ProgressionConfiguration { Mode = ProgressionMode.Stars };
+        var mapped = ProgressionMapping.GetRequirement(1200, configuration);
+
+        Assert.That(mapped, Is.EqualTo(new MapRequirement(265, 0, 2)));
+        Assert.That(EvolutionRules.IsMet(ClassEvolution.Fifth, mapped.Level, 0, mapped.Stars, configuration), Is.True);
+        Assert.That(EvolutionRules.IsMet(ClassEvolution.Fifth, mapped.Level - 5, 0, mapped.Stars, configuration), Is.False);
+        Assert.That(EvolutionRules.IsMet(ClassEvolution.Fifth, 400, 0, 0, configuration), Is.False);
+    }
+
+    /// <summary>
     /// The first three evolutions keep their quests and levels; the rules don't ask for anything.
     /// </summary>
     /// <param name="evolution">The evolution.</param>

@@ -3,6 +3,8 @@
   * [C1 EE 10 - CreateCharacterWide (by client)](C1-EE-10-CreateCharacterWide_by-client.md)
   * [C1 EE 11 - CharacterCreatedWide (by server)](C1-EE-11-CharacterCreatedWide_by-server.md)
   * [C1 EE 12 - CharacterClassCodes (by server)](C1-EE-12-CharacterClassCodes_by-server.md)
+  * [C2 EE 20 - PlayerAppearanceWide (by server)](C2-EE-20-PlayerAppearanceWide_by-server.md)
+  * [C1 EE 21 - AppearanceChangedWide (by server)](C1-EE-21-AppearanceChangedWide_by-server.md)
   * [C1 EE F0 - ForkHello (by client)](C1-EE-F0-ForkHello_by-client.md)
   * [C1 EE F1 - ForkWelcome (by server)](C1-EE-F1-ForkWelcome_by-server.md)
   * [C1 EE F2 - ForkFeaturesChanged (by server)](C1-EE-F2-ForkFeaturesChanged_by-server.md)

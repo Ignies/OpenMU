@@ -47,6 +47,28 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the structure size calculation for EquippedItemWide.
+    /// </summary>
+    [Test]
+    public void EquippedItemWide_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 33;
+        var actualLength = EquippedItemWide.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Slot' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Slot' exceeds structure boundary");
+        
+        // Validate field 'ItemData' boundary
+        Assert.That(1 + 32, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ItemData' exceeds structure boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for ForkHello.
     /// </summary>
     [Test]
@@ -188,5 +210,57 @@ public class PacketStructureTests
         // Field 'CharacterCount' starts at index 4 with size 1
         Assert.That(4, Is.GreaterThanOrEqualTo(0), 
             "Field 'CharacterCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for PlayerAppearanceWide.
+    /// </summary>
+    [Test]
+    public void PlayerAppearanceWide_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'PlayerId' starts at index 5 with size 2
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'PlayerId' has invalid negative index");
+        
+        // Field 'ClassCode' starts at index 7 with size 1
+        Assert.That(7, Is.GreaterThanOrEqualTo(0), 
+            "Field 'ClassCode' has invalid negative index");
+        
+        // Field 'ItemCount' starts at index 8 with size 1
+        Assert.That(8, Is.GreaterThanOrEqualTo(0), 
+            "Field 'ItemCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for AppearanceChangedWide.
+    /// </summary>
+    [Test]
+    public void AppearanceChangedWide_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 40;
+        var actualLength = AppearanceChangedWideRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'PlayerId' boundary
+        Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PlayerId' exceeds packet boundary");
+        
+        // Validate field 'Slot' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Slot' exceeds packet boundary");
+        
+        // Validate field 'ClassCode' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ClassCode' exceeds packet boundary");
+        
+        // Validate field 'ItemData' boundary
+        Assert.That(8 + 32, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ItemData' exceeds packet boundary");
     }
 }
