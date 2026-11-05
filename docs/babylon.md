@@ -53,8 +53,10 @@ Rules:
 | `progression` | The progression core (`src/GameLogic/Progression`): the world's progression setting |
 | `fork_protocol` | The Babylon protocol, wire 1: the `21B01` login, the 0xEE handshake (section "Protocol") |
 | `wire_w32` | The W32 item format for the Babylon client (section "W32") |
-| `class_codes` | The one-byte class code of the Babylon packets (section "Class code") |
+| `class_codes` | The one-byte class code of the Babylon packets (section "Class code"); numbers and helpers in `src/GameLogic/Classes` |
 | `s21_items_all` | Every item of the Season 21 data (update "Add every item of Season 21"); what the Season 6 item format can't carry is defined but inactive |
+| `classes_s21` | The nine classes of Season 21 with all their evolutions (update "Add the classes of Season 21") |
+| `evolutions_45` | The fourth and fifth evolution of the Season 6 classes and their level rules per progression mode |
 
 ## Balance
 
