@@ -8,7 +8,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 
 /// <summary>
-/// Tests the level which a mini game bracket checks, <see cref="MiniGameDefinitionExtensions.GetBracketLevel"/>.
+/// Tests the level which a mini game bracket checks, <see cref="MiniGameDefinitionExtensions.GetBracketLevel(MiniGameDefinition, int, int, short, bool)"/>.
 /// </summary>
 [TestFixture]
 public class MiniGameLevelBracketTest
