@@ -193,135 +193,6 @@ public sealed class ConfigurationWriteOperations(IPersistenceContextProvider per
             cancellationToken).ConfigureAwait(false);
     }
 
-    private static void ValidateReferences(GameConfiguration config, IReadOnlyDictionary<PropertyInfo, object?> values)
-    {
-        foreach (var (property, value) in values.Where(p => p.Value is not null && !ConfigurationPatch.IsScalar(p.Key.PropertyType)))
-        {
-            var type = ConfigurationPatch.IsReferenceCollection(property) ? property.PropertyType.GetGenericArguments()[0] : property.PropertyType;
-            var allowed = GameConfigurationHelper.Enumerables[type](config).Cast<object>().Select(o => o.GetId()).ToHashSet();
-            var references = value is List<object> list ? list : [value!];
-            if (references.Any(o => !allowed.Contains(o.GetId())))
-            {
-                throw new AdminOperationException("References must belong to the active game configuration.", AdminOperationErrorKind.InvalidInput);
-            }
-        }
-    }
-
-    private static string Fingerprint(JsonObject? value, object? item, Type type)
-    {
-        if (value is null)
-        {
-            return Convert.ToHexString(SHA256.HashData("null"u8));
-        }
-
-        var state = value.DeepClone().AsObject();
-        foreach (var property in type.GetProperties().Where(p => p.CanRead && p.GetIndexParameters().Length == 0).OrderBy(p => p.Name, StringComparer.Ordinal))
-        {
-            var field = item is null ? null : property.GetValue(item);
-            if (field is byte[] bytes)
-            {
-                state["$binary:" + property.Name] = Convert.ToHexString(SHA256.HashData(bytes));
-            }
-            else if (property.IsDefined(typeof(MemberOfAggregateAttribute)) && field is IEnumerable children)
-            {
-                state["$children:" + property.Name] = new JsonArray(children.Cast<object>().Select(c => c.GetId().ToString()).Order(StringComparer.Ordinal).Select(id => (JsonNode)JsonValue.Create(id)!).ToArray());
-            }
-            else
-            {
-                // Scalar/reference fields are projected already; other shapes are outside the editable surface.
-            }
-        }
-
-        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(state.ToJsonString())));
-    }
-
-    private static JsonObject SelectFields(JsonObject snapshot, IEnumerable<PropertyInfo> fields)
-    {
-        var result = new JsonObject();
-        foreach (var field in fields.OrderBy(p => p.Name, StringComparer.Ordinal))
-        {
-            result[field.Name] = snapshot[field.Name]?.DeepClone();
-        }
-
-        return result;
-    }
-
-    private static object Candidate(object? item, Type type, Dictionary<PropertyInfo, object?> values)
-    {
-        var candidate = Activator.CreateInstance(type) ?? throw new AdminOperationException("This configuration type cannot be constructed.");
-        if (item is not null)
-        {
-            foreach (var property in type.GetProperties().Where(p => p.CanRead && p.SetMethod?.IsPublic == true && p.GetIndexParameters().Length == 0))
-            {
-                property.SetValue(candidate, property.GetValue(item));
-            }
-        }
-
-        foreach (var (property, value) in values.Where(v => !ConfigurationPatch.IsReferenceCollection(v.Key)))
-        {
-            property.SetValue(candidate, value);
-        }
-
-        ConfigurationPatch.Validate(candidate);
-        return candidate;
-    }
-
-    private static object Find(GameConfiguration config, Type type, Guid id)
-        => GameConfigurationHelper.Enumerables[type](config).Cast<object>().FirstOrDefault(o => o.GetId() == id)
-           ?? throw new AdminOperationException("The configuration object is not part of the active game configuration.", AdminOperationErrorKind.InvalidInput);
-
-    private static (PropertyInfo Property, Type ChildType) Collection(Type type, string name)
-    {
-        var property = type.GetProperty(name);
-        if (property is null || !property.IsDefined(typeof(MemberOfAggregateAttribute)) || !property.PropertyType.IsGenericType || property.PropertyType.GetGenericTypeDefinition() != typeof(ICollection<>))
-        {
-            throw new AdminOperationException("Choose an aggregate ICollection field from config_describe.", AdminOperationErrorKind.InvalidInput);
-        }
-
-        var childType = property.PropertyType.GetGenericArguments()[0];
-        ConfigurationPatch.Resolve(childType.Name);
-        return (property, childType);
-    }
-
-    private static void CheckDeletion(GameConfiguration config, object item, object parent, PropertyInfo owningCollection, Type type)
-    {
-        if (type.GetConstructor(Type.EmptyTypes) is null)
-        {
-            throw new AdminOperationException("This immutable configuration type has no safe reconstruction path. Use the panel to manage it.");
-        }
-
-        var restorable = ConfigurationPatch.Fields(type).Select(p => p.Name).ToHashSet(StringComparer.Ordinal);
-        if (type.GetProperties().Any(p => p.SetMethod?.IsPublic == true && p.Name != "Id" && !restorable.Contains(p.Name) && p.GetValue(item) is not null))
-        {
-            throw new AdminOperationException("The object contains fields outside the safe snapshot. Use the panel to manage it; deleting it here would lose data needed for reversal.");
-        }
-
-        if (type.GetProperties().Where(p => p.IsDefined(typeof(MemberOfAggregateAttribute))).Any(p => p.GetValue(item) is IEnumerable children ? children.Cast<object>().Any() : p.GetValue(item) is not null))
-        {
-            throw new AdminOperationException("The object owns child objects. Remove them in separate reviewed steps before deleting it.");
-        }
-
-        foreach (var (sourceType, enumerate) in GameConfigurationHelper.Enumerables)
-        {
-            foreach (var source in enumerate(config).Cast<object>())
-            {
-                foreach (var property in sourceType.GetProperties().Where(p => p.CanRead && p.GetIndexParameters().Length == 0 && !ConfigurationPatch.IsScalar(p.PropertyType)))
-                {
-                    if ((ReferenceEquals(source, parent) && property.Name == owningCollection.Name) || ReferenceEquals(source, item))
-                    {
-                        continue;
-                    }
-
-                    var value = property.GetValue(source);
-                    if (ReferenceEquals(value, item) || (value is IEnumerable references && references.Cast<object>().Any(v => ReferenceEquals(v, item))))
-                    {
-                        throw new AdminOperationException("The object is still referenced by another configuration object. Remove the reference before deleting it.");
-                    }
-                }
-            }
-        }
-    }
-
     private async ValueTask<JsonObject> ChangeAsync(string operation, string mode, string typeName, Guid id, string? parentType, Guid? parentId, string? collection, string patch, bool apply, string? token, CancellationToken cancellationToken, JsonObject? expected = null, Guid? auditId = null, string? expectedFingerprint = null)
     {
         var actor = await AdminChangeExecution.RequireAsync(executor, settings, AdminRoles.Administrator, cancellationToken).ConfigureAwait(false);
@@ -341,8 +212,8 @@ public sealed class ConfigurationWriteOperations(IPersistenceContextProvider per
         if (parentType is not null && parentId is { } ownerId && collection is not null)
         {
             var ownerType = ConfigurationPatch.Resolve(parentType);
-            parent = Find(config, ownerType, ownerId);
-            (collectionProperty, type) = Collection(ownerType, collection);
+            parent = ConfigurationRules.Find(config, ownerType, ownerId);
+            (collectionProperty, type) = ConfigurationRules.Collection(ownerType, collection);
         }
         else
         {
@@ -355,7 +226,7 @@ public sealed class ConfigurationWriteOperations(IPersistenceContextProvider per
         }
 
         var item = mode == "create" ? null : type == typeof(GameServerDefinition)
-            ? await context.GetByIdAsync<GameServerDefinition>(id, cancellationToken).ConfigureAwait(false) : Find(config, type, id);
+            ? await context.GetByIdAsync<GameServerDefinition>(id, cancellationToken).ConfigureAwait(false) : ConfigurationRules.Find(config, type, id);
         if ((mode != "create" && item is null) || (item is GameServerDefinition server && server.GameConfiguration?.GetId() != configId))
         {
             throw new AdminOperationException("The object is not part of the active game configuration.", AdminOperationErrorKind.InvalidInput);
@@ -368,14 +239,14 @@ public sealed class ConfigurationWriteOperations(IPersistenceContextProvider per
 
         var before = item is null ? null : ConfigurationPatch.Snapshot(item, type);
         if ((expected is not null && expected.Any(pair => !JsonNode.DeepEquals(before?[pair.Key], pair.Value)))
-            || (expectedFingerprint is not null && expectedFingerprint != Fingerprint(before, item, type)))
+            || (expectedFingerprint is not null && expectedFingerprint != ConfigurationRules.Fingerprint(before, item, type)))
         {
             throw new AdminOperationException("The object changed after the recorded change. Revert refused; inspect the current configuration.");
         }
 
         var values = mode == "delete" ? new Dictionary<PropertyInfo, object?>() : await ConfigurationPatch.ConvertAsync(type, ConfigurationPatch.Parse(patch), context, cancellationToken).ConfigureAwait(false);
-        ValidateReferences(config, values);
-        var after = mode == "delete" ? null : ConfigurationPatch.Snapshot(Candidate(item, type, values), type);
+        ConfigurationRules.ValidateReferences(config, values);
+        var after = mode == "delete" ? null : ConfigurationPatch.Snapshot(ConfigurationRules.Candidate(item, type, values), type);
         if (after is not null)
         {
             foreach (var property in ConfigurationPatch.Fields(type).Where(ConfigurationPatch.IsReferenceCollection))
@@ -388,16 +259,16 @@ public sealed class ConfigurationWriteOperations(IPersistenceContextProvider per
 
         if (mode == "delete")
         {
-            CheckDeletion(config, item!, parent!, collectionProperty!, type);
+            ConfigurationRules.CheckDeletion(config, item!, parent!, collectionProperty!, type);
         }
 
         var change = new JsonObject
         {
             ["kind"] = mode, ["type"] = type.Name, ["id"] = id.ToString(),
             ["parentType"] = parentType, ["parentId"] = parentId?.ToString(), ["collection"] = collection,
-            ["beforeFingerprint"] = Fingerprint(before, item, type), ["afterFingerprint"] = Fingerprint(after, item, type),
-            ["before"] = mode == "update" ? SelectFields(before!, values.Keys) : before,
-            ["after"] = mode == "update" ? SelectFields(after!, values.Keys) : after,
+            ["beforeFingerprint"] = ConfigurationRules.Fingerprint(before, item, type), ["afterFingerprint"] = ConfigurationRules.Fingerprint(after, item, type),
+            ["before"] = mode == "update" ? ConfigurationRules.SelectFields(before!, values.Keys) : before,
+            ["after"] = mode == "update" ? ConfigurationRules.SelectFields(after!, values.Keys) : after,
         };
         if (change.ToJsonString().Length > 6500)
         {

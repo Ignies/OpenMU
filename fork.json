@@ -16,6 +16,7 @@
     "fork_protocol",
     "wire_w32",
     "class_codes",
-    "s21_items_all"
+    "s21_items_all",
+    "config_api"
   ]
 }

@@ -242,5 +242,5 @@ internal static class ConfigurationPatch
         && !property.IsDefined(typeof(MUnique.OpenMU.DataModel.Composition.MemberOfAggregateAttribute))
         && IsReference(property.PropertyType.GetGenericArguments()[0]);
 
-    private static bool IsReference(Type type) => GameConfigurationHelper.Enumerables.ContainsKey(type) && type != typeof(PlugInConfiguration);
+    internal static bool IsReference(Type type) => GameConfigurationHelper.Enumerables.ContainsKey(type) && type != typeof(PlugInConfiguration);
 }

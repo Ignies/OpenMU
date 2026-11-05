@@ -385,6 +385,13 @@ internal sealed class Program : IDisposable
             }
 
             builder.Services.AddSingleton(new MUnique.OpenMU.Web.AdminPanel.Operations.AdminAuditSettings { IsDemo = args.Contains("-demo") });
+            if (args.Contains("-demo"))
+            {
+                // The site's configuration editor keeps its history and reverts in the demo, which has no database.
+                builder.Services.AddSingleton<IAdminAuditRepository, TransientAdminAuditRepository>();
+            }
+
+            builder.Services.AddSingleton(new MUnique.OpenMU.Web.AdminPanel.Operations.Site.SiteBridgeOptions(SavesPublishChanges: !args.Contains("-demo")));
             builder.AddAdminPanel(includeMapApp: true);
             builder.Services.AddAdminMcp(builder.Configuration);
         }
@@ -474,6 +481,7 @@ internal sealed class Program : IDisposable
         {
             host.UseAdminMcpProtection();
             host.ConfigureAdminPanel();
+            MUnique.OpenMU.Web.AdminPanel.Operations.Site.SiteBridge.Attach(host.Services);
             host.MapAdminMcp();
         }
 

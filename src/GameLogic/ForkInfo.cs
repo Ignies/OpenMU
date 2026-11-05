@@ -43,6 +43,7 @@ public static class ForkInfo
         "wire_w32",
         "class_codes",
         "s21_items_all",
+        "config_api",
     ];
 
     /// <summary>
