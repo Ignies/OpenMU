@@ -5088,5 +5088,59 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("DiscordIntegrationFeaturePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Extension consume handler.
+        /// </summary>
+        public static string JewelOfExtensionConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("JewelOfExtensionConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repairs a lucky item to its full durability, if it isn't worn down completely..
+        /// </summary>
+        public static string JewelOfExtensionConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("JewelOfExtensionConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewel of Elevation consume handler.
+        /// </summary>
+        public static string JewelOfElevationConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("JewelOfElevationConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gives a lucky item without a harmony option a harmony option..
+        /// </summary>
+        public static string JewelOfElevationConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("JewelOfElevationConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Lucky item wear.
+        /// </summary>
+        public static string LuckyItemWearPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LuckyItemWearPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Equipped lucky items lose a point of durability each time they were worn for the configured interval..
+        /// </summary>
+        public static string LuckyItemWearPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LuckyItemWearPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

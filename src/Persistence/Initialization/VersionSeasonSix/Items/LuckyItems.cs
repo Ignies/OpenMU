@@ -31,6 +31,11 @@ internal class LuckyItems : InitializerBase
     internal const byte TicketExchangeCraftingNumber = 51;
 
     /// <summary>
+    /// The number of the crafting of the lucky item refinery, which the client sends when the player refines a lucky item.
+    /// </summary>
+    internal const byte RefineryCraftingNumber = 52;
+
+    /// <summary>
     /// The level requirement of the lucky armors of the first tier.
     /// </summary>
     private const int FirstTierLevelRequirement = 1;
@@ -158,6 +163,43 @@ internal class LuckyItems : InitializerBase
                 result.Reference = reference;
                 craftingSettings.ResultItems.Add(result);
             }
+        }
+
+        return crafting;
+    }
+
+    /// <summary>
+    /// Creates the crafting of the lucky item refinery, which refines a lucky armor into a jewel of extension or a
+    /// jewel of elevation, see <see cref="LuckyItemRefineryCrafting"/>.
+    /// </summary>
+    /// <returns>The crafting.</returns>
+    internal ItemCrafting CreateRefineryCrafting()
+    {
+        var crafting = this.Context.CreateNew<ItemCrafting>();
+        crafting.Name = LocalizedString.FromResource(() => CraftingNames.LuckyItemRefinery);
+        crafting.Number = RefineryCraftingNumber;
+        crafting.ItemCraftingHandlerClassName = typeof(LuckyItemRefineryCrafting).FullName!;
+        var craftingSettings = this.Context.CreateNew<SimpleCraftingSettings>();
+        crafting.SimpleCraftingSettings = craftingSettings;
+        craftingSettings.SuccessPercent = 100;
+
+        var luckyArmor = this.Context.CreateNew<ItemCraftingRequiredItem>();
+        foreach (var armor in this.GameConfiguration.Items.Where(IsLuckyArmor).OrderBy(item => item.Group).ThenBy(item => item.Number))
+        {
+            luckyArmor.PossibleItems.Add(armor);
+        }
+
+        luckyArmor.MinimumAmount = 1;
+        luckyArmor.MaximumAmount = 1;
+        luckyArmor.SuccessResult = MixResult.Disappear;
+        luckyArmor.FailResult = MixResult.Disappear;
+        craftingSettings.RequiredItems.Add(luckyArmor);
+
+        foreach (var jewelNumber in new short[] { 160, 161 })
+        {
+            var result = this.Context.CreateNew<ItemCraftingResultItem>();
+            result.ItemDefinition = this.GameConfiguration.Items.First(item => item.Group == 14 && item.Number == jewelNumber);
+            craftingSettings.ResultItems.Add(result);
         }
 
         return crafting;

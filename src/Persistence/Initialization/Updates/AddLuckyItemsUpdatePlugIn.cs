@@ -30,7 +30,7 @@ public class AddLuckyItemsUpdatePlugIn : UpdatePlugInBase
     /// <summary>
     /// The plug in description.
     /// </summary>
-    internal const string PlugInDescription = "This update adds the lucky armor sets, the lucky item tickets and the jewels of extension and elevation. David in Elveland exchanges a ticket for a lucky armor which fits the character class. The packages of the in-game shop which contain the tickets are put on sale.";
+    internal const string PlugInDescription = "This update adds the lucky armor sets, the lucky item tickets and the jewels of extension and elevation. David in Elveland exchanges a ticket for a lucky armor which fits the character class, and refines a lucky armor into a jewel of extension or elevation. The packages of the in-game shop which contain the tickets are put on sale.";
 
     /// <summary>
     /// The number of the npc David, who exchanges the lucky item tickets.
@@ -64,6 +64,15 @@ public class AddLuckyItemsUpdatePlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     /// <remarks>
+    /// Version 2 adds David's lucky item refinery.
+    /// </remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 05, 3, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    /// <remarks>
     /// The items get the item rule flags and the item stat profiles, so these have to exist first.
     /// </remarks>
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddItemRuleFlagsPlugIn).GUID, typeof(AddItemStatProfilesUpdatePlugInSeasonSix).GUID];
@@ -82,6 +91,11 @@ public class AddLuckyItemsUpdatePlugIn : UpdatePlugInBase
             if (david.ItemCraftings.All(c => c.Number != LuckyItems.TicketExchangeCraftingNumber))
             {
                 david.ItemCraftings.Add(luckyItems.CreateTicketExchangeCrafting());
+            }
+
+            if (david.ItemCraftings.All(c => c.Number != LuckyItems.RefineryCraftingNumber))
+            {
+                david.ItemCraftings.Add(luckyItems.CreateRefineryCrafting());
             }
         }
 

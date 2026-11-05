@@ -1851,4 +1851,22 @@
   <data name="MediumEliteHealingPotionConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Plugin which handles the medium elite healing potion consumption. It recovers a part of the health immediately.</value>
   </data>
+  <data name="JewelOfExtensionConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Jewel of Extension consume handler</value>
+  </data>
+  <data name="JewelOfExtensionConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Repairs a lucky item to its full durability, if it isn't worn down completely.</value>
+  </data>
+  <data name="JewelOfElevationConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Jewel of Elevation consume handler</value>
+  </data>
+  <data name="JewelOfElevationConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Gives a lucky item without a harmony option a harmony option.</value>
+  </data>
+  <data name="LuckyItemWearPlugIn_Name" xml:space="preserve">
+    <value>Lucky item wear</value>
+  </data>
+  <data name="LuckyItemWearPlugIn_Description" xml:space="preserve">
+    <value>Equipped lucky items lose a point of durability each time they were worn for the configured interval.</value>
+  </data>
 </root>

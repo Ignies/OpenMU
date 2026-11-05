@@ -82,7 +82,9 @@ public class ChaosMixes : InitializerBase
         cherryBlossomSpirit.ItemCraftings.Add(this.CherryBlossomEventCrafting());
 
         var david = this.GameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.CombineLuckyItem);
-        david.ItemCraftings.Add(new LuckyItems(this.Context, this.GameConfiguration).CreateTicketExchangeCrafting());
+        var luckyItems = new LuckyItems(this.Context, this.GameConfiguration);
+        david.ItemCraftings.Add(luckyItems.CreateTicketExchangeCrafting());
+        david.ItemCraftings.Add(luckyItems.CreateRefineryCrafting());
     }
 
     private ItemCrafting ItemLevelUpgradeCrafting(byte craftingNumber, byte targetLevel)

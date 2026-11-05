@@ -245,6 +245,16 @@ public class ItemConstants
     public static ItemIdentifier JewelOfHarmony => new(42, 14);
 
     /// <summary>
+    /// Gets the identifier for the jewel of extension, which repairs lucky items.
+    /// </summary>
+    public static ItemIdentifier JewelOfExtension => new(160, 14);
+
+    /// <summary>
+    /// Gets the identifier for the jewel of elevation, which gives lucky items a harmony option.
+    /// </summary>
+    public static ItemIdentifier JewelOfElevation => new(161, 14);
+
+    /// <summary>
     /// Gets the identifier for the lower refine stone.
     /// </summary>
     public static ItemIdentifier LowerRefineStone => new(43, 14);
