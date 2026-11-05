@@ -89,7 +89,7 @@ missing dependency doesn't stop the creation of a new database.
 ## Maps of the later seasons
 
 A Season 6 server can add the maps which came after Season 6, up to Season 20,
-the gear and the event rules of Season 21 with four optional updates. A new database leaves them pending, so a server
+the gear, the event rules and the progression of Season 21 with five optional updates. A new database leaves them pending, so a server
 changes only when you apply them:
 
 * **Add the maps of the later seasons (Season 21 data)** adds Acheron (with
@@ -130,6 +130,17 @@ changes only when you apply them:
   the red and blue chocolate boxes hold its rings. Each item carries the season
   which introduced it (Season 21 Part 1 where the history doesn't say), so
   Content activation can switch the gear off by season too.
+* **Turn on the progression of the Season 21 maps (stars)** turns on the plugin
+  **Progression (Season 21 maps)** in its stars mode and the reset feature with
+  the star costs (10 stars, level 400, 5,000,000 zen times the star, a Jewel of
+  Life more per star from star 6); reset values you changed stay. The plugin's
+  mode decides how the Season 21 maps play, computed from its settings while
+  the stored rows stay as they are: *Original* keeps the numbers of Season 21;
+  *Normalized* maps each requirement into level 400 plus master level 200 (850
+  becomes 350, 1600 becomes 400 and master level 185) and puts the monsters on
+  the Season 6 curve; *Stars* asks stars (resets) instead of master levels
+  (1000 becomes level 200 and 2 stars), turns master levels off and gives each
+  star stat points, 20 master tree points and a little less experience.
 
 Afterwards, every value can be changed in the game configuration: the warp costs
 and level requirements in the warp list, the entry level in the requirements of

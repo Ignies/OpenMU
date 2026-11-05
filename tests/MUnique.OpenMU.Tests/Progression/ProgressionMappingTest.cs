@@ -189,4 +189,50 @@ public class ProgressionMappingTest
         Assert.That(ProgressionMapping.GetDropLevel(140, configuration), Is.EqualTo(140));
         Assert.That(ProgressionMapping.GetDropLevel(187, off), Is.EqualTo(187));
     }
+
+    /// <summary>
+    /// The inverse of the curve gives back the Season 21 requirement.
+    /// </summary>
+    [Test]
+    public void Season21RequirementIsTheInverse()
+    {
+        var configuration = new ProgressionConfiguration();
+
+        Assert.That(ProgressionMapping.GetSeason21Requirement(190, configuration), Is.EqualTo(400).Within(1e-6));
+        Assert.That(ProgressionMapping.GetSeason21Requirement(400, configuration), Is.EqualTo(1000).Within(1e-6));
+        Assert.That(ProgressionMapping.GetSeason21Requirement(ProgressionMapping.GetPowerLevel(1350, configuration), configuration), Is.EqualTo(1350).Within(1e-6));
+    }
+
+    /// <summary>
+    /// Event brackets: a Season 6 grade checks the capped key, a Season 21 grade the Season 21 total which the key stands
+    /// for; the Season 21 total as key keeps the original check.
+    /// </summary>
+    [Test]
+    public void EventBracketLevel()
+    {
+        var stars = new ProgressionConfiguration { Mode = ProgressionMode.Stars };
+        var normalized = new ProgressionConfiguration { Mode = ProgressionMode.Normalized };
+        var original = new ProgressionConfiguration { Mode = ProgressionMode.Normalized, EventBracketKey = ProgressionLevelKey.Season21Total };
+
+        Assert.That(ProgressionMapping.GetEventBracketLevel(1199, 400, 200, 0, 2, stars), Is.EqualTo(1000));
+        Assert.That(ProgressionMapping.GetEventBracketLevel(400, 400, 200, 0, 2, stars), Is.EqualTo(400));
+        Assert.That(ProgressionMapping.GetEventBracketLevel(400, 400, 50, 0, 3, stars), Is.EqualTo(350));
+        Assert.That(ProgressionMapping.GetEventBracketLevel(int.MaxValue, 400, 400, 185, 0, normalized), Is.EqualTo(1597).Within(3));
+        Assert.That(ProgressionMapping.GetEventBracketLevel(400, 400, 400, 185, 0, normalized), Is.EqualTo(400));
+        Assert.That(ProgressionMapping.GetEventBracketLevel(1199, 400, 400, 600, 0, original), Is.EqualTo(1000));
+    }
+
+    /// <summary>
+    /// The master class grades need a star in the stars mode.
+    /// </summary>
+    [Test]
+    public void MasterGradesNeedAStar()
+    {
+        var stars = new ProgressionConfiguration { Mode = ProgressionMode.Stars };
+
+        Assert.That(ProgressionMapping.MeetsMasterGrade(true, 0, stars), Is.False);
+        Assert.That(ProgressionMapping.MeetsMasterGrade(true, 1, stars), Is.True);
+        Assert.That(ProgressionMapping.MeetsMasterGrade(false, 0, stars), Is.True);
+        Assert.That(ProgressionMapping.MeetsMasterGrade(true, 0, new ProgressionConfiguration { Mode = ProgressionMode.Normalized }), Is.True);
+    }
 }

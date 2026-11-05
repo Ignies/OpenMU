@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.GameLogic.Resets;
 
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
+using MUnique.OpenMU.GameLogic.Progression;
 
 /// <summary>
 /// Applies the stat and point part of a reset, for players and bots alike.
@@ -21,6 +23,8 @@ public static class ResetPointsExtensions
     /// When the stats go back to their base values and the points are replaced, the points of the finished quests are
     /// added again: the quests stay finished and can't be repeated, so without this every reset would lose them
     /// (80 points in Season 6).
+    /// In the stars mode of the progression, a reset is a star: its points are levels' worth of the class's points per
+    /// level (<see cref="StarRules.GetPointsForStar"/>), and it gives master tree points.
     /// </remarks>
     public static void ApplyResetPoints(this Player player, ResetConfiguration configuration, ResetProgression progression)
     {
@@ -36,15 +40,28 @@ public static class ResetPointsExtensions
                 .ForEach(s => attributes[s.Attribute] = s.BaseValue);
         }
 
+        var stars = ProgressionFeaturePlugIn.GetWorld(player.GameContext) is { Configuration: { Mode: ProgressionMode.Stars } starConfiguration }
+            ? starConfiguration
+            : null;
+        var pointsPerLevel = (int)(characterClass.StatAttributes.FirstOrDefault(s => s.Attribute == Stats.PointsPerLevelUp)?.BaseValue ?? 0);
+        if (stars is not null)
+        {
+            character.MasterLevelUpPoints += StarRules.GetTreePoints(1, stars);
+        }
+
         if (!configuration.ReplacePointsPerReset)
         {
-            character.LevelUpPoints += progression.PointsForReset;
+            character.LevelUpPoints += stars is null
+                ? progression.PointsForReset
+                : StarRules.GetPointsForStar(progression.NextResetCount, pointsPerLevel, stars);
             return;
         }
 
         var questPoints = configuration.ResetStats
             ? character.GetEarnedLevelUpPoints(player.GameContext.Configuration.Monsters.SelectMany(m => m.Quests))
             : 0;
-        character.LevelUpPoints = progression.TotalPointsAfterReset + questPoints;
+        character.LevelUpPoints = questPoints + (stars is null
+            ? progression.TotalPointsAfterReset
+            : StarRules.GetTotalStarPoints(progression.NextResetCount, pointsPerLevel, stars));
     }
 }

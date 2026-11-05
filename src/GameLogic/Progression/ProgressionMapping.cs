@@ -61,6 +61,71 @@ public static class ProgressionMapping
     }
 
     /// <summary>
+    /// Gets the Season 21 requirement R of a power level T, the inverse of <see cref="GetPowerLevel"/>.
+    /// </summary>
+    /// <param name="powerLevel">The power level.</param>
+    /// <param name="configuration">The configuration.</param>
+    /// <returns>The Season 21 total level.</returns>
+    public static double GetSeason21Requirement(double powerLevel, ProgressionConfiguration configuration)
+    {
+        var anchor400 = (double)Math.Clamp(configuration.Anchor400, 150, 250);
+        var anchor1000 = (double)Math.Clamp(configuration.Anchor1000, 300, 400);
+        var exponent = Math.Log(anchor400 / anchor1000) / Math.Log(0.4);
+        return 1000 * Math.Pow(Math.Max(0, powerLevel) / anchor1000, 1 / exponent);
+    }
+
+    /// <summary>
+    /// Gets the level which an event bracket checks for a character.
+    /// </summary>
+    /// <param name="bracketMaximum">The maximum level of the bracket.</param>
+    /// <param name="maximumLevel">The maximum normal level of the game configuration.</param>
+    /// <param name="level">The normal level.</param>
+    /// <param name="masterLevel">The master level.</param>
+    /// <param name="stars">The stars.</param>
+    /// <param name="configuration">The configuration.</param>
+    /// <returns>The level to check.</returns>
+    /// <remarks>
+    /// A bracket within the maximum level is a Season 6 grade: it checks the key, capped at the level cap. A bracket above
+    /// it is a Season 21 grade (total levels up to 1600 and more): it checks the Season 21 total level which the key
+    /// stands for, so a character who may enter Scorched Canyon (R 1000) gets its grade. Season 21 total as key keeps
+    /// the original check.
+    /// </remarks>
+    public static int GetEventBracketLevel(int bracketMaximum, int maximumLevel, int level, int masterLevel, int stars, ProgressionConfiguration configuration)
+    {
+        var key = GetEventBracketKey(configuration);
+        var isSeason21Grade = bracketMaximum > maximumLevel;
+        if (key == ProgressionLevelKey.Season21Total)
+        {
+            return isSeason21Grade ? level + masterLevel : level;
+        }
+
+        if (!isSeason21Grade)
+        {
+            return StarRules.GetRequirementLevel(key, level, masterLevel, stars, configuration);
+        }
+
+        var powerLevel = key switch
+        {
+            ProgressionLevelKey.LevelAndMasterLevel => level + masterLevel,
+            ProgressionLevelKey.PowerLevel => StarRules.GetPowerLevel(level, stars, configuration),
+            _ => level,
+        };
+        return (int)Math.Round(GetSeason21Requirement(powerLevel, configuration));
+    }
+
+    /// <summary>
+    /// Determines whether a character may enter a master class grade of an event: in the stars mode it needs a star.
+    /// </summary>
+    /// <param name="requiresMasterClass">If set to <c>true</c>, the grade requires the master class.</param>
+    /// <param name="stars">The stars.</param>
+    /// <param name="configuration">The configuration.</param>
+    /// <returns><c>true</c>, if the character may enter.</returns>
+    public static bool MeetsMasterGrade(bool requiresMasterClass, int stars, ProgressionConfiguration configuration)
+    {
+        return !requiresMasterClass || configuration.Mode != ProgressionMode.Stars || stars > 0;
+    }
+
+    /// <summary>
     /// Gets the entry requirement of a Season 21 map set.
     /// </summary>
     /// <param name="season21Requirement">The Season 21 total-level requirement.</param>

@@ -38,8 +38,26 @@ Its rewards are the progression configuration's: stat points of 100 levels of th
 
 A reset which resets the stats keeps the level-up points of the finished quests (`ResetPointsExtensions`).
 
-## Not wired yet
+## In the running world
 
-The configuration and the rules are in place; applying them to the running world (level caps, warp list and gates,
-monster attributes, entry checks by stars, star rewards in the reset, the drop cap, events, items, experience) follows
-in later changes.
+`ProgressionFeaturePlugIn` applies the mode without changing a stored row, so switching back to Original restores
+every number:
+
+- **Season 21 maps** are the maps with a total-level requirement (`Stats.TotalLevel`). `ProgressionWorld` computes
+  their requirement (level, master level, stars) and warp zen; the map check (`TryGetRequirementError`), the warp list
+  and the gates ask it instead of the stored total level.
+- **Monsters** which spawn only on Season 21 maps are normalized per set (maps sharing monsters, or with the same
+  safezone map and requirement), at the median requirement of the set's maps. Spawned monsters get multipliers on
+  their attributes, shared per definition, so a mode change reaches the living ones too.
+- **Drops** roll with the normalized level, capped (`DefaultDropGenerator`).
+- **Level caps** are set on the running game configuration (400 and master 200 or 0); Original puts the stored ones
+  back. The experience tables are built for the stored caps, so the progression only lowers a cap.
+- **Events**: a Season 6 grade checks level plus master level (Normalized) or the power level E (Stars), capped at 400;
+  a Season 21 grade (above the level cap) checks the Season 21 total the key stands for (the inverse of T). In Stars a
+  master class grade needs a star.
+- **Stars**: a reset needs the third class; it gives the class's points per level times 100 (50 after star 5), the
+  quest points, and 20 master tree points. Each star takes 6% experience (down to 40%).
+- Without a configuration (no row yet) the plugin does nothing. `AddProgressionUpdatePlugIn` turns it on in the stars
+  mode and the reset feature with the star costs, keeping operator values.
+
+Not yet applied: the power bonus against monsters and the power level for item requirements.

@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions;
 
 using System.Diagnostics.CodeAnalysis;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Progression;
 
 /// <summary>
 /// Extension methods for <see cref="GameMapDefinition"/>.
@@ -28,6 +30,14 @@ public static class GameMapDefinitionExtensions
             return true;
         }
 
+        var progressionRequirement = default(MapRequirement);
+        var hasProgression = ProgressionFeaturePlugIn.GetWorld(player.GameContext)?.TryGetRequirement(gameMapDefinition, out progressionRequirement) is true;
+        if (hasProgression && GetMissingAttribute(player, progressionRequirement) is { } missing)
+        {
+            errorMessage = player.GetLocalizedMessage(PlayerMessage.MissingMapRequirement, missing.Description);
+            return true;
+        }
+
         if (gameMapDefinition.MapRequirements is null || !gameMapDefinition.MapRequirements.Any())
         {
             return false;
@@ -35,6 +45,11 @@ public static class GameMapDefinitionExtensions
 
         foreach (var requirement in gameMapDefinition.MapRequirements)
         {
+            if (hasProgression && requirement.Attribute == Stats.TotalLevel)
+            {
+                continue;
+            }
+
             if (player.Attributes is null || player.Attributes[requirement.Attribute] < requirement.MinimumValue)
             {
                 errorMessage = player.GetLocalizedMessage(PlayerMessage.MissingMapRequirement, requirement.Attribute?.Description);
@@ -43,6 +58,25 @@ public static class GameMapDefinitionExtensions
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Gets the first attribute in which the player misses a progression requirement of a Season 21 map.
+    /// </summary>
+    private static AttributeSystem.AttributeDefinition? GetMissingAttribute(Player player, MapRequirement requirement)
+    {
+        var attributes = player.Attributes;
+        if ((attributes?[Stats.Level] ?? 0) < requirement.Level)
+        {
+            return Stats.Level;
+        }
+
+        if ((attributes?[Stats.MasterLevel] ?? 0) < requirement.MasterLevel)
+        {
+            return Stats.MasterLevel;
+        }
+
+        return (attributes?[Stats.Resets] ?? 0) < requirement.Stars ? Stats.Resets : null;
     }
 
     /// <summary>
@@ -74,4 +108,4 @@ public static class GameMapDefinitionExtensions
         return gameMapDefinition.ExitGates?.FirstOrDefault(g => g.IsSpawnGate && terrain.SafezoneMap[g.X1, g.Y1])
                ?? gameMapDefinition.ExitGates?.FirstOrDefault(g => g.IsSpawnGate);
     }
-}
+}

@@ -1018,4 +1018,7 @@ Inventarerweiterungen: {18}</value>
   <data name="MapIsNotActive" xml:space="preserve">
     <value>Diese Karte ist nicht verfügbar.</value>
   </data>
+  <data name="ResetRequiresMasterClass" xml:space="preserve">
+    <value>Ein Stern erfordert die dritte Klasse.</value>
+  </data>
 </root>

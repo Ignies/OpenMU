@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.Progression;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Login;
 using MUnique.OpenMU.GameLogic.Views.NPC;
@@ -73,6 +74,13 @@ public class ResetCharacterAction
         if (configuration.ResetLimit > 0 && resetProgression.NextResetCount > configuration.ResetLimit)
         {
             await this.ShowMessageAsync(nameof(PlayerMessage.MaximumResetsReached), configuration.ResetLimit).ConfigureAwait(false);
+            return;
+        }
+
+        if (ProgressionFeaturePlugIn.GetWorld(this._player.GameContext) is { Configuration: { Mode: ProgressionMode.Stars, StarRequiresMasterClass: true } }
+            && this._player.SelectedCharacter.CharacterClass?.IsMasterClass is not true)
+        {
+            await this.ShowMessageAsync(nameof(PlayerMessage.ResetRequiresMasterClass)).ConfigureAwait(false);
             return;
         }
 

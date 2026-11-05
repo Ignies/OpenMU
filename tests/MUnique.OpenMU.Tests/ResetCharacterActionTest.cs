@@ -164,6 +164,40 @@ public class ResetCharacterActionTest
         Assert.That(questState.LastFinishedQuest?.Number, Is.EqualTo(6));
     }
 
+    /// <summary>
+    /// Verifies that in the stars mode a reset is a star: 100 levels' worth of the class's points, 20 master tree points,
+    /// and that it needs the third class.
+    /// </summary>
+    [Test]
+    public async Task StarGivesClassPointsAndTreePointsAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.Attributes![Stats.Level] = 400;
+        player.Money = 1_000;
+        var characterClass = player.SelectedCharacter!.CharacterClass!;
+        characterClass.StatAttributes.Add(new StatAttributeDefinition(Stats.PointsPerLevelUp, 5, false));
+        Mock.Get(player.GameContext.Configuration).Setup(c => c.Monsters).Returns(new List<MonsterDefinition>());
+        Mock.Get(player.SelectedCharacter).Setup(c => c.QuestStates).Returns(new List<CharacterQuestState>());
+
+        var requiredItem = new ItemDefinition { Name = "Jewel of Creation", Group = 14, Number = 22, Width = 1, Height = 1 };
+        var configuration = this.CreateConfiguration(requiredItem);
+        configuration.ResetStats = true;
+        player.GameContext.FeaturePlugIns.AddPlugIn(new ResetFeaturePlugIn { Configuration = configuration }, true);
+        player.GameContext.FeaturePlugIns.AddPlugIn(new GameLogic.Progression.ProgressionFeaturePlugIn { Configuration = new() { Mode = GameLogic.Progression.ProgressionMode.Stars } }, true);
+        await AddRequiredItemsAsync(player, requiredItem, 2).ConfigureAwait(false);
+        var action = new ResetCharacterAction(player, await CreateResetNpcAsync(player).ConfigureAwait(false));
+
+        await action.ResetCharacterAsync().ConfigureAwait(false);
+        Assert.That((int)player.Attributes[Stats.Resets], Is.Zero, "not the third class");
+
+        characterClass.IsMasterClass = true;
+        await action.ResetCharacterAsync().ConfigureAwait(false);
+
+        Assert.That((int)player.Attributes[Stats.Resets], Is.EqualTo(1));
+        Assert.That(player.SelectedCharacter.LevelUpPoints, Is.EqualTo(500));
+        Assert.That(player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(20));
+    }
+
     private static CharacterQuestState SetUpFinishedLegacyQuests(Player player)
     {
         var quests = new List<QuestDefinition>

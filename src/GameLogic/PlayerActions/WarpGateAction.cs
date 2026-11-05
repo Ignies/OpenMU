@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions;
 using System.ComponentModel;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Progression;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 
@@ -69,7 +70,7 @@ public class WarpGateAction
             return false;
         }
 
-        var requirement = player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(enterGate.LevelRequirement);
+        var requirement = player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(enterGate.GetLevelRequirement(player.GameContext));
         if (requirement > player.Attributes![Stats.Level])
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.LevelTooLowToEnterMap)).ConfigureAwait(false);
@@ -114,4 +115,4 @@ public class WarpGateAction
 
     private bool IsYInRange(Point currentPosition, Gate gate, byte inaccuracy) => currentPosition.Y >= gate.Y1 - inaccuracy
                                                                                   && currentPosition.Y <= gate.Y2 + inaccuracy;
-}
+}

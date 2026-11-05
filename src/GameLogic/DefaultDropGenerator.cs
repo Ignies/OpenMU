@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Progression;
 using Nito.AsyncEx;
 
 /// <summary>
@@ -41,6 +42,11 @@ public class DefaultDropGenerator : IDropGenerator
     private readonly byte _excellentItemDropLevelDelta;
 
     /// <summary>
+    /// The monster level of the current drop when the progression of the Season 21 maps decides it.
+    /// </summary>
+    private int? _dropLevel;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="DefaultDropGenerator" /> class.
     /// </summary>
     /// <param name="config">The configuration.</param>
@@ -73,6 +79,7 @@ public class DefaultDropGenerator : IDropGenerator
         using var l = await this._lock.LockAsync().ConfigureAwait(false);
         this._guaranteedDropGroups.Clear();
         this._chanceDropGroups.Clear();
+        this._dropLevel = ProgressionFeaturePlugIn.GetWorld(player.GameContext)?.GetDropLevel(monster);
 
         if (monster.ObjectKind == NpcObjectKind.Destructible)
         {
@@ -95,6 +102,7 @@ public class DefaultDropGenerator : IDropGenerator
 
         this._guaranteedDropGroups.Clear();
         this._chanceDropGroups.Clear();
+        this._dropLevel = null;
         return (droppedItems ?? Enumerable.Empty<Item>(), money > 0 ? money : null);
     }
 
@@ -240,14 +248,15 @@ public class DefaultDropGenerator : IDropGenerator
         return character.GetQuestDropItemGroups();
     }
 
-    private static bool IsGroupRelevant(MonsterDefinition monsterDefinition, DropItemGroup group)
+    private bool IsGroupRelevant(MonsterDefinition monsterDefinition, DropItemGroup group)
     {
-        if (group.MinimumMonsterLevel.HasValue && monsterDefinition[Stats.Level] < group.MinimumMonsterLevel)
+        var monsterLevel = this.GetMonsterLevel(monsterDefinition);
+        if (group.MinimumMonsterLevel.HasValue && monsterLevel < group.MinimumMonsterLevel)
         {
             return false;
         }
 
-        if (group.MaximumMonsterLevel.HasValue && monsterDefinition[Stats.Level] > group.MaximumMonsterLevel)
+        if (group.MaximumMonsterLevel.HasValue && monsterLevel > group.MaximumMonsterLevel)
         {
             return false;
         }
@@ -340,7 +349,7 @@ public class DefaultDropGenerator : IDropGenerator
     {
         foreach (var group in groups)
         {
-            if (monster is not null && !IsGroupRelevant(monster, group))
+            if (monster is not null && !this.IsGroupRelevant(monster, group))
             {
                 continue;
             }
@@ -540,7 +549,7 @@ public class DefaultDropGenerator : IDropGenerator
             return this.GenerateItemDrop(selectedGroup, selectedGroup.PossibleItems!);
         }
 
-        var monsterLevel = (int)monster[Stats.Level];
+        var monsterLevel = this.GetMonsterLevel(monster);
         var isJewel = selectedGroup.ItemType == SpecialItemType.Jewel;
 
         var filteredPossibleItems = selectedGroup.PossibleItems!
@@ -553,7 +562,7 @@ public class DefaultDropGenerator : IDropGenerator
 
     private Item? GenerateSpecialItem(MonsterDefinition monster, DropItemGroup selectedGroup)
     {
-        var monsterLevel = (int)monster[Stats.Level];
+        var monsterLevel = this.GetMonsterLevel(monster);
         return selectedGroup.ItemType switch
         {
             SpecialItemType.Ancient => this.GenerateRandomAncient(),
@@ -563,6 +572,8 @@ public class DefaultDropGenerator : IDropGenerator
             _ => null,
         };
     }
+
+    private int GetMonsterLevel(MonsterDefinition monster) => this._dropLevel ?? (int)monster[Stats.Level];
 
     private DropItemGroup? SelectRandomGroup(IEnumerable<DropItemGroup> groups, double totalChance)
     {
@@ -602,4 +613,4 @@ public class DefaultDropGenerator : IDropGenerator
                        && (it.MaximumSockets > 0) == isSocketItem
                  select it).ToList();
     }
-}
+}

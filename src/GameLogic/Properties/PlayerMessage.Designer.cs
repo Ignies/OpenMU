@@ -3189,5 +3189,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ItemBoxRequiresLevel", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A star requires the third class..
+        /// </summary>
+        public static string ResetRequiresMasterClass {
+            get {
+                return ResourceManager.GetString("ResetRequiresMasterClass", resourceCulture);
+            }
+        }
     }
 }

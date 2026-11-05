@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Progression;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Interfaces;
 
@@ -49,7 +50,7 @@ public class WarpAction
     {
         errorMessage = null;
 
-        var requirement = player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warpInfo.LevelRequirement);
+        var requirement = player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warpInfo.GetLevelRequirement(player.GameContext));
         if (requirement > player.Attributes?[Stats.Level])
         {
             errorMessage = $"You need to be level {requirement} in order to warp";
@@ -71,7 +72,7 @@ public class WarpAction
         // Money check should be last to avoid getting zen when other checks failed
         if (!this.CheckMoneyRequirement(player, warpInfo))
         {
-            errorMessage = $"You need {warpInfo.Costs} in order to warp";
+            errorMessage = $"You need {warpInfo.GetCosts(player.GameContext)} in order to warp";
             return false;
         }
 
@@ -80,11 +81,11 @@ public class WarpAction
 
     private bool CheckMoneyRequirement(Player player, WarpInfo warpInfo)
     {
-        if (player.TryRemoveMoney(warpInfo.Costs))
+        if (player.TryRemoveMoney(warpInfo.GetCosts(player.GameContext)))
         {
             return true;
         }
 
         return false;
     }
-}
+}

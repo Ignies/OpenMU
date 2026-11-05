@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Progression;
 
 /// <summary>
 /// Extensions regarding the <see cref="MiniGameDefinition"/>s.
@@ -53,6 +54,12 @@ public static class MiniGameDefinitionExtensions
             return false;
         }
 
+        if (ProgressionFeaturePlugIn.GetWorld(player.GameContext) is { } world
+            && !ProgressionMapping.MeetsMasterGrade(definition.RequiresMasterClass, (int)(player.Attributes?[Stats.Resets] ?? 0), world.Configuration))
+        {
+            return false;
+        }
+
         var isSpecialCharacter = player.SelectedCharacter!.IsSpecialCharacter();
         var level = definition.GetBracketLevel(player, isSpecialCharacter);
         if (isSpecialCharacter)
@@ -76,6 +83,17 @@ public static class MiniGameDefinitionExtensions
     public static int GetBracketLevel(this MiniGameDefinition definition, Player player, bool isSpecialCharacter)
     {
         var attributes = player.Attributes;
+        if (ProgressionFeaturePlugIn.GetWorld(player.GameContext) is { } world)
+        {
+            return ProgressionMapping.GetEventBracketLevel(
+                isSpecialCharacter ? definition.MaximumSpecialCharacterLevel : definition.MaximumCharacterLevel,
+                player.GameContext.Configuration.MaximumLevel,
+                (int)(attributes?[Stats.Level] ?? 0),
+                (int)(attributes?[Stats.MasterLevel] ?? 0),
+                (int)(attributes?[Stats.Resets] ?? 0),
+                world.Configuration);
+        }
+
         return definition.GetBracketLevel(
             (int)(attributes?[Stats.Level] ?? 0),
             (int)(attributes?[Stats.MasterLevel] ?? 0),

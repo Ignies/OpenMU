@@ -14,6 +14,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.Progression;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
 
@@ -2242,7 +2243,7 @@ internal sealed class BotNavigator : AsyncDisposable
         // Select the identity tier before applying access requirements. Otherwise an exact entry
         // which is too high-level could incorrectly fall through to an easier same-number entry.
         var plainLevel = (int)(this._player.Attributes?[Stats.Level] ?? 1);
-        return mapWarps.Where(w => character.GetEffectiveMoveLevelRequirement(w.LevelRequirement) <= plainLevel);
+        return mapWarps.Where(w => character.GetEffectiveMoveLevelRequirement(w.GetLevelRequirement(this._player.GameContext)) <= plainLevel);
     }
 
     /// <summary>
@@ -2260,7 +2261,7 @@ internal sealed class BotNavigator : AsyncDisposable
             this._warpFloorConfiguration = configuration;
             this._warpFloorClass = characterClass;
             this._minWarpLevel = configuration.WarpList
-                .Select(warp => this._player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warp.LevelRequirement) ?? warp.LevelRequirement)
+                .Select(warp => this._player.SelectedCharacter?.GetEffectiveMoveLevelRequirement(warp.GetLevelRequirement(this._player.GameContext)) ?? warp.LevelRequirement)
                 .DefaultIfEmpty(FallbackMinWarpLevel)
                 .Min();
         }
