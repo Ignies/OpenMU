@@ -43,7 +43,7 @@ public class UpdateCharacterStatsPlugIn : IUpdateCharacterStatsPlugIn
             this._player.Position.Y,
             (byte)this._player.SelectedCharacter!.CurrentMap!.Number.ToUnsigned(),
             (ulong)this._player.SelectedCharacter.Experience,
-            (ulong)this._player.GameServerContext.ExperienceTable[(int)this._player.Attributes![Stats.Level] + 1],
+            (ulong)this._player.GameServerContext.ExperienceTable.GetExperienceOfNextLevel((int)this._player.Attributes![Stats.Level]),
             (ushort)Math.Max(0, this._player.SelectedCharacter.LevelUpPoints),
             (ushort)this._player.Attributes[Stats.BaseStrength],
             (ushort)this._player.Attributes[Stats.BaseAgility],

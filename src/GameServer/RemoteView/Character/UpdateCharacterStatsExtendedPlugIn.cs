@@ -43,7 +43,7 @@ public class UpdateCharacterStatsExtendedPlugIn : IUpdateCharacterStatsPlugIn
         var character = this._player.SelectedCharacter!;
         var attributes = this._player.Attributes!;
         var map = character.CurrentMap!;
-        var experienceForNextLevel = this._player.GameServerContext.ExperienceTable[(int)attributes[Stats.Level] + 1];
+        var experienceForNextLevel = this._player.GameServerContext.ExperienceTable.GetExperienceOfNextLevel((int)attributes[Stats.Level]);
 
         // Written by hand instead of with the generated sender, to clear the packet first: its unused
         // byte 89 would keep what an earlier packet left in the reused output buffer.
