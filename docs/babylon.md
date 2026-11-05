@@ -105,7 +105,16 @@ C1 08 EE F2  ForkFeaturesChanged (server)  11 u8      ClassEncoding: 0 Season 6,
 7 GL, 8 RW, 9 SL, 10 GC, 11 LW, 12 LM, 13 IK, 14 AL, 15 CS), evolution 0-4 = 1st to 5th class, 5-7 and bit 7
 reserved. The Season 6 classes keep their `CharacterClass.Number` (base << 2 | generation); every other class and
 evolution has the number 128 + its code. MG, DL and RF have no 2nd class: their master class is evolution 2.
-Helper: `GameServer/RemoteView/Babylon/ClassCodes.cs` (`ToCode`, `FromCode`).
+Helper: `GameServer/RemoteView/Babylon/ClassCodes.cs` (`ToCode`, `FromCode`), on top of `GameLogic/Classes/ClassCodes.cs`.
+
+Character packets (characters range 10-1F):
+
+- `C1 EE 10 CreateCharacterWide` (client, 15): name (10) at 4, class code at 14. Creates any class the world has;
+  failures answer with the Season 6 creation failure.
+- `C1 EE 11 CharacterCreatedWide` (server, 16): name at 4, slot at 14, class code at 15.
+- `C1 EE 12 CharacterClassCodes` (server): count at 4, then (slot, class code) pairs; sent right after the
+  Season 6 character list, which a Babylon client gets with every character (a Season 6 client gets no
+  character of a new class, and a 4th or 5th evolution as its 3rd).
 
 ### W32
 

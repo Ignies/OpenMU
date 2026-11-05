@@ -13,6 +13,8 @@ using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Character;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameServer.MessageHandler.Babylon;
+using MUnique.OpenMU.Network.Packets.Babylon;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
@@ -175,6 +177,21 @@ public class Season21ClassesInGameTest
         await new EvolveChatCommandPlugIn().HandleCommandAsync(player, "/evolve").ConfigureAwait(false);
 
         Assert.That(character.CharacterClass?.Number, Is.EqualTo((byte)CharacterClassNumber.ImpactCrusader));
+    }
+
+    /// <summary>
+    /// The Babylon client creates a character by its class code.
+    /// </summary>
+    [Test]
+    public async ValueTask BabylonClientCreatesByClassCodeAsync()
+    {
+        var player = await this.CreatePlayerAtCharacterSelectionAsync().ConfigureAwait(false);
+        var packet = new byte[CreateCharacterWide.Length];
+        _ = new CreateCharacterWide(packet) { Name = "Alchemist", ClassCode = ClassCodes.GetCode(BaseClassCode.Alchemist, ClassEvolution.First) };
+
+        await new CreateCharacterWideHandlerPlugIn().HandlePacketAsync(player, packet).ConfigureAwait(false);
+
+        Assert.That(player.Account!.Characters.Single().CharacterClass?.Number, Is.EqualTo((byte)CharacterClassNumber.Alchemist));
     }
 
     private CharacterClass Class(CharacterClassNumber number) => this._gameConfiguration.CharacterClasses.Single(c => c.Number == (byte)number);

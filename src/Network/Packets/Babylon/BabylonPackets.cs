@@ -16,6 +16,47 @@ using System;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 /// <summary>
+/// The class code of a character of the character list..
+/// </summary>
+public readonly struct CharacterClassCode
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CharacterClassCode"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CharacterClassCode(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 2;
+
+    /// <summary>
+    /// Gets or sets the slot of the character, as in the character list.
+    /// </summary>
+    public byte SlotIndex
+    {
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the class code: base class times 8 plus evolution.
+    /// </summary>
+    public byte ClassCode
+    {
+        get => this._data.Span[1];
+        set => this._data.Span[1] = value;
+    }
+}
+
+
+/// <summary>
 /// Is sent by the client when: After the login succeeded, when the client logged in with the version of the Babylon client.
 /// Causes reaction on server side: The server answers with the ForkWelcome which tells the client the wire format and the features which are active.
 /// </summary>
@@ -333,4 +374,296 @@ public readonly struct ForkFeaturesChanged
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(ForkFeaturesChanged packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: The player creates a character of any class, on the character selection screen.
+/// Causes reaction on server side: The server creates the character and answers with the CharacterCreatedWide, or with the character creation failure of Season 6.
+/// </summary>
+public readonly struct CreateCharacterWide
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateCharacterWide"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CreateCharacterWide(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreateCharacterWide"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CreateCharacterWide(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x10;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 15;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(4, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the class code: base class times 8 plus evolution.
+    /// </summary>
+    public byte ClassCode
+    {
+        get => this._data.Span[14];
+        set => this._data.Span[14] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CreateCharacterWide"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CreateCharacterWide(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CreateCharacterWide"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CreateCharacterWide packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the server created a character which the Babylon client asked for.
+/// Causes reaction on client side: The client shows the new character in its slot.
+/// </summary>
+public readonly struct CharacterCreatedWide
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CharacterCreatedWide"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CharacterCreatedWide(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CharacterCreatedWide"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CharacterCreatedWide(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x11;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 16;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the name.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.Span.ExtractString(4, 10, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 10).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the slot index.
+    /// </summary>
+    public byte SlotIndex
+    {
+        get => this._data.Span[14];
+        set => this._data.Span[14] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the class code: base class times 8 plus evolution.
+    /// </summary>
+    public byte ClassCode
+    {
+        get => this._data.Span[15];
+        set => this._data.Span[15] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CharacterCreatedWide"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CharacterCreatedWide(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CharacterCreatedWide"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CharacterCreatedWide packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: Right after the character list, to a Babylon client.
+/// Causes reaction on client side: The client takes the class of each character from its code instead of the 5 bits of the Season 6 appearance.
+/// </summary>
+public readonly struct CharacterClassCodes
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CharacterClassCodes"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CharacterClassCodes(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CharacterClassCodes"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CharacterClassCodes(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x12;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the character count.
+    /// </summary>
+    public byte CharacterCount
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="CharacterClassCode"/> of the specified index.
+    /// </summary>
+        public CharacterClassCode this[int index] => new (this._data.Slice(5 + index * CharacterClassCode.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="CharacterClassCodes"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CharacterClassCodes(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CharacterClassCodes"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(CharacterClassCodes packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="CharacterClassCode"/>.
+    /// </summary>
+    /// <param name="charactersCount">The count of <see cref="CharacterClassCode"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int charactersCount) => charactersCount * CharacterClassCode.Length + 5;
 }

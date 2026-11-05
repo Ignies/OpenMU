@@ -43,12 +43,32 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
         }
 
         var unlockFlags = CreateUnlockFlags(account);
-        await this.SendCharacterListAsync(connection, account, unlockFlags).ConfigureAwait(false);
+        var characters = account.Characters.Where(this.IsShown).OrderBy(c => c.CharacterSlot).ToList();
+        await this.SendCharacterListAsync(connection, account, characters, unlockFlags).ConfigureAwait(false);
         if (unlockFlags > CharacterCreationUnlockFlags.None)
         {
             await connection.SendCharacterClassCreationUnlockAsync(unlockFlags).ConfigureAwait(false);
         }
+
+        await this.OnCharacterListSentAsync(connection, characters).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Determines whether the list shows the character. A Season 6 client gets no character of a class which it doesn't
+    /// know (<see cref="ClassCodes.GetSeason6Number"/>).
+    /// </summary>
+    /// <param name="character">The character.</param>
+    /// <returns><c>true</c>, if the character is in the list.</returns>
+    protected virtual bool IsShown(Character character)
+        => character.CharacterClass is null || ClassCodes.GetSeason6Number(character.CharacterClass.Number) is not null;
+
+    /// <summary>
+    /// Called after the character list was sent, e.g. to send more about the characters.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="characters">The characters of the list, in slot order.</param>
+    /// <returns>The task.</returns>
+    protected virtual ValueTask OnCharacterListSentAsync(IConnection connection, IReadOnlyList<Character> characters) => ValueTask.CompletedTask;
 
     private static CharacterCreationUnlockFlags CreateUnlockFlags(Account account)
     {
@@ -60,13 +80,9 @@ public class ShowCharacterListPlugIn : IShowCharacterListPlugIn
         return (CharacterCreationUnlockFlags)result;
     }
 
-    private async ValueTask SendCharacterListAsync(IConnection connection, Account account, CharacterCreationUnlockFlags unlockFlags)
+    private async ValueTask SendCharacterListAsync(IConnection connection, Account account, IReadOnlyList<Character> characters, CharacterCreationUnlockFlags unlockFlags)
     {
         // The positions are written by index, so both loops go through the same list in slot order.
-        var characters = account.Characters
-            .Where(c => c.CharacterClass is null || ClassCodes.GetSeason6Number(c.CharacterClass.Number) is not null)
-            .OrderBy(c => c.CharacterSlot)
-            .ToList();
         var guildPositions = new GuildPosition?[characters.Count];
         int i = 0;
         foreach (var character in characters)

@@ -2,6 +2,25 @@
 <PacketDefinitions xmlns="http://www.munique.net/OpenMU/PacketDefinitions">
   <Description>This file contains the packet definitions of the Babylon protocol: packets of the Ignies/OpenMU fork, exchanged only with the Babylon client after it announced the fork protocol. All of them use the head code 0xEE (0xFB is the ping relay of the Babylon proxy) and a sub code; the sub code ranges are reserved per system (see docs/babylon.md).</Description>
   <Structures>
+    <Structure>
+      <Name>CharacterClassCode</Name>
+      <Description>The class code of a character of the character list.</Description>
+      <Length>2</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>SlotIndex</Name>
+          <Description>The slot of the character, as in the character list.</Description>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>Byte</Type>
+          <Name>ClassCode</Name>
+          <Description>The class code: base class times 8 plus evolution.</Description>
+        </Field>
+      </Fields>
+    </Structure>
   </Structures>
   <Packets>
     <Packet>
@@ -97,6 +116,82 @@
           <Type>IntegerLittleEndian</Type>
           <Name>ActiveFeatures</Name>
           <Description>The features which are active from now on.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>10</SubCode>
+      <Name>CreateCharacterWide</Name>
+      <Length>15</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player creates a character of any class, on the character selection screen.</SentWhen>
+      <CausedReaction>The server creates the character and answers with the CharacterCreatedWide, or with the character creation failure of Season 6.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>Byte</Type>
+          <Name>ClassCode</Name>
+          <Description>The class code: base class times 8 plus evolution.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>11</SubCode>
+      <Name>CharacterCreatedWide</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the server created a character which the Babylon client asked for.</SentWhen>
+      <CausedReaction>The client shows the new character in its slot.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>Byte</Type>
+          <Name>SlotIndex</Name>
+        </Field>
+        <Field>
+          <Index>15</Index>
+          <Type>Byte</Type>
+          <Name>ClassCode</Name>
+          <Description>The class code: base class times 8 plus evolution.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>12</SubCode>
+      <Name>CharacterClassCodes</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Right after the character list, to a Babylon client.</SentWhen>
+      <CausedReaction>The client takes the class of each character from its code instead of the 5 bits of the Season 6 appearance.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>CharacterCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>CharacterClassCode</TypeName>
+          <Name>Characters</Name>
+          <ItemCountField>CharacterCount</ItemCountField>
         </Field>
       </Fields>
     </Packet>

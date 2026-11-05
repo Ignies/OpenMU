@@ -25,6 +25,28 @@ public class PacketStructureTests
 {
 
     /// <summary>
+    /// Tests the structure size calculation for CharacterClassCode.
+    /// </summary>
+    [Test]
+    public void CharacterClassCode_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 2;
+        var actualLength = CharacterClassCode.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'SlotIndex' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SlotIndex' exceeds structure boundary");
+        
+        // Validate field 'ClassCode' boundary
+        Assert.That(1 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ClassCode' exceeds structure boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for ForkHello.
     /// </summary>
     [Test]
@@ -104,5 +126,67 @@ public class PacketStructureTests
         // Validate field 'ActiveFeatures' boundary
         Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'ActiveFeatures' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for CreateCharacterWide.
+    /// </summary>
+    [Test]
+    public void CreateCharacterWide_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 15;
+        var actualLength = CreateCharacterWideRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Name' boundary
+        Assert.That(4 + 10, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Name' exceeds packet boundary");
+        
+        // Validate field 'ClassCode' boundary
+        Assert.That(14 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ClassCode' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for CharacterCreatedWide.
+    /// </summary>
+    [Test]
+    public void CharacterCreatedWide_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 16;
+        var actualLength = CharacterCreatedWideRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Name' boundary
+        Assert.That(4 + 10, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Name' exceeds packet boundary");
+        
+        // Validate field 'SlotIndex' boundary
+        Assert.That(14 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SlotIndex' exceeds packet boundary");
+        
+        // Validate field 'ClassCode' boundary
+        Assert.That(15 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ClassCode' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for CharacterClassCodes.
+    /// </summary>
+    [Test]
+    public void CharacterClassCodes_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'CharacterCount' starts at index 4 with size 1
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'CharacterCount' has invalid negative index");
     }
 }

@@ -8036,6 +8036,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         /// <summary>Gets the localized ForkWelcomePlugIn_Description text.</summary>
         public static string ForkWelcomePlugIn_Description => ResourceManager.GetString("ForkWelcomePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized CreateCharacterWideHandlerPlugIn_Name text.</summary>
+        public static string CreateCharacterWideHandlerPlugIn_Name => ResourceManager.GetString("CreateCharacterWideHandlerPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized CreateCharacterWideHandlerPlugIn_Description text.</summary>
+        public static string CreateCharacterWideHandlerPlugIn_Description => ResourceManager.GetString("CreateCharacterWideHandlerPlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized ShowCreatedCharacterWidePlugIn_Name text.</summary>
+        public static string ShowCreatedCharacterWidePlugIn_Name => ResourceManager.GetString("ShowCreatedCharacterWidePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ShowCreatedCharacterWidePlugIn_Description text.</summary>
+        public static string ShowCreatedCharacterWidePlugIn_Description => ResourceManager.GetString("ShowCreatedCharacterWidePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized ShowCharacterListBabylonPlugIn_Name text.</summary>
+        public static string ShowCharacterListBabylonPlugIn_Name => ResourceManager.GetString("ShowCharacterListBabylonPlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ShowCharacterListBabylonPlugIn_Description text.</summary>
+        public static string ShowCharacterListBabylonPlugIn_Description => ResourceManager.GetString("ShowCharacterListBabylonPlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized ItemSerializerW32_Name text.</summary>
         public static string ItemSerializerW32_Name => ResourceManager.GetString("ItemSerializerW32_Name", resourceCulture)!;
 

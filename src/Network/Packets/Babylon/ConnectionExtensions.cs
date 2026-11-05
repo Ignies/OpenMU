@@ -124,4 +124,66 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CreateCharacterWide" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="name">The name.</param>
+    /// <param name="classCode">The class code: base class times 8 plus evolution.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player creates a character of any class, on the character selection screen.
+    /// Causes reaction on server side: The server creates the character and answers with the CharacterCreatedWide, or with the character creation failure of Season 6.
+    /// </remarks>
+    public static async ValueTask SendCreateCharacterWideAsync(this IConnection? connection, string @name, byte @classCode)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CreateCharacterWideRef.Length;
+            var packet = new CreateCharacterWideRef(connection.Output.GetSpan(length)[..length]);
+            packet.Name = @name;
+            packet.ClassCode = @classCode;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="CharacterCreatedWide" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="name">The name.</param>
+    /// <param name="slotIndex">The slot index.</param>
+    /// <param name="classCode">The class code: base class times 8 plus evolution.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the server created a character which the Babylon client asked for.
+    /// Causes reaction on client side: The client shows the new character in its slot.
+    /// </remarks>
+    public static async ValueTask SendCharacterCreatedWideAsync(this IConnection? connection, string @name, byte @slotIndex, byte @classCode)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = CharacterCreatedWideRef.Length;
+            var packet = new CharacterCreatedWideRef(connection.Output.GetSpan(length)[..length]);
+            packet.Name = @name;
+            packet.SlotIndex = @slotIndex;
+            packet.ClassCode = @classCode;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

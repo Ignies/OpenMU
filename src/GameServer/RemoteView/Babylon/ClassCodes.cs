@@ -14,6 +14,8 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Babylon;
 /// The Season 6 classes keep their <see cref="DataModel.Configuration.CharacterClass.Number"/>; every other class
 /// and evolution has the number <see cref="NewClassNumberOffset"/> + its code, so stored characters never change.
 /// Magic Gladiator, Dark Lord and Rage Fighter have no 2nd class, so their master class is the 3rd evolution.
+/// The numbering itself is <see cref="GameLogic.Classes.ClassCodes"/>; this is its wire side, which refuses what the
+/// protocol can't carry.
 /// </remarks>
 public static class ClassCodes
 {
@@ -25,25 +27,7 @@ public static class ClassCodes
     /// <summary>
     /// The class number of the class code 0; the numbers below are the Season 6 ones.
     /// </summary>
-    public const byte NewClassNumberOffset = 128;
-
-    private const int Season6NumberLimit = 28;
-
-    private const int EvolutionBits = 3;
-
-    private const int EvolutionMask = (1 << EvolutionBits) - 1;
-
-    private const int MaximumCode = NewClassNumberOffset - 1;
-
-    private const int MagicGladiatorBase = 3;
-
-    private const int DarkLordBase = 4;
-
-    private const int RageFighterBase = 6;
-
-    private const int Season6BaseLimit = 7;
-
-    private const int MasterEvolution = 2;
+    public const byte NewClassNumberOffset = GameLogic.Classes.ClassCodes.ForkNumberOffset;
 
     /// <summary>
     /// Gets the class code of a class number.
@@ -53,24 +37,14 @@ public static class ClassCodes
     /// <exception cref="ArgumentOutOfRangeException">The number belongs to no class.</exception>
     public static byte ToCode(byte classNumber)
     {
-        if (classNumber >= NewClassNumberOffset)
+        if (GameLogic.Classes.ClassCodes.ToCode(classNumber) is { } code)
         {
-            return (byte)(classNumber - NewClassNumberOffset);
+            return code;
         }
 
-        if (classNumber >= Season6NumberLimit)
-        {
-            throw new ArgumentOutOfRangeException(nameof(classNumber), classNumber, "The number belongs to no class.");
-        }
-
-        var evolution = (classNumber & 0b11) switch
-        {
-            0 => 0,
-            2 => 1,
-            _ => MasterEvolution,
-        };
-
-        return (byte)(((classNumber >> 2) << EvolutionBits) | evolution);
+        return classNumber >= NewClassNumberOffset
+            ? (byte)(classNumber - NewClassNumberOffset)
+            : throw new ArgumentOutOfRangeException(nameof(classNumber), classNumber, "The number belongs to no class.");
     }
 
     /// <summary>
@@ -81,25 +55,11 @@ public static class ClassCodes
     /// <exception cref="ArgumentOutOfRangeException">The code has the reserved bit 7 set.</exception>
     public static byte FromCode(byte classCode)
     {
-        if (classCode > MaximumCode)
+        if (classCode >= NewClassNumberOffset)
         {
             throw new ArgumentOutOfRangeException(nameof(classCode), classCode, "Bit 7 of a class code is reserved.");
         }
 
-        var baseClass = classCode >> EvolutionBits;
-        var evolution = classCode & EvolutionMask;
-        var skipsSecond = baseClass is MagicGladiatorBase or DarkLordBase or RageFighterBase;
-        int? generation = (evolution, skipsSecond) switch
-        {
-            (0, _) => 0,
-            (1, false) => 2,
-            (MasterEvolution, false) => 3,
-            (MasterEvolution, true) => 1,
-            _ => null,
-        };
-
-        return baseClass < Season6BaseLimit && generation is { } g
-            ? (byte)((baseClass << 2) | g)
-            : (byte)(NewClassNumberOffset + classCode);
+        return GameLogic.Classes.ClassCodes.FromCode(classCode) ?? (byte)(NewClassNumberOffset + classCode);
     }
 }

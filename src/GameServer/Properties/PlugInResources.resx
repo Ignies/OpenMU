@@ -2807,4 +2807,22 @@
   <data name="PlayerShopBuyRequestResultW32PlugIn_Description" xml:space="preserve">
     <value>Shows the result of a player shop purchase to the Babylon client, in the extended packet whose item has the W32 size.</value>
   </data>
+  <data name="CreateCharacterWideHandlerPlugIn_Name" xml:space="preserve">
+    <value>Create Character (Babylon)</value>
+  </data>
+  <data name="CreateCharacterWideHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the character creation of the Babylon client, which names the class by its class code, so it can create every class of Season 21.</value>
+  </data>
+  <data name="ShowCreatedCharacterWidePlugIn_Name" xml:space="preserve">
+    <value>Show Created Character (Babylon)</value>
+  </data>
+  <data name="ShowCreatedCharacterWidePlugIn_Description" xml:space="preserve">
+    <value>Shows a created character to the Babylon client with its class code.</value>
+  </data>
+  <data name="ShowCharacterListBabylonPlugIn_Name" xml:space="preserve">
+    <value>Show Character List (Babylon)</value>
+  </data>
+  <data name="ShowCharacterListBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows every character of the account to the Babylon client, followed by the class code of each.</value>
+  </data>
 </root>
