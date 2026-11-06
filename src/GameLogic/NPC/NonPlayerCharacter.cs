@@ -105,6 +105,7 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
             }
         }
 
+        spawnPoint ??= this.GetAnyValidSpawnPoint(this.SpawnArea);
         if (spawnPoint == null)
         {
             throw new InvalidOperationException("No valid spawn point found. Spawn area might not contain valid points.");
@@ -276,6 +277,27 @@ public class NonPlayerCharacter : AsyncDisposable, IObservable, IRotatable, ILoc
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Picks one of the valid points of the area, for areas where random tries keep missing their few valid tiles.
+    /// </summary>
+    private Point? GetAnyValidSpawnPoint(MonsterSpawnArea spawnArea)
+    {
+        var validPoints = new List<Point>();
+        for (var x = Math.Min(spawnArea.X1, spawnArea.X2); x <= Math.Max(spawnArea.X1, spawnArea.X2); x++)
+        {
+            for (var y = Math.Min(spawnArea.Y1, spawnArea.Y2); y <= Math.Max(spawnArea.Y1, spawnArea.Y2); y++)
+            {
+                var point = new Point((byte)x, (byte)y);
+                if (this.IsValidSpawnPoint(point))
+                {
+                    validPoints.Add(point);
+                }
+            }
+        }
+
+        return validPoints.Count > 0 ? validPoints[Rand.NextInt(0, validPoints.Count)] : null;
     }
 
     private bool IsValidSpawnPoint(Point spawnPoint)
