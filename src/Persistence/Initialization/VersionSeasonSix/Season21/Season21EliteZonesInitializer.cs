@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.EliteZones;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -22,6 +23,11 @@ internal class Season21EliteZonesInitializer
     /// The first number of the spawn areas of the zones; the maps update numbers its spawns from 10 up.
     /// </summary>
     private const short FirstSpawnNumber = 2000;
+
+    /// <summary>
+    /// The first number of the spawn areas of the flags.
+    /// </summary>
+    private const short FirstFlagSpawnNumber = 2100;
 
     /// <summary>
     /// The offset of the tile data in a terrain file, behind its header.
@@ -76,6 +82,7 @@ internal class Season21EliteZonesInitializer
             }
         }
 
+        this.PlaceFlags();
         this.Configure();
     }
 
@@ -180,6 +187,15 @@ internal class Season21EliteZonesInitializer
         }
     }
 
+    private void PlaceFlags()
+    {
+        var number = FirstFlagSpawnNumber;
+        foreach (var (map, npc, x, y) in Season21EliteZoneData.Flags)
+        {
+            Season21NpcSpawns.Place(this._context, this._gameConfiguration, number++, map, npc, LocalizedString.FromResource(() => MonsterNames.EliteZoneFlag), x, y, Direction.Undefined);
+        }
+    }
+
     private void Configure()
     {
         var configuration = Season21PlugInConfigurations.GetOrCreate<EliteZoneConfiguration>(this._context, this._gameConfiguration, typeof(EliteZonesFeaturePlugIn).GUID, out var plugIn);
@@ -190,10 +206,23 @@ internal class Season21EliteZonesInitializer
 
         var maps = this._gameConfiguration.Maps.Where(m => m.Discriminator == 0).Select(m => m.Number).ToHashSet();
         var missing = CreateZones(maps).Where(z => !configuration.Zones.Any(c => c.MapNumber == z.MapNumber && c.Element == z.Element)).ToList();
-        if (missing.Count > 0)
+        var changed = false;
+        if (configuration.Debuffs.Count == 0)
+        {
+            configuration.Debuffs.AddRange(Season21EliteZoneData.CreateDebuffs());
+            changed = true;
+        }
+
+        if (configuration.DropLimits.Count == 0)
+        {
+            configuration.DropLimits.AddRange(Season21EliteZoneData.CreateDropLimits());
+            changed = true;
+        }
+
+        if (missing.Count > 0 || changed)
         {
             // The first application turns the feature on; later ones leave the operator's switch alone.
-            plugIn.IsActive |= configuration.Zones.Count == 0;
+            plugIn.IsActive |= configuration.Zones.Count == 0 && missing.Count > 0;
             configuration.Zones.AddRange(missing);
             plugIn.SetConfiguration(configuration, null);
         }

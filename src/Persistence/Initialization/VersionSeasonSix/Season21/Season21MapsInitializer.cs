@@ -72,6 +72,25 @@ internal class Season21MapsInitializer
     }
 
     /// <summary>
+    /// Creates the definition of a passive NPC.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="number">The number.</param>
+    /// <param name="name">The name.</param>
+    /// <param name="introducedIn">The version which introduced it.</param>
+    /// <returns>The definition, not yet added to the configuration.</returns>
+    internal static MonsterDefinition CreateNpc(IContext context, short number, LocalizedString name, GameVersion introducedIn)
+    {
+        var npc = context.CreateNew<MonsterDefinition>();
+        npc.SetGuid(number);
+        npc.Number = number;
+        npc.Designation = name;
+        npc.IntroducedIn = introducedIn;
+        npc.ObjectKind = NpcObjectKind.PassiveNpc;
+        return npc;
+    }
+
+    /// <summary>
     /// Creates the monster definition of a row of the data.
     /// </summary>
     /// <param name="context">The context.</param>
@@ -141,13 +160,7 @@ internal class Season21MapsInitializer
 
         foreach (var row in set.Npcs.Where(row => this._gameConfiguration.Monsters.All(m => m.Number != row.Number)))
         {
-            var npc = this._context.CreateNew<MonsterDefinition>();
-            npc.SetGuid(row.Number);
-            npc.Number = row.Number;
-            npc.Designation = row.Name;
-            npc.IntroducedIn = set.IntroducedIn;
-            npc.ObjectKind = NpcObjectKind.PassiveNpc;
-            this._gameConfiguration.Monsters.Add(npc);
+            this._gameConfiguration.Monsters.Add(CreateNpc(this._context, row.Number, row.Name, set.IntroducedIn));
         }
     }
 

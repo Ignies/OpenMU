@@ -1022,4 +1022,6 @@
   <data name="EliteShadowMasterOfDoom" xml:space="preserve"><value>(Elite) Shadow Master of Doom</value></data>
   <data name="EliteNapinOfDoom" xml:space="preserve"><value>(Elite) Napin of Doom</value></data>
   <data name="EliteSapiQueenOfDoom" xml:space="preserve"><value>(Elite) Sapi Queen of Doom</value></data>
+  <data name="PriestJames" xml:space="preserve"><value>Priest James</value></data>
+  <data name="EliteZoneFlag" xml:space="preserve"><value>Elite Zone Flag</value></data>
 </root>

@@ -126,4 +126,101 @@ internal static class Season21EliteZoneData
         (231, 83, 93), (232, 82, 93), (233, 81, 92), (234, 78, 92), (235, 78, 92), (236, 78, 91),
         (237, 78, 90), (238, 78, 90), (239, 85, 89),
     ];
+
+    /// <summary>
+    /// Gets the Elite Zone Flags (838, 866, 925) at the entrances, from the spawn files of the data. Ignis is left out:
+    /// its file copies the flags of Kanturu Underground.
+    /// </summary>
+    public static IReadOnlyList<(byte Map, short Npc, byte X, byte Y)> Flags { get; } =
+    [
+        (130, 838, 62, 219),
+        (130, 838, 87, 235),
+        (130, 838, 89, 210),
+        (130, 838, 77, 197),
+        (130, 838, 170, 195),
+        (130, 838, 154, 225),
+        (130, 838, 214, 214),
+        (130, 838, 155, 28),
+        (130, 838, 135, 42),
+        (130, 838, 113, 24),
+        (130, 838, 226, 120),
+        (130, 838, 207, 122),
+        (130, 838, 230, 90),
+        (130, 838, 48, 86),
+        (130, 838, 29, 111),
+        (130, 838, 31, 80),
+        (131, 838, 205, 141),
+        (131, 838, 205, 219),
+        (131, 838, 38, 198),
+        (131, 838, 42, 117),
+        (131, 838, 62, 30),
+        (132, 866, 55, 66),
+        (132, 866, 79, 203),
+        (132, 866, 179, 49),
+        (132, 866, 178, 205),
+        (132, 866, 215, 117),
+        (137, 838, 40, 38),
+        (137, 838, 18, 215),
+        (137, 838, 124, 10),
+        (137, 838, 225, 212),
+        (137, 838, 235, 11),
+        (140, 925, 50, 42),
+        (140, 925, 214, 218),
+        (140, 925, 92, 113),
+        (140, 925, 50, 215),
+        (140, 925, 225, 29),
+        (141, 925, 154, 219),
+        (141, 925, 25, 198),
+        (141, 925, 191, 14),
+        (141, 925, 242, 158),
+        (141, 925, 60, 18),
+        (142, 925, 213, 58),
+        (142, 925, 213, 51),
+        (142, 925, 209, 200),
+        (142, 925, 208, 193),
+        (142, 925, 118, 40),
+        (142, 925, 124, 40),
+        (142, 925, 40, 114),
+        (142, 925, 40, 120),
+        (142, 925, 102, 229),
+        (142, 925, 102, 223),
+    ];
+
+    /// <summary>
+    /// Creates the debuffs of the elites from <c>Monster/EliteMonster.txt</c>: its five blocks are the elements fire to darkness;
+    /// bleeding 17 % of the hit a second up to 12,000, poisoning 2-3 % of the maximum health a second, 13 seconds;
+    /// attack and attack speed down 10, defense down 20 %, 15 seconds; every hit (rate 100).
+    /// </summary>
+    /// <returns>The debuffs.</returns>
+    public static List<EliteDebuff> CreateDebuffs() =>
+    [
+        Bleeding(EliteZoneElement.Fire), Decrease(EliteZoneElement.Fire, EliteDebuffKind.DecreaseAttack, 10),
+        Poisoning(EliteZoneElement.Water), Decrease(EliteZoneElement.Water, EliteDebuffKind.DecreaseAttack, 10),
+        Bleeding(EliteZoneElement.Earth), Decrease(EliteZoneElement.Earth, EliteDebuffKind.DecreaseAttackSpeed, 10),
+        Poisoning(EliteZoneElement.Wind), Decrease(EliteZoneElement.Wind, EliteDebuffKind.DecreaseDefense, 20),
+        Bleeding(EliteZoneElement.Darkness), Decrease(EliteZoneElement.Darkness, EliteDebuffKind.DecreaseAttackSpeed, 10),
+    ];
+
+    /// <summary>
+    /// Creates the weekly drop limits from <c>Item/ItemDropLimit.xml</c> (item index = group * 512 + number): Garuda's
+    /// Flame and Sealed Armor Fragment 5, Guardian Elite Option Conversion Fragment, Golden Crest, Elite Guardian Upgrade
+    /// Stone and Jewel of Harmony 10.
+    /// </summary>
+    /// <returns>The limits.</returns>
+    public static List<EliteDropLimit> CreateDropLimits() =>
+    [
+        Limit(7122, 5), Limit(7639, 5), Limit(7637, 10), Limit(7124, 10), Limit(7636, 10), Limit(7210, 10),
+    ];
+
+    private static EliteDebuff Bleeding(EliteZoneElement element)
+        => new() { Element = element, Kind = EliteDebuffKind.Bleeding, Value = 17, MaximumValue = 12000, Seconds = 13 };
+
+    private static EliteDebuff Poisoning(EliteZoneElement element)
+        => new() { Element = element, Kind = EliteDebuffKind.Poisoning, Value = 2, MaximumValue = 3, Seconds = 13 };
+
+    private static EliteDebuff Decrease(EliteZoneElement element, EliteDebuffKind kind, int value)
+        => new() { Element = element, Kind = kind, Value = value, Seconds = 15 };
+
+    private static EliteDropLimit Limit(int index, int maximum)
+        => new() { ItemGroup = (byte)(index / 512), ItemNumber = (short)(index % 512), MaximumPerWeek = maximum };
 }

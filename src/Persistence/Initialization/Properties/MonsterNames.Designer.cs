@@ -4430,5 +4430,19 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("EliteSapiQueenOfDoom", resourceCulture);
             }
         }
+
+        /// <summary>Gets PriestJames from the configuration name resources.</summary>
+        public static string PriestJames {
+            get {
+                return ResourceManager.GetString("PriestJames", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteZoneFlag from the configuration name resources.</summary>
+        public static string EliteZoneFlag {
+            get {
+                return ResourceManager.GetString("EliteZoneFlag", resourceCulture);
+            }
+        }
     }
 }

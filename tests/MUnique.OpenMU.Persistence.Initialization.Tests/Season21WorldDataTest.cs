@@ -43,7 +43,7 @@ internal class Season21WorldDataTest
         {
             var map = gameConfiguration.Maps.Single(m => m.Number == group.Key);
             var terrain = new GameMapTerrain(map);
-            var elites = map.MonsterSpawns.Where(s => s.MonsterDefinition!.Designation.ValueInNeutralLanguage.Contains("Elite", StringComparison.OrdinalIgnoreCase)).ToList();
+            var elites = map.MonsterSpawns.Where(s => s.MonsterDefinition!.ObjectKind == NpcObjectKind.Monster && s.MonsterDefinition.Designation.ValueInNeutralLanguage.Contains("Elite", StringComparison.OrdinalIgnoreCase)).ToList();
             Assert.That(elites, Is.Not.Empty, $"Map {group.Key} has elites.");
             foreach (var spawn in elites)
             {
@@ -57,6 +57,12 @@ internal class Season21WorldDataTest
         Assert.That(new GameMapTerrain(karutan).WalkMap[226, 54], Is.True, "The zone is open.");
         Assert.That(gameConfiguration.Maps.Single(m => m.Number == CrimsonIcarus).MonsterSpawns.Where(s => s.MonsterDefinition!.Number is 864 or 865).Sum(s => s.Quantity), Is.EqualTo(30), "No more elites spread over the map.");
         Assert.That(gameConfiguration.Monsters.Select(m => m.Number), Does.Contain((short)914).And.Contain((short)968).And.Contain((short)974));
+
+        Assert.That(configuration.Debuffs, Has.Count.EqualTo(10), "Two debuffs per element (EliteMonster.txt).");
+        Assert.That(configuration.Debuffs.Single(d => d.Element == EliteZoneElement.Wind && d.Kind == EliteDebuffKind.DecreaseDefense).Value, Is.EqualTo(20));
+        Assert.That(configuration.DropLimits.Single(l => l.ItemGroup == 14 && l.ItemNumber == 42).MaximumPerWeek, Is.EqualTo(10), "Jewel of Harmony (7210).");
+        Assert.That(karutan.MonsterSpawns.Count(s => s.MonsterDefinition!.Number == 925), Is.EqualTo(10), "The ten Elite Zone Flags.");
+        Assert.That(gameConfiguration.Monsters.Single(m => m.Number == 925).ObjectKind, Is.EqualTo(NpcObjectKind.PassiveNpc));
     }
 
     /// <summary>
@@ -84,6 +90,13 @@ internal class Season21WorldDataTest
         Assert.That(configuration.Bosses.Select(b => b.Name), Is.EquivalentTo(new[] { "Medusa", "Silvester", "Magriffy", "Ferea", "Nix", "GodOfDarkness" }));
         Assert.That((configuration.RespawnMinimum, configuration.RespawnRandom), Is.EqualTo((TimeSpan.FromHours(18), TimeSpan.FromHours(6))));
         Assert.That(configuration.Bosses.SelectMany(b => b.Stages).Select(s => s.MonsterNumber), Has.All.Matches<short>(n => gameConfiguration.Monsters.Any(m => m.Number == n)));
+
+        var medusa = configuration.Bosses.Single(b => b.Name == "Medusa");
+        Assert.That(medusa.Grounds, Has.Count.EqualTo(4), "The four grounds of BossFightSystem.xml.");
+        Assert.That(configuration.Bosses.Single(b => b.Name == "GodOfDarkness").Stages[^1].Abilities.Select(a => a.Name), Is.EquivalentTo(new[] { "Flame", "Darkness" }));
+        var nixBoss = configuration.Bosses.Single(b => b.Name == "Nix");
+        Assert.That(gameConfiguration.Items.Any(i => i.Group == nixBoss.EntryItemGroup && i.Number == nixBoss.EntryItemNumber), Is.True, "The Spirit Nixie's Shard is in the catalog.");
+        Assert.That(gameConfiguration.Maps.Single(m => m.Number == 51).MonsterSpawns.Any(s => s.MonsterDefinition!.Number == nixBoss.EntryItemNpcNumber), Is.True, "Priest James stands in Elbeland.");
 
         var world = new ProgressionWorld(gameConfiguration, new ProgressionConfiguration { Mode = ProgressionMode.Normalized });
         Assert.That(world.TryGetMonster(nix, out var source, out var normalized), Is.True, "Nix is normalized with Nixie Lake.");

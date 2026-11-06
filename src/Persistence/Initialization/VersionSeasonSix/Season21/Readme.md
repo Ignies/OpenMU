@@ -97,12 +97,17 @@ Two more optional updates, both after the maps:
   Twisted Karutan's zones are walled in on the server terrain of the data but walkable on the terrain of the Season
   21 client (its tiles carry 0x0800 there): the update opens those 1,347 tiles, and its 45 elites spawn back on them.
   Arenil Temple (no published zones), Old Kethotum (no elites) and Aquilas Temple (not shipped) have none.
+  The update also places the Elite Zone Flags of the spawn files (not on Ignis, whose file copies Kanturu
+  Underground's) and sets the debuffs (`EliteMonster.txt`) and weekly drop limits (`ItemDropLimit.xml`) when the
+  configuration has none.
 * `AddSeason21FieldBossesUpdatePlugIn` (`Season21FieldBossesInitializer`, `Season21FieldBossData`): Medusa 561,
   Lord of Ferea 734 and its crystal orb 735, the God of Darkness 790-794 from `Monster.xml` (experience level as
   everywhere; Medusa keeps level 175 on its Season 6 map). Each boss gets a spawn area which only the plugin uses
   (`ManuallyForEvent`, so Lord Silvester and Core Magriffy stop spawning as plain monsters and the progression
   normalizes the bosses with their map), and its item bag (`EventItemBag` 106, 168, 191, 293, 309, 310): one drop
   group per section with a chance of 1, so every section drops one item. Items the catalog lacks are left out.
+  It places Priest James (725) in Elbeland and Loren Market, who hands out the Spirit Nixie's Shard which Nix's
+  statue takes, and fills in the grounds, special skills and entry item of a boss an operator configured without them.
 
 ## Evolution quests
 

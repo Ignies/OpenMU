@@ -120,6 +120,16 @@ internal static class Season21FieldBossData
     ];
 
     /// <summary>
+    /// Gets Priest James (725), who hands out the Spirit Nixie's Shard, at his places of the spawn files of the data
+    /// (Elbeland, Loren Market).
+    /// </summary>
+    public static IReadOnlyList<(byte Map, short Npc, byte X, byte Y, Direction Direction)> Npcs { get; } =
+    [
+        (51, 725, 32, 239, Direction.West),
+        (79, 725, 215, 56, Direction.South),
+    ];
+
+    /// <summary>
     /// Gets the spawn areas of the boss monsters. They spawn manually by the field bosses plugin; the areas place them
     /// in their map's set, so the progression normalizes them with it.
     /// </summary>
@@ -156,6 +166,13 @@ internal static class Season21FieldBossData
             Name = "Medusa",
             MapNumber = 56,
             Stages = [Stage(561, 53, 108, [Summon(560, 7, 50, 103, 57, 114)])],
+            Grounds =
+            [
+                new FieldBossGround { Name = "Ground 1", X = 181, Y = 119 },
+                new FieldBossGround { Name = "Ground 2", X = 130, Y = 167 },
+                new FieldBossGround { Name = "Ground 3", X = 53, Y = 108 },
+                new FieldBossGround { Name = "Ground 4", X = 152, Y = 15 },
+            ],
         },
         new()
         {
@@ -183,6 +200,11 @@ internal static class Season21FieldBossData
                     MonsterNumber = 734,
                     X = 31,
                     Y = 120,
+                    Abilities =
+                    [
+                        Strike("Whirlwind", 3, 80, 30),
+                        Strike("Land mine", 2, 95, 20),
+                    ],
                     Phases =
                     [
                         FereaPhase(90, 1, 2, 2),
@@ -198,6 +220,10 @@ internal static class Season21FieldBossData
             Name = "Nix",
             MapNumber = 113,
             EntryNpcNumber = 748,
+            EntryItemGroup = 14,
+            EntryItemNumber = 390,
+            EntryItemNpcNumber = 725,
+            EntryItemPrice = 1_000_000,
             BattleMinutes = 30,
             Arena = new FieldBossArena { X1 = 14, Y1 = 202, X2 = 47, Y2 = 236, EntryX = 24, EntryY = 228, ClosesWhenEngaged = true },
             Stages = [Stage(746, 30, 218)],
@@ -210,15 +236,18 @@ internal static class Season21FieldBossData
             Arena = new FieldBossArena { X1 = 174, Y1 = 8, X2 = 194, Y2 = 28, EntryX = 192, EntryY = 9, MaximumPlayers = 10 },
             Stages =
             [
-                Stage(790, 184, 18, [Summon(791, 4, 178, 12, 190, 24), Summon(792, 4, 178, 12, 190, 24)]),
-                Stage(793, 184, 18),
-                Stage(794, 184, 18),
+                Stage(790, 184, 18, [Summon(791, 4, 178, 12, 190, 24), Summon(792, 4, 178, 12, 190, 24)], [new FieldBossAbility { Name = "Call the pets", Kind = FieldBossAbilityKind.Summon, IntervalSeconds = 20, MaximumAlive = 8, Summons = [Summon(791, 4, 178, 12, 190, 24), Summon(792, 4, 178, 12, 190, 24)] }]),
+                Stage(793, 184, 18, abilities: [Strike("Wave", 4, 100, 15), Strike("Water course", 4, 100, 15)]),
+                Stage(794, 184, 18, abilities: [Strike("Flame", 5, 90, 10), Strike("Darkness", 5, 100, 20)]),
             ],
         },
     ];
 
-    private static FieldBossStage Stage(short monster, byte x, byte y, List<FieldBossSummon>? summons = null)
-        => new() { MonsterNumber = monster, X = x, Y = y, Summons = summons ?? [] };
+    private static FieldBossStage Stage(short monster, byte x, byte y, List<FieldBossSummon>? summons = null, List<FieldBossAbility>? abilities = null)
+        => new() { MonsterNumber = monster, X = x, Y = y, Summons = summons ?? [], Abilities = abilities ?? [] };
+
+    private static FieldBossAbility Strike(string name, byte distance, int damagePercent, int chancePercent)
+        => new() { Name = name, Kind = FieldBossAbilityKind.AreaStrike, IntervalSeconds = 2, Distance = distance, DamagePercent = damagePercent, ChancePercent = chancePercent };
 
     private static FieldBossSummon Summon(short monster, int count, byte x1, byte y1, byte x2, byte y2)
         => new() { MonsterNumber = monster, Count = count, X1 = x1, Y1 = y1, X2 = x2, Y2 = y2 };

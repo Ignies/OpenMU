@@ -21,8 +21,19 @@ Magriffy (Nars), Lord of Ferea (Ferea), Nix (Nixie Lake) and the God of Darkness
 
 The bosses' numbers are normalized by the progression with their map (`MonsterNormalizer` bosses, 20x a normal);
 Medusa stands on a Season 6 map and keeps its numbers. The data comes with the update "Add the field bosses of
-Season 21". The state lives in memory: a restart spawns the bosses again.
+Season 21".
 
-Not built: the special skills of the bosses (Nix's barrier stones and knowledge absorb, Ferea's whirlwind and land
-mines, the god's flame and darkness), Medusa's random choice of four grounds (ground 3 is used), Priest James and
-the Spirit Nixie's Shard (the data has no such item; the statue lets the party in).
+- **Special skills** (`FieldBossStage.Abilities`), used during a fight: area strikes (a share of the stage monster's
+  damage to every player within a distance: Ferea's whirlwind and land mine, the water monster's wave and water
+  course, the god's flame and darkness, S21Emu `Event/WorldBoss`) and summons up to a number alive (the swamp
+  monster's 8 pets every 20 seconds).
+- **Grounds** (`Grounds`): a boss spawns on one at random, its stages and summons move along (Medusa's four grounds of
+  `BossFightSystem.xml`).
+- **Entry item** (`EntryItemGroup`, `EntryItemNumber`): the entry NPC takes one from each player it lets in (Nix: the
+  Spirit Nixie's Shard 14/390, from the S21 client's item table); `EntryItemNpcNumber` hands it out for
+  `EntryItemPrice` zen (Priest James 725 in Elbeland and Loren Market, the data's spawn points).
+- **Restart**: the state file (`StateFile`) keeps the timers; a killed or waiting boss keeps its respawn time, a living
+  one spawns again.
+
+Not built: Nix's barrier stones and knowledge absorb, the roar of the Lord of Ferea, the water source healing (the
+data names them without numbers which say what they do).

@@ -20,6 +20,11 @@ internal class Season21FieldBossesInitializer
     private const short FirstSpawnNumber = 1900;
 
     /// <summary>
+    /// The first number of the spawn areas of the NPCs.
+    /// </summary>
+    private const short FirstNpcSpawnNumber = 1950;
+
+    /// <summary>
     /// The parent number of the drop groups' ids; each boss adds its index, each section its number.
     /// </summary>
     private const short DropGroupNumberOffset = 2200;
@@ -47,7 +52,43 @@ internal class Season21FieldBossesInitializer
         this.CreateMonsters();
         this.CreateSpawns();
         this.CreateDrops();
+        var number = FirstNpcSpawnNumber;
+        foreach (var (map, npc, x, y, direction) in Season21FieldBossData.Npcs)
+        {
+            Season21NpcSpawns.Place(this._context, this._gameConfiguration, number++, map, npc, LocalizedString.FromResource(() => MonsterNames.PriestJames), x, y, direction);
+        }
+
         this.Configure();
+    }
+
+    /// <summary>
+    /// Adds the grounds, the special skills and the entry item of the data to a boss an operator configured without them.
+    /// </summary>
+    private static bool AddMissingRules(FieldBossDefinition boss, FieldBossDefinition source)
+    {
+        var changed = false;
+        if (boss.Grounds.Count == 0 && source.Grounds.Count > 0)
+        {
+            boss.Grounds.AddRange(source.Grounds);
+            changed = true;
+        }
+
+        if (boss.EntryItemGroup < 0 && source.EntryItemGroup >= 0)
+        {
+            (boss.EntryItemGroup, boss.EntryItemNumber, boss.EntryItemNpcNumber, boss.EntryItemPrice) = (source.EntryItemGroup, source.EntryItemNumber, source.EntryItemNpcNumber, source.EntryItemPrice);
+            changed = true;
+        }
+
+        foreach (var (stage, sourceStage) in boss.Stages.Zip(source.Stages).Where(p => p.First.MonsterNumber == p.Second.MonsterNumber))
+        {
+            if (stage.Abilities.Count == 0 && sourceStage.Abilities.Count > 0)
+            {
+                stage.Abilities.AddRange(sourceStage.Abilities);
+                changed = true;
+            }
+        }
+
+        return changed;
     }
 
     private static short KeyOf(ItemDefinition item) => (short)((item.Group * 512) + item.Number);
@@ -158,13 +199,21 @@ internal class Season21FieldBossesInitializer
             return;
         }
 
-        var missing = Season21FieldBossData.CreateBosses()
-            .Where(b => this.FindMap((byte)b.MapNumber) is not null && configuration.Bosses.All(c => !string.Equals(c.Name, b.Name, StringComparison.OrdinalIgnoreCase)))
-            .ToList();
-        if (missing.Count > 0)
+        var defaults = Season21FieldBossData.CreateBosses().Where(b => this.FindMap((byte)b.MapNumber) is not null).ToList();
+        var missing = defaults.Where(b => configuration.Bosses.All(c => !string.Equals(c.Name, b.Name, StringComparison.OrdinalIgnoreCase))).ToList();
+        var changed = false;
+        foreach (var boss in configuration.Bosses)
+        {
+            if (defaults.FirstOrDefault(d => string.Equals(d.Name, boss.Name, StringComparison.OrdinalIgnoreCase)) is { } source)
+            {
+                changed |= AddMissingRules(boss, source);
+            }
+        }
+
+        if (missing.Count > 0 || changed)
         {
             // The first application turns the feature on; later ones leave the operator's switch alone.
-            plugIn.IsActive |= configuration.Bosses.Count == 0;
+            plugIn.IsActive |= configuration.Bosses.Count == 0 && missing.Count > 0;
             configuration.Bosses.AddRange(missing);
             plugIn.SetConfiguration(configuration, null);
         }
