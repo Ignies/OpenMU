@@ -8580,5 +8580,113 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("StatsSpecializationSection_Percent_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level penalties (Season 21).
+        /// </summary>
+        public static string LevelPenaltyPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LevelPenaltyPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A character below a monster's level plus 600 deals 10 % less damage per level, takes 10 % more from it, and gets 10 % less experience in the Kardamahal temple, at most 70 % (S21Emu DamagePenalty.lua and ExperienciePenalty.lua). Levels map through the progression mode. Off by default..
+        /// </summary>
+        public static string LevelPenaltyPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LevelPenaltyPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage penalty.
+        /// </summary>
+        public static string LevelPenaltyConfiguration_DamagePenaltyActive_Name {
+            get {
+                return ResourceManager.GetString("LevelPenaltyConfiguration_DamagePenaltyActive_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster damage bonus.
+        /// </summary>
+        public static string LevelPenaltyConfiguration_MonsterDamageBonusActive_Name {
+            get {
+                return ResourceManager.GetString("LevelPenaltyConfiguration_MonsterDamageBonusActive_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience penalty.
+        /// </summary>
+        public static string LevelPenaltyConfiguration_ExperiencePenaltyActive_Name {
+            get {
+                return ResourceManager.GetString("LevelPenaltyConfiguration_ExperiencePenaltyActive_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Levels added to the monster level.
+        /// </summary>
+        public static string LevelPenaltyConfiguration_MonsterLevelOffset_Name {
+            get {
+                return ResourceManager.GetString("LevelPenaltyConfiguration_MonsterLevelOffset_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Percent per level.
+        /// </summary>
+        public static string LevelPenaltyConfiguration_PercentPerLevel_Name {
+            get {
+                return ResourceManager.GetString("LevelPenaltyConfiguration_PercentPerLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum levels counted.
+        /// </summary>
+        public static string LevelPenaltyConfiguration_MaximumLevels_Name {
+            get {
+                return ResourceManager.GetString("LevelPenaltyConfiguration_MaximumLevels_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage penalty from evolution.
+        /// </summary>
+        public static string LevelPenaltyConfiguration_DamageMinimumEvolution_Name {
+            get {
+                return ResourceManager.GetString("LevelPenaltyConfiguration_DamageMinimumEvolution_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maps with the damage penalty by total level.
+        /// </summary>
+        public static string LevelPenaltyConfiguration_DamageLevelMaps_Name {
+            get {
+                return ResourceManager.GetString("LevelPenaltyConfiguration_DamageLevelMaps_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total level for those maps.
+        /// </summary>
+        public static string LevelPenaltyConfiguration_DamageLevelMapMinimumLevel_Name {
+            get {
+                return ResourceManager.GetString("LevelPenaltyConfiguration_DamageLevelMapMinimumLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maps with the experience penalty.
+        /// </summary>
+        public static string LevelPenaltyConfiguration_ExperienceMaps_Name {
+            get {
+                return ResourceManager.GetString("LevelPenaltyConfiguration_ExperienceMaps_Name", resourceCulture);
+            }
+        }
     }
 }

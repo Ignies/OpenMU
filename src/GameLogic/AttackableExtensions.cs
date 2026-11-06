@@ -12,6 +12,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Elements;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Pet;
+using MUnique.OpenMU.GameLogic.Progression;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 
@@ -234,6 +235,7 @@ public static class AttackableExtensions
         if (!isPvp)
         {
             dmg = (int)(dmg * (1 + attacker.Attributes[Stats.FinalDamageIncreasePvm]) * (1 - defender.Attributes[Stats.FinalDamageReceiveDecrementPvm]));
+            dmg = LevelPenaltyPlugIn.ApplyToDamage(attackerPlayer, attacker, defender, dmg);
         }
 
         if (skill != null)

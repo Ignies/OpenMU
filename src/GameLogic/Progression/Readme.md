@@ -66,3 +66,19 @@ every number:
   damage instead. **Items** check the power level E (capped at 400) against their level requirement in Stars.
 - **Turning the plugin off** puts the stored caps back at once and takes the monster and star numbers off
   (`IDeactivationAwareFeaturePlugIn`).
+
+## Level penalties (`LevelPenaltyPlugIn`, `LevelPenalties`)
+
+S21Emu `DamagePenalty.lua` and `ExperienciePenalty.lua`: a character below the monster's level + 600 deals 10 % less
+damage per level to it and takes 10 % more from it, at most 7 levels (70 %). Outside the Labyrinth of Dimensions (map
+115) only a fourth or fifth evolution has it (`CheckEnhanceLevel`); in the labyrinth every evolution from total level
+400. Monsters of the Kardamahal Underground Temple (map 143) give 10 % less experience per level, at most 70 %.
+
+- The threshold and the 400 are Season 21 total levels and map through the mode with `EvolutionRules.GetLevelsMissing`,
+  the helper of the evolution rules: the levels below count in the mode's unit (total, level + master level, power
+  level). A normalized level 400 character is above the mapped threshold of a level 150 monster, not 350 short.
+- The monster level is the stored one (`MonsterDefinition`), the Season 21 level the threshold is written for.
+- Damage: after the PvM final factors in `AttackableExtensions.CalculateDamageAsync`, rounded like the Lua's floor.
+  Experience: an `IExperienceCalculationPlugIn` factor, also for master experience and party members.
+- Left open by the Lua and therefore settings: the evolution of `CheckEnhanceLevel`, the maps, and switches for the
+  three parts. Off by default (`IDisabledByDefault`), fork feature `level_penalties`.

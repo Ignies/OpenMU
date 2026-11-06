@@ -91,10 +91,23 @@ public static class EvolutionRules
     /// <param name="configuration">The progression configuration, or <c>null</c> if the progression is off.</param>
     /// <returns><c>true</c>, if the character meets it.</returns>
     public static bool IsMet(int requirement, int level, int masterLevel, int stars, ProgressionConfiguration? configuration)
+        => GetLevelsMissing(requirement, level, masterLevel, stars, configuration) <= 0;
+
+    /// <summary>
+    /// Gets how many levels of the world's mode a character is below a Season 21 total level, in the unit of
+    /// <see cref="GetLevelKey"/>: the requirement maps like in <see cref="IsMet(int, int, int, int, ProgressionConfiguration?)"/>.
+    /// </summary>
+    /// <param name="requirement">The Season 21 total level.</param>
+    /// <param name="level">The normal level.</param>
+    /// <param name="masterLevel">The master level.</param>
+    /// <param name="stars">The stars (resets).</param>
+    /// <param name="configuration">The progression configuration, or <c>null</c> if the progression is off.</param>
+    /// <returns>The missing levels; zero or less when the character meets it.</returns>
+    public static int GetLevelsMissing(int requirement, int level, int masterLevel, int stars, ProgressionConfiguration? configuration)
     {
         var actual = GetLevelKey(configuration) == ProgressionLevelKey.PowerLevel
             ? StarRules.GetPowerLevel(level, stars, configuration!)
             : level + masterLevel;
-        return actual >= GetRequiredLevel(requirement, configuration);
+        return GetRequiredLevel(requirement, configuration) - actual;
     }
 }

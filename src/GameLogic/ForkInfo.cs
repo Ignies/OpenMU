@@ -84,6 +84,7 @@ public static class ForkInfo
         "battle_pass",
         "stats_specialize",
         "creatable_classes",
+        "level_penalties",
     ];
 
     /// <summary>

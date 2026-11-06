@@ -3015,4 +3015,40 @@
   <data name="StatsSpecializationSection_Percent_Name" xml:space="preserve">
     <value>Percent</value>
   </data>
+  <data name="LevelPenaltyPlugIn_Name" xml:space="preserve">
+    <value>Level penalties (Season 21)</value>
+  </data>
+  <data name="LevelPenaltyPlugIn_Description" xml:space="preserve">
+    <value>A character below a monster's level plus 600 deals 10 % less damage per level, takes 10 % more from it, and gets 10 % less experience in the Kardamahal temple, at most 70 % (S21Emu DamagePenalty.lua and ExperienciePenalty.lua). Levels map through the progression mode. Off by default.</value>
+  </data>
+  <data name="LevelPenaltyConfiguration_DamagePenaltyActive_Name" xml:space="preserve">
+    <value>Damage penalty</value>
+  </data>
+  <data name="LevelPenaltyConfiguration_MonsterDamageBonusActive_Name" xml:space="preserve">
+    <value>Monster damage bonus</value>
+  </data>
+  <data name="LevelPenaltyConfiguration_ExperiencePenaltyActive_Name" xml:space="preserve">
+    <value>Experience penalty</value>
+  </data>
+  <data name="LevelPenaltyConfiguration_MonsterLevelOffset_Name" xml:space="preserve">
+    <value>Levels added to the monster level</value>
+  </data>
+  <data name="LevelPenaltyConfiguration_PercentPerLevel_Name" xml:space="preserve">
+    <value>Percent per level</value>
+  </data>
+  <data name="LevelPenaltyConfiguration_MaximumLevels_Name" xml:space="preserve">
+    <value>Maximum levels counted</value>
+  </data>
+  <data name="LevelPenaltyConfiguration_DamageMinimumEvolution_Name" xml:space="preserve">
+    <value>Damage penalty from evolution</value>
+  </data>
+  <data name="LevelPenaltyConfiguration_DamageLevelMaps_Name" xml:space="preserve">
+    <value>Maps with the damage penalty by total level</value>
+  </data>
+  <data name="LevelPenaltyConfiguration_DamageLevelMapMinimumLevel_Name" xml:space="preserve">
+    <value>Total level for those maps</value>
+  </data>
+  <data name="LevelPenaltyConfiguration_ExperienceMaps_Name" xml:space="preserve">
+    <value>Maps with the experience penalty</value>
+  </data>
 </root>

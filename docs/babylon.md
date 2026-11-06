@@ -95,6 +95,7 @@ Rules:
 | `battle_pass` | The season pass (MU Pass): the monthly seasons of the data repeated every year, 20 levels, 25 daily missions and one special mission (their kind set by the operator), the free, gold and premium pass with their rewards (buffs until the season ends, items into the gremory case), the Exp, Gold and Premium Pass Tickets (update "Add the season pass of Season 21", plugin "Season pass (Season 21)", `src/GameLogic/SeasonPass`) |
 | `stats_specialize` | The stat specialization of Season 21: a stat of a class raises an option by the percent of its section (S21Emu `Character/StatsSpecialize.txt`; plugin "Stat specialization (Season 21)", off by default, `src/GameLogic/Classes`). No packet: the raised values reach the client through the Season 6 stat packets |
 | `creatable_classes` | `C1 EE 14 CreatableClasses` after the class codes of the list: every class the creation offers with the state of the server's creation rule (`GameLogic/Classes/ClassCreationRule.cs`) and its creation level |
+| `level_penalties` | The damage and experience penalties of Season 21 below a monster's level + 600 (S21Emu `DamagePenalty.lua`, `ExperienciePenalty.lua`; plugin "Level penalties (Season 21)", off by default, levels mapped through the progression mode, `src/GameLogic/Progression`). No packet |
 
 ## Balance
 
