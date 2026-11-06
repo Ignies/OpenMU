@@ -88,6 +88,7 @@ Rules:
 | `tormented_square` | The Tormented Square of Season 21: map 102, fifteen rounds of monsters, points and ranks, by its timetable (update "Add the Tormented Square of Season 21", plugins "Events of Season 21" and "Tormented Square start"; event type 9 of the event packets) |
 | `instance_zone` | The Instance Zone of Season 21 (map 114): the entrances of the fourth and fifth class trials and of the labyrinth (update "Add the Instance Zone and the Labyrinth of Dimensions of Season 21") |
 | `labyrinth` | The Labyrinth of Dimensions of Season 21 (map 115): a solo instance of 41 floors with Ruud and boxes (same update; event type 10) |
+| `labyrinth_league` | The scores and weekly leagues of the labyrinth: floor points by the daily record, first play and fast finish, a Maze of Dimensions box per floor, groups of five per tier (Bronze, Silver, Gold, Legend), two up and the fifth down every week, the tier reward on the 29th (update "Add the leagues of the Labyrinth of Dimensions of Season 21", plugin "Labyrinth of Dimensions league (Season 21)", off by default; `C1 EE B5 LabyrinthLeague`) |
 | `boss_battle` | The Boss Battle Together of Season 21 (map 139): one of five bosses for everybody, rewards for damage, top damage and the last hit (update "Add the Boss Battle Together of Season 21"; event type 11) |
 | `acheron_guardian` | The Protector of Acheron of Season 21 (maps 92 and 96): 30 waves of monsters, a bag reward for 100 points (update "Add the Protector of Acheron of Season 21"; event type 12) |
 | `imperial_guardian_s18` | The Imperial Guardian rework of Season 18: from total level 1000, artifact rewards at the completion (update "Apply the Imperial Guardian rework of Season 18") |
@@ -300,6 +301,16 @@ C1 14 EE B2  EventScore (server)             6  u8      0 success, 1 failed, 2 n
   12 u16 LE  rank (0 unranked)                   4  u16 LE  event type, 6 bool success
   14 u16 LE  players                             8  u32 LE  score, 12 u16 LE rank
   16 u32 LE  seconds left                        16 u32 LE  experience of the reward
+```
+
+```
+C1 0E EE B5  LabyrinthLeague (server, on entering the labyrinth and after the run; fork id labyrinth_league)
+  4  u8      tier: 0 Bronze, 1 Silver, 2 Gold, 3 Legend
+  5  u8      rank in the group of the week (0 no points this week)
+  6  u8      characters in the group
+  7  u8      day: 0 no league day, 1 first day of a week, 2 play day, 3 reward day
+  8  u32 LE  points of the week
+  12 u16 LE  floors cleared today
 ```
 
 Item rewards go into the gremory case where Season 21 does (and the plugin is on), else into the inventory.

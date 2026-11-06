@@ -1578,5 +1578,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21SeasonPassUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the leagues of the Labyrinth of Dimensions of Season 21.
+        /// </summary>
+        public static string AddSeason21LabyrinthLeagueUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21LabyrinthLeagueUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The points of the labyrinth floors (first and repeated clear of the day, first play, fast finish), a Maze of Dimensions box per floor which opens into the items of its bag, and the weekly leagues in groups of five with the rewards of the tiers (S21Emu LabyrinthOfDimension_League.xml). Keeps the configuration and the switch the operator set..
+        /// </summary>
+        public static string AddSeason21LabyrinthLeagueUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21LabyrinthLeagueUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

@@ -1772,4 +1772,42 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LabyrinthLeague" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="tier">The tier: 0 Bronze, 1 Silver, 2 Gold, 3 Legend.</param>
+    /// <param name="rank">The rank in the group of the current week, 0 when the character has no points this week.</param>
+    /// <param name="groupSize">The number of characters of the group.</param>
+    /// <param name="day">The kind of the day: 0 no league day, 1 the first day of a week, 2 a play day, 3 the reward day.</param>
+    /// <param name="points">The points of the current week.</param>
+    /// <param name="floorsToday">The number of floors cleared today.</param>
+    /// <remarks>
+    /// Is sent by the server when: When the character enters the Labyrinth of Dimensions and when its run ended, while the plugin of the labyrinth league is on.
+    /// Causes reaction on client side: The client shows the tier, the rank in the group and the points of the week of the character.
+    /// </remarks>
+    public static async ValueTask SendLabyrinthLeagueAsync(this IConnection? connection, byte @tier, byte @rank, byte @groupSize, byte @day, uint @points, ushort @floorsToday)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = LabyrinthLeagueRef.Length;
+            var packet = new LabyrinthLeagueRef(connection.Output.GetSpan(length)[..length]);
+            packet.Tier = @tier;
+            packet.Rank = @rank;
+            packet.GroupSize = @groupSize;
+            packet.Day = @day;
+            packet.Points = @points;
+            packet.FloorsToday = @floorsToday;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

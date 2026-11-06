@@ -77,7 +77,30 @@ each the mission monsters (Great Sword 754 x2, Soldier 755 x3, Lancer 756 x3 of 
 50 points per floor number, the Ruud of the first seven floors (30 to 400) and at the floors 10, 20 and 30 one item of the
 lower, medium and higher Maze of Dimensions box (bags 240-242); a floor which runs out ends the run.
 Not ported: the 10 x 10 rooms of a floor which the server opens along `LabyrinthOfDimension_Path.xml` (the run is played
-in the first room), Elena's Letter, the daily floor reset and the weekly leagues.
+in the first room; plan in the S21 hub notes, "[E2] labyrinth rooms") and Elena's Letter.
+
+#### Leagues of the labyrinth (fork feature `labyrinth_league`)
+
+Update "Add the leagues of the Labyrinth of Dimensions of Season 21" (S21Emu `LabyrinthOfDimension_League.xml`), plugin
+"Labyrinth of Dimensions league (Season 21)" (`LabyrinthLeaguePlugIn`, off by default, the update switches it on once).
+While it's on, `Season21RoundsContext` scores the labyrinth through it:
+
+- A cleared floor gives its first points (50 per floor) the first time it's cleared on the day (UTC) and its repeat points
+  (25 per floor) after that; the first floor of the day adds 1,000, and a clear within 20 minutes adds up to 250
+  (`FastFinish - FastFinish * (seconds * 100 / 1200) / 100`). Kills keep their points (goblin 2,000).
+- Every cleared floor gives one Maze of Dimensions box (14/403-405) by the chances of the floor, instead of the round's
+  random item; the update lets the boxes be dropped open into the items of bags 240-242.
+- The points of the run also count for the week: the schedule lists the days of the month (weeks from the 1st, 8th, 15th
+  and 22nd, the reward day on the 29th; the 30th and 31st count nothing). A character's first points of a week put it into
+  the first group of its tier with fewer than five characters. When the next week starts, each group is ranked by points
+  (a tie goes to the earlier one): ranks 1-2 go up a tier, rank 5 down (Bronze and Legend are the ends).
+- On the reward day, entering the labyrinth gives Silver 2, Gold 5 and Legend 10 Higher boxes (14/405), once. A new
+  month starts every character in Bronze.
+- The state is kept in `state/labyrinth_league.json` (`CharacterStateStore`). The Babylon client gets `EE B5` on entering
+  and after the run (docs/babylon.md, "Events").
+
+Not ported: Webzen's weekly progression on Tuesday 00:00 UTC (the S21Emu schedule by day of month is the data) and the top
+100 rewards (no data).
 
 ### Boss Battle Together (fork feature `boss_battle`)
 

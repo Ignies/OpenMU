@@ -56,6 +56,7 @@
   * [C1 EE B2 - EventScore (by server)](C1-EE-B2-EventScore_by-server.md)
   * [C1 EE B3 - EventResult (by server)](C1-EE-B3-EventResult_by-server.md)
   * [C1 EE B4 - EventEnterResult (by server)](C1-EE-B4-EventEnterResult_by-server.md)
+  * [C1 EE B5 - LabyrinthLeague (by server)](C1-EE-B5-LabyrinthLeague_by-server.md)
   * [C1 EE C4 - EvolutionQuestState (by server)](C1-EE-C4-EvolutionQuestState_by-server.md)
   * [C2 EE D0 - RankingPage (by server)](C2-EE-D0-RankingPage_by-server.md)
   * [C2 EE D1 - HuntingRecordList (by server)](C2-EE-D1-HuntingRecordList_by-server.md)

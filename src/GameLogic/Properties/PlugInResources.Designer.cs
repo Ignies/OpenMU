@@ -8688,5 +8688,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("LevelPenaltyConfiguration_ExperienceMaps_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Labyrinth of Dimensions league (Season 21).
+        /// </summary>
+        public static string LabyrinthLeaguePlugIn_Name {
+            get {
+                return ResourceManager.GetString("LabyrinthLeaguePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The points, floor boxes and weekly leagues of the Labyrinth of Dimensions: groups of five characters per tier, promotion and demotion every week, the reward of the tier on the reward day (S21Emu LabyrinthOfDimension_League.xml)..
+        /// </summary>
+        public static string LabyrinthLeaguePlugIn_Description {
+            get {
+                return ResourceManager.GetString("LabyrinthLeaguePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

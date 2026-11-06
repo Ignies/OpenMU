@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests.Babylon;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameServer;
@@ -85,5 +86,21 @@ public class EventPacketsTest
         await view.ShowEnterResultAsync(MiniGameType.PartyInstance, EnterResult.Full).ConfigureAwait(false);
         var enter = new EventEnterResult(output.ToArray());
         Assert.That((enter.EventType, enter.Result), Is.EqualTo(((ushort)MiniGameType.PartyInstance, (byte)EnterResult.Full)));
+    }
+    /// <summary>
+    /// The league packet of the labyrinth carries the tier, rank, group, day kind, points and floors.
+    /// </summary>
+    [Test]
+    public async ValueTask LabyrinthLeagueHasItsFieldsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(BabylonClient.Version);
+        var view = new Season21EventBabylonPlugIn(player);
+
+        await view.ShowLabyrinthLeagueAsync(new LabyrinthStanding(LabyrinthLeagueTier.Gold, 2, 5, 12_345, 7), LabyrinthDayKind.Play).ConfigureAwait(false);
+
+        var league = new LabyrinthLeague(output.ToArray());
+        Assert.That(
+            (league.Header.SubCode, league.Tier, league.Rank, league.GroupSize, league.Day, league.Points, league.FloorsToday),
+            Is.EqualTo(((byte)0xB5, (byte)2, (byte)2, (byte)5, (byte)2, 12_345u, (ushort)7)));
     }
 }

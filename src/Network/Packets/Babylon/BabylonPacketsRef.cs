@@ -8480,3 +8480,134 @@ public readonly ref struct EventEnterResultRef
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(EventEnterResultRef packet) => packet._data; 
 }
+
+
+/// <summary>
+/// Is sent by the server when: When the character enters the Labyrinth of Dimensions and when its run ended, while the plugin of the labyrinth league is on.
+/// Causes reaction on client side: The client shows the tier, the rank in the group and the points of the week of the character.
+/// </summary>
+public readonly ref struct LabyrinthLeagueRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LabyrinthLeagueRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LabyrinthLeagueRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LabyrinthLeagueRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private LabyrinthLeagueRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xB5;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 14;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the tier: 0 Bronze, 1 Silver, 2 Gold, 3 Legend.
+    /// </summary>
+    public byte Tier
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the rank in the group of the current week, 0 when the character has no points this week.
+    /// </summary>
+    public byte Rank
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the number of characters of the group.
+    /// </summary>
+    public byte GroupSize
+    {
+        get => this._data[6];
+        set => this._data[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the kind of the day: 0 no league day, 1 the first day of a week, 2 a play day, 3 the reward day.
+    /// </summary>
+    public byte Day
+    {
+        get => this._data[7];
+        set => this._data[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the points of the current week.
+    /// </summary>
+    public uint Points
+    {
+        get => ReadUInt32LittleEndian(this._data[8..]);
+        set => WriteUInt32LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the number of floors cleared today.
+    /// </summary>
+    public ushort FloorsToday
+    {
+        get => ReadUInt16LittleEndian(this._data[12..]);
+        set => WriteUInt16LittleEndian(this._data[12..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="LabyrinthLeague"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator LabyrinthLeagueRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="LabyrinthLeague"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(LabyrinthLeagueRef packet) => packet._data; 
+}

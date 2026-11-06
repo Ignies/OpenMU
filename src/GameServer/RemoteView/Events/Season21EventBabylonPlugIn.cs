@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Events;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.Network.Packets.Babylon;
 using MUnique.OpenMU.Network.PlugIns;
@@ -14,7 +15,7 @@ using MiniGameType = MUnique.OpenMU.DataModel.Configuration.MiniGameType;
 
 /// <summary>
 /// The implementation of the <see cref="ISeason21EventViewPlugIn"/> for the Babylon client: the event packets
-/// <c>EE B0</c>, <c>EE B2</c>, <c>EE B3</c> and <c>EE B4</c>.
+/// <c>EE B0</c>, <c>EE B2</c>, <c>EE B3</c>, <c>EE B4</c> and the league of the labyrinth, <c>EE B5</c>.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.Season21EventBabylonPlugIn_Name), Description = nameof(PlugInResources.Season21EventBabylonPlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -52,6 +53,18 @@ public class Season21EventBabylonPlugIn : ISeason21EventViewPlugIn
     public async ValueTask ShowEnterResultAsync(MiniGameType type, EnterResult result)
     {
         await this._player.Connection.SendEventEnterResultAsync((ushort)type, (byte)result).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc/>
+    public async ValueTask ShowLabyrinthLeagueAsync(LabyrinthStanding standing, LabyrinthDayKind day)
+    {
+        await this._player.Connection.SendLabyrinthLeagueAsync(
+            (byte)standing.Tier,
+            (byte)Math.Clamp(standing.Rank, 0, byte.MaxValue),
+            (byte)Math.Clamp(standing.GroupSize, 0, byte.MaxValue),
+            (byte)day,
+            (uint)Math.Max(standing.Points, 0),
+            (ushort)Math.Clamp(standing.FloorsToday, 0, ushort.MaxValue)).ConfigureAwait(false);
     }
 
     /// <summary>

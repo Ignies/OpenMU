@@ -139,6 +139,27 @@ internal class Season21EventsDataTest
     }
 
     /// <summary>
+    /// The league of the labyrinth has the data of S21Emu <c>LabyrinthOfDimension_League.xml</c> and is on; its boxes open
+    /// into the items of their bags.
+    /// </summary>
+    [Test]
+    public void LabyrinthLeagueHasTheDataOfTheLeagueFile()
+    {
+        var plugIn = this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(GameLogic.MiniGames.Season21.LabyrinthLeaguePlugIn).GUID);
+        var league = plugIn.GetConfiguration<GameLogic.MiniGames.Season21.LabyrinthLeagueConfiguration>(new GameConfigurationReferenceHandler(this._gameConfiguration))!;
+        Assert.That(plugIn.IsActive, Is.True);
+        Assert.That(league.Floors, Has.Count.EqualTo(41));
+        Assert.That((league.Floors[40].FirstPoints, league.Floors[40].RepeatPoints), Is.EqualTo((2050, 1025)));
+        Assert.That(league.Floors[5].BoxChances, Is.EqualTo(new[] { 0.9, 0.1, 0 }));
+        Assert.That(league.Floors[40].BoxChances, Is.EqualTo(new[] { 0, 0.3, 0.7 }));
+        Assert.That(league.Schedule.Where(d => d.Kind == GameLogic.MiniGames.Season21.LabyrinthDayKind.Start).Select(d => d.Day), Is.EqualTo(new byte[] { 1, 8, 15, 22 }));
+        Assert.That(league.Schedule.Single(d => d.Kind == GameLogic.MiniGames.Season21.LabyrinthDayKind.Reward).Day, Is.EqualTo(29));
+        Assert.That(league.TierRewards.Select(r => (r.Item.Number, r.Item.Count)), Is.EqualTo(new[] { ((short)405, (byte)2), ((short)405, (byte)5), ((short)405, (byte)10) }));
+        var higherBox = this._gameConfiguration.Items.Single(i => i.Group == 14 && i.Number == 405);
+        Assert.That(higherBox.DropItems.SelectMany(d => d.PossibleItems).Select(i => (i.Group, i.Number)), Does.Contain(((byte)14, (short)13)));
+    }
+
+    /// <summary>
     /// A Crywolf schedule which the operator changed stays when the renewal runs again.
     /// </summary>
     [Test]
@@ -209,6 +230,7 @@ internal class Season21EventsDataTest
         new AddSeason21AcheronGuardianUpdatePlugIn(),
         new AddSeason21ImperialGuardianReworkUpdatePlugIn(),
         new AddSeason21CrywolfUpdatePlugIn(),
+        new AddSeason21LabyrinthLeagueUpdatePlugIn(),
     ];
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6Async()

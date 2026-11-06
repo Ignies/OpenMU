@@ -32,6 +32,8 @@ public sealed class Season21RoundsContext : MiniGameContext
 
     private readonly bool _isInstance;
 
+    private readonly LabyrinthLeaguePlugIn? _league;
+
     private TaskCompletionSource _roundCleared = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     private DateTime _roundEndsAt;
@@ -53,6 +55,7 @@ public sealed class Season21RoundsContext : MiniGameContext
     {
         this._rounds = rounds;
         this._isInstance = definition.MapCreationPolicy != MiniGameMapCreationPolicy.Shared;
+        this._league = definition.Type == MiniGameType.LabyrinthOfDimensions ? LabyrinthLeaguePlugIn.Get(gameContext) : null;
     }
 
     /// <summary>
@@ -88,6 +91,10 @@ public sealed class Season21RoundsContext : MiniGameContext
         foreach (var player in players)
         {
             this._scores.TryAdd(player, 0);
+            if (this._league is { } league)
+            {
+                await league.EnteredAsync(player).ConfigureAwait(false);
+            }
         }
 
         var token = this.GameEndedToken;
@@ -105,7 +112,7 @@ public sealed class Season21RoundsContext : MiniGameContext
 
         if (this.Map.GetObject(e.KillerId) is Player killer)
         {
-            this._scores.AddOrUpdate(killer, points, (_, score) => score + points);
+            this.AddScore(killer, points);
             _ = this.ShowScoreAsync(killer).AsTask();
         }
 
@@ -129,6 +136,10 @@ public sealed class Season21RoundsContext : MiniGameContext
 
             await this.NotifyObjectiveReachedAsync(player, MiniGameObjective.Rank, rank).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<ISeason21EventViewPlugIn>(p => p.ShowResultAsync(this.Definition.Type, success, score, rank, 0)).ConfigureAwait(false);
+            if (this._league is { } league)
+            {
+                await league.ShowStandingAsync(player).ConfigureAwait(false);
+            }
         }
     }
 
@@ -206,10 +217,8 @@ public sealed class Season21RoundsContext : MiniGameContext
     {
         if (player.IsAlive)
         {
-            if (round.ClearPoints > 0)
-            {
-                this._scores.AddOrUpdate(player, round.ClearPoints, (_, score) => score + round.ClearPoints);
-            }
+            var clearPoints = this._league?.ScoreFloorClear(player, this._round, this._rounds.RoundDuration - (this._roundEndsAt - DateTime.UtcNow)) ?? round.ClearPoints;
+            this.AddScore(player, clearPoints);
 
             if (round.ClearRuud > 0)
             {
@@ -221,13 +230,32 @@ public sealed class Season21RoundsContext : MiniGameContext
                 await RewardDelivery.DeliverAsync(player, reward).ConfigureAwait(false);
             }
 
-            if (round.ClearRandomItems.Count > 0)
+            if (this._league is { } league)
+            {
+                // The league's box of the floor replaces the random item of the round.
+                if (league.RollFloorBox(this._round) is { } box)
+                {
+                    await RewardDelivery.DeliverAsync(player, box).ConfigureAwait(false);
+                }
+            }
+            else if (round.ClearRandomItems.Count > 0)
             {
                 await RewardDelivery.DeliverAsync(player, round.ClearRandomItems[Rand.NextInt(0, round.ClearRandomItems.Count)]).ConfigureAwait(false);
             }
         }
 
         await this.ShowScoreAsync(player).ConfigureAwait(false);
+    }
+
+    private void AddScore(Player player, int points)
+    {
+        if (points <= 0)
+        {
+            return;
+        }
+
+        this._scores.AddOrUpdate(player, points, (_, score) => score + points);
+        this._league?.AddPoints(player, points);
     }
 
     private async ValueTask<bool> PlayRoundAsync(EventRound round, CancellationToken cancellationToken)

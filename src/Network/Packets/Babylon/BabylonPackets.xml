@@ -2623,5 +2623,53 @@
         </Field>
       </Fields>
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>B5</SubCode>
+      <Name>LabyrinthLeague</Name>
+      <Length>14</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the character enters the Labyrinth of Dimensions and when its run ended, while the plugin of the labyrinth league is on.</SentWhen>
+      <CausedReaction>The client shows the tier, the rank in the group and the points of the week of the character.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Tier</Name>
+          <Description>The tier: 0 Bronze, 1 Silver, 2 Gold, 3 Legend.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Rank</Name>
+          <Description>The rank in the group of the current week, 0 when the character has no points this week.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>GroupSize</Name>
+          <Description>The number of characters of the group.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Day</Name>
+          <Description>The kind of the day: 0 no league day, 1 the first day of a week, 2 a play day, 3 the reward day.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Points</Name>
+          <Description>The points of the current week.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>FloorsToday</Name>
+          <Description>The number of floors cleared today.</Description>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
 </PacketDefinitions>

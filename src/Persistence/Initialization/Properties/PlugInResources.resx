@@ -612,4 +612,10 @@
   <data name="AddSeason21SeasonPassUpdatePlugIn_Description" xml:space="preserve">
     <value>Sets the season pass (MU Pass) of Season 21: the monthly schedule (repeated every year), 20 levels, 25 daily and one special mission (their kind is yours to set), the rewards of the free and gold pass and the buffs, and turns it on. A configuration with seasons stays. Optional; needs the item catalog.</value>
   </data>
+  <data name="AddSeason21LabyrinthLeagueUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the leagues of the Labyrinth of Dimensions of Season 21</value>
+  </data>
+  <data name="AddSeason21LabyrinthLeagueUpdatePlugIn_Description" xml:space="preserve">
+    <value>The points of the labyrinth floors (first and repeated clear of the day, first play, fast finish), a Maze of Dimensions box per floor which opens into the items of its bag, and the weekly leagues in groups of five with the rewards of the tiers (S21Emu LabyrinthOfDimension_League.xml). Keeps the configuration and the switch the operator set.</value>
+  </data>
 </root>

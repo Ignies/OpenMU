@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.MiniGames;
 
+using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.GameLogic.Views;
 
@@ -49,4 +50,11 @@ public interface ISeason21EventViewPlugIn : IViewPlugIn
     /// <param name="type">The type of the event.</param>
     /// <param name="result">The result.</param>
     ValueTask ShowEnterResultAsync(MiniGameType type, EnterResult result);
+
+    /// <summary>
+    /// Shows the standing of the own character in the league of the Labyrinth of Dimensions.
+    /// </summary>
+    /// <param name="standing">The standing.</param>
+    /// <param name="day">The kind of the day in the league schedule.</param>
+    ValueTask ShowLabyrinthLeagueAsync(LabyrinthStanding standing, LabyrinthDayKind day);
 }

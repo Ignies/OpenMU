@@ -3051,4 +3051,10 @@
   <data name="LevelPenaltyConfiguration_ExperienceMaps_Name" xml:space="preserve">
     <value>Maps with the experience penalty</value>
   </data>
+  <data name="LabyrinthLeaguePlugIn_Name" xml:space="preserve">
+    <value>Labyrinth of Dimensions league (Season 21)</value>
+  </data>
+  <data name="LabyrinthLeaguePlugIn_Description" xml:space="preserve">
+    <value>The points, floor boxes and weekly leagues of the Labyrinth of Dimensions: groups of five characters per tier, promotion and demotion every week, the reward of the tier on the reward day (S21Emu LabyrinthOfDimension_League.xml).</value>
+  </data>
 </root>

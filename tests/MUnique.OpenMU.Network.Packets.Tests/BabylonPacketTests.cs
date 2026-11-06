@@ -2277,4 +2277,42 @@ public class PacketStructureTests
         Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Result' exceeds packet boundary");
     }
+
+    /// <summary>
+    /// Tests the packet size calculation for LabyrinthLeague.
+    /// </summary>
+    [Test]
+    public void LabyrinthLeague_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 14;
+        var actualLength = LabyrinthLeagueRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Tier' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Tier' exceeds packet boundary");
+        
+        // Validate field 'Rank' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Rank' exceeds packet boundary");
+        
+        // Validate field 'GroupSize' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'GroupSize' exceeds packet boundary");
+        
+        // Validate field 'Day' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Day' exceeds packet boundary");
+        
+        // Validate field 'Points' boundary
+        Assert.That(8 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Points' exceeds packet boundary");
+        
+        // Validate field 'FloorsToday' boundary
+        Assert.That(12 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'FloorsToday' exceeds packet boundary");
+    }
 }

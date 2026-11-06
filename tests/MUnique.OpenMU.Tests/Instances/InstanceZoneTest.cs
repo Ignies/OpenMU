@@ -11,6 +11,7 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Rewards;
 using MUnique.OpenMU.GameLogic.Ruud;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
@@ -124,6 +125,62 @@ public class InstanceZoneTest
         finally
         {
             this._events.Configuration.Labyrinth = original;
+        }
+    }
+
+    /// <summary>
+    /// With the league plugin on, a cleared floor scores the points of the league (first clear, first play of the day and
+    /// fast finish), which count for the week of the character, and gives a box of the floor.
+    /// </summary>
+    [Test]
+    public async ValueTask LabyrinthLeagueScoresTheFloorsAsync()
+    {
+        var league = new LabyrinthLeaguePlugIn
+        {
+            Configuration = new LabyrinthLeagueConfiguration
+            {
+                StateFile = string.Empty,
+                Floors = [new LabyrinthFloorScore { FirstPoints = 50, RepeatPoints = 25, BoxChances = [1] }],
+                FloorBoxes = [new RewardItem { Group = 14, Number = 403 }],
+                Schedule = [new LabyrinthLeagueDay { Day = 1, Kind = LabyrinthDayKind.Start }, new LabyrinthLeagueDay { Day = 2, Kind = LabyrinthDayKind.Play }],
+            },
+            UtcNow = () => new DateTime(2026, 11, 2, 12, 0, 0, DateTimeKind.Utc),
+        };
+        this._world.AddFeaturePlugIn(league);
+        var original = this._events.Configuration!.Labyrinth!;
+        this._events.Configuration.Labyrinth = new RoundsEventDefinition
+        {
+            SpawnPoints = original.SpawnPoints,
+            RoundDuration = TimeSpan.FromSeconds(5),
+            PauseAfterRound = TimeSpan.Zero,
+            EndsWhenARoundFails = true,
+            PartyIsATeam = false,
+            Rounds =
+            [
+                new EventRound { MonsterNumber = 754, Count = 1, ClearPoints = 50 },
+                new EventRound { MonsterNumber = 754, Count = 1, ClearPoints = 100 },
+            ],
+        };
+        try
+        {
+            var player = await this._world.CreatePlayerAsync(CharacterClassNumber.BladeMaster, 400, 100, 114, 232, 57).ConfigureAwait(false);
+            await this._world.TalkAsync(player, 758).ConfigureAwait(false);
+            var run = (Season21RoundsContext)player.CurrentMiniGame!;
+            await Season21EventWorld.SkipUntilPlayingAsync(run).ConfigureAwait(false);
+
+            await Season21EventWorld.WaitUntilAsync(() => run.Round == 1 && Monsters(run).Count == 1).ConfigureAwait(false);
+            await Season21EventWorld.KillAsync(Monsters(run)[0], player).ConfigureAwait(false);
+            await Season21EventWorld.WaitUntilAsync(() => run.ClearedRounds == 1).ConfigureAwait(false);
+
+            Assert.That(run.GetScore(player), Is.EqualTo(50 + 1000 + 250));
+            Assert.That(league.GetStanding(player.SelectedCharacter!.Id, league.UtcNow()).Points, Is.EqualTo(1300));
+            Assert.That(player.Inventory!.Items.Select(i => (i.Definition!.Group, i.Definition.Number)), Does.Contain(((byte)14, (short)403)));
+            Mock.Get(player.ViewPlugIns.GetPlugIn<ISeason21EventViewPlugIn>()!).Verify(v => v.ShowLabyrinthLeagueAsync(It.IsAny<LabyrinthStanding>(), LabyrinthDayKind.Play), Times.AtLeastOnce);
+        }
+        finally
+        {
+            this._events.Configuration.Labyrinth = original;
+            this._world.PlugInManager.DeactivatePlugIn<LabyrinthLeaguePlugIn>();
         }
     }
 

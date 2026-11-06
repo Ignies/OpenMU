@@ -85,6 +85,7 @@ public static class ForkInfo
         "stats_specialize",
         "creatable_classes",
         "level_penalties",
+        "labyrinth_league",
     ];
 
     /// <summary>
