@@ -1098,5 +1098,41 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
 
         /// <summary>Gets the localized AddProgressionUpdatePlugIn_Description text.</summary>
         public static string AddProgressionUpdatePlugIn_Description => ResourceManager.GetString("AddProgressionUpdatePlugIn_Description", resourceCulture)!;
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the skills of Season 21 (Season 21 data).
+        /// </summary>
+        public static string AddSeason21SkillsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21SkillsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds the skills of the nine classes of Season 21 and the fourth and fifth evolution skills of the Season 6 classes, as the Season 21 server data defines them (damage, mana, AG, range, requirements, classes), the master tree nodes Season 21 adds, the books which teach them and the skill enhancement tree of the fourth evolution. Skills whose effects the server can't simulate yet are kept as data. Existing skills keep their values; they only get the new classes. Requires the classes and the items of Season 21..
+        /// </summary>
+        public static string AddSeason21SkillsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21SkillsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the first skills of the Season 21 classes.
+        /// </summary>
+        public static string AddSeason21InitialSkillsPlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21InitialSkillsPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds the skills a new character of a Season 21 class starts with (Clash, Magical Shot, Mana Glaive, ...)..
+        /// </summary>
+        public static string AddSeason21InitialSkillsPlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21InitialSkillsPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

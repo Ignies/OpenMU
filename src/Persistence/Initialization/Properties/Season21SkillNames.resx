@@ -1,0 +1,4119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Skill1" xml:space="preserve">
+    <value>Poison</value>
+  </data>
+  <data name="Skill2" xml:space="preserve">
+    <value>Meteorite</value>
+  </data>
+  <data name="Skill3" xml:space="preserve">
+    <value>Lightning</value>
+  </data>
+  <data name="Skill4" xml:space="preserve">
+    <value>Fire Ball</value>
+  </data>
+  <data name="Skill5" xml:space="preserve">
+    <value>Flame</value>
+  </data>
+  <data name="Skill6" xml:space="preserve">
+    <value>Teleport</value>
+  </data>
+  <data name="Skill7" xml:space="preserve">
+    <value>Ice</value>
+  </data>
+  <data name="Skill8" xml:space="preserve">
+    <value>Twister</value>
+  </data>
+  <data name="Skill9" xml:space="preserve">
+    <value>Evil Spirit</value>
+  </data>
+  <data name="Skill10" xml:space="preserve">
+    <value>Hell Fire</value>
+  </data>
+  <data name="Skill11" xml:space="preserve">
+    <value>Power Wave</value>
+  </data>
+  <data name="Skill12" xml:space="preserve">
+    <value>Aqua Beam</value>
+  </data>
+  <data name="Skill13" xml:space="preserve">
+    <value>Blast</value>
+  </data>
+  <data name="Skill14" xml:space="preserve">
+    <value>Inferno</value>
+  </data>
+  <data name="Skill15" xml:space="preserve">
+    <value>Teleport Party</value>
+  </data>
+  <data name="Skill16" xml:space="preserve">
+    <value>Mana Shield</value>
+  </data>
+  <data name="Skill17" xml:space="preserve">
+    <value>Energy Ball</value>
+  </data>
+  <data name="Skill18" xml:space="preserve">
+    <value>Defense</value>
+  </data>
+  <data name="Skill19" xml:space="preserve">
+    <value>Falling Slash</value>
+  </data>
+  <data name="Skill20" xml:space="preserve">
+    <value>Lunge</value>
+  </data>
+  <data name="Skill21" xml:space="preserve">
+    <value>Uppercut</value>
+  </data>
+  <data name="Skill22" xml:space="preserve">
+    <value>Cyclone</value>
+  </data>
+  <data name="Skill23" xml:space="preserve">
+    <value>Slash</value>
+  </data>
+  <data name="Skill24" xml:space="preserve">
+    <value>Triple Shot</value>
+  </data>
+  <data name="Skill26" xml:space="preserve">
+    <value>Heal</value>
+  </data>
+  <data name="Skill27" xml:space="preserve">
+    <value>Greater Defense</value>
+  </data>
+  <data name="Skill28" xml:space="preserve">
+    <value>Greater Damage</value>
+  </data>
+  <data name="Skill30" xml:space="preserve">
+    <value>Summon Goblin</value>
+  </data>
+  <data name="Skill31" xml:space="preserve">
+    <value>Summon Stone Golem</value>
+  </data>
+  <data name="Skill32" xml:space="preserve">
+    <value>Summon Assassin</value>
+  </data>
+  <data name="Skill33" xml:space="preserve">
+    <value>Summon Elite Yeti</value>
+  </data>
+  <data name="Skill34" xml:space="preserve">
+    <value>Summon Dark Knight</value>
+  </data>
+  <data name="Skill35" xml:space="preserve">
+    <value>Summon Bali</value>
+  </data>
+  <data name="Skill36" xml:space="preserve">
+    <value>Summon Soldier</value>
+  </data>
+  <data name="Skill38" xml:space="preserve">
+    <value>Decay</value>
+  </data>
+  <data name="Skill39" xml:space="preserve">
+    <value>Ice Storm</value>
+  </data>
+  <data name="Skill40" xml:space="preserve">
+    <value>Nova</value>
+  </data>
+  <data name="Skill41" xml:space="preserve">
+    <value>Twisting Slash</value>
+  </data>
+  <data name="Skill42" xml:space="preserve">
+    <value>Rageful Blow</value>
+  </data>
+  <data name="Skill43" xml:space="preserve">
+    <value>Death Stab</value>
+  </data>
+  <data name="Skill44" xml:space="preserve">
+    <value>Crescent Moon Slash</value>
+  </data>
+  <data name="Skill45" xml:space="preserve">
+    <value>Lance (Mana Glaive)</value>
+  </data>
+  <data name="Skill46" xml:space="preserve">
+    <value>Starfall</value>
+  </data>
+  <data name="Skill48" xml:space="preserve">
+    <value>Greater Life</value>
+  </data>
+  <data name="Skill49" xml:space="preserve">
+    <value>Fire Breath</value>
+  </data>
+  <data name="Skill50" xml:space="preserve">
+    <value>Monster Area Attack</value>
+  </data>
+  <data name="Skill51" xml:space="preserve">
+    <value>Ice Arrow</value>
+  </data>
+  <data name="Skill52" xml:space="preserve">
+    <value>Penetration</value>
+  </data>
+  <data name="Skill55" xml:space="preserve">
+    <value>Fire Slash</value>
+  </data>
+  <data name="Skill56" xml:space="preserve">
+    <value>Power Slash</value>
+  </data>
+  <data name="Skill57" xml:space="preserve">
+    <value>Spiral Slash</value>
+  </data>
+  <data name="Skill60" xml:space="preserve">
+    <value>Force</value>
+  </data>
+  <data name="Skill61" xml:space="preserve">
+    <value>Fire Burst</value>
+  </data>
+  <data name="Skill62" xml:space="preserve">
+    <value>Earthquake</value>
+  </data>
+  <data name="Skill63" xml:space="preserve">
+    <value>Summon Party</value>
+  </data>
+  <data name="Skill64" xml:space="preserve">
+    <value>Greater Critical Damage</value>
+  </data>
+  <data name="Skill65" xml:space="preserve">
+    <value>Electric Spark</value>
+  </data>
+  <data name="Skill66" xml:space="preserve">
+    <value>Force Wave</value>
+  </data>
+  <data name="Skill67" xml:space="preserve">
+    <value>Stern</value>
+  </data>
+  <data name="Skill68" xml:space="preserve">
+    <value>Remove Stern</value>
+  </data>
+  <data name="Skill69" xml:space="preserve">
+    <value>Greater Mana</value>
+  </data>
+  <data name="Skill70" xml:space="preserve">
+    <value>Invisibility</value>
+  </data>
+  <data name="Skill71" xml:space="preserve">
+    <value>Remove Invisibility</value>
+  </data>
+  <data name="Skill72" xml:space="preserve">
+    <value>Remove All Effect</value>
+  </data>
+  <data name="Skill73" xml:space="preserve">
+    <value>Mana Rays</value>
+  </data>
+  <data name="Skill74" xml:space="preserve">
+    <value>Fire Blast</value>
+  </data>
+  <data name="Skill76" xml:space="preserve">
+    <value>Plasma Storm</value>
+  </data>
+  <data name="Skill77" xml:space="preserve">
+    <value>Infinity Arrow</value>
+  </data>
+  <data name="Skill78" xml:space="preserve">
+    <value>Fire Scream</value>
+  </data>
+  <data name="Skill79" xml:space="preserve">
+    <value>Explosion</value>
+  </data>
+  <data name="Skill200" xml:space="preserve">
+    <value>Monster Summon</value>
+  </data>
+  <data name="Skill201" xml:space="preserve">
+    <value>Magic Damage Immunity</value>
+  </data>
+  <data name="Skill202" xml:space="preserve">
+    <value>Physi Damage Immunity</value>
+  </data>
+  <data name="Skill203" xml:space="preserve">
+    <value>Potion of Bless</value>
+  </data>
+  <data name="Skill204" xml:space="preserve">
+    <value>Potion of Soul</value>
+  </data>
+  <data name="Skill210" xml:space="preserve">
+    <value>Order of Protection</value>
+  </data>
+  <data name="Skill211" xml:space="preserve">
+    <value>Order of Restraint</value>
+  </data>
+  <data name="Skill212" xml:space="preserve">
+    <value>Order of Tracking</value>
+  </data>
+  <data name="Skill213" xml:space="preserve">
+    <value>Order of Weaken</value>
+  </data>
+  <data name="Skill214" xml:space="preserve">
+    <value>Drain Life</value>
+  </data>
+  <data name="Skill215" xml:space="preserve">
+    <value>Chain Lightning</value>
+  </data>
+  <data name="Skill217" xml:space="preserve">
+    <value>Damage Reflect</value>
+  </data>
+  <data name="Skill218" xml:space="preserve">
+    <value>Berserker</value>
+  </data>
+  <data name="Skill219" xml:space="preserve">
+    <value>Sleep</value>
+  </data>
+  <data name="Skill221" xml:space="preserve">
+    <value>Lesser Damage</value>
+  </data>
+  <data name="Skill222" xml:space="preserve">
+    <value>Lesser Defense</value>
+  </data>
+  <data name="Skill223" xml:space="preserve">
+    <value>Sahamutt</value>
+  </data>
+  <data name="Skill224" xml:space="preserve">
+    <value>Neil</value>
+  </data>
+  <data name="Skill225" xml:space="preserve">
+    <value>Ghost Phantom</value>
+  </data>
+  <data name="Skill230" xml:space="preserve">
+    <value>Red Storm</value>
+  </data>
+  <data name="Skill232" xml:space="preserve">
+    <value>Frozen Stab</value>
+  </data>
+  <data name="Skill233" xml:space="preserve">
+    <value>Magic Circle</value>
+  </data>
+  <data name="Skill234" xml:space="preserve">
+    <value>Shield Recover</value>
+  </data>
+  <data name="Skill235" xml:space="preserve">
+    <value>Multi Shot</value>
+  </data>
+  <data name="Skill236" xml:space="preserve">
+    <value>Sword Slash</value>
+  </data>
+  <data name="Skill237" xml:space="preserve">
+    <value>Lightning Storm</value>
+  </data>
+  <data name="Skill238" xml:space="preserve">
+    <value>Birds</value>
+  </data>
+  <data name="Skill239" xml:space="preserve">
+    <value>Self Explosion</value>
+  </data>
+  <data name="Skill240" xml:space="preserve">
+    <value>Magical Shot</value>
+  </data>
+  <data name="Skill241" xml:space="preserve">
+    <value>Shining Bird</value>
+  </data>
+  <data name="Skill242" xml:space="preserve">
+    <value>Dragon Violent</value>
+  </data>
+  <data name="Skill243" xml:space="preserve">
+    <value>Spearstorm</value>
+  </data>
+  <data name="Skill244" xml:space="preserve">
+    <value>Reflection Barrier</value>
+  </data>
+  <data name="Skill245" xml:space="preserve">
+    <value>Marvel Burst</value>
+  </data>
+  <data name="Skill246" xml:space="preserve">
+    <value>Unleashed Marvel</value>
+  </data>
+  <data name="Skill247" xml:space="preserve">
+    <value>Ultimate Force</value>
+  </data>
+  <data name="Skill248" xml:space="preserve">
+    <value>Reflection Barrier(Reflective Barrier)</value>
+  </data>
+  <data name="Skill249" xml:space="preserve">
+    <value>Illusion Avatar Atack Skill</value>
+  </data>
+  <data name="Skill260" xml:space="preserve">
+    <value>Large Ring Blower</value>
+  </data>
+  <data name="Skill261" xml:space="preserve">
+    <value>Upper Beast</value>
+  </data>
+  <data name="Skill262" xml:space="preserve">
+    <value>Chain Driver</value>
+  </data>
+  <data name="Skill263" xml:space="preserve">
+    <value>Dark Side</value>
+  </data>
+  <data name="Skill264" xml:space="preserve">
+    <value>Dragon Lore</value>
+  </data>
+  <data name="Skill265" xml:space="preserve">
+    <value>Dragon Slayer</value>
+  </data>
+  <data name="Skill266" xml:space="preserve">
+    <value>Greater Ignore Damage Rate</value>
+  </data>
+  <data name="Skill267" xml:space="preserve">
+    <value>Fitness</value>
+  </data>
+  <data name="Skill268" xml:space="preserve">
+    <value>Greater Defense Success Rate</value>
+  </data>
+  <data name="Skill269" xml:space="preserve">
+    <value>Charge</value>
+  </data>
+  <data name="Skill270" xml:space="preserve">
+    <value>Phoenix Shot</value>
+  </data>
+  <data name="Skill271" xml:space="preserve">
+    <value>Spin Step</value>
+  </data>
+  <data name="Skill272" xml:space="preserve">
+    <value>Circle Shield</value>
+  </data>
+  <data name="Skill273" xml:space="preserve">
+    <value>Obsidian</value>
+  </data>
+  <data name="Skill274" xml:space="preserve">
+    <value>Magic Pin</value>
+  </data>
+  <data name="Skill275" xml:space="preserve">
+    <value>Clash</value>
+  </data>
+  <data name="Skill276" xml:space="preserve">
+    <value>Harsh Strike</value>
+  </data>
+  <data name="Skill277" xml:space="preserve">
+    <value>Shining Peak</value>
+  </data>
+  <data name="Skill278" xml:space="preserve">
+    <value>Wrath</value>
+  </data>
+  <data name="Skill279" xml:space="preserve">
+    <value>Breche</value>
+  </data>
+  <data name="Skill280" xml:space="preserve">
+    <value>Spin Step Explosion</value>
+  </data>
+  <data name="Skill281" xml:space="preserve">
+    <value>Magic Pin Explosion</value>
+  </data>
+  <data name="Skill282" xml:space="preserve">
+    <value>Spirit Hook</value>
+  </data>
+  <data name="Skill283" xml:space="preserve">
+    <value>Magic Arrow</value>
+  </data>
+  <data name="Skill284" xml:space="preserve">
+    <value>Plasma Ball</value>
+  </data>
+  <data name="Skill285" xml:space="preserve">
+    <value>Shock Blast</value>
+  </data>
+  <data name="Skill286" xml:space="preserve">
+    <value>Might</value>
+  </data>
+  <data name="Skill287" xml:space="preserve">
+    <value>Haste</value>
+  </data>
+  <data name="Skill288" xml:space="preserve">
+    <value>Death Scythe</value>
+  </data>
+  <data name="Skill289" xml:space="preserve">
+    <value>Darkness</value>
+  </data>
+  <data name="Skill291" xml:space="preserve">
+    <value>Elite Monster Skill</value>
+  </data>
+  <data name="Skill292" xml:space="preserve">
+    <value>Sword Inertia</value>
+  </data>
+  <data name="Skill293" xml:space="preserve">
+    <value>Bat Flock</value>
+  </data>
+  <data name="Skill294" xml:space="preserve">
+    <value>Pierce Attack</value>
+  </data>
+  <data name="Skill295" xml:space="preserve">
+    <value>Detection</value>
+  </data>
+  <data name="Skill297" xml:space="preserve">
+    <value>Demolish</value>
+  </data>
+  <data name="Skill298" xml:space="preserve">
+    <value>Blessing of Experience</value>
+  </data>
+  <data name="Skill300" xml:space="preserve">
+    <value>Add Item Durability Rate</value>
+  </data>
+  <data name="Skill301" xml:space="preserve">
+    <value>Add Defense Success Rate PvP</value>
+  </data>
+  <data name="Skill302" xml:space="preserve">
+    <value>Add Max SD</value>
+  </data>
+  <data name="Skill303" xml:space="preserve">
+    <value>Add MP Recovery Rate</value>
+  </data>
+  <data name="Skill304" xml:space="preserve">
+    <value>Add Poison Resistance</value>
+  </data>
+  <data name="Skill305" xml:space="preserve">
+    <value>Add Item Durability Rate</value>
+  </data>
+  <data name="Skill306" xml:space="preserve">
+    <value>Add SD Recovery Rate</value>
+  </data>
+  <data name="Skill307" xml:space="preserve">
+    <value>Add HP Recovery Rate</value>
+  </data>
+  <data name="Skill308" xml:space="preserve">
+    <value>Add Lightning Resistance</value>
+  </data>
+  <data name="Skill309" xml:space="preserve">
+    <value>Add Defense</value>
+  </data>
+  <data name="Skill310" xml:space="preserve">
+    <value>Add BP Recovery Rate</value>
+  </data>
+  <data name="Skill311" xml:space="preserve">
+    <value>Add Ice Resistance</value>
+  </data>
+  <data name="Skill312" xml:space="preserve">
+    <value>Add Item Durability Rate</value>
+  </data>
+  <data name="Skill313" xml:space="preserve">
+    <value>Add Defense Success Rate</value>
+  </data>
+  <data name="Skill314" xml:space="preserve">
+    <value>Cast Invincibility</value>
+  </data>
+  <data name="Skill315" xml:space="preserve">
+    <value>Add Armor Set Bonus</value>
+  </data>
+  <data name="Skill316" xml:space="preserve">
+    <value>Add Reflect Damage</value>
+  </data>
+  <data name="Skill317" xml:space="preserve">
+    <value>Add Energy</value>
+  </data>
+  <data name="Skill318" xml:space="preserve">
+    <value>Add Vitality</value>
+  </data>
+  <data name="Skill319" xml:space="preserve">
+    <value>Add Agility</value>
+  </data>
+  <data name="Skill320" xml:space="preserve">
+    <value>Add Strength</value>
+  </data>
+  <data name="Skill321" xml:space="preserve">
+    <value>Wing of Storm Absorption PowUp</value>
+  </data>
+  <data name="Skill322" xml:space="preserve">
+    <value>Add DK Wing Defense</value>
+  </data>
+  <data name="Skill323" xml:space="preserve">
+    <value>Iron Defense</value>
+  </data>
+  <data name="Skill324" xml:space="preserve">
+    <value>Add DK Wing Damage</value>
+  </data>
+  <data name="Skill325" xml:space="preserve">
+    <value>Add Attack Success Rate</value>
+  </data>
+  <data name="Skill326" xml:space="preserve">
+    <value>Add Cyclone Improved</value>
+  </data>
+  <data name="Skill327" xml:space="preserve">
+    <value>Add Slash Improved</value>
+  </data>
+  <data name="Skill328" xml:space="preserve">
+    <value>Add Falling Slash Improved</value>
+  </data>
+  <data name="Skill329" xml:space="preserve">
+    <value>Add Lunge Improved</value>
+  </data>
+  <data name="Skill330" xml:space="preserve">
+    <value>Add Twisting Slash Improved</value>
+  </data>
+  <data name="Skill331" xml:space="preserve">
+    <value>Add Rageful Blow Improved</value>
+  </data>
+  <data name="Skill332" xml:space="preserve">
+    <value>Add Twisting Slash Enhanced</value>
+  </data>
+  <data name="Skill333" xml:space="preserve">
+    <value>Add Rageful Blow Enhanced</value>
+  </data>
+  <data name="Skill334" xml:space="preserve">
+    <value>Add Max HP</value>
+  </data>
+  <data name="Skill335" xml:space="preserve">
+    <value>Add Weapon Damage</value>
+  </data>
+  <data name="Skill336" xml:space="preserve">
+    <value>Add Death Stab Improved</value>
+  </data>
+  <data name="Skill338" xml:space="preserve">
+    <value>Add Max MP</value>
+  </data>
+  <data name="Skill339" xml:space="preserve">
+    <value>Add Death Stab Enhanced</value>
+  </data>
+  <data name="Skill340" xml:space="preserve">
+    <value>Add Frozen Stab Enhanced</value>
+  </data>
+  <data name="Skill341" xml:space="preserve">
+    <value>Add Max BP</value>
+  </data>
+  <data name="Skill342" xml:space="preserve">
+    <value>Add Death Stab Mastered</value>
+  </data>
+  <data name="Skill343" xml:space="preserve">
+    <value>Add Frozen Stab Mastered</value>
+  </data>
+  <data name="Skill344" xml:space="preserve">
+    <value>Add Blood Storm</value>
+  </data>
+  <data name="Skill345" xml:space="preserve">
+    <value>Add Combo Damage</value>
+  </data>
+  <data name="Skill346" xml:space="preserve">
+    <value>Add Blood Storm Improved</value>
+  </data>
+  <data name="Skill347" xml:space="preserve">
+    <value>Add Attack Success Rate PvP</value>
+  </data>
+  <data name="Skill348" xml:space="preserve">
+    <value>Add Two Hand Sword Damage</value>
+  </data>
+  <data name="Skill349" xml:space="preserve">
+    <value>Add One Hand Sword Damage</value>
+  </data>
+  <data name="Skill350" xml:space="preserve">
+    <value>Add Mace Damage</value>
+  </data>
+  <data name="Skill351" xml:space="preserve">
+    <value>Add Spear Damage</value>
+  </data>
+  <data name="Skill352" xml:space="preserve">
+    <value>Add Two Hand Sword Mastery</value>
+  </data>
+  <data name="Skill353" xml:space="preserve">
+    <value>Add One Hand Sword Mastery</value>
+  </data>
+  <data name="Skill354" xml:space="preserve">
+    <value>Add Mace Mastery</value>
+  </data>
+  <data name="Skill355" xml:space="preserve">
+    <value>Add Spear Mastery</value>
+  </data>
+  <data name="Skill356" xml:space="preserve">
+    <value>Add Greater Life Improved</value>
+  </data>
+  <data name="Skill357" xml:space="preserve">
+    <value>Add MP Consumption Rate</value>
+  </data>
+  <data name="Skill358" xml:space="preserve">
+    <value>Add Hunt SD</value>
+  </data>
+  <data name="Skill359" xml:space="preserve">
+    <value>Add Hunt HP</value>
+  </data>
+  <data name="Skill360" xml:space="preserve">
+    <value>Add Greater Life Enhanced</value>
+  </data>
+  <data name="Skill361" xml:space="preserve">
+    <value>Add Min Physi Damage</value>
+  </data>
+  <data name="Skill362" xml:space="preserve">
+    <value>Add Hunt MP</value>
+  </data>
+  <data name="Skill363" xml:space="preserve">
+    <value>Add Greater Life Mastered</value>
+  </data>
+  <data name="Skill364" xml:space="preserve">
+    <value>Add Max Physi Damage</value>
+  </data>
+  <data name="Skill366" xml:space="preserve">
+    <value>Add Critical Damage Rate</value>
+  </data>
+  <data name="Skill367" xml:space="preserve">
+    <value>Add Restore MP Rate</value>
+  </data>
+  <data name="Skill368" xml:space="preserve">
+    <value>Add Restore HP Rate</value>
+  </data>
+  <data name="Skill369" xml:space="preserve">
+    <value>Add Excellent Damage Rate</value>
+  </data>
+  <data name="Skill370" xml:space="preserve">
+    <value>Add Double Damage Rate</value>
+  </data>
+  <data name="Skill371" xml:space="preserve">
+    <value>Add Ignore Defense Rate</value>
+  </data>
+  <data name="Skill372" xml:space="preserve">
+    <value>Add Restore SD Rate</value>
+  </data>
+  <data name="Skill373" xml:space="preserve">
+    <value>Increases triple damage rate</value>
+  </data>
+  <data name="Skill374" xml:space="preserve">
+    <value>Eternal Wings Absorption PowUp</value>
+  </data>
+  <data name="Skill375" xml:space="preserve">
+    <value>Add DW Wing Defense</value>
+  </data>
+  <data name="Skill377" xml:space="preserve">
+    <value>Add DW Wing Damage</value>
+  </data>
+  <data name="Skill378" xml:space="preserve">
+    <value>Add Flame Improved</value>
+  </data>
+  <data name="Skill379" xml:space="preserve">
+    <value>Add Lightning Improved</value>
+  </data>
+  <data name="Skill380" xml:space="preserve">
+    <value>Add Magic Circle Improved</value>
+  </data>
+  <data name="Skill381" xml:space="preserve">
+    <value>Add Inferno Improved</value>
+  </data>
+  <data name="Skill382" xml:space="preserve">
+    <value>Add Blast Improved</value>
+  </data>
+  <data name="Skill383" xml:space="preserve">
+    <value>Add Magic Circle Enhanced</value>
+  </data>
+  <data name="Skill384" xml:space="preserve">
+    <value>Add Poison Improved</value>
+  </data>
+  <data name="Skill385" xml:space="preserve">
+    <value>Add Evil Spirit Improved</value>
+  </data>
+  <data name="Skill386" xml:space="preserve">
+    <value>Add Magic Damage</value>
+  </data>
+  <data name="Skill387" xml:space="preserve">
+    <value>Add Decay Improved</value>
+  </data>
+  <data name="Skill388" xml:space="preserve">
+    <value>Add Hell Fire Improved</value>
+  </data>
+  <data name="Skill389" xml:space="preserve">
+    <value>Add Ice Improved</value>
+  </data>
+  <data name="Skill390" xml:space="preserve">
+    <value>Add Meteorite Improved</value>
+  </data>
+  <data name="Skill391" xml:space="preserve">
+    <value>Add Ice Storm Improved</value>
+  </data>
+  <data name="Skill392" xml:space="preserve">
+    <value>Add Nova Improved</value>
+  </data>
+  <data name="Skill393" xml:space="preserve">
+    <value>Add Ice Storm Enhanced</value>
+  </data>
+  <data name="Skill394" xml:space="preserve">
+    <value>Add Meteorite Enhanced</value>
+  </data>
+  <data name="Skill395" xml:space="preserve">
+    <value>Nova Cast Strengthener</value>
+  </data>
+  <data name="Skill397" xml:space="preserve">
+    <value>Add One Hand Staff Damage</value>
+  </data>
+  <data name="Skill398" xml:space="preserve">
+    <value>Add Two Hand Staff Damage</value>
+  </data>
+  <data name="Skill399" xml:space="preserve">
+    <value>Add Shield Defense</value>
+  </data>
+  <data name="Skill400" xml:space="preserve">
+    <value>Add One Hand Staff Mastery</value>
+  </data>
+  <data name="Skill401" xml:space="preserve">
+    <value>Add Two Hand Staff Mastery</value>
+  </data>
+  <data name="Skill402" xml:space="preserve">
+    <value>Add Shield Mastery</value>
+  </data>
+  <data name="Skill403" xml:space="preserve">
+    <value>Add Mana Shield Improved</value>
+  </data>
+  <data name="Skill404" xml:space="preserve">
+    <value>Add Mana Shield Enhanced</value>
+  </data>
+  <data name="Skill405" xml:space="preserve">
+    <value>Add Min Magic Damage</value>
+  </data>
+  <data name="Skill406" xml:space="preserve">
+    <value>Add Mana Shield Mastered</value>
+  </data>
+  <data name="Skill407" xml:space="preserve">
+    <value>Add Max Magic Damage</value>
+  </data>
+  <data name="Skill409" xml:space="preserve">
+    <value>Illusion Wings Absorption PowUp</value>
+  </data>
+  <data name="Skill410" xml:space="preserve">
+    <value>Add FE Wing Defense</value>
+  </data>
+  <data name="Skill411" xml:space="preserve">
+    <value>Add Five Shot Improved</value>
+  </data>
+  <data name="Skill412" xml:space="preserve">
+    <value>Add FE Wing Damage</value>
+  </data>
+  <data name="Skill413" xml:space="preserve">
+    <value>Add Heal Improved</value>
+  </data>
+  <data name="Skill414" xml:space="preserve">
+    <value>Add Triple Shot Improved</value>
+  </data>
+  <data name="Skill415" xml:space="preserve">
+    <value>Add Summon Life</value>
+  </data>
+  <data name="Skill416" xml:space="preserve">
+    <value>Add Penetration Improved</value>
+  </data>
+  <data name="Skill417" xml:space="preserve">
+    <value>Add Greater Defense Improved</value>
+  </data>
+  <data name="Skill418" xml:space="preserve">
+    <value>Add Triple Shot Enhanced</value>
+  </data>
+  <data name="Skill419" xml:space="preserve">
+    <value>Add Summon Defense</value>
+  </data>
+  <data name="Skill420" xml:space="preserve">
+    <value>Add Greater Damage Improved</value>
+  </data>
+  <data name="Skill421" xml:space="preserve">
+    <value>Add Weapon Damage</value>
+  </data>
+  <data name="Skill422" xml:space="preserve">
+    <value>Add Greater Damage Enhanced</value>
+  </data>
+  <data name="Skill423" xml:space="preserve">
+    <value>Add Greater Defense Enhanced</value>
+  </data>
+  <data name="Skill424" xml:space="preserve">
+    <value>Add Ice Arrow Improved</value>
+  </data>
+  <data name="Skill425" xml:space="preserve">
+    <value>Add Cure</value>
+  </data>
+  <data name="Skill426" xml:space="preserve">
+    <value>Add Party Healing</value>
+  </data>
+  <data name="Skill427" xml:space="preserve">
+    <value>Add Poison Arrow</value>
+  </data>
+  <data name="Skill428" xml:space="preserve">
+    <value>Add Summon Damage</value>
+  </data>
+  <data name="Skill429" xml:space="preserve">
+    <value>Add Party Healing Improved</value>
+  </data>
+  <data name="Skill430" xml:space="preserve">
+    <value>Add Bless</value>
+  </data>
+  <data name="Skill431" xml:space="preserve">
+    <value>Add Five Shot Enhanced</value>
+  </data>
+  <data name="Skill432" xml:space="preserve">
+    <value>Add Summon Satyros</value>
+  </data>
+  <data name="Skill433" xml:space="preserve">
+    <value>Add Bless Improved</value>
+  </data>
+  <data name="Skill434" xml:space="preserve">
+    <value>Add Poison Arrow Improved</value>
+  </data>
+  <data name="Skill435" xml:space="preserve">
+    <value>Add Bow Damage</value>
+  </data>
+  <data name="Skill436" xml:space="preserve">
+    <value>Add Cross Bow Damage</value>
+  </data>
+  <data name="Skill437" xml:space="preserve">
+    <value>Add Shield Defense</value>
+  </data>
+  <data name="Skill438" xml:space="preserve">
+    <value>Add Bow Mastery</value>
+  </data>
+  <data name="Skill439" xml:space="preserve">
+    <value>Add Cross Bow Mastery</value>
+  </data>
+  <data name="Skill440" xml:space="preserve">
+    <value>Add Shield Mastery</value>
+  </data>
+  <data name="Skill441" xml:space="preserve">
+    <value>Add Infinity Arrow Improved</value>
+  </data>
+  <data name="Skill442" xml:space="preserve">
+    <value>Add Min Physi Damage</value>
+  </data>
+  <data name="Skill443" xml:space="preserve">
+    <value>Add Max Physi Damage</value>
+  </data>
+  <data name="Skill445" xml:space="preserve">
+    <value>DimensionWings Absorb PowUp</value>
+  </data>
+  <data name="Skill446" xml:space="preserve">
+    <value>Add SU Wing Defense</value>
+  </data>
+  <data name="Skill447" xml:space="preserve">
+    <value>Add SU Wing Damage</value>
+  </data>
+  <data name="Skill451" xml:space="preserve">
+    <value>Add Sahamutt Enhanced</value>
+  </data>
+  <data name="Skill452" xml:space="preserve">
+    <value>Add Neil Enhanced</value>
+  </data>
+  <data name="Skill453" xml:space="preserve">
+    <value>Add Ghost Phantom Enhanced</value>
+  </data>
+  <data name="Skill454" xml:space="preserve">
+    <value>Add Sleep Improved</value>
+  </data>
+  <data name="Skill455" xml:space="preserve">
+    <value>Add Chain Lightning Improved</value>
+  </data>
+  <data name="Skill456" xml:space="preserve">
+    <value>Add Red Storm Improved</value>
+  </data>
+  <data name="Skill457" xml:space="preserve">
+    <value>Add Magic Damage</value>
+  </data>
+  <data name="Skill458" xml:space="preserve">
+    <value>Add Drain Life Improved</value>
+  </data>
+  <data name="Skill459" xml:space="preserve">
+    <value>Add Lesser Damage Improved</value>
+  </data>
+  <data name="Skill460" xml:space="preserve">
+    <value>Add Lesser Defense Improved</value>
+  </data>
+  <data name="Skill461" xml:space="preserve">
+    <value>Add Blind</value>
+  </data>
+  <data name="Skill462" xml:space="preserve">
+    <value>Add Drain Life Enhanced</value>
+  </data>
+  <data name="Skill463" xml:space="preserve">
+    <value>Add Blind Improved</value>
+  </data>
+  <data name="Skill465" xml:space="preserve">
+    <value>Add Stick Damage</value>
+  </data>
+  <data name="Skill466" xml:space="preserve">
+    <value>Add Book Damage</value>
+  </data>
+  <data name="Skill467" xml:space="preserve">
+    <value>Add Stick Mastery</value>
+  </data>
+  <data name="Skill468" xml:space="preserve">
+    <value>Add Book Mastery</value>
+  </data>
+  <data name="Skill469" xml:space="preserve">
+    <value>Add Sword Power Improved</value>
+  </data>
+  <data name="Skill470" xml:space="preserve">
+    <value>Add Sword Power Enhanced</value>
+  </data>
+  <data name="Skill471" xml:space="preserve">
+    <value>Add Min Magic Damage</value>
+  </data>
+  <data name="Skill473" xml:space="preserve">
+    <value>Add Max Magic Damage</value>
+  </data>
+  <data name="Skill475" xml:space="preserve">
+    <value>Wing of Ruin Absorption PowUp</value>
+  </data>
+  <data name="Skill476" xml:space="preserve">
+    <value>Add MG Wing Defense</value>
+  </data>
+  <data name="Skill478" xml:space="preserve">
+    <value>Add MG Wing Damage</value>
+  </data>
+  <data name="Skill479" xml:space="preserve">
+    <value>Add Cyclone Improved</value>
+  </data>
+  <data name="Skill480" xml:space="preserve">
+    <value>Add Lightning Improved</value>
+  </data>
+  <data name="Skill481" xml:space="preserve">
+    <value>Add Twisting Slash Improved</value>
+  </data>
+  <data name="Skill482" xml:space="preserve">
+    <value>Add Power Slash Improved</value>
+  </data>
+  <data name="Skill483" xml:space="preserve">
+    <value>Add Flame Improved</value>
+  </data>
+  <data name="Skill484" xml:space="preserve">
+    <value>Add Blast Improved</value>
+  </data>
+  <data name="Skill485" xml:space="preserve">
+    <value>Add Weapon Damage</value>
+  </data>
+  <data name="Skill486" xml:space="preserve">
+    <value>Add Inferno Improved</value>
+  </data>
+  <data name="Skill487" xml:space="preserve">
+    <value>Add Evil Spirit Improved</value>
+  </data>
+  <data name="Skill488" xml:space="preserve">
+    <value>Add Magic Damage</value>
+  </data>
+  <data name="Skill489" xml:space="preserve">
+    <value>Add Ice Improved</value>
+  </data>
+  <data name="Skill490" xml:space="preserve">
+    <value>Add Fire Slash Improved</value>
+  </data>
+  <data name="Skill491" xml:space="preserve">
+    <value>Add Ice Enhanced</value>
+  </data>
+  <data name="Skill492" xml:space="preserve">
+    <value>Add Sword Slash Improved</value>
+  </data>
+  <data name="Skill493" xml:space="preserve">
+    <value>Add Fire Slash Enhanced</value>
+  </data>
+  <data name="Skill494" xml:space="preserve">
+    <value>Add Sword Slash Enhanced</value>
+  </data>
+  <data name="Skill495" xml:space="preserve">
+    <value>Add Earth Prison</value>
+  </data>
+  <data name="Skill496" xml:space="preserve">
+    <value>Add Lightning Storm Improved</value>
+  </data>
+  <data name="Skill497" xml:space="preserve">
+    <value>Add Earth Prison Improved</value>
+  </data>
+  <data name="Skill504" xml:space="preserve">
+    <value>Emperor Cape Absorption PowUp</value>
+  </data>
+  <data name="Skill505" xml:space="preserve">
+    <value>Add DL Wing Defense</value>
+  </data>
+  <data name="Skill506" xml:space="preserve">
+    <value>Add Leadership</value>
+  </data>
+  <data name="Skill507" xml:space="preserve">
+    <value>Add DL Wing Damage</value>
+  </data>
+  <data name="Skill508" xml:space="preserve">
+    <value>Add Fire Burst Improved</value>
+  </data>
+  <data name="Skill510" xml:space="preserve">
+    <value>Add Dark Horse Defense</value>
+  </data>
+  <data name="Skill511" xml:space="preserve">
+    <value>Add Greater C. D. Improved</value>
+  </data>
+  <data name="Skill512" xml:space="preserve">
+    <value>Add Earthquake Improved</value>
+  </data>
+  <data name="Skill513" xml:space="preserve">
+    <value>Add Weapon Damage</value>
+  </data>
+  <data name="Skill514" xml:space="preserve">
+    <value>Add Fire Burst Enhanced</value>
+  </data>
+  <data name="Skill518" xml:space="preserve">
+    <value>Add Fire Scream Improved</value>
+  </data>
+  <data name="Skill519" xml:space="preserve">
+    <value>Add Electric Spark Improved</value>
+  </data>
+  <data name="Skill520" xml:space="preserve">
+    <value>Add Fire Scream Enhanced</value>
+  </data>
+  <data name="Skill523" xml:space="preserve">
+    <value>Add Birds Improved</value>
+  </data>
+  <data name="Skill527" xml:space="preserve">
+    <value>Add Scepter Damage</value>
+  </data>
+  <data name="Skill528" xml:space="preserve">
+    <value>Add Shield Defense</value>
+  </data>
+  <data name="Skill529" xml:space="preserve">
+    <value>Add Scepter Pet Damage</value>
+  </data>
+  <data name="Skill530" xml:space="preserve">
+    <value>Add Dark Spirit C. D. Rate</value>
+  </data>
+  <data name="Skill531" xml:space="preserve">
+    <value>Add Scepter Mastery</value>
+  </data>
+  <data name="Skill532" xml:space="preserve">
+    <value>Add Shield Mastery</value>
+  </data>
+  <data name="Skill533" xml:space="preserve">
+    <value>Add Damage By Leadership</value>
+  </data>
+  <data name="Skill534" xml:space="preserve">
+    <value>Add Dark Spirit E. D. Rate</value>
+  </data>
+  <data name="Skill538" xml:space="preserve">
+    <value>Add Dark Spirit D. D. Rate</value>
+  </data>
+  <data name="Skill539" xml:space="preserve">
+    <value>Add Dark Spirit I. D. Rate</value>
+  </data>
+  <data name="Skill548" xml:space="preserve">
+    <value>Reigning Cloak Absorption PowUp</value>
+  </data>
+  <data name="Skill549" xml:space="preserve">
+    <value>Add RF Wing Defense</value>
+  </data>
+  <data name="Skill550" xml:space="preserve">
+    <value>Add RF Wing Damage</value>
+  </data>
+  <data name="Skill551" xml:space="preserve">
+    <value>Add Large Ring Blower Improved</value>
+  </data>
+  <data name="Skill552" xml:space="preserve">
+    <value>Add Upper Beast Improved</value>
+  </data>
+  <data name="Skill554" xml:space="preserve">
+    <value>Add Large Ring Blower Enhanced</value>
+  </data>
+  <data name="Skill555" xml:space="preserve">
+    <value>Add Upper Beast Enhanced</value>
+  </data>
+  <data name="Skill556" xml:space="preserve">
+    <value>Add Defense Success Rate</value>
+  </data>
+  <data name="Skill557" xml:space="preserve">
+    <value>Add Weapon Damage</value>
+  </data>
+  <data name="Skill558" xml:space="preserve">
+    <value>Add Chain Driver Improved</value>
+  </data>
+  <data name="Skill559" xml:space="preserve">
+    <value>Add Dark Side Improved</value>
+  </data>
+  <data name="Skill560" xml:space="preserve">
+    <value>Add Dragon Lore Improved</value>
+  </data>
+  <data name="Skill561" xml:space="preserve">
+    <value>Add Dragon Lore Enhanced</value>
+  </data>
+  <data name="Skill562" xml:space="preserve">
+    <value>Add Chain Driver Enhanced</value>
+  </data>
+  <data name="Skill563" xml:space="preserve">
+    <value>Add Dark Side Enhanced</value>
+  </data>
+  <data name="Skill564" xml:space="preserve">
+    <value>Add Dragon Slayer Improved</value>
+  </data>
+  <data name="Skill565" xml:space="preserve">
+    <value>Add Blood Howling</value>
+  </data>
+  <data name="Skill566" xml:space="preserve">
+    <value>Add Dragon Slayer Enhanced</value>
+  </data>
+  <data name="Skill567" xml:space="preserve">
+    <value>Add Blood Howling Improved</value>
+  </data>
+  <data name="Skill568" xml:space="preserve">
+    <value>Add Glove Damage</value>
+  </data>
+  <data name="Skill569" xml:space="preserve">
+    <value>Add Greater D. S. Rate Improved</value>
+  </data>
+  <data name="Skill571" xml:space="preserve">
+    <value>Add Glove Mastery</value>
+  </data>
+  <data name="Skill572" xml:space="preserve">
+    <value>Add Greater D. S. Rate Enhanced</value>
+  </data>
+  <data name="Skill573" xml:space="preserve">
+    <value>Add Fitness Improved</value>
+  </data>
+  <data name="Skill574" xml:space="preserve">
+    <value>Defense Switch</value>
+  </data>
+  <data name="Skill578" xml:space="preserve">
+    <value>Add Item Durability Rate</value>
+  </data>
+  <data name="Skill579" xml:space="preserve">
+    <value>Add Defense Success Rate PvP</value>
+  </data>
+  <data name="Skill580" xml:space="preserve">
+    <value>Add Max SD</value>
+  </data>
+  <data name="Skill581" xml:space="preserve">
+    <value>Add MP Recovery Rate</value>
+  </data>
+  <data name="Skill582" xml:space="preserve">
+    <value>Add Poison Resistance</value>
+  </data>
+  <data name="Skill583" xml:space="preserve">
+    <value>Add Item Durability Rate</value>
+  </data>
+  <data name="Skill584" xml:space="preserve">
+    <value>Add SD Recovery Rate</value>
+  </data>
+  <data name="Skill585" xml:space="preserve">
+    <value>Add HP Recovery Rate</value>
+  </data>
+  <data name="Skill586" xml:space="preserve">
+    <value>Add Lightning Resistance</value>
+  </data>
+  <data name="Skill587" xml:space="preserve">
+    <value>Add Defense</value>
+  </data>
+  <data name="Skill588" xml:space="preserve">
+    <value>Add BP Recovery Rate</value>
+  </data>
+  <data name="Skill589" xml:space="preserve">
+    <value>Add Ice Resistance</value>
+  </data>
+  <data name="Skill590" xml:space="preserve">
+    <value>Add Item Durability Rate</value>
+  </data>
+  <data name="Skill591" xml:space="preserve">
+    <value>Add Defense Success Rate</value>
+  </data>
+  <data name="Skill592" xml:space="preserve">
+    <value>Cast Invincibility</value>
+  </data>
+  <data name="Skill593" xml:space="preserve">
+    <value>Add Armor Set Bonus</value>
+  </data>
+  <data name="Skill594" xml:space="preserve">
+    <value>Add Reflect Damage</value>
+  </data>
+  <data name="Skill595" xml:space="preserve">
+    <value>Add Energy</value>
+  </data>
+  <data name="Skill596" xml:space="preserve">
+    <value>Add Vitality</value>
+  </data>
+  <data name="Skill597" xml:space="preserve">
+    <value>Add Agility</value>
+  </data>
+  <data name="Skill598" xml:space="preserve">
+    <value>Add Strength</value>
+  </data>
+  <data name="Skill599" xml:space="preserve">
+    <value>Add Attack Success Rate</value>
+  </data>
+  <data name="Skill600" xml:space="preserve">
+    <value>Add Max HP</value>
+  </data>
+  <data name="Skill601" xml:space="preserve">
+    <value>Add Max MP</value>
+  </data>
+  <data name="Skill602" xml:space="preserve">
+    <value>Add Max BP</value>
+  </data>
+  <data name="Skill603" xml:space="preserve">
+    <value>Add Attack Success Rate PvP</value>
+  </data>
+  <data name="Skill604" xml:space="preserve">
+    <value>Add MP Consumption Rate</value>
+  </data>
+  <data name="Skill605" xml:space="preserve">
+    <value>Add Hunt SD</value>
+  </data>
+  <data name="Skill606" xml:space="preserve">
+    <value>Add Hunt HP</value>
+  </data>
+  <data name="Skill607" xml:space="preserve">
+    <value>Add Min Physi Damage</value>
+  </data>
+  <data name="Skill608" xml:space="preserve">
+    <value>Add Hunt MP</value>
+  </data>
+  <data name="Skill609" xml:space="preserve">
+    <value>Add Max Physi Damage</value>
+  </data>
+  <data name="Skill610" xml:space="preserve">
+    <value>Add Critical Damage Rate</value>
+  </data>
+  <data name="Skill611" xml:space="preserve">
+    <value>Add Restore MP Rate</value>
+  </data>
+  <data name="Skill612" xml:space="preserve">
+    <value>Add Restore HP Rate</value>
+  </data>
+  <data name="Skill613" xml:space="preserve">
+    <value>Add Excellent Damage Rate</value>
+  </data>
+  <data name="Skill614" xml:space="preserve">
+    <value>Add Double Damage Rate</value>
+  </data>
+  <data name="Skill615" xml:space="preserve">
+    <value>Add Ignore Defense Rate</value>
+  </data>
+  <data name="Skill616" xml:space="preserve">
+    <value>Add Restore SD Rate</value>
+  </data>
+  <data name="Skill617" xml:space="preserve">
+    <value>Add Triple Damage Rate</value>
+  </data>
+  <data name="Skill618" xml:space="preserve">
+    <value>Order of Protection</value>
+  </data>
+  <data name="Skill619" xml:space="preserve">
+    <value>Order of Restraint</value>
+  </data>
+  <data name="Skill620" xml:space="preserve">
+    <value>Order of Tracking</value>
+  </data>
+  <data name="Skill621" xml:space="preserve">
+    <value>Order of Weaken</value>
+  </data>
+  <data name="Skill623" xml:space="preserve">
+    <value>Add Block Part Damage Rate</value>
+  </data>
+  <data name="Skill624" xml:space="preserve">
+    <value>Add Parry Full Damage Rate</value>
+  </data>
+  <data name="Skill625" xml:space="preserve">
+    <value>Add Block Full Damage Rate</value>
+  </data>
+  <data name="Skill626" xml:space="preserve">
+    <value>Add Impenetrable Defense</value>
+  </data>
+  <data name="Skill627" xml:space="preserve">
+    <value>Add Resist Stun Rate</value>
+  </data>
+  <data name="Skill628" xml:space="preserve">
+    <value>Add Recover HP</value>
+  </data>
+  <data name="Skill629" xml:space="preserve">
+    <value>Add Recover SD</value>
+  </data>
+  <data name="Skill630" xml:space="preserve">
+    <value>Add Melee Damage</value>
+  </data>
+  <data name="Skill631" xml:space="preserve">
+    <value>Add Rush</value>
+  </data>
+  <data name="Skill634" xml:space="preserve">
+    <value>Add Block Part Damage Rate</value>
+  </data>
+  <data name="Skill635" xml:space="preserve">
+    <value>Add Parry Full Damage Rate</value>
+  </data>
+  <data name="Skill636" xml:space="preserve">
+    <value>Add Block Full Damage Rate</value>
+  </data>
+  <data name="Skill637" xml:space="preserve">
+    <value>Add Impenetrable Defense</value>
+  </data>
+  <data name="Skill638" xml:space="preserve">
+    <value>Add Resist Stun Rate</value>
+  </data>
+  <data name="Skill639" xml:space="preserve">
+    <value>Add Recover HP</value>
+  </data>
+  <data name="Skill640" xml:space="preserve">
+    <value>Add Recover SD</value>
+  </data>
+  <data name="Skill641" xml:space="preserve">
+    <value>Add Range Damage</value>
+  </data>
+  <data name="Skill642" xml:space="preserve">
+    <value>Add Illusion</value>
+  </data>
+  <data name="Skill643" xml:space="preserve">
+    <value>Add Block Part Damage Rate</value>
+  </data>
+  <data name="Skill644" xml:space="preserve">
+    <value>Add Parry Full Damage Rate</value>
+  </data>
+  <data name="Skill645" xml:space="preserve">
+    <value>Add Block Full Damage Rate</value>
+  </data>
+  <data name="Skill646" xml:space="preserve">
+    <value>Add Impenetrable Defense</value>
+  </data>
+  <data name="Skill647" xml:space="preserve">
+    <value>Add Resist Stun Rate</value>
+  </data>
+  <data name="Skill648" xml:space="preserve">
+    <value>Add Recover HP</value>
+  </data>
+  <data name="Skill649" xml:space="preserve">
+    <value>Add Recover SD</value>
+  </data>
+  <data name="Skill650" xml:space="preserve">
+    <value>Add Range Damage</value>
+  </data>
+  <data name="Skill651" xml:space="preserve">
+    <value>Add Shadow Step</value>
+  </data>
+  <data name="Skill652" xml:space="preserve">
+    <value>Add Evasion</value>
+  </data>
+  <data name="Skill653" xml:space="preserve">
+    <value>Add Block Part Damage Rate</value>
+  </data>
+  <data name="Skill654" xml:space="preserve">
+    <value>Add Parry Full Damage Rate</value>
+  </data>
+  <data name="Skill655" xml:space="preserve">
+    <value>Add Block Full Damage Rate</value>
+  </data>
+  <data name="Skill656" xml:space="preserve">
+    <value>Add Impenetrable Defense</value>
+  </data>
+  <data name="Skill657" xml:space="preserve">
+    <value>Add Resist Stun Rate</value>
+  </data>
+  <data name="Skill658" xml:space="preserve">
+    <value>Add Recover HP</value>
+  </data>
+  <data name="Skill659" xml:space="preserve">
+    <value>Add Recover SD</value>
+  </data>
+  <data name="Skill660" xml:space="preserve">
+    <value>Add Range Damage</value>
+  </data>
+  <data name="Skill663" xml:space="preserve">
+    <value>Add Block Part Damage Rate</value>
+  </data>
+  <data name="Skill664" xml:space="preserve">
+    <value>Add Parry Full Damage Rate</value>
+  </data>
+  <data name="Skill665" xml:space="preserve">
+    <value>Add Block Full Damage Rate</value>
+  </data>
+  <data name="Skill666" xml:space="preserve">
+    <value>Add Impenetrable Defense</value>
+  </data>
+  <data name="Skill667" xml:space="preserve">
+    <value>Add Resist Stun Rate</value>
+  </data>
+  <data name="Skill668" xml:space="preserve">
+    <value>Add Recover HP</value>
+  </data>
+  <data name="Skill669" xml:space="preserve">
+    <value>Add Recover SD</value>
+  </data>
+  <data name="Skill670" xml:space="preserve">
+    <value>Add Block Part Damage Rate</value>
+  </data>
+  <data name="Skill671" xml:space="preserve">
+    <value>Add Parry Full Damage Rate</value>
+  </data>
+  <data name="Skill672" xml:space="preserve">
+    <value>Add Block Full Damage Rate</value>
+  </data>
+  <data name="Skill673" xml:space="preserve">
+    <value>Add Impenetrable Defense</value>
+  </data>
+  <data name="Skill674" xml:space="preserve">
+    <value>Add Resist Stun Rate</value>
+  </data>
+  <data name="Skill675" xml:space="preserve">
+    <value>Add Recover HP</value>
+  </data>
+  <data name="Skill676" xml:space="preserve">
+    <value>Add Recover SD</value>
+  </data>
+  <data name="Skill677" xml:space="preserve">
+    <value>Add Block Part Damage Rate</value>
+  </data>
+  <data name="Skill678" xml:space="preserve">
+    <value>Add Parry Full Damage Rate</value>
+  </data>
+  <data name="Skill679" xml:space="preserve">
+    <value>Add Block Full Damage Rate</value>
+  </data>
+  <data name="Skill680" xml:space="preserve">
+    <value>Add Impenetrable Defense</value>
+  </data>
+  <data name="Skill681" xml:space="preserve">
+    <value>Add Resist Stun Rate</value>
+  </data>
+  <data name="Skill682" xml:space="preserve">
+    <value>Add Recover HP</value>
+  </data>
+  <data name="Skill683" xml:space="preserve">
+    <value>Add Recover SD</value>
+  </data>
+  <data name="Skill684" xml:space="preserve">
+    <value>Cloak of Transcendence Absorption PowUp</value>
+  </data>
+  <data name="Skill685" xml:space="preserve">
+    <value>Add GL Wing Defense</value>
+  </data>
+  <data name="Skill686" xml:space="preserve">
+    <value>Add GL Wing Damage</value>
+  </data>
+  <data name="Skill687" xml:space="preserve">
+    <value>Add Spin Step Improved</value>
+  </data>
+  <data name="Skill688" xml:space="preserve">
+    <value>Add Harsh Strike Improved</value>
+  </data>
+  <data name="Skill689" xml:space="preserve">
+    <value>Add Weapon Damage</value>
+  </data>
+  <data name="Skill690" xml:space="preserve">
+    <value>Add Spin Step Enhanced</value>
+  </data>
+  <data name="Skill691" xml:space="preserve">
+    <value>Add Harsh Strike Enhanced</value>
+  </data>
+  <data name="Skill692" xml:space="preserve">
+    <value>Add Magic Pin Improved</value>
+  </data>
+  <data name="Skill693" xml:space="preserve">
+    <value>Add Obsidian Improved</value>
+  </data>
+  <data name="Skill695" xml:space="preserve">
+    <value>Add Magic Pin Mastered</value>
+  </data>
+  <data name="Skill696" xml:space="preserve">
+    <value>Add Breche Improved</value>
+  </data>
+  <data name="Skill698" xml:space="preserve">
+    <value>Add Breche Mastered</value>
+  </data>
+  <data name="Skill699" xml:space="preserve">
+    <value>Add Shining Peak Improved</value>
+  </data>
+  <data name="Skill700" xml:space="preserve">
+    <value>Add Burst</value>
+  </data>
+  <data name="Skill701" xml:space="preserve">
+    <value>Add Burst Improved</value>
+  </data>
+  <data name="Skill702" xml:space="preserve">
+    <value>Add Lance Damage</value>
+  </data>
+  <data name="Skill703" xml:space="preserve">
+    <value>Add Circle Shield Improved</value>
+  </data>
+  <data name="Skill704" xml:space="preserve">
+    <value>Add Shield Defense</value>
+  </data>
+  <data name="Skill705" xml:space="preserve">
+    <value>Add Lance Mastery</value>
+  </data>
+  <data name="Skill706" xml:space="preserve">
+    <value>Add Circle Shield Enhanced</value>
+  </data>
+  <data name="Skill707" xml:space="preserve">
+    <value>Add Shield Mastery</value>
+  </data>
+  <data name="Skill708" xml:space="preserve">
+    <value>Wrath PowUp</value>
+  </data>
+  <data name="Skill709" xml:space="preserve">
+    <value>Wrath Proficiency</value>
+  </data>
+  <data name="Skill710" xml:space="preserve">
+    <value>Wrath Mastery</value>
+  </data>
+  <data name="Skill711" xml:space="preserve">
+    <value>Add GL Damage Multiplier Rate</value>
+  </data>
+  <data name="Skill712" xml:space="preserve">
+    <value>Add GL Damage Multiplier Rate</value>
+  </data>
+  <data name="Skill713" xml:space="preserve">
+    <value>Add Block Part Damage Rate</value>
+  </data>
+  <data name="Skill714" xml:space="preserve">
+    <value>Add Parry Full Damage Rate</value>
+  </data>
+  <data name="Skill715" xml:space="preserve">
+    <value>Add Block Full Damage Rate</value>
+  </data>
+  <data name="Skill716" xml:space="preserve">
+    <value>Add Impenetrable Defense</value>
+  </data>
+  <data name="Skill717" xml:space="preserve">
+    <value>Add Resist Stun Rate</value>
+  </data>
+  <data name="Skill718" xml:space="preserve">
+    <value>Add Recover HP</value>
+  </data>
+  <data name="Skill719" xml:space="preserve">
+    <value>Add Recover SD</value>
+  </data>
+  <data name="Skill720" xml:space="preserve">
+    <value>Elemental Immunity</value>
+  </data>
+  <data name="Skill721" xml:space="preserve">
+    <value>Debuff Immunity</value>
+  </data>
+  <data name="Skill722" xml:space="preserve">
+    <value>Berserker</value>
+  </data>
+  <data name="Skill723" xml:space="preserve">
+    <value>Fire Blow</value>
+  </data>
+  <data name="Skill724" xml:space="preserve">
+    <value>Meteor Strike</value>
+  </data>
+  <data name="Skill725" xml:space="preserve">
+    <value>Meteor Shower</value>
+  </data>
+  <data name="Skill726" xml:space="preserve">
+    <value>Soul Seeker</value>
+  </data>
+  <data name="Skill727" xml:space="preserve">
+    <value>Focus Shot</value>
+  </data>
+  <data name="Skill729" xml:space="preserve">
+    <value>Fire Beast</value>
+  </data>
+  <data name="Skill730" xml:space="preserve">
+    <value>Aqua Beast</value>
+  </data>
+  <data name="Skill731" xml:space="preserve">
+    <value>Aqua Blood</value>
+  </data>
+  <data name="Skill732" xml:space="preserve">
+    <value>Fire Blood</value>
+  </data>
+  <data name="Skill733" xml:space="preserve">
+    <value>Dark Blast</value>
+  </data>
+  <data name="Skill734" xml:space="preserve">
+    <value>Meteor Impact</value>
+  </data>
+  <data name="Skill737" xml:space="preserve">
+    <value>Wind Soul</value>
+  </data>
+  <data name="Skill739" xml:space="preserve">
+    <value>Dark Phoenix Shot</value>
+  </data>
+  <data name="Skill740" xml:space="preserve">
+    <value>Archangel Will</value>
+  </data>
+  <data name="Skill743" xml:space="preserve">
+    <value>Add Max HP</value>
+  </data>
+  <data name="Skill744" xml:space="preserve">
+    <value>Add Phoenix Shot Improved</value>
+  </data>
+  <data name="Skill745" xml:space="preserve">
+    <value>Add Phoenix Shot Enhanced</value>
+  </data>
+  <data name="Skill746" xml:space="preserve">
+    <value>Add Elemental Defense</value>
+  </data>
+  <data name="Skill747" xml:space="preserve">
+    <value>Pentagram Elemental Defense Increase</value>
+  </data>
+  <data name="Skill748" xml:space="preserve">
+    <value>Add Magic Arrow Improved</value>
+  </data>
+  <data name="Skill749" xml:space="preserve">
+    <value>Add Magic Arrow Enhanced</value>
+  </data>
+  <data name="Skill750" xml:space="preserve">
+    <value>Add Plasma Ball Improved</value>
+  </data>
+  <data name="Skill751" xml:space="preserve">
+    <value>Add Plasma Ball Enhanced</value>
+  </data>
+  <data name="Skill752" xml:space="preserve">
+    <value>Add Rune Mace Damage</value>
+  </data>
+  <data name="Skill753" xml:space="preserve">
+    <value>Add Rune Mace Mastery</value>
+  </data>
+  <data name="Skill754" xml:space="preserve">
+    <value>Add RW Wing Defense</value>
+  </data>
+  <data name="Skill755" xml:space="preserve">
+    <value>Add RW Wing Damage</value>
+  </data>
+  <data name="Skill756" xml:space="preserve">
+    <value>Add Block Full Damage Rate</value>
+  </data>
+  <data name="Skill758" xml:space="preserve">
+    <value>Add Block Part Damage Rate</value>
+  </data>
+  <data name="Skill759" xml:space="preserve">
+    <value>Add Impenetrable Defense</value>
+  </data>
+  <data name="Skill760" xml:space="preserve">
+    <value>Add Resist Stun Rate</value>
+  </data>
+  <data name="Skill761" xml:space="preserve">
+    <value>Add Recover HP</value>
+  </data>
+  <data name="Skill762" xml:space="preserve">
+    <value>Add Recover SD</value>
+  </data>
+  <data name="Skill763" xml:space="preserve">
+    <value>Add Range Damage</value>
+  </data>
+  <data name="Skill765" xml:space="preserve">
+    <value>Add Might Improved</value>
+  </data>
+  <data name="Skill766" xml:space="preserve">
+    <value>Add Might Enhanced</value>
+  </data>
+  <data name="Skill768" xml:space="preserve">
+    <value>Add Haste Improved</value>
+  </data>
+  <data name="Skill769" xml:space="preserve">
+    <value>Add Haste Enhanced</value>
+  </data>
+  <data name="Skill770" xml:space="preserve">
+    <value>Darkness Improved</value>
+  </data>
+  <data name="Skill771" xml:space="preserve">
+    <value>Darkness Enhanced</value>
+  </data>
+  <data name="Skill772" xml:space="preserve">
+    <value>Lesser Damage Enhanced</value>
+  </data>
+  <data name="Skill773" xml:space="preserve">
+    <value>Lesser Defense Enhanced</value>
+  </data>
+  <data name="Skill774" xml:space="preserve">
+    <value>Sahamutt Improved</value>
+  </data>
+  <data name="Skill775" xml:space="preserve">
+    <value>Neil Improved</value>
+  </data>
+  <data name="Skill776" xml:space="preserve">
+    <value>Ghost Phantom Improved</value>
+  </data>
+  <data name="Skill777" xml:space="preserve">
+    <value>Ghost Phantom Enhanced</value>
+  </data>
+  <data name="Skill778" xml:space="preserve">
+    <value>Ghost Phantom Mastered</value>
+  </data>
+  <data name="Skill779" xml:space="preserve">
+    <value>Sword Inertia Improved</value>
+  </data>
+  <data name="Skill780" xml:space="preserve">
+    <value>Sword Inertia Enhanced</value>
+  </data>
+  <data name="Skill781" xml:space="preserve">
+    <value>Bat Flock Improved</value>
+  </data>
+  <data name="Skill782" xml:space="preserve">
+    <value>Bat Flock Enhanced</value>
+  </data>
+  <data name="Skill783" xml:space="preserve">
+    <value>Add Short Sword Damage</value>
+  </data>
+  <data name="Skill784" xml:space="preserve">
+    <value>Add Short Sword Mastery</value>
+  </data>
+  <data name="Skill785" xml:space="preserve">
+    <value>Add SL Wing Defense</value>
+  </data>
+  <data name="Skill786" xml:space="preserve">
+    <value>Add SL Wing Damage</value>
+  </data>
+  <data name="Skill787" xml:space="preserve">
+    <value>Demolish Improved</value>
+  </data>
+  <data name="Skill788" xml:space="preserve">
+    <value>Demolish Enhanced</value>
+  </data>
+  <data name="Skill789" xml:space="preserve">
+    <value>Add Weapon Damage</value>
+  </data>
+  <data name="Skill790" xml:space="preserve">
+    <value>Add Impenetrable Defense</value>
+  </data>
+  <data name="Skill791" xml:space="preserve">
+    <value>Add Parry Full Damage Rate</value>
+  </data>
+  <data name="Skill792" xml:space="preserve">
+    <value>Add Recover HP</value>
+  </data>
+  <data name="Skill793" xml:space="preserve">
+    <value>Add Recover SD</value>
+  </data>
+  <data name="Skill794" xml:space="preserve">
+    <value>Detection Improved</value>
+  </data>
+  <data name="Skill801" xml:space="preserve">
+    <value>Strengthening Sword's Wrath</value>
+  </data>
+  <data name="Skill802" xml:space="preserve">
+    <value>Sword Fury Mastery</value>
+  </data>
+  <data name="Skill803" xml:space="preserve">
+    <value>Reinforced solid protection</value>
+  </data>
+  <data name="Skill804" xml:space="preserve">
+    <value>Solid protection skill</value>
+  </data>
+  <data name="Skill805" xml:space="preserve">
+    <value>Reinforced solid protection (3)</value>
+  </data>
+  <data name="Skill806" xml:space="preserve">
+    <value>Solid Protection Mastery</value>
+  </data>
+  <data name="Skill807" xml:space="preserve">
+    <value>Frozen Stab Improved</value>
+  </data>
+  <data name="Skill809" xml:space="preserve">
+    <value>Frozen Stab Enhanced</value>
+  </data>
+  <data name="Skill810" xml:space="preserve">
+    <value>Strengthen strong Conviction</value>
+  </data>
+  <data name="Skill811" xml:space="preserve">
+    <value>Add Twisting Slash Improved</value>
+  </data>
+  <data name="Skill812" xml:space="preserve">
+    <value>Add Rageful Blow Improved</value>
+  </data>
+  <data name="Skill813" xml:space="preserve">
+    <value>Rush</value>
+  </data>
+  <data name="Skill814" xml:space="preserve">
+    <value>Energy stat increase</value>
+  </data>
+  <data name="Skill815" xml:space="preserve">
+    <value>Heal stat increase</value>
+  </data>
+  <data name="Skill816" xml:space="preserve">
+    <value>Agility stat increase</value>
+  </data>
+  <data name="Skill817" xml:space="preserve">
+    <value>Strength stat increase</value>
+  </data>
+  <data name="Skill818" xml:space="preserve">
+    <value>Enhances Wing Defense of Hit</value>
+  </data>
+  <data name="Skill819" xml:space="preserve">
+    <value>Enhances Wing Attack of Hit</value>
+  </data>
+  <data name="Skill820" xml:space="preserve">
+    <value>Dark Plasma Enhancement</value>
+  </data>
+  <data name="Skill821" xml:space="preserve">
+    <value>Dark plasma skill</value>
+  </data>
+  <data name="Skill822" xml:space="preserve">
+    <value>Dark Plasma Mastery</value>
+  </data>
+  <data name="Skill823" xml:space="preserve">
+    <value>Ice break enhancement</value>
+  </data>
+  <data name="Skill824" xml:space="preserve">
+    <value>Ice break Mastery</value>
+  </data>
+  <data name="Skill825" xml:space="preserve">
+    <value>Death Fire Enhancement</value>
+  </data>
+  <data name="Skill826" xml:space="preserve">
+    <value>Death Fire Mastery</value>
+  </data>
+  <data name="Skill828" xml:space="preserve">
+    <value>Fixed Fire Strenghtener</value>
+  </data>
+  <data name="Skill829" xml:space="preserve">
+    <value>Fixed Fire Mastery</value>
+  </data>
+  <data name="Skill831" xml:space="preserve">
+    <value>Strengthen Magic Gun</value>
+  </data>
+  <data name="Skill832" xml:space="preserve">
+    <value>Magic Gun Mastery</value>
+  </data>
+  <data name="Skill835" xml:space="preserve">
+    <value>Death Ice Strengthener</value>
+  </data>
+  <data name="Skill836" xml:space="preserve">
+    <value>Death Ice Mastery</value>
+  </data>
+  <data name="Skill837" xml:space="preserve">
+    <value>Add KM Wing Defense</value>
+  </data>
+  <data name="Skill838" xml:space="preserve">
+    <value>Add KM Wing Defense</value>
+  </data>
+  <data name="Skill839" xml:space="preserve">
+    <value>Add Impenetrable Defense</value>
+  </data>
+  <data name="Skill840" xml:space="preserve">
+    <value>Add LM Wing Defense</value>
+  </data>
+  <data name="Skill841" xml:space="preserve">
+    <value>Add LM Wing Defense</value>
+  </data>
+  <data name="Skill842" xml:space="preserve">
+    <value>Add Impenetrable Defense</value>
+  </data>
+  <data name="Skill843" xml:space="preserve">
+    <value>Shining Bird Enhancement</value>
+  </data>
+  <data name="Skill844" xml:space="preserve">
+    <value>Shining Bird Mastery</value>
+  </data>
+  <data name="Skill845" xml:space="preserve">
+    <value>Add Magic Mastery</value>
+  </data>
+  <data name="Skill846" xml:space="preserve">
+    <value>Dragon Violent Enhancement</value>
+  </data>
+  <data name="Skill847" xml:space="preserve">
+    <value>Dragon Violent Mastery</value>
+  </data>
+  <data name="Skill848" xml:space="preserve">
+    <value>Marvel Burst Enhancement</value>
+  </data>
+  <data name="Skill849" xml:space="preserve">
+    <value>Marvel Burst Mastery</value>
+  </data>
+  <data name="Skill850" xml:space="preserve">
+    <value>Add Magic Mastery</value>
+  </data>
+  <data name="Skill851" xml:space="preserve">
+    <value>Add Beginner Greater Defense Improved</value>
+  </data>
+  <data name="Skill852" xml:space="preserve">
+    <value>Add Beginner Greater Defense Enhanced</value>
+  </data>
+  <data name="Skill853" xml:space="preserve">
+    <value>Add Beginner Greater Damage Improved</value>
+  </data>
+  <data name="Skill854" xml:space="preserve">
+    <value>Add Beginner Greater Damage Enhanced</value>
+  </data>
+  <data name="Skill855" xml:space="preserve">
+    <value>Add Unleashed Marvel Improved</value>
+  </data>
+  <data name="Skill856" xml:space="preserve">
+    <value>Add Unleashed Marvel Enhanced</value>
+  </data>
+  <data name="Skill857" xml:space="preserve">
+    <value>Add Beginner Bless Improved</value>
+  </data>
+  <data name="Skill858" xml:space="preserve">
+    <value>Add Beginner Heal Improved</value>
+  </data>
+  <data name="Skill859" xml:space="preserve">
+    <value>Magic Book Enhancement</value>
+  </data>
+  <data name="Skill860" xml:space="preserve">
+    <value>Magic Book Mastery</value>
+  </data>
+  <data name="Skill861" xml:space="preserve">
+    <value>Damage Reflection Improved</value>
+  </data>
+  <data name="Skill862" xml:space="preserve">
+    <value>Damage Reflection Enhancement</value>
+  </data>
+  <data name="Skill863" xml:space="preserve">
+    <value>Damage Reflection Mastery</value>
+  </data>
+  <data name="Skill864" xml:space="preserve">
+    <value>Orb Enhancement</value>
+  </data>
+  <data name="Skill865" xml:space="preserve">
+    <value>Spiral Charge Strenghtener</value>
+  </data>
+  <data name="Skill866" xml:space="preserve">
+    <value>Spiral Charge Mastery</value>
+  </data>
+  <data name="Skill867" xml:space="preserve">
+    <value>Crusher Charge Strenghtener</value>
+  </data>
+  <data name="Skill868" xml:space="preserve">
+    <value>Crusher Charge Mastery</value>
+  </data>
+  <data name="Skill869" xml:space="preserve">
+    <value>Elemental Charge Strenghtener</value>
+  </data>
+  <data name="Skill870" xml:space="preserve">
+    <value>Elemental Charge Mastery</value>
+  </data>
+  <data name="Skill871" xml:space="preserve">
+    <value>Two-handed Sword Strenghtener</value>
+  </data>
+  <data name="Skill872" xml:space="preserve">
+    <value>Two-handed Staff Strenghtener</value>
+  </data>
+  <data name="Skill873" xml:space="preserve">
+    <value>Two-handed Sword Mastery</value>
+  </data>
+  <data name="Skill874" xml:space="preserve">
+    <value>Two-handed Staff Mastery</value>
+  </data>
+  <data name="Skill875" xml:space="preserve">
+    <value>Orb Mastery</value>
+  </data>
+  <data name="Skill876" xml:space="preserve">
+    <value>Holy Bolt Strenghtener</value>
+  </data>
+  <data name="Skill877" xml:space="preserve">
+    <value>Charge Slash Strengthener</value>
+  </data>
+  <data name="Skill878" xml:space="preserve">
+    <value>Charge Slash Mastery</value>
+  </data>
+  <data name="Skill879" xml:space="preserve">
+    <value>Windglaive Strengthener</value>
+  </data>
+  <data name="Skill880" xml:space="preserve">
+    <value>Windglaive Mastery</value>
+  </data>
+  <data name="Skill881" xml:space="preserve">
+    <value>Bladestorm Strengthener</value>
+  </data>
+  <data name="Skill882" xml:space="preserve">
+    <value>Bladestorm Mastery</value>
+  </data>
+  <data name="Skill883" xml:space="preserve">
+    <value>Illusion Avatar Strengthener</value>
+  </data>
+  <data name="Skill884" xml:space="preserve">
+    <value>Illusion Avatar Mastery</value>
+  </data>
+  <data name="Skill885" xml:space="preserve">
+    <value>Illusion Blade Strengthener</value>
+  </data>
+  <data name="Skill886" xml:space="preserve">
+    <value>Illusion Blade Proficiency</value>
+  </data>
+  <data name="Skill887" xml:space="preserve">
+    <value>Illusion Blade Mastery</value>
+  </data>
+  <data name="Skill888" xml:space="preserve">
+    <value>Add Parry Full Damage Rate</value>
+  </data>
+  <data name="Skill889" xml:space="preserve">
+    <value>Add Impenetrable Defense</value>
+  </data>
+  <data name="Skill890" xml:space="preserve">
+    <value>Add KM Wing Defense</value>
+  </data>
+  <data name="Skill891" xml:space="preserve">
+    <value>Add KM Wing Defense</value>
+  </data>
+  <data name="Skill892" xml:space="preserve">
+    <value>Add One Hand Sword Damage</value>
+  </data>
+  <data name="Skill893" xml:space="preserve">
+    <value>Add One Hand Sword Mastery</value>
+  </data>
+  <data name="Skill894" xml:space="preserve">
+    <value>Oversting Strengthener</value>
+  </data>
+  <data name="Skill895" xml:space="preserve">
+    <value>Wrath Strengthener</value>
+  </data>
+  <data name="Skill896" xml:space="preserve">
+    <value>Wild Breche Strengthener</value>
+  </data>
+  <data name="Skill897" xml:space="preserve">
+    <value>Wings of Tiger Eye Defense PowUp</value>
+  </data>
+  <data name="Skill898" xml:space="preserve">
+    <value>Wings of Tiger Eye Attack PowUp</value>
+  </data>
+  <data name="Skill899" xml:space="preserve">
+    <value>Steel Armor</value>
+  </data>
+  <data name="Skill900" xml:space="preserve">
+    <value>Synthesis: Angel Homunculus Enhancement</value>
+  </data>
+  <data name="Skill901" xml:space="preserve">
+    <value>Synthesis: Angel Homunculus Mastery</value>
+  </data>
+  <data name="Skill902" xml:space="preserve">
+    <value>Magic Mastery</value>
+  </data>
+  <data name="Skill903" xml:space="preserve">
+    <value>Synthesis: Ignition Bomber Enhancement</value>
+  </data>
+  <data name="Skill904" xml:space="preserve">
+    <value>Synthesis: Ignition Bomber Mastery</value>
+  </data>
+  <data name="Skill905" xml:space="preserve">
+    <value>Synthesis: Confusion Stone Enhancement</value>
+  </data>
+  <data name="Skill906" xml:space="preserve">
+    <value>Synthesis: Confusion Stone Mastery</value>
+  </data>
+  <data name="Skill907" xml:space="preserve">
+    <value>Wand Enhancement</value>
+  </data>
+  <data name="Skill909" xml:space="preserve">
+    <value>Elixir Enhancement</value>
+  </data>
+  <data name="Skill910" xml:space="preserve">
+    <value>Elixir Mastery</value>
+  </data>
+  <data name="Skill911" xml:space="preserve">
+    <value>Spirit Blast Enhancement</value>
+  </data>
+  <data name="Skill912" xml:space="preserve">
+    <value>Crown Force Strengthener</value>
+  </data>
+  <data name="Skill913" xml:space="preserve">
+    <value>Divine Force Strengthener</value>
+  </data>
+  <data name="Skill914" xml:space="preserve">
+    <value>Divine Aura Strengthener</value>
+  </data>
+  <data name="Skill915" xml:space="preserve">
+    <value>Battle Glory Enhancement</value>
+  </data>
+  <data name="Skill916" xml:space="preserve">
+    <value>Rune Sphere Enhancement</value>
+  </data>
+  <data name="Skill917" xml:space="preserve">
+    <value>Cloak of Longing Defense Boost</value>
+  </data>
+  <data name="Skill918" xml:space="preserve">
+    <value>Cloak of Longing Attack Boost</value>
+  </data>
+  <data name="Skill919" xml:space="preserve">
+    <value>Divine Fall Enhancement</value>
+  </data>
+  <data name="Skill920" xml:space="preserve">
+    <value>Divine Fall Mastery</value>
+  </data>
+  <data name="Skill921" xml:space="preserve">
+    <value>Holy Sweep Enhancement</value>
+  </data>
+  <data name="Skill923" xml:space="preserve">
+    <value>Sacred Impact Enhancement</value>
+  </data>
+  <data name="Skill925" xml:space="preserve">
+    <value>Weapon Mastery</value>
+  </data>
+  <data name="Skill926" xml:space="preserve">
+    <value>Hammer Enhancement</value>
+  </data>
+  <data name="Skill927" xml:space="preserve">
+    <value>Hammer Mastery</value>
+  </data>
+  <data name="Skill928" xml:space="preserve">
+    <value>Lugard's Blessing: Punishment Enhancement</value>
+  </data>
+  <data name="Skill1001" xml:space="preserve">
+    <value>Add Ext Skill Damage</value>
+  </data>
+  <data name="Skill1002" xml:space="preserve">
+    <value>Add Ext Skill Damage Count 1</value>
+  </data>
+  <data name="Skill1003" xml:space="preserve">
+    <value>Add Ext Skill Damage Count 2</value>
+  </data>
+  <data name="Skill1004" xml:space="preserve">
+    <value>Add Ext Skill Damage Count 3</value>
+  </data>
+  <data name="Skill1005" xml:space="preserve">
+    <value>Add Ext Skill Damage Count 4</value>
+  </data>
+  <data name="Skill1006" xml:space="preserve">
+    <value>Add Ext Skill Damage Count 5</value>
+  </data>
+  <data name="Skill1007" xml:space="preserve">
+    <value>Add Ext Skill Extra Damage Rate</value>
+  </data>
+  <data name="Skill1008" xml:space="preserve">
+    <value>Add Ext Skill Speed</value>
+  </data>
+  <data name="Skill1009" xml:space="preserve">
+    <value>Add Ext Skill Radio</value>
+  </data>
+  <data name="Skill1010" xml:space="preserve">
+    <value>Add Ext Skill Splash Damage</value>
+  </data>
+  <data name="Skill1011" xml:space="preserve">
+    <value>Add Ext Skill Range</value>
+  </data>
+  <data name="Skill1012" xml:space="preserve">
+    <value>Add Ext Skill Target Number</value>
+  </data>
+  <data name="Skill1013" xml:space="preserve">
+    <value>Buff Synergy Effect</value>
+  </data>
+  <data name="Skill1014" xml:space="preserve">
+    <value>Buff Synergy Effect</value>
+  </data>
+  <data name="Skill1015" xml:space="preserve">
+    <value>Increase Skill Duration</value>
+  </data>
+  <data name="Skill1016" xml:space="preserve">
+    <value>Iron Defense (Learned)</value>
+  </data>
+  <data name="Skill1017" xml:space="preserve">
+    <value>Enhance Iron Defense</value>
+  </data>
+  <data name="Skill1018" xml:space="preserve">
+    <value>Cooldown Time Reduction</value>
+  </data>
+  <data name="Skill1019" xml:space="preserve">
+    <value>Add Ext Skill Remove Cooldown</value>
+  </data>
+  <data name="Skill1020" xml:space="preserve">
+    <value>Add Weapon Physi Damage</value>
+  </data>
+  <data name="Skill1021" xml:space="preserve">
+    <value>Add Weapon Magic Damage</value>
+  </data>
+  <data name="Skill1022" xml:space="preserve">
+    <value>Add Penetration Effect</value>
+  </data>
+  <data name="Skill1023" xml:space="preserve">
+    <value>Add Arrow Missile</value>
+  </data>
+  <data name="Skill1024" xml:space="preserve">
+    <value>Add Debuff Toxic Rate</value>
+  </data>
+  <data name="Skill1025" xml:space="preserve">
+    <value>Add Debuff Chill Rate</value>
+  </data>
+  <data name="Skill1026" xml:space="preserve">
+    <value>Add Debuff Bleed Rate</value>
+  </data>
+  <data name="Skill1028" xml:space="preserve">
+    <value>Add Debuff Toxic Value</value>
+  </data>
+  <data name="Skill1029" xml:space="preserve">
+    <value>Add Debuff Chill Value</value>
+  </data>
+  <data name="Skill1030" xml:space="preserve">
+    <value>Add Debuff Bleed Value</value>
+  </data>
+  <data name="Skill1032" xml:space="preserve">
+    <value>Add Debuff Toxic Count</value>
+  </data>
+  <data name="Skill1033" xml:space="preserve">
+    <value>Add Debuff Chill Count</value>
+  </data>
+  <data name="Skill1034" xml:space="preserve">
+    <value>Add Debuff Bleed Count</value>
+  </data>
+  <data name="Skill1036" xml:space="preserve">
+    <value>Add Debuff Toxic Improved Value</value>
+  </data>
+  <data name="Skill1037" xml:space="preserve">
+    <value>Add Debuff Chill Improved Value</value>
+  </data>
+  <data name="Skill1038" xml:space="preserve">
+    <value>Add Debuff Bleed Improved Value</value>
+  </data>
+  <data name="Skill1040" xml:space="preserve">
+    <value>Add Debuff Toxic Improved Rate</value>
+  </data>
+  <data name="Skill1041" xml:space="preserve">
+    <value>Add Debuff Chill Improved Rate</value>
+  </data>
+  <data name="Skill1042" xml:space="preserve">
+    <value>Add Debuff Bleed Improved Rate</value>
+  </data>
+  <data name="Skill1046" xml:space="preserve">
+    <value>Add Debuff Toxic Rate</value>
+  </data>
+  <data name="Skill1047" xml:space="preserve">
+    <value>Add Debuff Chill Rate</value>
+  </data>
+  <data name="Skill1048" xml:space="preserve">
+    <value>Add Debuff Bleed Rate</value>
+  </data>
+  <data name="Skill1050" xml:space="preserve">
+    <value>Add Debuff Toxic Value</value>
+  </data>
+  <data name="Skill1051" xml:space="preserve">
+    <value>Add Debuff Chill Value</value>
+  </data>
+  <data name="Skill1052" xml:space="preserve">
+    <value>Add Debuff Bleed Value</value>
+  </data>
+  <data name="Skill1054" xml:space="preserve">
+    <value>Add Debuff Toxic Count</value>
+  </data>
+  <data name="Skill1055" xml:space="preserve">
+    <value>Add Debuff Chill Count</value>
+  </data>
+  <data name="Skill1056" xml:space="preserve">
+    <value>Add Debuff Bleed Count</value>
+  </data>
+  <data name="Skill1058" xml:space="preserve">
+    <value>Add Debuff Toxic Improved Value</value>
+  </data>
+  <data name="Skill1059" xml:space="preserve">
+    <value>Add Debuff Chill Improved Value</value>
+  </data>
+  <data name="Skill1060" xml:space="preserve">
+    <value>Add Debuff Bleed Improved Value</value>
+  </data>
+  <data name="Skill1062" xml:space="preserve">
+    <value>Add Debuff Toxic Improved Rate</value>
+  </data>
+  <data name="Skill1063" xml:space="preserve">
+    <value>Add Debuff Chill Improved Rate</value>
+  </data>
+  <data name="Skill1064" xml:space="preserve">
+    <value>Add Debuff Bleed Improved Rate</value>
+  </data>
+  <data name="Skill1069" xml:space="preserve">
+    <value>Add Rageful Blow Extended</value>
+  </data>
+  <data name="Skill1071" xml:space="preserve">
+    <value>Add Death Stab Extended</value>
+  </data>
+  <data name="Skill1072" xml:space="preserve">
+    <value>Add Fire Blow Extended</value>
+  </data>
+  <data name="Skill1075" xml:space="preserve">
+    <value>Add Meteor Strike Extended</value>
+  </data>
+  <data name="Skill1076" xml:space="preserve">
+    <value>Add Meteor Shower Extended</value>
+  </data>
+  <data name="Skill1078" xml:space="preserve">
+    <value>Add Evil Spirit Extended</value>
+  </data>
+  <data name="Skill1081" xml:space="preserve">
+    <value>Add Triple Shot Extended</value>
+  </data>
+  <data name="Skill1083" xml:space="preserve">
+    <value>Add Five Shot Extended</value>
+  </data>
+  <data name="Skill1085" xml:space="preserve">
+    <value>Add Focus Shot Extended</value>
+  </data>
+  <data name="Skill1087" xml:space="preserve">
+    <value>Add Lightning Storm Extended</value>
+  </data>
+  <data name="Skill1088" xml:space="preserve">
+    <value>Add Evil Spirit Extended</value>
+  </data>
+  <data name="Skill1089" xml:space="preserve">
+    <value>Add Dark Blast Extended</value>
+  </data>
+  <data name="Skill1092" xml:space="preserve">
+    <value>Add Fire Slash Extended</value>
+  </data>
+  <data name="Skill1094" xml:space="preserve">
+    <value>Add Fire Blood Extended</value>
+  </data>
+  <data name="Skill1095" xml:space="preserve">
+    <value>Add Aqua Blood Extended</value>
+  </data>
+  <data name="Skill1096" xml:space="preserve">
+    <value>Add Fire Burst Extended</value>
+  </data>
+  <data name="Skill1098" xml:space="preserve">
+    <value>Add Birds Extended</value>
+  </data>
+  <data name="Skill1099" xml:space="preserve">
+    <value>Add Wind Soul Extended</value>
+  </data>
+  <data name="Skill1102" xml:space="preserve">
+    <value>Add Fire Beast Extended</value>
+  </data>
+  <data name="Skill1103" xml:space="preserve">
+    <value>Add Red Storm Extended</value>
+  </data>
+  <data name="Skill1105" xml:space="preserve">
+    <value>Add Aqua Beast Extended</value>
+  </data>
+  <data name="Skill1111" xml:space="preserve">
+    <value>Add Dragon Lore Extended</value>
+  </data>
+  <data name="Skill1112" xml:space="preserve">
+    <value>Add Chain Driver Extended</value>
+  </data>
+  <data name="Skill1113" xml:space="preserve">
+    <value>Add Dark Side Extended</value>
+  </data>
+  <data name="Skill1117" xml:space="preserve">
+    <value>Add Magic Pin Extended</value>
+  </data>
+  <data name="Skill1118" xml:space="preserve">
+    <value>Add Breche Extended</value>
+  </data>
+  <data name="Skill1119" xml:space="preserve">
+    <value>Add Shining Peak Extended</value>
+  </data>
+  <data name="Skill1125" xml:space="preserve">
+    <value>Add Poison Storm</value>
+  </data>
+  <data name="Skill1126" xml:space="preserve">
+    <value>Add Chill Explosion</value>
+  </data>
+  <data name="Skill1127" xml:space="preserve">
+    <value>Add Bleed Explosion</value>
+  </data>
+  <data name="Skill1129" xml:space="preserve">
+    <value>Add Toxic Explosion Damage</value>
+  </data>
+  <data name="Skill1130" xml:space="preserve">
+    <value>Add Chill Explosion Damage</value>
+  </data>
+  <data name="Skill1131" xml:space="preserve">
+    <value>Add Bleed Explosion Damage</value>
+  </data>
+  <data name="Skill1133" xml:space="preserve">
+    <value>Add Toxic Explosion Effect</value>
+  </data>
+  <data name="Skill1134" xml:space="preserve">
+    <value>Add Chill Explosion Effect</value>
+  </data>
+  <data name="Skill1135" xml:space="preserve">
+    <value>Add Bleed Explosion Effect</value>
+  </data>
+  <data name="Skill1137" xml:space="preserve">
+    <value>Add Max HP</value>
+  </data>
+  <data name="Skill1138" xml:space="preserve">
+    <value>Add Stat Point</value>
+  </data>
+  <data name="Skill1139" xml:space="preserve">
+    <value>Add Impenetrable Defense</value>
+  </data>
+  <data name="Skill1140" xml:space="preserve">
+    <value>Increase Defense of Lv. 4 Wings /Cape</value>
+  </data>
+  <data name="Skill1141" xml:space="preserve">
+    <value>Add Physi Damage</value>
+  </data>
+  <data name="Skill1142" xml:space="preserve">
+    <value>Add Magic Damage</value>
+  </data>
+  <data name="Skill1143" xml:space="preserve">
+    <value>Add Stat Point</value>
+  </data>
+  <data name="Skill1144" xml:space="preserve">
+    <value>Add Skill Damage</value>
+  </data>
+  <data name="Skill1145" xml:space="preserve">
+    <value>Increase ATK of Lv. 4 Wings /Cape</value>
+  </data>
+  <data name="Skill1146" xml:space="preserve">
+    <value>Add Damage</value>
+  </data>
+  <data name="Skill1147" xml:space="preserve">
+    <value>Add Spirit Hook Extended</value>
+  </data>
+  <data name="Skill1148" xml:space="preserve">
+    <value>Add Magic Arrow Extended</value>
+  </data>
+  <data name="Skill1149" xml:space="preserve">
+    <value>Add Plasma Ball Extended</value>
+  </data>
+  <data name="Skill1150" xml:space="preserve">
+    <value>Add Shock Blast Extended</value>
+  </data>
+  <data name="Skill1151" xml:space="preserve">
+    <value>Add Ext Skill Ground Speed</value>
+  </data>
+  <data name="Skill1152" xml:space="preserve">
+    <value>Increase Plasma Attack Speed</value>
+  </data>
+  <data name="Skill1153" xml:space="preserve">
+    <value>Add Ext Skill Splash Radio</value>
+  </data>
+  <data name="Skill1154" xml:space="preserve">
+    <value>Add Ext Skill Splash Count</value>
+  </data>
+  <data name="Skill1155" xml:space="preserve">
+    <value>Add Death Scythe Extended</value>
+  </data>
+  <data name="Skill1156" xml:space="preserve">
+    <value>Add Weapon Curse Damage</value>
+  </data>
+  <data name="Skill1157" xml:space="preserve">
+    <value>Add Curse Damage</value>
+  </data>
+  <data name="Skill1158" xml:space="preserve">
+    <value>Add Sword Inertia Extended</value>
+  </data>
+  <data name="Skill1159" xml:space="preserve">
+    <value>Add Bat Flock Extended</value>
+  </data>
+  <data name="Skill1160" xml:space="preserve">
+    <value>Add Pierce Attack Extended</value>
+  </data>
+  <data name="Skill1166" xml:space="preserve">
+    <value>Add Debuff Toxic Target</value>
+  </data>
+  <data name="Skill1167" xml:space="preserve">
+    <value>Add Debuff Toxic Improved Target</value>
+  </data>
+  <data name="Skill1168" xml:space="preserve">
+    <value>Add Debuff Bleed Target</value>
+  </data>
+  <data name="Skill1169" xml:space="preserve">
+    <value>Add Debuff Bleed Improved Target</value>
+  </data>
+  <data name="Skill1170" xml:space="preserve">
+    <value>Add Debuff Chill Target</value>
+  </data>
+  <data name="Skill1171" xml:space="preserve">
+    <value>Add Debuff Chill Improved Target</value>
+  </data>
+  <data name="Skill1172" xml:space="preserve">
+    <value>Add Debuff Toxic Range</value>
+  </data>
+  <data name="Skill1174" xml:space="preserve">
+    <value>Add Debuff Bleed Range</value>
+  </data>
+  <data name="Skill1176" xml:space="preserve">
+    <value>Add Debuff Chill Range</value>
+  </data>
+  <data name="Skill1178" xml:space="preserve">
+    <value>Add Debuff Toxic Chance</value>
+  </data>
+  <data name="Skill1179" xml:space="preserve">
+    <value>Add Debuff Toxic Improved Chance</value>
+  </data>
+  <data name="Skill1180" xml:space="preserve">
+    <value>Add Debuff Bleed Chance</value>
+  </data>
+  <data name="Skill1181" xml:space="preserve">
+    <value>Add Debuff Bleed Improved Chance</value>
+  </data>
+  <data name="Skill1182" xml:space="preserve">
+    <value>Add Debuff Chill Chance</value>
+  </data>
+  <data name="Skill1183" xml:space="preserve">
+    <value>Add Debuff Chill Improved Chance</value>
+  </data>
+  <data name="Skill1184" xml:space="preserve">
+    <value>Add Debuff Toxic Chance</value>
+  </data>
+  <data name="Skill1185" xml:space="preserve">
+    <value>Add Debuff Toxic Improved Chance</value>
+  </data>
+  <data name="Skill1186" xml:space="preserve">
+    <value>Add Debuff Bleed Chance</value>
+  </data>
+  <data name="Skill1187" xml:space="preserve">
+    <value>Add Debuff Bleed Improved Chance</value>
+  </data>
+  <data name="Skill1188" xml:space="preserve">
+    <value>Add Debuff Chill Chance</value>
+  </data>
+  <data name="Skill1189" xml:space="preserve">
+    <value>Add Debuff Chill Improved Chance</value>
+  </data>
+  <data name="Skill1190" xml:space="preserve">
+    <value>Add Debuff Toxic Target</value>
+  </data>
+  <data name="Skill1191" xml:space="preserve">
+    <value>Add Debuff Bleed Target</value>
+  </data>
+  <data name="Skill1192" xml:space="preserve">
+    <value>Add Debuff Chill Target</value>
+  </data>
+  <data name="Skill1193" xml:space="preserve">
+    <value>Add 4th Wing Defense</value>
+  </data>
+  <data name="Skill1194" xml:space="preserve">
+    <value>Add 4th Wing Damage</value>
+  </data>
+  <data name="Skill1195" xml:space="preserve">
+    <value>Add 4th Wing Curse Damage</value>
+  </data>
+  <data name="Skill1196" xml:space="preserve">
+    <value>Add Toxic Explosion Damage</value>
+  </data>
+  <data name="Skill1197" xml:space="preserve">
+    <value>Add Bleed Explosion Damage</value>
+  </data>
+  <data name="Skill1198" xml:space="preserve">
+    <value>Add Chill Explosion Damage</value>
+  </data>
+  <data name="Skill1199" xml:space="preserve">
+    <value>Add Toxic Explosion Effect</value>
+  </data>
+  <data name="Skill1200" xml:space="preserve">
+    <value>Add Bleed Explosion Effect</value>
+  </data>
+  <data name="Skill1201" xml:space="preserve">
+    <value>Add Chill Explosion Effect</value>
+  </data>
+  <data name="Skill1202" xml:space="preserve">
+    <value>Destruction Strike Enhancement Skill</value>
+  </data>
+  <data name="Skill1203" xml:space="preserve">
+    <value>Sword Blow Enhancement Skill</value>
+  </data>
+  <data name="Skill1204" xml:space="preserve">
+    <value>Solid protection enhancement skill</value>
+  </data>
+  <data name="Skill1205" xml:space="preserve">
+    <value>Solid Protection Enhancement Max HP</value>
+  </data>
+  <data name="Skill1206" xml:space="preserve">
+    <value>Solid Protection Enhancement Party Damage</value>
+  </data>
+  <data name="Skill1207" xml:space="preserve">
+    <value>Solid Protection Enhancement HP Convert Rate</value>
+  </data>
+  <data name="Skill1208" xml:space="preserve">
+    <value>Solid Protection Enhancement Dmg Convert Rate</value>
+  </data>
+  <data name="Skill1209" xml:space="preserve">
+    <value>Solid Protection Enhancement Defense Party</value>
+  </data>
+  <data name="Skill1210" xml:space="preserve">
+    <value>Solid Protection Enhancement Defense</value>
+  </data>
+  <data name="Skill1211" xml:space="preserve">
+    <value>Dark Plasma Enhancement Skill</value>
+  </data>
+  <data name="Skill1212" xml:space="preserve">
+    <value>Ice Blast Enhancement Skill</value>
+  </data>
+  <data name="Skill1213" xml:space="preserve">
+    <value>Busting Flare Enhancement Skill</value>
+  </data>
+  <data name="Skill1214" xml:space="preserve">
+    <value>Chaos Blade Enhancement Skill</value>
+  </data>
+  <data name="Skill1215" xml:space="preserve">
+    <value>Havok Spear Enhancement Skill</value>
+  </data>
+  <data name="Skill1216" xml:space="preserve">
+    <value>Spearstorm Enhancement Skill</value>
+  </data>
+  <data name="Skill1217" xml:space="preserve">
+    <value>Marvel Burst Enhancement Skill</value>
+  </data>
+  <data name="Skill1218" xml:space="preserve">
+    <value>Unleash Marvel Enhancement Skill</value>
+  </data>
+  <data name="Skill1219" xml:space="preserve">
+    <value>Ultimate Force Enhancement Skill</value>
+  </data>
+  <data name="Skill1220" xml:space="preserve">
+    <value>Shining Bird Enhancement Skill</value>
+  </data>
+  <data name="Skill1221" xml:space="preserve">
+    <value>Dragon Violent Enhancement Skill</value>
+  </data>
+  <data name="Skill1222" xml:space="preserve">
+    <value>Raining Arrow Enhancement Skill</value>
+  </data>
+  <data name="Skill1223" xml:space="preserve">
+    <value>Holy Bolt Enhancement Skill</value>
+  </data>
+  <data name="Skill1224" xml:space="preserve">
+    <value>Elemental Damage Enhancement Skill</value>
+  </data>
+  <data name="Skill1225" xml:space="preserve">
+    <value>Elemental Defense Enhancement Skill</value>
+  </data>
+  <data name="Skill1226" xml:space="preserve">
+    <value>Heal Enhancement Skill</value>
+  </data>
+  <data name="Skill1227" xml:space="preserve">
+    <value>Party Healing Enhancement Skill</value>
+  </data>
+  <data name="Skill1228" xml:space="preserve">
+    <value>Greater Damage Enhancement Skill</value>
+  </data>
+  <data name="Skill1229" xml:space="preserve">
+    <value>Greater Defense Enhancement Skill</value>
+  </data>
+  <data name="Skill1230" xml:space="preserve">
+    <value>Bless Enhancement Skill</value>
+  </data>
+  <data name="Skill1231" xml:space="preserve">
+    <value>Charge Slash Enhancement Skill</value>
+  </data>
+  <data name="Skill1232" xml:space="preserve">
+    <value>Windglaive Enhancement Skill</value>
+  </data>
+  <data name="Skill1233" xml:space="preserve">
+    <value>Bladestorm Enhancement Skill</value>
+  </data>
+  <data name="Skill1234" xml:space="preserve">
+    <value>Illusion Avatar Strengthening Skill</value>
+  </data>
+  <data name="Skill1235" xml:space="preserve">
+    <value>Oversting Enhancement Skill</value>
+  </data>
+  <data name="Skill1236" xml:space="preserve">
+    <value>Wild Breche Enhancement Skill</value>
+  </data>
+  <data name="Skill1237" xml:space="preserve">
+    <value>Synthesis: Angel Homunculus Enhancement Skill</value>
+  </data>
+  <data name="Skill1238" xml:space="preserve">
+    <value>Synthesis: Ignition Bomber Enhancement Skill</value>
+  </data>
+  <data name="Skill1239" xml:space="preserve">
+    <value>Synthesis: Countless Weapon Enhancement Skill</value>
+  </data>
+  <data name="Skill1240" xml:space="preserve">
+    <value>Spirit Blast Enhancement Skill</value>
+  </data>
+  <data name="Skill1241" xml:space="preserve">
+    <value>4th Stat Increase</value>
+  </data>
+  <data name="Skill1242" xml:space="preserve">
+    <value>4th Stat Increase</value>
+  </data>
+  <data name="Skill1500" xml:space="preserve">
+    <value>Sword's Fury</value>
+  </data>
+  <data name="Skill1501" xml:space="preserve">
+    <value>Sword Blow</value>
+  </data>
+  <data name="Skill1502" xml:space="preserve">
+    <value>Strong belief</value>
+  </data>
+  <data name="Skill1503" xml:space="preserve">
+    <value>Solid protection</value>
+  </data>
+  <data name="Skill1504" xml:space="preserve">
+    <value>Rune Sphere Enhancement Skill</value>
+  </data>
+  <data name="Skill1505" xml:space="preserve">
+    <value>Rune Praise Enhancement Skill</value>
+  </data>
+  <data name="Skill1506" xml:space="preserve">
+    <value>Divine Fall Enhancement Skill</value>
+  </data>
+  <data name="Skill1507" xml:space="preserve">
+    <value>Holy Sweep Enhancement Skill</value>
+  </data>
+  <data name="Skill1508" xml:space="preserve">
+    <value>Sacred Impact Enhancement Skill</value>
+  </data>
+  <data name="Skill2001" xml:space="preserve">
+    <value>Dark Plasma</value>
+  </data>
+  <data name="Skill2002" xml:space="preserve">
+    <value>Ice break</value>
+  </data>
+  <data name="Skill2003" xml:space="preserve">
+    <value>Ice Blast</value>
+  </data>
+  <data name="Skill2004" xml:space="preserve">
+    <value>Death Fire</value>
+  </data>
+  <data name="Skill2005" xml:space="preserve">
+    <value>Bursting flare</value>
+  </data>
+  <data name="Skill2006" xml:space="preserve">
+    <value>Death Ice</value>
+  </data>
+  <data name="Skill2007" xml:space="preserve">
+    <value>Beginner Care</value>
+  </data>
+  <data name="Skill2008" xml:space="preserve">
+    <value>Beginner Recovery</value>
+  </data>
+  <data name="Skill2009" xml:space="preserve">
+    <value>Beginner Greater Defense</value>
+  </data>
+  <data name="Skill2010" xml:space="preserve">
+    <value>Beginner Greater Damage</value>
+  </data>
+  <data name="Skill2011" xml:space="preserve">
+    <value>Beginner Bless</value>
+  </data>
+  <data name="Skill2012" xml:space="preserve">
+    <value>Chaos Blade</value>
+  </data>
+  <data name="Skill2013" xml:space="preserve">
+    <value>Havok Spear</value>
+  </data>
+  <data name="Skill2014" xml:space="preserve">
+    <value>Spiral Charge</value>
+  </data>
+  <data name="Skill2015" xml:space="preserve">
+    <value>Crusher Charge</value>
+  </data>
+  <data name="Skill2016" xml:space="preserve">
+    <value>Elemental Charge</value>
+  </data>
+  <data name="Skill2017" xml:space="preserve">
+    <value>Chaos Blade Magic Explosion</value>
+  </data>
+  <data name="Skill2018" xml:space="preserve">
+    <value>Fire Blood Magic Explosion</value>
+  </data>
+  <data name="Skill2019" xml:space="preserve">
+    <value>Ice Blood Magic Explosion</value>
+  </data>
+  <data name="Skill2020" xml:space="preserve">
+    <value>Havok Spear Nova</value>
+  </data>
+  <data name="Skill2021" xml:space="preserve">
+    <value>Fixed Fire</value>
+  </data>
+  <data name="Skill2022" xml:space="preserve">
+    <value>Bonding Cord</value>
+  </data>
+  <data name="Skill2023" xml:space="preserve">
+    <value>Raining Arrow</value>
+  </data>
+  <data name="Skill2024" xml:space="preserve">
+    <value>Dex Booster</value>
+  </data>
+  <data name="Skill2025" xml:space="preserve">
+    <value>Holy Bolt</value>
+  </data>
+  <data name="Skill2026" xml:space="preserve">
+    <value>Elemental Damage Enhancement</value>
+  </data>
+  <data name="Skill2027" xml:space="preserve">
+    <value>Elemental Defense Enhancement</value>
+  </data>
+  <data name="Skill2028" xml:space="preserve">
+    <value>Charge Slash</value>
+  </data>
+  <data name="Skill2029" xml:space="preserve">
+    <value>Windglaive</value>
+  </data>
+  <data name="Skill2030" xml:space="preserve">
+    <value>Bladestorm</value>
+  </data>
+  <data name="Skill2031" xml:space="preserve">
+    <value>Illusion Avatar</value>
+  </data>
+  <data name="Skill2032" xml:space="preserve">
+    <value>Illusion Blade</value>
+  </data>
+  <data name="Skill2036" xml:space="preserve">
+    <value>Oversting</value>
+  </data>
+  <data name="Skill2037" xml:space="preserve">
+    <value>Meteor Storm Gale</value>
+  </data>
+  <data name="Skill2040" xml:space="preserve">
+    <value>Sword Blow Saturation</value>
+  </data>
+  <data name="Skill2043" xml:space="preserve">
+    <value>Frozen Stab Gale</value>
+  </data>
+  <data name="Skill2044" xml:space="preserve">
+    <value>Raining Arrow Saturation</value>
+  </data>
+  <data name="Skill2047" xml:space="preserve">
+    <value>Holy Bolt Gale</value>
+  </data>
+  <data name="Skill2049" xml:space="preserve">
+    <value>Chaos Blade Saturation</value>
+  </data>
+  <data name="Skill2051" xml:space="preserve">
+    <value>Havok Spear Wrath</value>
+  </data>
+  <data name="Skill2054" xml:space="preserve">
+    <value>Wind Soul Saturation</value>
+  </data>
+  <data name="Skill2058" xml:space="preserve">
+    <value>Fire Beast Saturation</value>
+  </data>
+  <data name="Skill2060" xml:space="preserve">
+    <value>Death Scythe Fury</value>
+  </data>
+  <data name="Skill2061" xml:space="preserve">
+    <value>Dark Side Saturation</value>
+  </data>
+  <data name="Skill2063" xml:space="preserve">
+    <value>Spirit Hook Saturation</value>
+  </data>
+  <data name="Skill2065" xml:space="preserve">
+    <value>Oversting Saturation</value>
+  </data>
+  <data name="Skill2068" xml:space="preserve">
+    <value>Lightning Storm Gale</value>
+  </data>
+  <data name="Skill2071" xml:space="preserve">
+    <value>Pierce Attack Saturation</value>
+  </data>
+  <data name="Skill2073" xml:space="preserve">
+    <value>Bursting Flare Gale</value>
+  </data>
+  <data name="Skill2076" xml:space="preserve">
+    <value>Ultimate Force Saturation</value>
+  </data>
+  <data name="Skill2080" xml:space="preserve">
+    <value>Spearstorm Saturation</value>
+  </data>
+  <data name="Skill2082" xml:space="preserve">
+    <value>Blade Storm Saturation</value>
+  </data>
+  <data name="Skill2085" xml:space="preserve">
+    <value>Wild Breche</value>
+  </data>
+  <data name="Skill2086" xml:space="preserve">
+    <value>Nuke(Activated)</value>
+  </data>
+  <data name="Skill2087" xml:space="preserve">
+    <value>Bolt(Activated)</value>
+  </data>
+  <data name="Skill2088" xml:space="preserve">
+    <value>AoE(Activated)</value>
+  </data>
+  <data name="Skill2089" xml:space="preserve">
+    <value>Wild Breche Gale</value>
+  </data>
+  <data name="Skill2090" xml:space="preserve">
+    <value>Synthesis: Confusion Stone</value>
+  </data>
+  <data name="Skill2091" xml:space="preserve">
+    <value>Synthesis: Angel Homunculus</value>
+  </data>
+  <data name="Skill2092" xml:space="preserve">
+    <value>Synthesis: Ignition Bomber</value>
+  </data>
+  <data name="Skill2093" xml:space="preserve">
+    <value>Synthesis: Countless Weapon</value>
+  </data>
+  <data name="Skill2094" xml:space="preserve">
+    <value>Countless Weapon of Saturation</value>
+  </data>
+  <data name="Skill2095" xml:space="preserve">
+    <value>Spirit Blast</value>
+  </data>
+  <data name="Skill2096" xml:space="preserve">
+    <value>Spirit Blast of Anger</value>
+  </data>
+  <data name="Skill2097" xml:space="preserve">
+    <value>Crown Force</value>
+  </data>
+  <data name="Skill2098" xml:space="preserve">
+    <value>Divine Force</value>
+  </data>
+  <data name="Skill2099" xml:space="preserve">
+    <value>Divine Aura</value>
+  </data>
+  <data name="Skill2100" xml:space="preserve">
+    <value>Battle Glory</value>
+  </data>
+  <data name="Skill2101" xml:space="preserve">
+    <value>Rune Sphere</value>
+  </data>
+  <data name="Skill2102" xml:space="preserve">
+    <value>Rune Praise</value>
+  </data>
+  <data name="Skill2103" xml:space="preserve">
+    <value>Overloaded Rune Praise</value>
+  </data>
+  <data name="Skill2104" xml:space="preserve">
+    <value>Special Praise</value>
+  </data>
+  <data name="Skill2105" xml:space="preserve">
+    <value>Divine Fall</value>
+  </data>
+  <data name="Skill2106" xml:space="preserve">
+    <value>Holy Sweep</value>
+  </data>
+  <data name="Skill2107" xml:space="preserve">
+    <value>Sacred Impact</value>
+  </data>
+  <data name="Skill2108" xml:space="preserve">
+    <value>Lugard's Blessing: Punishment</value>
+  </data>
+  <data name="Skill2109" xml:space="preserve">
+    <value>Gale Sacred Impact</value>
+  </data>
+  <data name="Effect1" xml:space="preserve">
+    <value>Greater Damage</value>
+  </data>
+  <data name="Effect2" xml:space="preserve">
+    <value>Greater Defense</value>
+  </data>
+  <data name="Effect3" xml:space="preserve">
+    <value>Elf Buffer</value>
+  </data>
+  <data name="Effect4" xml:space="preserve">
+    <value>Mana Shield</value>
+  </data>
+  <data name="Effect5" xml:space="preserve">
+    <value>Greater Critical Damage</value>
+  </data>
+  <data name="Effect6" xml:space="preserve">
+    <value>Infinity Arrrow</value>
+  </data>
+  <data name="Effect7" xml:space="preserve">
+    <value>BP Recovery</value>
+  </data>
+  <data name="Effect8" xml:space="preserve">
+    <value>Greater Life</value>
+  </data>
+  <data name="Effect9" xml:space="preserve">
+    <value>Greater Mana</value>
+  </data>
+  <data name="Effect10" xml:space="preserve">
+    <value>Bless Potion</value>
+  </data>
+  <data name="Effect11" xml:space="preserve">
+    <value>Soul Potion</value>
+  </data>
+  <data name="Effect12" xml:space="preserve">
+    <value>Disable Magic</value>
+  </data>
+  <data name="Effect13" xml:space="preserve">
+    <value>Castle Gate State</value>
+  </data>
+  <data name="Effect14" xml:space="preserve">
+    <value>Guild State 1</value>
+  </data>
+  <data name="Effect15" xml:space="preserve">
+    <value>Guild State 2</value>
+  </data>
+  <data name="Effect16" xml:space="preserve">
+    <value>Guild State 3</value>
+  </data>
+  <data name="Effect17" xml:space="preserve">
+    <value>Guild State 4</value>
+  </data>
+  <data name="Effect18" xml:space="preserve">
+    <value>Invisibility</value>
+  </data>
+  <data name="Effect19" xml:space="preserve">
+    <value>Guild State 5</value>
+  </data>
+  <data name="Effect20" xml:space="preserve">
+    <value>Guild State 6</value>
+  </data>
+  <data name="Effect21" xml:space="preserve">
+    <value>Crywolf State 1</value>
+  </data>
+  <data name="Effect22" xml:space="preserve">
+    <value>Crywolf State 2</value>
+  </data>
+  <data name="Effect23" xml:space="preserve">
+    <value>Crywolf State 3</value>
+  </data>
+  <data name="Effect24" xml:space="preserve">
+    <value>Crywolf State 4</value>
+  </data>
+  <data name="Effect25" xml:space="preserve">
+    <value>Crywolf State 5</value>
+  </data>
+  <data name="Effect26" xml:space="preserve">
+    <value>Crywolf State 6</value>
+  </data>
+  <data name="Effect27" xml:space="preserve">
+    <value>Crywolf State 7</value>
+  </data>
+  <data name="Effect28" xml:space="preserve">
+    <value>Game Master</value>
+  </data>
+  <data name="Effect29" xml:space="preserve">
+    <value>Seal of Ascension</value>
+  </data>
+  <data name="Effect30" xml:space="preserve">
+    <value>Seal of Wealth</value>
+  </data>
+  <data name="Effect31" xml:space="preserve">
+    <value>Seal of Sustenance</value>
+  </data>
+  <data name="Effect32" xml:space="preserve">
+    <value>Order of Speed</value>
+  </data>
+  <data name="Effect33" xml:space="preserve">
+    <value>Order of Sublimation</value>
+  </data>
+  <data name="Effect34" xml:space="preserve">
+    <value>Order of Protection</value>
+  </data>
+  <data name="Effect35" xml:space="preserve">
+    <value>Halloween 1</value>
+  </data>
+  <data name="Effect36" xml:space="preserve">
+    <value>Halloween 2</value>
+  </data>
+  <data name="Effect37" xml:space="preserve">
+    <value>Halloween 3</value>
+  </data>
+  <data name="Effect38" xml:space="preserve">
+    <value>Halloween 4</value>
+  </data>
+  <data name="Effect39" xml:space="preserve">
+    <value>Halloween 5</value>
+  </data>
+  <data name="Effect40" xml:space="preserve">
+    <value>Seal of Ascension</value>
+  </data>
+  <data name="Effect41" xml:space="preserve">
+    <value>Seal of Wealth</value>
+  </data>
+  <data name="Effect42" xml:space="preserve">
+    <value>Seal of Sustenance</value>
+  </data>
+  <data name="Effect43" xml:space="preserve">
+    <value>Seal of Movement</value>
+  </data>
+  <data name="Effect44" xml:space="preserve">
+    <value>Scroll of Quick</value>
+  </data>
+  <data name="Effect45" xml:space="preserve">
+    <value>Scroll of Defense</value>
+  </data>
+  <data name="Effect46" xml:space="preserve">
+    <value>Scroll of Damage</value>
+  </data>
+  <data name="Effect47" xml:space="preserve">
+    <value>Scroll of Magic Damage</value>
+  </data>
+  <data name="Effect48" xml:space="preserve">
+    <value>Scroll of Life</value>
+  </data>
+  <data name="Effect49" xml:space="preserve">
+    <value>Scroll of Mana</value>
+  </data>
+  <data name="Effect50" xml:space="preserve">
+    <value>Elixir of Strength</value>
+  </data>
+  <data name="Effect51" xml:space="preserve">
+    <value>Elixir of Dexterity</value>
+  </data>
+  <data name="Effect52" xml:space="preserve">
+    <value>Elixir of Vitality</value>
+  </data>
+  <data name="Effect53" xml:space="preserve">
+    <value>Elixir of Energy</value>
+  </data>
+  <data name="Effect54" xml:space="preserve">
+    <value>Elixir of Leadership</value>
+  </data>
+  <data name="Effect55" xml:space="preserve">
+    <value>Poison</value>
+  </data>
+  <data name="Effect56" xml:space="preserve">
+    <value>Ice</value>
+  </data>
+  <data name="Effect57" xml:space="preserve">
+    <value>Ice Arrow</value>
+  </data>
+  <data name="Effect58" xml:space="preserve">
+    <value>Fire Slash</value>
+  </data>
+  <data name="Effect59" xml:space="preserve">
+    <value>Physi Damage Immunity</value>
+  </data>
+  <data name="Effect60" xml:space="preserve">
+    <value>Magic Damage Immunity</value>
+  </data>
+  <data name="Effect61" xml:space="preserve">
+    <value>Stern</value>
+  </data>
+  <data name="Effect62" xml:space="preserve">
+    <value>Magic Defense</value>
+  </data>
+  <data name="Effect63" xml:space="preserve">
+    <value>Monster Physi Damage Immunity</value>
+  </data>
+  <data name="Effect64" xml:space="preserve">
+    <value>Monster Magic Damage Immunity</value>
+  </data>
+  <data name="Effect65" xml:space="preserve">
+    <value>Order of Restraint</value>
+  </data>
+  <data name="Effect66" xml:space="preserve">
+    <value>Crywolf State 8</value>
+  </data>
+  <data name="Effect67" xml:space="preserve">
+    <value>Crywolf State 9</value>
+  </data>
+  <data name="Effect68" xml:space="preserve">
+    <value>Crywolf State 10</value>
+  </data>
+  <data name="Effect69" xml:space="preserve">
+    <value>Crywolf State 11</value>
+  </data>
+  <data name="Effect70" xml:space="preserve">
+    <value>Crywolf State 12</value>
+  </data>
+  <data name="Effect71" xml:space="preserve">
+    <value>Damage Reflect</value>
+  </data>
+  <data name="Effect72" xml:space="preserve">
+    <value>Sleep</value>
+  </data>
+  <data name="Effect73" xml:space="preserve">
+    <value>Blind</value>
+  </data>
+  <data name="Effect74" xml:space="preserve">
+    <value>Neil</value>
+  </data>
+  <data name="Effect75" xml:space="preserve">
+    <value>Sahamutt</value>
+  </data>
+  <data name="Effect76" xml:space="preserve">
+    <value>Lesser Damage</value>
+  </data>
+  <data name="Effect77" xml:space="preserve">
+    <value>Lesser Defense</value>
+  </data>
+  <data name="Effect78" xml:space="preserve">
+    <value>Cherry Blossom 1</value>
+  </data>
+  <data name="Effect79" xml:space="preserve">
+    <value>Cherry Blossom 2</value>
+  </data>
+  <data name="Effect80" xml:space="preserve">
+    <value>Cherry Blossom 3</value>
+  </data>
+  <data name="Effect81" xml:space="preserve">
+    <value>Sword Power</value>
+  </data>
+  <data name="Effect82" xml:space="preserve">
+    <value>Magic Circle</value>
+  </data>
+  <data name="Effect83" xml:space="preserve">
+    <value>Sword Slash</value>
+  </data>
+  <data name="Effect84" xml:space="preserve">
+    <value>Lightning Storm</value>
+  </data>
+  <data name="Effect85" xml:space="preserve">
+    <value>Red Storm</value>
+  </data>
+  <data name="Effect86" xml:space="preserve">
+    <value>Frozen Stab</value>
+  </data>
+  <data name="Effect87" xml:space="preserve">
+    <value>Seal of Life</value>
+  </data>
+  <data name="Effect88" xml:space="preserve">
+    <value>Seal of Mana</value>
+  </data>
+  <data name="Effect89" xml:space="preserve">
+    <value>Scroll of Battle</value>
+  </data>
+  <data name="Effect90" xml:space="preserve">
+    <value>Scroll of Strength</value>
+  </data>
+  <data name="Effect91" xml:space="preserve">
+    <value>Christmas 1</value>
+  </data>
+  <data name="Effect92" xml:space="preserve">
+    <value>Christmas 2</value>
+  </data>
+  <data name="Effect93" xml:space="preserve">
+    <value>Christmas 3</value>
+  </data>
+  <data name="Effect94" xml:space="preserve">
+    <value>Christmas 4</value>
+  </data>
+  <data name="Effect95" xml:space="preserve">
+    <value>Christmas 5</value>
+  </data>
+  <data name="Effect96" xml:space="preserve">
+    <value>Christmas 6</value>
+  </data>
+  <data name="Effect97" xml:space="preserve">
+    <value>Christmas 7</value>
+  </data>
+  <data name="Effect98" xml:space="preserve">
+    <value>Duel Arena Watch</value>
+  </data>
+  <data name="Effect99" xml:space="preserve">
+    <value>Talisman of Guardian</value>
+  </data>
+  <data name="Effect100" xml:space="preserve">
+    <value>Talisman of Protection</value>
+  </data>
+  <data name="Effect101" xml:space="preserve">
+    <value>Master Seal of Ascension</value>
+  </data>
+  <data name="Effect102" xml:space="preserve">
+    <value>Master Seal of Wealth</value>
+  </data>
+  <data name="Effect103" xml:space="preserve">
+    <value>Gladiator's Glory</value>
+  </data>
+  <data name="Effect105" xml:space="preserve">
+    <value>Double Goer Delete</value>
+  </data>
+  <data name="Effect112" xml:space="preserve">
+    <value>Party Experience Bonus</value>
+  </data>
+  <data name="Effect113" xml:space="preserve">
+    <value>Max AG Boost Aura</value>
+  </data>
+  <data name="Effect114" xml:space="preserve">
+    <value>Max SD Boost Aura</value>
+  </data>
+  <data name="Effect121" xml:space="preserve">
+    <value>Scroll of Healing</value>
+  </data>
+  <data name="Effect122" xml:space="preserve">
+    <value>Hawk Figurine</value>
+  </data>
+  <data name="Effect123" xml:space="preserve">
+    <value>Goat Figurine</value>
+  </data>
+  <data name="Effect124" xml:space="preserve">
+    <value>Oak Charm</value>
+  </data>
+  <data name="Effect125" xml:space="preserve">
+    <value>Maple Charm</value>
+  </data>
+  <data name="Effect126" xml:space="preserve">
+    <value>Golden Oak Charm</value>
+  </data>
+  <data name="Effect127" xml:space="preserve">
+    <value>Golden Maple Charm</value>
+  </data>
+  <data name="Effect128" xml:space="preserve">
+    <value>Worn Horseshoe</value>
+  </data>
+  <data name="Effect129" xml:space="preserve">
+    <value>Greater Ignore Defense Rate</value>
+  </data>
+  <data name="Effect130" xml:space="preserve">
+    <value>Fitness</value>
+  </data>
+  <data name="Effect131" xml:space="preserve">
+    <value>Greater Defense Success Rate</value>
+  </data>
+  <data name="Effect132" xml:space="preserve">
+    <value>Phoenix Shot</value>
+  </data>
+  <data name="Effect134" xml:space="preserve">
+    <value>Iron Defense</value>
+  </data>
+  <data name="Effect135" xml:space="preserve">
+    <value>Greater Life Enhanced</value>
+  </data>
+  <data name="Effect136" xml:space="preserve">
+    <value>Greater Life Mastered</value>
+  </data>
+  <data name="Effect137" xml:space="preserve">
+    <value>Death Stab Enhanced</value>
+  </data>
+  <data name="Effect138" xml:space="preserve">
+    <value>Magic Circle Improved</value>
+  </data>
+  <data name="Effect139" xml:space="preserve">
+    <value>Magic Circle Enhanced</value>
+  </data>
+  <data name="Effect140" xml:space="preserve">
+    <value>Mana Shield Mastered</value>
+  </data>
+  <data name="Effect141" xml:space="preserve">
+    <value>Frozen Stab Mastered</value>
+  </data>
+  <data name="Effect142" xml:space="preserve">
+    <value>Bless</value>
+  </data>
+  <data name="Effect143" xml:space="preserve">
+    <value>Infinity Arrrow Improved</value>
+  </data>
+  <data name="Effect144" xml:space="preserve">
+    <value>Blind Improved</value>
+  </data>
+  <data name="Effect145" xml:space="preserve">
+    <value>Drain Life Enhanced</value>
+  </data>
+  <data name="Effect146" xml:space="preserve">
+    <value>Ice Storm Enhanced</value>
+  </data>
+  <data name="Effect147" xml:space="preserve">
+    <value>Earth Prison</value>
+  </data>
+  <data name="Effect148" xml:space="preserve">
+    <value>Greater Critical D. Mastered</value>
+  </data>
+  <data name="Effect149" xml:space="preserve">
+    <value>Greater Critical D. Extended</value>
+  </data>
+  <data name="Effect150" xml:space="preserve">
+    <value>Sword Power Improved</value>
+  </data>
+  <data name="Effect151" xml:space="preserve">
+    <value>Sword Power Enhanced</value>
+  </data>
+  <data name="Effect152" xml:space="preserve">
+    <value>Sword Power Mastered</value>
+  </data>
+  <data name="Effect153" xml:space="preserve">
+    <value>Greater D. S. Rate Improved</value>
+  </data>
+  <data name="Effect154" xml:space="preserve">
+    <value>Greater D. S. Rate Enhanced</value>
+  </data>
+  <data name="Effect155" xml:space="preserve">
+    <value>Fitness Improved</value>
+  </data>
+  <data name="Effect157" xml:space="preserve">
+    <value>Dragon Lore Enhanced</value>
+  </data>
+  <data name="Effect158" xml:space="preserve">
+    <value>Chain Driver Enhanced</value>
+  </data>
+  <data name="Effect159" xml:space="preserve">
+    <value>Poison Arrow</value>
+  </data>
+  <data name="Effect160" xml:space="preserve">
+    <value>Poison Arrow Improved</value>
+  </data>
+  <data name="Effect161" xml:space="preserve">
+    <value>Bless Improved</value>
+  </data>
+  <data name="Effect162" xml:space="preserve">
+    <value>Lesser Damage Improved</value>
+  </data>
+  <data name="Effect163" xml:space="preserve">
+    <value>Lesser Defense Improved</value>
+  </data>
+  <data name="Effect164" xml:space="preserve">
+    <value>Fire Slash Enhanced</value>
+  </data>
+  <data name="Effect165" xml:space="preserve">
+    <value>Iron Defense Improved</value>
+  </data>
+  <data name="Effect166" xml:space="preserve">
+    <value>Blood Howling</value>
+  </data>
+  <data name="Effect167" xml:space="preserve">
+    <value>Blood Howling Improved</value>
+  </data>
+  <data name="Effect174" xml:space="preserve">
+    <value>Pentagram Debuff Fire</value>
+  </data>
+  <data name="Effect175" xml:space="preserve">
+    <value>Pentagram Debuff Water</value>
+  </data>
+  <data name="Effect176" xml:space="preserve">
+    <value>Pentagram Debuff Earth</value>
+  </data>
+  <data name="Effect177" xml:space="preserve">
+    <value>Pentagram Debuff Wind</value>
+  </data>
+  <data name="Effect178" xml:space="preserve">
+    <value>Pentagram Debuff Dark</value>
+  </data>
+  <data name="Effect179" xml:space="preserve">
+    <value>Arca Battle Reward 1</value>
+  </data>
+  <data name="Effect180" xml:space="preserve">
+    <value>Arca Battle Reward 2</value>
+  </data>
+  <data name="Effect181" xml:space="preserve">
+    <value>Arca Battle Reward 3</value>
+  </data>
+  <data name="Effect182" xml:space="preserve">
+    <value>Arca Battle Reward 4</value>
+  </data>
+  <data name="Effect183" xml:space="preserve">
+    <value>Arca Battle Reward 5</value>
+  </data>
+  <data name="Effect184" xml:space="preserve">
+    <value>Arca Battle Penalty</value>
+  </data>
+  <data name="Effect186" xml:space="preserve">
+    <value>Pentagram Debuff Slow</value>
+  </data>
+  <data name="Effect187" xml:space="preserve">
+    <value>Arca Battle Reward 6</value>
+  </data>
+  <data name="Effect190" xml:space="preserve">
+    <value>Talisman of Ascension 1</value>
+  </data>
+  <data name="Effect191" xml:space="preserve">
+    <value>Talisman of Ascension 2</value>
+  </data>
+  <data name="Effect192" xml:space="preserve">
+    <value>Talisman of Ascension 3</value>
+  </data>
+  <data name="Effect193" xml:space="preserve">
+    <value>Seal of Ascension</value>
+  </data>
+  <data name="Effect194" xml:space="preserve">
+    <value>Master Seal of Ascension</value>
+  </data>
+  <data name="Effect195" xml:space="preserve">
+    <value>Blessing of Light</value>
+  </data>
+  <data name="Effect196" xml:space="preserve">
+    <value>Master Scroll of Defense</value>
+  </data>
+  <data name="Effect197" xml:space="preserve">
+    <value>Master Scroll of Magic Damage</value>
+  </data>
+  <data name="Effect198" xml:space="preserve">
+    <value>Master Scroll of Life</value>
+  </data>
+  <data name="Effect199" xml:space="preserve">
+    <value>Master Scroll of Mana</value>
+  </data>
+  <data name="Effect200" xml:space="preserve">
+    <value>Master Scroll of Damage</value>
+  </data>
+  <data name="Effect201" xml:space="preserve">
+    <value>Master Scroll of Healing</value>
+  </data>
+  <data name="Effect202" xml:space="preserve">
+    <value>Master Scroll of Battle</value>
+  </data>
+  <data name="Effect203" xml:space="preserve">
+    <value>Master Scroll of Strength</value>
+  </data>
+  <data name="Effect204" xml:space="preserve">
+    <value>Master Scroll of Quick</value>
+  </data>
+  <data name="Effect205" xml:space="preserve">
+    <value>Horn of Uniria</value>
+  </data>
+  <data name="Effect206" xml:space="preserve">
+    <value>Horn of Dinorant</value>
+  </data>
+  <data name="Effect207" xml:space="preserve">
+    <value>Horn of Dark Horse</value>
+  </data>
+  <data name="Effect208" xml:space="preserve">
+    <value>Horn of Fenrir</value>
+  </data>
+  <data name="Effect209" xml:space="preserve">
+    <value>Paralyze</value>
+  </data>
+  <data name="Effect210" xml:space="preserve">
+    <value>Paralyze Improved</value>
+  </data>
+  <data name="Effect212" xml:space="preserve">
+    <value>Blessing of Light</value>
+  </data>
+  <data name="Effect213" xml:space="preserve">
+    <value>Blessing of Light</value>
+  </data>
+  <data name="Effect214" xml:space="preserve">
+    <value>Evasion</value>
+  </data>
+  <data name="Effect216" xml:space="preserve">
+    <value>Circle Shield</value>
+  </data>
+  <data name="Effect217" xml:space="preserve">
+    <value>Obsidian</value>
+  </data>
+  <data name="Effect218" xml:space="preserve">
+    <value>Wrath</value>
+  </data>
+  <data name="Effect219" xml:space="preserve">
+    <value>Burst</value>
+  </data>
+  <data name="Effect220" xml:space="preserve">
+    <value>Obsidian Improved</value>
+  </data>
+  <data name="Effect221" xml:space="preserve">
+    <value>Circle Shield Improved</value>
+  </data>
+  <data name="Effect222" xml:space="preserve">
+    <value>Circle Shield Enhanced</value>
+  </data>
+  <data name="Effect223" xml:space="preserve">
+    <value>Wrath Improved</value>
+  </data>
+  <data name="Effect224" xml:space="preserve">
+    <value>Wrath Enhanced</value>
+  </data>
+  <data name="Effect225" xml:space="preserve">
+    <value>Wrath Mastered</value>
+  </data>
+  <data name="Effect226" xml:space="preserve">
+    <value>Burst Improved</value>
+  </data>
+  <data name="Effect227" xml:space="preserve">
+    <value>Evomon Success</value>
+  </data>
+  <data name="Effect228" xml:space="preserve">
+    <value>Evomon Failure</value>
+  </data>
+  <data name="Effect229" xml:space="preserve">
+    <value>Core Magriffy Berserker</value>
+  </data>
+  <data name="Effect230" xml:space="preserve">
+    <value>Core Magriffy Clone</value>
+  </data>
+  <data name="Effect231" xml:space="preserve">
+    <value>Core Magriffy Twist</value>
+  </data>
+  <data name="Effect232" xml:space="preserve">
+    <value>Dark Raven</value>
+  </data>
+  <data name="Effect238" xml:space="preserve">
+    <value>Bastion</value>
+  </data>
+  <data name="Effect239" xml:space="preserve">
+    <value>Hemorrhage</value>
+  </data>
+  <data name="Effect240" xml:space="preserve">
+    <value>Paralysis</value>
+  </data>
+  <data name="Effect241" xml:space="preserve">
+    <value>Bondage</value>
+  </data>
+  <data name="Effect242" xml:space="preserve">
+    <value>Blindness</value>
+  </data>
+  <data name="Effect243" xml:space="preserve">
+    <value>Elemental Immunity</value>
+  </data>
+  <data name="Effect244" xml:space="preserve">
+    <value>Debuff Immunity</value>
+  </data>
+  <data name="Effect245" xml:space="preserve">
+    <value>Widened</value>
+  </data>
+  <data name="Effect246" xml:space="preserve">
+    <value>Archangel Will</value>
+  </data>
+  <data name="Effect247" xml:space="preserve">
+    <value>Ferea Party Experience Bonus</value>
+  </data>
+  <data name="Effect248" xml:space="preserve">
+    <value>Lunedil Blessing 1</value>
+  </data>
+  <data name="Effect249" xml:space="preserve">
+    <value>Lunedil Blessing 2</value>
+  </data>
+  <data name="Effect250" xml:space="preserve">
+    <value>Lunedil Blessing 3</value>
+  </data>
+  <data name="Effect251" xml:space="preserve">
+    <value>Lunedil Blessing 4</value>
+  </data>
+  <data name="Effect252" xml:space="preserve">
+    <value>Lunedil Blessing 5</value>
+  </data>
+  <data name="Effect253" xml:space="preserve">
+    <value>Bless of Light</value>
+  </data>
+  <data name="Effect254" xml:space="preserve">
+    <value>Bless of Light</value>
+  </data>
+  <data name="Effect255" xml:space="preserve">
+    <value>Bless of Light</value>
+  </data>
+  <data name="Effect256" xml:space="preserve">
+    <value>Medicine of Life</value>
+  </data>
+  <data name="Effect257" xml:space="preserve">
+    <value>Medicine of Mana</value>
+  </data>
+  <data name="Effect258" xml:space="preserve">
+    <value>Medicine of Speed</value>
+  </data>
+  <data name="Effect259" xml:space="preserve">
+    <value>Medicine of Physi Damage</value>
+  </data>
+  <data name="Effect260" xml:space="preserve">
+    <value>Medicine of Magic Damage</value>
+  </data>
+  <data name="Effect261" xml:space="preserve">
+    <value>Medicine of Defense</value>
+  </data>
+  <data name="Effect262" xml:space="preserve">
+    <value>Medicine of Critical Damage</value>
+  </data>
+  <data name="Effect263" xml:space="preserve">
+    <value>Medicine of Excellent Damage</value>
+  </data>
+  <data name="Effect273" xml:space="preserve">
+    <value>Toxic</value>
+  </data>
+  <data name="Effect274" xml:space="preserve">
+    <value>Chill</value>
+  </data>
+  <data name="Effect275" xml:space="preserve">
+    <value>Bleed</value>
+  </data>
+  <data name="Effect276" xml:space="preserve">
+    <value>Shock</value>
+  </data>
+  <data name="Effect277" xml:space="preserve">
+    <value>Toxic Improved</value>
+  </data>
+  <data name="Effect278" xml:space="preserve">
+    <value>Chill Improved</value>
+  </data>
+  <data name="Effect279" xml:space="preserve">
+    <value>Bleed Improved</value>
+  </data>
+  <data name="Effect280" xml:space="preserve">
+    <value>Shock Improved</value>
+  </data>
+  <data name="Effect283" xml:space="preserve">
+    <value>Ext Stat Point</value>
+  </data>
+  <data name="Effect288" xml:space="preserve">
+    <value>Ext Stat Point</value>
+  </data>
+  <data name="Effect292" xml:space="preserve">
+    <value>Switch Mode</value>
+  </data>
+  <data name="Effect293" xml:space="preserve">
+    <value>Might</value>
+  </data>
+  <data name="Effect294" xml:space="preserve">
+    <value>Haste</value>
+  </data>
+  <data name="Effect295" xml:space="preserve">
+    <value>Might Improved</value>
+  </data>
+  <data name="Effect296" xml:space="preserve">
+    <value>Might Enhanced</value>
+  </data>
+  <data name="Effect298" xml:space="preserve">
+    <value>Haste Improved</value>
+  </data>
+  <data name="Effect299" xml:space="preserve">
+    <value>Haste Enhanced</value>
+  </data>
+  <data name="Effect301" xml:space="preserve">
+    <value>Darkness</value>
+  </data>
+  <data name="Effect302" xml:space="preserve">
+    <value>Darkness Improved</value>
+  </data>
+  <data name="Effect303" xml:space="preserve">
+    <value>Darkness Enhanced</value>
+  </data>
+  <data name="Effect304" xml:space="preserve">
+    <value>Lesser Damage Enhanced</value>
+  </data>
+  <data name="Effect305" xml:space="preserve">
+    <value>Lesser Defense Enhanced</value>
+  </data>
+  <data name="Effect306" xml:space="preserve">
+    <value>Death Scythe</value>
+  </data>
+  <data name="Effect307" xml:space="preserve">
+    <value>Horn of Ghost Horse</value>
+  </data>
+  <data name="Effect309" xml:space="preserve">
+    <value>Elite Monster - Bleeding</value>
+  </data>
+  <data name="Effect310" xml:space="preserve">
+    <value>Elite Monster - Poisoning</value>
+  </data>
+  <data name="Effect311" xml:space="preserve">
+    <value>Elite Monster - Dec Atk</value>
+  </data>
+  <data name="Effect312" xml:space="preserve">
+    <value>Elite Monster - Dec Atk Speed</value>
+  </data>
+  <data name="Effect313" xml:space="preserve">
+    <value>Elite Monster - Dec Def</value>
+  </data>
+  <data name="Effect315" xml:space="preserve">
+    <value>Bat Flock</value>
+  </data>
+  <data name="Effect316" xml:space="preserve">
+    <value>Detection</value>
+  </data>
+  <data name="Effect317" xml:space="preserve">
+    <value>Demolish</value>
+  </data>
+  <data name="Effect318" xml:space="preserve">
+    <value>Detection Improved</value>
+  </data>
+  <data name="Effect319" xml:space="preserve">
+    <value>Demolish Improved</value>
+  </data>
+  <data name="Effect320" xml:space="preserve">
+    <value>Demolish Enhanced</value>
+  </data>
+  <data name="Effect321" xml:space="preserve">
+    <value>Demolish Drain BP</value>
+  </data>
+  <data name="Effect322" xml:space="preserve">
+    <value>Ice Dragon</value>
+  </data>
+  <data name="Effect323" xml:space="preserve">
+    <value>Ice Dragon Rare</value>
+  </data>
+  <data name="Effect324" xml:space="preserve">
+    <value>Sword's Fury</value>
+  </data>
+  <data name="Effect325" xml:space="preserve">
+    <value>Firm Belief</value>
+  </data>
+  <data name="Effect326" xml:space="preserve">
+    <value>Strong Blessing</value>
+  </data>
+  <data name="Effect327" xml:space="preserve">
+    <value>Sword's Fury Strengthener</value>
+  </data>
+  <data name="Effect328" xml:space="preserve">
+    <value>Sword's Fury Mastery</value>
+  </data>
+  <data name="Effect329" xml:space="preserve">
+    <value>Strong Blessing Strengthener</value>
+  </data>
+  <data name="Effect330" xml:space="preserve">
+    <value>Strong Blessing Proficiency</value>
+  </data>
+  <data name="Effect331" xml:space="preserve">
+    <value>Strong Blessing Mastery</value>
+  </data>
+  <data name="Effect332" xml:space="preserve">
+    <value>Strong Blessing Mastery</value>
+  </data>
+  <data name="Effect333" xml:space="preserve">
+    <value>Strong Blessing Effect</value>
+  </data>
+  <data name="Effect334" xml:space="preserve">
+    <value>Firm Belief Skill Strengthener</value>
+  </data>
+  <data name="Effect335" xml:space="preserve">
+    <value>Strong Blessing Skill Strengthener</value>
+  </data>
+  <data name="Effect336" xml:space="preserve">
+    <value>Firm Belief Strengthener</value>
+  </data>
+  <data name="Effect339" xml:space="preserve">
+    <value>Bond - Inactive</value>
+  </data>
+  <data name="Effect340" xml:space="preserve">
+    <value>Bond</value>
+  </data>
+  <data name="Effect341" xml:space="preserve">
+    <value>Bond - party member</value>
+  </data>
+  <data name="Effect342" xml:space="preserve">
+    <value>Bondage</value>
+  </data>
+  <data name="Effect343" xml:space="preserve">
+    <value>Reflection Barrier</value>
+  </data>
+  <data name="Effect345" xml:space="preserve">
+    <value>Reflection Barrier Improved</value>
+  </data>
+  <data name="Effect346" xml:space="preserve">
+    <value>Beginner Greater Damage</value>
+  </data>
+  <data name="Effect347" xml:space="preserve">
+    <value>Beginner Greater Defense</value>
+  </data>
+  <data name="Effect348" xml:space="preserve">
+    <value>Beginner Bless</value>
+  </data>
+  <data name="Effect349" xml:space="preserve">
+    <value>20th Anniversary Event Level 0</value>
+  </data>
+  <data name="Effect350" xml:space="preserve">
+    <value>20th Anniversary Event Level 1</value>
+  </data>
+  <data name="Effect351" xml:space="preserve">
+    <value>20th Anniversary Event Level 2</value>
+  </data>
+  <data name="Effect352" xml:space="preserve">
+    <value>20th Anniversary Event Level 3</value>
+  </data>
+  <data name="Effect353" xml:space="preserve">
+    <value>20th Anniversary Event Level 4</value>
+  </data>
+  <data name="Effect354" xml:space="preserve">
+    <value>20th Anniversary Event Level 5</value>
+  </data>
+  <data name="Effect355" xml:space="preserve">
+    <value>20th Anniversary Event Level 6</value>
+  </data>
+  <data name="Effect356" xml:space="preserve">
+    <value>20th Anniversary Event Level 7</value>
+  </data>
+  <data name="Effect357" xml:space="preserve">
+    <value>20th Anniversary Event Level 8</value>
+  </data>
+  <data name="Effect358" xml:space="preserve">
+    <value>20th Anniversary Event Level 9</value>
+  </data>
+  <data name="Effect359" xml:space="preserve">
+    <value>20th Anniversary Event Level 10</value>
+  </data>
+  <data name="Effect360" xml:space="preserve">
+    <value>20th Anniversary Event Level 11</value>
+  </data>
+  <data name="Effect361" xml:space="preserve">
+    <value>20th Anniversary Event Level 12</value>
+  </data>
+  <data name="Effect362" xml:space="preserve">
+    <value>20th Anniversary Event Level 13</value>
+  </data>
+  <data name="Effect363" xml:space="preserve">
+    <value>20th Anniversary Event Level 14</value>
+  </data>
+  <data name="Effect364" xml:space="preserve">
+    <value>20th Anniversary Event Level 15</value>
+  </data>
+  <data name="Effect365" xml:space="preserve">
+    <value>Spiral Charge</value>
+  </data>
+  <data name="Effect366" xml:space="preserve">
+    <value>Crusher Charge</value>
+  </data>
+  <data name="Effect367" xml:space="preserve">
+    <value>Elemental Charge</value>
+  </data>
+  <data name="Effect368" xml:space="preserve">
+    <value>Spiral Charge Improved</value>
+  </data>
+  <data name="Effect369" xml:space="preserve">
+    <value>Spiral Charge Enhanced</value>
+  </data>
+  <data name="Effect370" xml:space="preserve">
+    <value>Crusher Charge Improved</value>
+  </data>
+  <data name="Effect371" xml:space="preserve">
+    <value>Crusher Charge Enhanced</value>
+  </data>
+  <data name="Effect372" xml:space="preserve">
+    <value>Elemental Charge Improved</value>
+  </data>
+  <data name="Effect373" xml:space="preserve">
+    <value>Elemental Charge Enhanced</value>
+  </data>
+  <data name="Effect374" xml:space="preserve">
+    <value>Pierce Lion</value>
+  </data>
+  <data name="Effect375" xml:space="preserve">
+    <value>Pierce Lion Rare</value>
+  </data>
+  <data name="Effect376" xml:space="preserve">
+    <value>Exclusive Equipment - Pentagram</value>
+  </data>
+  <data name="Effect377" xml:space="preserve">
+    <value>Blessing of Experience</value>
+  </data>
+  <data name="Effect378" xml:space="preserve">
+    <value>Chaos Blade</value>
+  </data>
+  <data name="Effect379" xml:space="preserve">
+    <value>Havok Spear</value>
+  </data>
+  <data name="Effect380" xml:space="preserve">
+    <value>Fixed Fire</value>
+  </data>
+  <data name="Effect381" xml:space="preserve">
+    <value>Fixed Fire Improved</value>
+  </data>
+  <data name="Effect382" xml:space="preserve">
+    <value>Fixed Fire Enhanced</value>
+  </data>
+  <data name="Effect383" xml:space="preserve">
+    <value>Reflection Barrier</value>
+  </data>
+  <data name="Effect384" xml:space="preserve">
+    <value>Exclusive Equipment - Weapon</value>
+  </data>
+  <data name="Effect385" xml:space="preserve">
+    <value>20th Anniversary Event Level 16</value>
+  </data>
+  <data name="Effect386" xml:space="preserve">
+    <value>20th Anniversary Event Level 17</value>
+  </data>
+  <data name="Effect387" xml:space="preserve">
+    <value>20th Anniversary Event Level 18</value>
+  </data>
+  <data name="Effect388" xml:space="preserve">
+    <value>20th Anniversary Event Level 19</value>
+  </data>
+  <data name="Effect389" xml:space="preserve">
+    <value>20th Anniversary Event Level 20</value>
+  </data>
+  <data name="Effect390" xml:space="preserve">
+    <value>20th Anniversary Event Level 21</value>
+  </data>
+  <data name="Effect391" xml:space="preserve">
+    <value>20th Anniversary Event Level 22</value>
+  </data>
+  <data name="Effect392" xml:space="preserve">
+    <value>20th Anniversary Event Level 23</value>
+  </data>
+  <data name="Effect393" xml:space="preserve">
+    <value>20th Anniversary Event Level 24</value>
+  </data>
+  <data name="Effect394" xml:space="preserve">
+    <value>20th Anniversary Event Level 25</value>
+  </data>
+  <data name="Effect395" xml:space="preserve">
+    <value>Dex Booster</value>
+  </data>
+  <data name="Effect396" xml:space="preserve">
+    <value>Elemental Damage</value>
+  </data>
+  <data name="Effect397" xml:space="preserve">
+    <value>Elemental Defense</value>
+  </data>
+  <data name="Effect398" xml:space="preserve">
+    <value>Elemental Damage Enhanced</value>
+  </data>
+  <data name="Effect399" xml:space="preserve">
+    <value>Elemental Defense Enhanced</value>
+  </data>
+  <data name="Effect400" xml:space="preserve">
+    <value>Greater Damage Enhanced</value>
+  </data>
+  <data name="Effect401" xml:space="preserve">
+    <value>Greater Defense Enhanced</value>
+  </data>
+  <data name="Effect402" xml:space="preserve">
+    <value>Bless Enhanced</value>
+  </data>
+  <data name="Effect403" xml:space="preserve">
+    <value>Shining Tail</value>
+  </data>
+  <data name="Effect404" xml:space="preserve">
+    <value>Shining Tail(rare)</value>
+  </data>
+  <data name="Effect405" xml:space="preserve">
+    <value>Illusion Blade</value>
+  </data>
+  <data name="Effect406" xml:space="preserve">
+    <value>Illusion Blade Strengthener</value>
+  </data>
+  <data name="Effect407" xml:space="preserve">
+    <value>Illusion Blade Proficiency</value>
+  </data>
+  <data name="Effect408" xml:space="preserve">
+    <value>Illusion Blade Mastery</value>
+  </data>
+  <data name="Effect409" xml:space="preserve">
+    <value>Illusion Avatar</value>
+  </data>
+  <data name="Effect410" xml:space="preserve">
+    <value>Damage increase</value>
+  </data>
+  <data name="Effect411" xml:space="preserve">
+    <value>Season Pass - Increase Max HP</value>
+  </data>
+  <data name="Effect412" xml:space="preserve">
+    <value>Season Pass - Increased base experience</value>
+  </data>
+  <data name="Effect413" xml:space="preserve">
+    <value>Season Pass - Tempest Muun multiplier increase</value>
+  </data>
+  <data name="Effect414" xml:space="preserve">
+    <value>Season Pass - [G] Master Lee Horn's Decision</value>
+  </data>
+  <data name="Effect415" xml:space="preserve">
+    <value>Season Pass - [P] Master Lee Horn's Crystal</value>
+  </data>
+  <data name="Effect418" xml:space="preserve">
+    <value>Equip Ur</value>
+  </data>
+  <data name="Effect419" xml:space="preserve">
+    <value>Equip Ur (Rare)</value>
+  </data>
+  <data name="Effect420" xml:space="preserve">
+    <value>Piece of Pizza</value>
+  </data>
+  <data name="Effect421" xml:space="preserve">
+    <value>Extra Nuke Damage</value>
+  </data>
+  <data name="Effect422" xml:space="preserve">
+    <value>Extra Bolt Damage</value>
+  </data>
+  <data name="Effect423" xml:space="preserve">
+    <value>Extra AoE Damage</value>
+  </data>
+  <data name="Effect424" xml:space="preserve">
+    <value>Wrath</value>
+  </data>
+  <data name="Effect425" xml:space="preserve">
+    <value>Wrath Improved</value>
+  </data>
+  <data name="Effect427" xml:space="preserve">
+    <value>Crown Force</value>
+  </data>
+  <data name="Effect428" xml:space="preserve">
+    <value>Divine Force</value>
+  </data>
+  <data name="Effect429" xml:space="preserve">
+    <value>Divine Aura</value>
+  </data>
+  <data name="Effect430" xml:space="preserve">
+    <value>Divine Horse</value>
+  </data>
+  <data name="Effect431" xml:space="preserve">
+    <value>(General) Divine Spirit</value>
+  </data>
+  <data name="Effect432" xml:space="preserve">
+    <value>(Rare 1) Divine Spirit</value>
+  </data>
+  <data name="Effect433" xml:space="preserve">
+    <value>(Rare 2) Divine Spirit</value>
+  </data>
+  <data name="Effect434" xml:space="preserve">
+    <value>Mount Leviathan</value>
+  </data>
+  <data name="Effect435" xml:space="preserve">
+    <value>Mount Leviathan(rare)</value>
+  </data>
+  <data name="Effect436" xml:space="preserve">
+    <value>Battle Glory</value>
+  </data>
+  <data name="Effect437" xml:space="preserve">
+    <value>Enhance Battle Glory</value>
+  </data>
+  <data name="Effect442" xml:space="preserve">
+    <value>[Bound]Fire Divine Spirit</value>
+  </data>
+  <data name="Effect443" xml:space="preserve">
+    <value>Confusion Stone</value>
+  </data>
+  <data name="Effect444" xml:space="preserve">
+    <value>Equip Tauros</value>
+  </data>
+  <data name="Effect445" xml:space="preserve">
+    <value>Equip Tauros (Rare)</value>
+  </data>
+  <data name="Effect446" xml:space="preserve">
+    <value>Special Praise</value>
+  </data>
+  <data name="Effect447" xml:space="preserve">
+    <value>Blessing of Eunice</value>
+  </data>
+  <data name="Effect448" xml:space="preserve">
+    <value>Lugard's Blessing: Punishment</value>
+  </data>
+  <data name="Effect449" xml:space="preserve">
+    <value>Lugard's Blessing: Punishment Enhanced</value>
+  </data>
+  <data name="Effect450" xml:space="preserve">
+    <value>Contract of Rage</value>
+  </data>
+  <data name="Effect451" xml:space="preserve">
+    <value>Contract of Gale</value>
+  </data>
+  <data name="Effect452" xml:space="preserve">
+    <value>Contract of Life</value>
+  </data>
+  <data name="Effect453" xml:space="preserve">
+    <value>Contract of Mana</value>
+  </data>
+  <data name="Effect454" xml:space="preserve">
+    <value>Contract of Skill</value>
+  </data>
+  <data name="Effect455" xml:space="preserve">
+    <value>Contract Stone of Rage</value>
+  </data>
+  <data name="Effect456" xml:space="preserve">
+    <value>Contract Stone of Life</value>
+  </data>
+  <data name="Effect457" xml:space="preserve">
+    <value>Contract Stone of Mana</value>
+  </data>
+  <data name="Effect458" xml:space="preserve">
+    <value>Contract Stone of Skill</value>
+  </data>
+</root>

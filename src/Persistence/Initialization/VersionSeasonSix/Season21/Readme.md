@@ -7,7 +7,9 @@ them, as optional updates of a Season 6 database:
 * `AddSeason21LevelCapsUpdatePlugIn` sets the level caps of Season 21, which the
   maps depend on: their entry levels and monsters keep the numbers of Season 21,
 * `AddSeason21GearUpdatePlugIn` adds the gear of Season 21 (`Season21GearInitializer`),
-* `AddSeason21ItemCatalogUpdatePlugIn` defines every other item of the data (`Season21ItemCatalogInitializer`).
+* `AddSeason21ItemCatalogUpdatePlugIn` defines every other item of the data (`Season21ItemCatalogInitializer`).
+* `AddSeason21SkillsUpdatePlugIn` adds the skills, master tree nodes, books and the skill enhancement tree
+  (`Season21SkillsInitializer`); it needs the classes and the item catalog.
 
 They run on a new database too (`RunsOnNewDatabase`), but as they are optional,
 a new database leaves them pending. So a Season 6 server only changes when its
@@ -160,3 +162,48 @@ fourth and fifth wings (`wing grade`), errtels (`errtel`), muuns (`muun`), quive
 Kept in the catalog only, as the configuration has no place for them yet: the mastery options, the ancient sets
 of the new items, the options of the special types (10-15) other than the fixed jewelry bonuses, the resistances,
 the elemental and legendary columns and the buy prices.
+
+## Skills
+
+`Generator/season21-skills.mjs` transcribes the skill data of the Season 21 server data into
+`Resources/Season21/Skills.json` and `Properties/Season21SkillNames.resx`:
+
+    node season21-skills.mjs --data <S21 server Data folder>
+
+* `Skill/Skill.xml` (973 skills), `Skill/MasterSkillTree.xml` (1054 nodes of the 16 classes),
+  `Skill/Formula.txt` (section SkillTree, the values of the nodes by their level),
+* `Skill/EnhanceSkillTree/EnhanceSkillTree.xml` (2548 nodes), `EnhanceSkillTreePassive.xml` (128 passives) and
+  `EnhanceSkillTreeMagicField.xml`. The data has the tree twice; the copy in the folder (S21.1-2) wins over
+  `Skill/EnhanceSkillTree.xml` (S20.1-1): it differs in two requirements of the dark wizard, which the newer copy
+  points at the nodes beside them,
+* `Effect.txt` (names and groups of the effects), `Character/CharacterSkillInit.xml` (the first skills of a class),
+* the books: `Skill/SkillRequire.txt` names the 22 which need a master skill; the others are matched to their skill by
+  name (`Item.xml` has no skill on a book). 104 books teach a skill; the unmatched ones are Season 6 books, which
+  keep the skill of their Season 6 data, and a few without a skill row (Marble Burst, Unleash Marble).
+
+`Season21SkillsInitializer` maps the rows onto the configuration:
+
+* A skill which the configuration has keeps every value; it only gets the classes after Season 6 which the data
+  names (e.g. Poison for the rune wizard). The 598 skills it doesn't have are added: damage, mana, AG, range,
+  required level, energy and command as the data has them. A class column says from which evolution on (1 first
+  to 5 fifth) a class may use the skill; every later evolution of the class may use it too.
+* Use type 3, 7, 9, 10 and 11 (master and tree passives) are passive boosts. A skill of kind 0 or 7 hits: with a
+  radius it hits every target around its target (`EffectRange` = radius), else one. Kind 1 (buff) and 2 (debuff)
+  with an effect which has a duration in the configuration work as buffs and hits; their effect is the configured one.
+* The effects which the configuration doesn't have are added with their name and group, without power-ups or
+  duration: a buff or debuff with such an effect is kept as a skill of type `Other` (the server doesn't apply it
+  yet), and an attack doesn't link it, because it would apply an effect without duration. Kinds 3-6 (removals,
+  summons, movements, heals) are `Other` too. They wait for their effect data.
+* The damage type follows the stat the data specializes the damage by (energy: wizardry, the others: physical), else
+  the class (dark wizard, summoner and the wizard classes of Season 21: wizardry).
+* A master tree node of an added skill gets a `MasterSkillDefinition`: the root of its group, the rank of its slot
+  (the client tree has 3 roots of 4 x 9 slots), the minimum and maximum level, the formula of `Formula.txt` (variable
+  `level`), the skill it replaces and the skills it requires. The Season 6 nodes are kept as they are, so the Season 6
+  client's tree stays right; the Season 21 nodes of the Season 6 skills only add the new classes.
+* A book of the item catalog which teaches no skill yet gets its skill. The master skill which
+  `SkillRequire.txt` asks for is not checked: a book only checks its own requirements.
+* The skill enhancement tree is stored as the configuration of `EnhanceTreeFeaturePlugIn` (GameLogic `EnhanceTree`),
+  which the update turns on.
+
+Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
+damage reduction table, the Ability Enhancement Core (track T, later).
