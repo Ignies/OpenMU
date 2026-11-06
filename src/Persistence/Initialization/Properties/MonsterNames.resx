@@ -1024,4 +1024,7 @@
   <data name="EliteSapiQueenOfDoom" xml:space="preserve"><value>(Elite) Sapi Queen of Doom</value></data>
   <data name="PriestJames" xml:space="preserve"><value>Priest James</value></data>
   <data name="EliteZoneFlag" xml:space="preserve"><value>Elite Zone Flag</value></data>
+  <data name="Monica" xml:space="preserve">
+    <value>Monica</value>
+  </data>
 </root>

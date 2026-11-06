@@ -271,6 +271,101 @@
         </Field>
       </Fields>
     </Structure>
+    <Structure>
+      <Name>MuunInventoryItem</Name>
+      <Description>An item of the Muun inventory.</Description>
+      <Length>33</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+          <Description>0 the main Muun, 1 the sub Muun, 2-101 the bag.</Description>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+          <Description>The item in the W32 item format.</Description>
+          <Length>32</Length>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
+      <Name>MuunOptionState</Name>
+      <Description>The option of an equipped Muun.</Description>
+      <Length>5</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+          <Description>0 the main Muun, 1 the sub Muun.</Description>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>Byte</Type>
+          <Name>OptionType</Name>
+          <Description>The option type of the Season 21 data (MuunOption.xml OptionType).</Description>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Value</Name>
+          <Description>The value, raised by the additional option while it lasts.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Flags</Name>
+          <Description>Bit 0: it applies now (its condition is met). Bit 1: the additional option raises it.</Description>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
+      <Name>MuunExchangeOfferEntry</Name>
+      <Description>An offer of the Muun exchange NPC.</Description>
+      <Length>10</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>Index</Name>
+          <Description>The index of the offer, which the exchange request refers to.</Description>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>Byte</Type>
+          <Name>CostGroup</Name>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>CostNumber</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>CostCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ResultGroup</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ResultNumber</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>TargetNumber</Name>
+          <Description>The Muun which the evolution stone evolves (item group 16); 0xFFFF for none.</Description>
+        </Field>
+      </Fields>
+    </Structure>
   </Structures>
   <Packets>
     <Packet>
@@ -827,6 +922,312 @@
           <Index>7</Index>
           <Type>ShortLittleEndian</Type>
           <Name>ItemNumber</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>50</SubCode>
+      <Name>MuunInventoryList</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the character enters a map while the Muun system is on.</SentWhen>
+      <CausedReaction>The client shows the Muun inventory.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ItemCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Structure[]</Type>
+          <TypeName>MuunInventoryItem</TypeName>
+          <Name>Items</Name>
+          <ItemCountField>ItemCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>51</SubCode>
+      <Name>MuunItemMove</Name>
+      <Length>8</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player moves an item between the inventory and the Muun inventory, or within the Muun inventory; slots 0 and 1 equip a Muun.</SentWhen>
+      <CausedReaction>The server moves it and answers with MuunItemMoveResponse.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>FromStorage</Name>
+          <Description>0 the inventory, 1 the Muun inventory.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>FromSlot</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>ToStorage</Name>
+          <Description>0 the inventory, 1 the Muun inventory.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>ToSlot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>52</SubCode>
+      <Name>MuunItemMoveResponse</Name>
+      <Length>41</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a MuunItemMove.</SentWhen>
+      <CausedReaction>On success, the client shows the item at its new place; the inventory side also gets the Season 6 item removed / item added packets.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>FromStorage</Name>
+          <Description>0 the inventory, 1 the Muun inventory.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>FromSlot</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>ToStorage</Name>
+          <Description>0 the inventory, 1 the Muun inventory.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>ToSlot</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+          <Description>The item in the W32 item format; 0xFF when there is none.</Description>
+          <Length>32</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>53</SubCode>
+      <Name>MuunRideRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player mounts or dismounts the Muun of the main slot (Ctrl+Z in Season 21).</SentWhen>
+      <CausedReaction>The server answers with MuunActionResponse (action 6) and shows MuunAppearance to the player and the players around.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>Ride</Name>
+          <Description>True to mount, false to dismount.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>54</SubCode>
+      <Name>MuunItemUse</Name>
+      <Length>9</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player drops an item on a Muun item: a Muun of level 1 on the same Muun (level up), an evolution stone on a Muun (evolve), a Muun or an evolution stone on a Muun energy converter (charge), a jewel of life on a Muun (restore).</SentWhen>
+      <CausedReaction>The server uses up the source item, changes the target item and answers with MuunActionResponse.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Action</Name>
+          <Description>1 level up, 2 evolve, 3 charge energy, 4 restore.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>SourceStorage</Name>
+          <Description>0 the inventory, 1 the Muun inventory.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>SourceSlot</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>TargetStorage</Name>
+          <Description>0 the inventory, 1 the Muun inventory.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>TargetSlot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>55</SubCode>
+      <Name>MuunActionResponse</Name>
+      <Length>40</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a MuunItemUse, a MuunExchangeRequest or a MuunRideRequest, and when an equipped Muun lost health (action 4).</SentWhen>
+      <CausedReaction>The client shows the changed or created item at its place.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Action</Name>
+          <Description>1 level up, 2 evolve, 3 charge energy, 4 restore or health changed, 5 exchange, 6 ride.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Storage</Name>
+          <Description>0 the inventory, 1 the Muun inventory.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+          <Description>The item in the W32 item format; 0xFF when there is none.</Description>
+          <Length>32</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>56</SubCode>
+      <Name>MuunAppearance</Name>
+      <Length>11</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When a player with a Muun comes into view, and when the main Muun of a player changes or it mounts or dismounts.</SentWhen>
+      <CausedReaction>The client shows the Muun beside the player, or the player riding it.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>ItemGroup</Name>
+          <Description>16; 0xFF when the player has no main Muun.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ItemNumber</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>ItemLevel</Name>
+          <Description>The level of the Muun.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Boolean</Type>
+          <Name>IsRiding</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>57</SubCode>
+      <Name>MuunOptions</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the character enters a map, and when an option of an equipped Muun changes (equip, level, evolution, its condition, the end of the additional option).</SentWhen>
+      <CausedReaction>The client shows the options of the equipped Muuns and which of them apply now.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>OptionCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Structure[]</Type>
+          <TypeName>MuunOptionState</TypeName>
+          <Name>Options</Name>
+          <ItemCountField>OptionCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>58</SubCode>
+      <Name>MuunExchangeList</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player talked to the Muun exchange NPC (Monica, 682).</SentWhen>
+      <CausedReaction>The client opens the exchange with its offers.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>OfferCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Structure[]</Type>
+          <TypeName>MuunExchangeOfferEntry</TypeName>
+          <Name>Offers</Name>
+          <ItemCountField>OfferCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>59</SubCode>
+      <Name>MuunExchangeRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player takes an offer of the Muun exchange NPC.</SentWhen>
+      <CausedReaction>The server takes the items, puts the evolution stone into the bag of the Muun inventory and answers with MuunActionResponse (action 5).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>OfferIndex</Name>
         </Field>
       </Fields>
     </Packet>

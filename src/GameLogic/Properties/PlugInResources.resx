@@ -2406,4 +2406,163 @@
   <data name="ElementsConfiguration_DefenseAfterMultipliers_Name" xml:space="preserve">
     <value>Elemental defense after the multipliers</value>
   </data>
+  <data name="MuunFeaturePlugIn_Name" xml:space="preserve">
+    <value>Muuns of Season 21</value>
+  </data>
+  <data name="MuunFeaturePlugIn_Description" xml:space="preserve">
+    <value>The Muun system: the Muun inventory with two equipped Muuns and their options on the owner, level up, evolution, the energy converter, the exchange NPC (Monica) and the mounts. Only the Babylon client shows it.</value>
+  </data>
+  <data name="MuunConfiguration_ItemGroup_Name" xml:space="preserve">
+    <value>Item group of the Muuns</value>
+  </data>
+  <data name="MuunConfiguration_EvolutionStoneNumber_Name" xml:space="preserve">
+    <value>Item number of the evolution stone</value>
+  </data>
+  <data name="MuunConfiguration_TempestEvolutionStoneNumber_Name" xml:space="preserve">
+    <value>Item number of the tempest evolution stone</value>
+  </data>
+  <data name="MuunConfiguration_EnergyConverterNumber_Name" xml:space="preserve">
+    <value>Item number of the Muun energy converter</value>
+  </data>
+  <data name="MuunConfiguration_WizardryStoneNumber_Name" xml:space="preserve">
+    <value>Item number of the wizardry stone</value>
+  </data>
+  <data name="MuunConfiguration_WizardryStoneEnergy_Name" xml:space="preserve">
+    <value>Energy for a wizardry stone</value>
+  </data>
+  <data name="MuunConfiguration_EvolutionStoneEnergy_Name" xml:space="preserve">
+    <value>Energy of an evolution stone</value>
+  </data>
+  <data name="MuunConfiguration_RankEnergy_Name" xml:space="preserve">
+    <value>Energy by rank</value>
+  </data>
+  <data name="MuunConfiguration_LevelEnergy_Name" xml:space="preserve">
+    <value>Energy by level</value>
+  </data>
+  <data name="MuunConfiguration_ExchangeNpcNumber_Name" xml:space="preserve">
+    <value>Number of the exchange NPC</value>
+  </data>
+  <data name="MuunConfiguration_ExchangeOffers_Name" xml:space="preserve">
+    <value>Offers of the exchange NPC</value>
+  </data>
+  <data name="MuunConfiguration_Muuns_Name" xml:space="preserve">
+    <value>Muuns</value>
+  </data>
+  <data name="MuunConfiguration_Options_Name" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="MuunConfiguration_AddOptions_Name" xml:space="preserve">
+    <value>Additional options</value>
+  </data>
+  <data name="MuunConfiguration_NoRidingMiniGames_Name" xml:space="preserve">
+    <value>Mini games without riding</value>
+  </data>
+  <data name="MuunConfiguration_HealthDecayInterval_Name" xml:space="preserve">
+    <value>Health decay interval</value>
+  </data>
+  <data name="MuunConfiguration_HealthDecayAmount_Name" xml:space="preserve">
+    <value>Health decay amount</value>
+  </data>
+  <data name="MuunConfiguration_CheckInterval_Name" xml:space="preserve">
+    <value>Check interval of the conditions</value>
+  </data>
+  <data name="MuunDefinition_Number_Name" xml:space="preserve">
+    <value>Item number</value>
+  </data>
+  <data name="MuunDefinition_Kind_Name" xml:space="preserve">
+    <value>Kind</value>
+  </data>
+  <data name="MuunDefinition_Grade_Name" xml:space="preserve">
+    <value>Grade</value>
+  </data>
+  <data name="MuunDefinition_Rank_Name" xml:space="preserve">
+    <value>Rank</value>
+  </data>
+  <data name="MuunDefinition_OptionGroup_Name" xml:space="preserve">
+    <value>Option group</value>
+  </data>
+  <data name="MuunDefinition_AddOptionType_Name" xml:space="preserve">
+    <value>Additional option type</value>
+  </data>
+  <data name="MuunDefinition_AddOptionDays_Name" xml:space="preserve">
+    <value>Days of the additional option</value>
+  </data>
+  <data name="MuunDefinition_EvolvesTo_Name" xml:space="preserve">
+    <value>Evolves to (item number)</value>
+  </data>
+  <data name="MuunDefinition_IsEvolved_Name" xml:space="preserve">
+    <value>Is evolved</value>
+  </data>
+  <data name="MuunCondition_Type_Name" xml:space="preserve">
+    <value>Condition</value>
+  </data>
+  <data name="MuunCondition_Value1_Name" xml:space="preserve">
+    <value>First value</value>
+  </data>
+  <data name="MuunCondition_Value2_Name" xml:space="preserve">
+    <value>Second value</value>
+  </data>
+  <data name="MuunOptionDefinition_Group_Name" xml:space="preserve">
+    <value>Option group</value>
+  </data>
+  <data name="MuunOptionDefinition_Type_Name" xml:space="preserve">
+    <value>Option type</value>
+  </data>
+  <data name="MuunOptionDefinition_MinimumLevel_Name" xml:space="preserve">
+    <value>Minimum total level</value>
+  </data>
+  <data name="MuunOptionDefinition_MaximumLevel_Name" xml:space="preserve">
+    <value>Maximum total level</value>
+  </data>
+  <data name="MuunOptionDefinition_Values_Name" xml:space="preserve">
+    <value>Values (evolved, levels 1-5)</value>
+  </data>
+  <data name="MuunOptionDefinition_Condition_Name" xml:space="preserve">
+    <value>Condition</value>
+  </data>
+  <data name="MuunOptionDefinition_EvolvedCondition_Name" xml:space="preserve">
+    <value>Condition when evolved</value>
+  </data>
+  <data name="MuunOptionDefinition_Name_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="MuunAddOptionDefinition_Type_Name" xml:space="preserve">
+    <value>Additional option type</value>
+  </data>
+  <data name="MuunAddOptionDefinition_MinimumLevel_Name" xml:space="preserve">
+    <value>Minimum total level</value>
+  </data>
+  <data name="MuunAddOptionDefinition_MaximumLevel_Name" xml:space="preserve">
+    <value>Maximum total level</value>
+  </data>
+  <data name="MuunAddOptionDefinition_Kind_Name" xml:space="preserve">
+    <value>Kind</value>
+  </data>
+  <data name="MuunAddOptionDefinition_Values_Name" xml:space="preserve">
+    <value>Values (evolved, levels 1-5)</value>
+  </data>
+  <data name="MuunEnergyPoints_Key_Name" xml:space="preserve">
+    <value>Rank or level</value>
+  </data>
+  <data name="MuunEnergyPoints_Points_Name" xml:space="preserve">
+    <value>Energy</value>
+  </data>
+  <data name="MuunExchangeOffer_CostGroup_Name" xml:space="preserve">
+    <value>Item group of the price</value>
+  </data>
+  <data name="MuunExchangeOffer_CostNumber_Name" xml:space="preserve">
+    <value>Item number of the price</value>
+  </data>
+  <data name="MuunExchangeOffer_CostCount_Name" xml:space="preserve">
+    <value>Count of the price</value>
+  </data>
+  <data name="MuunExchangeOffer_ResultGroup_Name" xml:space="preserve">
+    <value>Item group of the result</value>
+  </data>
+  <data name="MuunExchangeOffer_ResultNumber_Name" xml:space="preserve">
+    <value>Item number of the result</value>
+  </data>
+  <data name="MuunExchangeOffer_TargetNumber_Name" xml:space="preserve">
+    <value>Muun of the evolution stone (item number)</value>
+  </data>
 </root>

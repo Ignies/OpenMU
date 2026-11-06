@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("6af07a97-8de6-49e0-b192-7d7d2b6b846c"), entityTypeCount: 130)
+            : base(skipDetectChanges: false, modelId: new Guid("07511c9a-441c-4993-96e6-257f0ab8798f"), entityTypeCount: 130)
         {
         }
 
@@ -209,6 +209,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             CharacterEntityType.CreateForeignKey3(character, gameMapDefinition);
             CharacterEntityType.CreateForeignKey4(character, itemStorage);
             CharacterEntityType.CreateForeignKey5(character, itemStorage);
+            CharacterEntityType.CreateForeignKey6(character, itemStorage);
             CharacterClassEntityType.CreateForeignKey1(characterClass, skillComboDefinition);
             CharacterClassEntityType.CreateForeignKey2(characterClass, gameConfiguration);
             CharacterClassEntityType.CreateForeignKey3(characterClass, gameMapDefinition);

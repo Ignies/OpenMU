@@ -282,6 +282,10 @@ public static class AttackableExtensions
         }
 
         dmg += (int)attacker.Attributes[Stats.FinalDamageBonus];
+        if (!isPvp)
+        {
+            dmg += (int)attacker.Attributes[Stats.FinalDamageBonusPvm];
+        }
 
         if (isPvp && attacker is not AttackerSurrogate)
         {

@@ -4444,5 +4444,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("EliteZoneFlag", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monica.
+        /// </summary>
+        public static string Monica {
+            get {
+                return ResourceManager.GetString("Monica", resourceCulture);
+            }
+        }
     }
 }

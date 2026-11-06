@@ -2969,4 +2969,34 @@
   <data name="ElementInfoRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of the Babylon client for the elemental stats of the own character.</value>
   </data>
+  <data name="MuunBabylonPlugIn_Name" xml:space="preserve">
+    <value>Muun view (Babylon)</value>
+  </data>
+  <data name="MuunBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the Muun inventory, the Muun actions, the options and the Muuns of other players to the Babylon client (EE 50, 52, 55-58).</value>
+  </data>
+  <data name="MuunItemMoveHandlerPlugIn_Name" xml:space="preserve">
+    <value>Muun item move handler (Babylon)</value>
+  </data>
+  <data name="MuunItemMoveHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the move of an item between the inventory and the Muun inventory (EE 51).</value>
+  </data>
+  <data name="MuunRideRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Muun ride handler (Babylon)</value>
+  </data>
+  <data name="MuunRideRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles mounting and dismounting the Muun of the main slot (EE 53).</value>
+  </data>
+  <data name="MuunItemUseHandlerPlugIn_Name" xml:space="preserve">
+    <value>Muun item use handler (Babylon)</value>
+  </data>
+  <data name="MuunItemUseHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles an item dropped on a Muun item: level up, evolution, energy, restore (EE 54).</value>
+  </data>
+  <data name="MuunExchangeRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Muun exchange handler (Babylon)</value>
+  </data>
+  <data name="MuunExchangeRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles an offer taken at the Muun exchange NPC (EE 59).</value>
+  </data>
 </root>

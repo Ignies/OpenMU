@@ -1258,4 +1258,7 @@ Inventory Extensions: {18}</value>
   <data name="RewardLostByFullInventory" xml:space="preserve">
     <value>Your reward {0} was lost: the gremory case and the inventory are full.</value>
   </data>
+  <data name="MuunNeedsNewerClient" xml:space="preserve">
+    <value>The Muun exchange needs a newer game client.</value>
+  </data>
 </root>

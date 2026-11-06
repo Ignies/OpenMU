@@ -6753,5 +6753,482 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ElementsConfiguration_DefenseAfterMultipliers_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Muuns of Season 21.
+        /// </summary>
+        public static string MuunFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("MuunFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Muun system: the Muun inventory with two equipped Muuns and their options on the owner, level up, evolution, the energy converter, the exchange NPC (Monica) and the mounts. Only the Babylon client shows it..
+        /// </summary>
+        public static string MuunFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("MuunFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item group of the Muuns.
+        /// </summary>
+        public static string MuunConfiguration_ItemGroup_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_ItemGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number of the evolution stone.
+        /// </summary>
+        public static string MuunConfiguration_EvolutionStoneNumber_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_EvolutionStoneNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number of the tempest evolution stone.
+        /// </summary>
+        public static string MuunConfiguration_TempestEvolutionStoneNumber_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_TempestEvolutionStoneNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number of the Muun energy converter.
+        /// </summary>
+        public static string MuunConfiguration_EnergyConverterNumber_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_EnergyConverterNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number of the wizardry stone.
+        /// </summary>
+        public static string MuunConfiguration_WizardryStoneNumber_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_WizardryStoneNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Energy for a wizardry stone.
+        /// </summary>
+        public static string MuunConfiguration_WizardryStoneEnergy_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_WizardryStoneEnergy_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Energy of an evolution stone.
+        /// </summary>
+        public static string MuunConfiguration_EvolutionStoneEnergy_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_EvolutionStoneEnergy_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Energy by rank.
+        /// </summary>
+        public static string MuunConfiguration_RankEnergy_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_RankEnergy_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Energy by level.
+        /// </summary>
+        public static string MuunConfiguration_LevelEnergy_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_LevelEnergy_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of the exchange NPC.
+        /// </summary>
+        public static string MuunConfiguration_ExchangeNpcNumber_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_ExchangeNpcNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Offers of the exchange NPC.
+        /// </summary>
+        public static string MuunConfiguration_ExchangeOffers_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_ExchangeOffers_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Muuns.
+        /// </summary>
+        public static string MuunConfiguration_Muuns_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_Muuns_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options.
+        /// </summary>
+        public static string MuunConfiguration_Options_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_Options_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Additional options.
+        /// </summary>
+        public static string MuunConfiguration_AddOptions_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_AddOptions_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mini games without riding.
+        /// </summary>
+        public static string MuunConfiguration_NoRidingMiniGames_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_NoRidingMiniGames_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Health decay interval.
+        /// </summary>
+        public static string MuunConfiguration_HealthDecayInterval_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_HealthDecayInterval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Health decay amount.
+        /// </summary>
+        public static string MuunConfiguration_HealthDecayAmount_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_HealthDecayAmount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check interval of the conditions.
+        /// </summary>
+        public static string MuunConfiguration_CheckInterval_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_CheckInterval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number.
+        /// </summary>
+        public static string MuunDefinition_Number_Name {
+            get {
+                return ResourceManager.GetString("MuunDefinition_Number_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kind.
+        /// </summary>
+        public static string MuunDefinition_Kind_Name {
+            get {
+                return ResourceManager.GetString("MuunDefinition_Kind_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Grade.
+        /// </summary>
+        public static string MuunDefinition_Grade_Name {
+            get {
+                return ResourceManager.GetString("MuunDefinition_Grade_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rank.
+        /// </summary>
+        public static string MuunDefinition_Rank_Name {
+            get {
+                return ResourceManager.GetString("MuunDefinition_Rank_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option group.
+        /// </summary>
+        public static string MuunDefinition_OptionGroup_Name {
+            get {
+                return ResourceManager.GetString("MuunDefinition_OptionGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Additional option type.
+        /// </summary>
+        public static string MuunDefinition_AddOptionType_Name {
+            get {
+                return ResourceManager.GetString("MuunDefinition_AddOptionType_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Days of the additional option.
+        /// </summary>
+        public static string MuunDefinition_AddOptionDays_Name {
+            get {
+                return ResourceManager.GetString("MuunDefinition_AddOptionDays_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Evolves to (item number).
+        /// </summary>
+        public static string MuunDefinition_EvolvesTo_Name {
+            get {
+                return ResourceManager.GetString("MuunDefinition_EvolvesTo_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Is evolved.
+        /// </summary>
+        public static string MuunDefinition_IsEvolved_Name {
+            get {
+                return ResourceManager.GetString("MuunDefinition_IsEvolved_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Condition.
+        /// </summary>
+        public static string MuunCondition_Type_Name {
+            get {
+                return ResourceManager.GetString("MuunCondition_Type_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to First value.
+        /// </summary>
+        public static string MuunCondition_Value1_Name {
+            get {
+                return ResourceManager.GetString("MuunCondition_Value1_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Second value.
+        /// </summary>
+        public static string MuunCondition_Value2_Name {
+            get {
+                return ResourceManager.GetString("MuunCondition_Value2_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option group.
+        /// </summary>
+        public static string MuunOptionDefinition_Group_Name {
+            get {
+                return ResourceManager.GetString("MuunOptionDefinition_Group_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option type.
+        /// </summary>
+        public static string MuunOptionDefinition_Type_Name {
+            get {
+                return ResourceManager.GetString("MuunOptionDefinition_Type_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum total level.
+        /// </summary>
+        public static string MuunOptionDefinition_MinimumLevel_Name {
+            get {
+                return ResourceManager.GetString("MuunOptionDefinition_MinimumLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum total level.
+        /// </summary>
+        public static string MuunOptionDefinition_MaximumLevel_Name {
+            get {
+                return ResourceManager.GetString("MuunOptionDefinition_MaximumLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Values (evolved, levels 1-5).
+        /// </summary>
+        public static string MuunOptionDefinition_Values_Name {
+            get {
+                return ResourceManager.GetString("MuunOptionDefinition_Values_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Condition.
+        /// </summary>
+        public static string MuunOptionDefinition_Condition_Name {
+            get {
+                return ResourceManager.GetString("MuunOptionDefinition_Condition_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Condition when evolved.
+        /// </summary>
+        public static string MuunOptionDefinition_EvolvedCondition_Name {
+            get {
+                return ResourceManager.GetString("MuunOptionDefinition_EvolvedCondition_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string MuunOptionDefinition_Name_Name {
+            get {
+                return ResourceManager.GetString("MuunOptionDefinition_Name_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Additional option type.
+        /// </summary>
+        public static string MuunAddOptionDefinition_Type_Name {
+            get {
+                return ResourceManager.GetString("MuunAddOptionDefinition_Type_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum total level.
+        /// </summary>
+        public static string MuunAddOptionDefinition_MinimumLevel_Name {
+            get {
+                return ResourceManager.GetString("MuunAddOptionDefinition_MinimumLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum total level.
+        /// </summary>
+        public static string MuunAddOptionDefinition_MaximumLevel_Name {
+            get {
+                return ResourceManager.GetString("MuunAddOptionDefinition_MaximumLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kind.
+        /// </summary>
+        public static string MuunAddOptionDefinition_Kind_Name {
+            get {
+                return ResourceManager.GetString("MuunAddOptionDefinition_Kind_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Values (evolved, levels 1-5).
+        /// </summary>
+        public static string MuunAddOptionDefinition_Values_Name {
+            get {
+                return ResourceManager.GetString("MuunAddOptionDefinition_Values_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rank or level.
+        /// </summary>
+        public static string MuunEnergyPoints_Key_Name {
+            get {
+                return ResourceManager.GetString("MuunEnergyPoints_Key_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Energy.
+        /// </summary>
+        public static string MuunEnergyPoints_Points_Name {
+            get {
+                return ResourceManager.GetString("MuunEnergyPoints_Points_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item group of the price.
+        /// </summary>
+        public static string MuunExchangeOffer_CostGroup_Name {
+            get {
+                return ResourceManager.GetString("MuunExchangeOffer_CostGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number of the price.
+        /// </summary>
+        public static string MuunExchangeOffer_CostNumber_Name {
+            get {
+                return ResourceManager.GetString("MuunExchangeOffer_CostNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Count of the price.
+        /// </summary>
+        public static string MuunExchangeOffer_CostCount_Name {
+            get {
+                return ResourceManager.GetString("MuunExchangeOffer_CostCount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item group of the result.
+        /// </summary>
+        public static string MuunExchangeOffer_ResultGroup_Name {
+            get {
+                return ResourceManager.GetString("MuunExchangeOffer_ResultGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number of the result.
+        /// </summary>
+        public static string MuunExchangeOffer_ResultNumber_Name {
+            get {
+                return ResourceManager.GetString("MuunExchangeOffer_ResultNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Muun of the evolution stone (item number).
+        /// </summary>
+        public static string MuunExchangeOffer_TargetNumber_Name {
+            get {
+                return ResourceManager.GetString("MuunExchangeOffer_TargetNumber_Name", resourceCulture);
+            }
+        }
     }
 }

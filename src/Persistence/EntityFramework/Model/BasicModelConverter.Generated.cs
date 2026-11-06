@@ -856,6 +856,7 @@ internal sealed class BasicModelConverter
 
         target.Inventory = (MUnique.OpenMU.DataModel.Entities.ItemStorage)this.ConvertObject(source.Inventory)!;
         target.GremoryCase = (MUnique.OpenMU.DataModel.Entities.ItemStorage)this.ConvertObject(source.GremoryCase)!;
+        target.MuunInventory = (MUnique.OpenMU.DataModel.Entities.ItemStorage)this.ConvertObject(source.MuunInventory)!;
         if (source.DropItemGroups is { } dropItemGroupsItems)
         {
             foreach (var item in dropItemGroupsItems)
@@ -1830,6 +1831,7 @@ internal sealed class BasicModelConverter
         target.StorePriceCoinType = source.StorePriceCoinType;
         target.PetExperience = source.PetExperience;
         target.ExpiresAt = source.ExpiresAt;
+        target.TimedOptionExpiresAt = source.TimedOptionExpiresAt;
         return target;
     }
 

@@ -77,6 +77,7 @@ Rules:
 | `event_contribution` | The event contribution points of Season 21 (blood castle, chaos castle, devil square, illusion temple, imperial guardian, doppelganger) and the Mastery Boxes they give at the end of an event, into the gremory case (same update, plugin "Event contribution boxes of Season 21") |
 | `pentagram_elements` | The elements: elemental damage and defense of characters and monsters, pentagrams, errtels and the elemental refinery (update "Add the elements, pentagrams and errtels", plugin "Elements (Season 21)", section "Elements, pentagrams and earrings") |
 | `earrings` | The earrings with their slots, options and links (update "Add the earrings", same section) |
+| `muun` | The Muuns of Season 21: the Muun inventory with two equipped Muuns, their options on the owner, level up, evolution, the energy converter, Monica's exchange and the mounts (update "Add the Muuns of Season 21", plugin "Muuns of Season 21", `src/GameLogic/Muuns`) |
 
 ## Balance
 
@@ -185,6 +186,37 @@ Season 6 packets (golden notices for a spawn, a kill and a lost battle, blue not
   on every change (spawn, stage, each tenth of health, kill, lost battle, back to waiting).
 - A2-A4 stay kept for mining and the invasion notice.
 
+### Muuns (range 50-5F)
+
+The Muun system (`src/GameLogic/Muuns`, plugin "Muuns of Season 21", off by default). A Season 6 client gets none of these
+packets and has no Muun system: Muuns are wide items, so it never sees one (test `MuunPacketsTest.OnlyTheBabylonClientGetsTheMuunView`).
+Storages in the packets: 0 the inventory, 1 the Muun inventory (slot 0 main Muun, 1 sub Muun, 2-101 bag). Results: 0 done,
+1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the
+exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun. Item data is 32
+bytes in the connection's item format (W32); 0xFF for no item.
+
+- `C2 EE 50 MuunInventoryList` (server): count at 5, then per item 33 bytes: slot (u8), item data (32). Sent on every map entry.
+- `C1 EE 51 MuunItemMove` (client, 8): from storage at 4, from slot at 5, to storage at 6, to slot at 7. Only a Muun goes into
+  slot 0 or 1, only items of the group 16 into the Muun inventory. Answered by `C1 EE 52 MuunItemMoveResponse` (server, 41):
+  result at 4, the four fields at 5-8, item data at its new place at 9. The inventory side also gets the Season 6 item removed /
+  item added packets.
+- `C1 EE 53 MuunRideRequest` (client, 5): ride (bool) at 4. Only a mount (kind 4) of the main slot, not in Chaos Castle or
+  Illusion Temple.
+- `C1 EE 54 MuunItemUse` (client, 9): action at 4 (1 level up: a Muun of level 1 of the same kind; 2 evolve: its evolution stone,
+  at its highest level; 3 charge energy: a Muun or an evolution stone on a Muun energy converter; 4 restore: a jewel of life),
+  source storage and slot at 5-6, target storage and slot at 7-8. The source item is used up.
+- `C1 EE 55 MuunActionResponse` (server, 40): action at 4 (1-4 as above, 4 also when an equipped Muun lost health, 5 exchange,
+  6 ride), result at 5, storage at 6, slot at 7, item data of the changed or created item at 8.
+- `C1 EE 56 MuunAppearance` (server, 11): player id (u16 BE) at 4, item group of the main Muun at 6 (0xFF none), number (u16 LE)
+  at 7, level at 9, riding (bool) at 10. Sent with the appearance of a player who comes into view, and to the player and
+  everyone who sees it when its main Muun changes or it mounts or dismounts.
+- `C2 EE 57 MuunOptions` (server): count at 5, then per equipped Muun 5 bytes: slot, option type (MuunOption.xml OptionType),
+  value (u16 LE, with the additional option), flags (bit 0 applies now, bit 1 raised by the additional option). Sent on map
+  entry and when an option changes.
+- `C2 EE 58 MuunExchangeList` (server): count at 5, then per offer 10 bytes: index, price group, number (u16 LE), count, result
+  group, number (u16 LE), the Muun of the evolution stone (u16 LE, 0xFFFF none). Sent when the character talks to Monica (682).
+- `C1 EE 59 MuunExchangeRequest` (client, 5): offer index at 4. Answered by EE 55 (action 5); the stone lands in the Muun bag.
+
 ### Economy (ranges 30-3F, 60-7F)
 
 The gremory case, Ruud, the merchant store tabs and the item expiry (`src/GameLogic/GremoryCase`, `Ruud`, `ItemExpiry`,
@@ -238,7 +270,7 @@ keeps its Season 6 meaning; the fields of later seasons stay zero until their sy
 | 13-17 | five slots: socket option index over all elements (0-49), 0xFE empty, 0xFF no slot |
 | 18-20 | five slot levels, 4 bits each (slot 0 = byte 18 low nibble): sphere level 1-10 (1-15 representable) |
 | 21 | element (bits 0-3), element kind (bits 4-7), see "Elements, pentagrams and earrings" |
-| 22-27 | kind block. Fourth and fifth wings: three grade options, each option number (u8, 0-10, 0xFF none) and grade (u8, 0-3); errtels and earrings: see "Elements, pentagrams and earrings"; the others stay zero |
+| 22-27 | kind block. Fourth and fifth wings: three grade options, each option number (u8, 0-10, 0xFF none) and grade (u8, 0-3); errtels and earrings: see "Elements, pentagrams and earrings". Muun: the end of its additional option at 22-25 (u32 LE, Unix seconds UTC, 0 not started); its level is byte 3, its health byte 4. Evolution stone: the Muun it evolves at 22-23 (u16 LE, item group 16). Muun energy converter: its energy is the durability (byte 4). The others stay zero |
 | 28-31 | expiry, u32 LE Unix seconds UTC, 0 = never |
 
 ## Wide items

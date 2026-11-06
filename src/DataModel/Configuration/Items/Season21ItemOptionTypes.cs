@@ -68,7 +68,13 @@ public static class Season21ItemOptionTypes
     public static ItemOptionType ErrtelSetBonus { get; } = new() { Name = "Errtel Set Bonus", Id = new Guid("{577BD27D-F1F1-42B3-B418-C6AAF051F5C9}"), IsVisible = true };
 
     /// <summary>
+    /// Gets the Muun evolution target option type: the Muun which an evolution stone evolves (the link level is the
+    /// item number of the Muun in the item group 16).
+    /// </summary>
+    public static ItemOptionType MuunEvolutionTarget { get; } = new() { Name = "Muun Evolution Target", Id = new Guid("{9D3F6B1E-5A27-4C80-B4E9-2F1A7C6D8E53}"), IsVisible = true };
+
+    /// <summary>
     /// Gets all types of this class.
     /// </summary>
-    public static IReadOnlyList<ItemOptionType> All { get; } = [Mastery, MasteryBonus, WingGrade, WideFormat, Element, ErrtelRank, EarringOption, PentagramOption, ErrtelSet, ErrtelSetBonus];
+    public static IReadOnlyList<ItemOptionType> All { get; } = [Mastery, MasteryBonus, WingGrade, WideFormat, Element, ErrtelRank, EarringOption, PentagramOption, ErrtelSet, ErrtelSetBonus, MuunEvolutionTarget];
 }

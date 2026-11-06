@@ -3450,5 +3450,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("RewardLostByFullInventory", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Muun exchange needs a newer game client..
+        /// </summary>
+        public static string MuunNeedsNewerClient {
+            get {
+                return ResourceManager.GetString("MuunNeedsNewerClient", resourceCulture);
+            }
+        }
     }
 }

@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
     public partial class AccountContextModel
     {
         private AccountContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("131d3ed0-7699-46c6-b541-37505bfc8674"), entityTypeCount: 49)
+            : base(skipDetectChanges: false, modelId: new Guid("120535d2-39ca-4d19-8126-05be18958bd1"), entityTypeCount: 49)
         {
         }
 
@@ -82,6 +82,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             CharacterEntityType.CreateForeignKey1(character, account);
             CharacterEntityType.CreateForeignKey2(character, itemStorage);
             CharacterEntityType.CreateForeignKey3(character, itemStorage);
+            CharacterEntityType.CreateForeignKey4(character, itemStorage);
             CharacterDropItemGroupEntityType.CreateForeignKey1(characterDropItemGroup, character);
             CharacterQuestStateEntityType.CreateForeignKey1(characterQuestState, character);
             GensAbuseEntityType.CreateForeignKey1(gensAbuse, character);

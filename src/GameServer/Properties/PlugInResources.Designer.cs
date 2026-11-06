@@ -8479,5 +8479,95 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("ElementInfoRequestHandlerPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Muun view (Babylon).
+        /// </summary>
+        public static string MuunBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MuunBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the Muun inventory, the Muun actions, the options and the Muuns of other players to the Babylon client (EE 50, 52, 55-58)..
+        /// </summary>
+        public static string MuunBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MuunBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Muun item move handler (Babylon).
+        /// </summary>
+        public static string MuunItemMoveHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MuunItemMoveHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the move of an item between the inventory and the Muun inventory (EE 51)..
+        /// </summary>
+        public static string MuunItemMoveHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MuunItemMoveHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Muun ride handler (Babylon).
+        /// </summary>
+        public static string MuunRideRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MuunRideRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles mounting and dismounting the Muun of the main slot (EE 53)..
+        /// </summary>
+        public static string MuunRideRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MuunRideRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Muun item use handler (Babylon).
+        /// </summary>
+        public static string MuunItemUseHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MuunItemUseHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles an item dropped on a Muun item: level up, evolution, energy, restore (EE 54)..
+        /// </summary>
+        public static string MuunItemUseHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MuunItemUseHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Muun exchange handler (Babylon).
+        /// </summary>
+        public static string MuunExchangeRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MuunExchangeRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles an offer taken at the Muun exchange NPC (EE 59)..
+        /// </summary>
+        public static string MuunExchangeRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MuunExchangeRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

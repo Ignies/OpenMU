@@ -1258,4 +1258,7 @@ Extensões de inventário: {18}</value>
   <data name="RewardLostByFullInventory" xml:space="preserve">
     <value>Sua recompensa {0} foi perdida: o baú de Gremory e o inventário estão cheios.</value>
   </data>
+  <data name="MuunNeedsNewerClient" xml:space="preserve">
+    <value>A troca de Muuns precisa de um cliente de jogo mais novo.</value>
+  </data>
 </root>

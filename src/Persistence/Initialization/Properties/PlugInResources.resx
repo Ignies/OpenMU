@@ -522,4 +522,10 @@
   <data name="AddSeason21EarringsUpdatePlugIn_Description" xml:space="preserve">
     <value>Gives the earrings of Season 21 their slots (right 237, left 238), their base stats, one to three random options and the link options of a left and right earring of the same tier (enemy defense ignore, all stats). Earrings are shown to the Babylon client only.</value>
   </data>
+  <data name="AddSeason21MuunsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the Muuns of Season 21</value>
+  </data>
+  <data name="AddSeason21MuunsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Configures the Muun system of Season 21 (386 Muuns, their options and additional options, the energy converter, six exchange offers), adds the evolution target to the evolution stones and places Monica, the exchange NPC, in Elbeland; switches the Muun system on. A configuration with Muuns stays. Optional.</value>
+  </data>
 </root>

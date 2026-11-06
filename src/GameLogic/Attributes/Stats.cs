@@ -517,6 +517,12 @@ public class Stats
     public static AttributeDefinition FinalDamageBonus { get; } = new(new Guid("88316AEC-1D82-4103-BF09-CA6A3C0B177A"), "Late Damage Bonus (any type)", "A bonus value which gets added to the final damage value during the damage calculation.");
 
     /// <summary>
+    /// Gets the final damage bonus attribute definition against monsters, e.g. the attack power of a Muun.
+    /// </summary>
+    /// <remarks>A flat value which gets added to the final damage when the target is no player.</remarks>
+    public static AttributeDefinition FinalDamageBonusPvm { get; } = new(new Guid("6E2B8F14-3C9A-4D57-A0E6-91F4B2C7D385"), "Late Damage Bonus (PvM)", "A bonus value which gets added to the final damage value against monsters during the damage calculation.");
+
+    /// <summary>
     /// Gets the player's skill multiplier attribute definition.
     /// </summary>
     public static AttributeDefinition SkillMultiplier { get; } = new(new Guid("D9FB3323-6DF5-48F7-8253-FDBB5EF82114"), "Skill Damage Multiplier", string.Empty);

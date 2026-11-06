@@ -66,6 +66,7 @@ public static class ForkInfo
         "event_contribution",
         "pentagram_elements",
         "earrings",
+        "muun",
     ];
 
     /// <summary>

@@ -270,6 +270,12 @@ public class Character
     public virtual ItemStorage? GremoryCase { get; set; }
 
     /// <summary>
+    /// Gets or sets the Muun inventory of the character: the two equipped Muuns (slots 0 and 1) and the Muun bag.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ItemStorage? MuunInventory { get; set; }
+
+    /// <summary>
     /// Gets or sets the drop item groups.
     /// </summary>
     public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; } = null!;

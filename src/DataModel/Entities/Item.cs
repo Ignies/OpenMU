@@ -88,6 +88,12 @@ public partial class Item
     public DateTime? ExpiresAt { get; set; }
 
     /// <summary>
+    /// Gets or sets the point in time (UTC) at which the timed option of the item ends, e.g. the additional option of a
+    /// Muun, which multiplies its option for the first days. It's <c>null</c> while the period hasn't started.
+    /// </summary>
+    public DateTime? TimedOptionExpiresAt { get; set; }
+
+    /// <summary>
     /// Assigns the values of another item to this item.
     /// </summary>
     /// <param name="otherItem">The other item.</param>
@@ -99,6 +105,7 @@ public partial class Item
         this.HasSkill = otherItem.HasSkill;
         this.SocketCount = otherItem.SocketCount;
         this.PetExperience = otherItem.PetExperience;
+        this.TimedOptionExpiresAt = otherItem.TimedOptionExpiresAt;
         if (otherItem.ItemOptions != null && otherItem.ItemOptions.Any())
         {
             this.ItemOptions.Clear();

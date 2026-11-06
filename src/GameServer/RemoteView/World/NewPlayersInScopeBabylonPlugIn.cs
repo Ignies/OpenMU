@@ -7,7 +7,9 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Classes;
+using MUnique.OpenMU.GameLogic.Muuns;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Muuns;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.Babylon;
 using MUnique.OpenMU.Network.PlugIns;
@@ -80,5 +82,9 @@ public class NewPlayersInScopeBabylonPlugIn : NewPlayersInScopePlugIn
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);
+        if (MuunService.GetMainMuun(newPlayer) is { } muun && this.Player.ViewPlugIns.GetPlugIn<IMuunViewPlugIn>() is { } muunView)
+        {
+            await muunView.ShowMuunAppearanceAsync(newPlayer, muun, MuunService.IsRiding(newPlayer)).ConfigureAwait(false);
+        }
     }
 }

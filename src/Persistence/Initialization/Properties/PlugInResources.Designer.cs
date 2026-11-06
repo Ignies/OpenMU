@@ -1308,5 +1308,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21EarringsUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the Muuns of Season 21.
+        /// </summary>
+        public static string AddSeason21MuunsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21MuunsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configures the Muun system of Season 21 (386 Muuns, their options and additional options, the energy converter, six exchange offers), adds the evolution target to the evolution stones and places Monica, the exchange NPC, in Elbeland; switches the Muun system on. A configuration with Muuns stays. Optional..
+        /// </summary>
+        public static string AddSeason21MuunsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21MuunsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

@@ -13,6 +13,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Elements;
 using MUnique.OpenMU.GameLogic.ItemExpiry;
+using MUnique.OpenMU.GameLogic.Muuns;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
@@ -27,7 +28,8 @@ using static ItemSerializerHelper;
 /// Every field which Season 6 knows keeps its Season 6 meaning, so the client reads both layouts into the same item.
 /// Of the fields of later seasons, the mastery options, the mastery bonus, the sphere levels up to 10 and the grade
 /// options of the fourth and fifth wings (kind block) are filled; the elements and the other kind blocks
-/// stay zero until the systems which fill them exist.
+/// stay zero until the systems which fill them exist. The kind block of a Muun holds the end of its additional option,
+/// the one of an evolution stone the Muun it evolves.
 /// </remarks>
 [Guid("5C1B8E2A-7F4D-4A93-B6E0-3D9A2C8F1E57")]
 [PlugIn]
@@ -63,6 +65,12 @@ public class ItemSerializerW32 : IItemSerializer
     private const int WingGradeEntries = 3;
     private const byte NoWingGrade = 0xFF;
     private const int ExpiryIndex = 28;
+
+    /// <summary>
+    /// The item group of the Muuns, whose kind block holds the end of their additional option.
+    /// </summary>
+    private const byte MuunGroup = 16;
+
     private const byte NoOption = 0xFF;
     private const int EarringOptionEntries = 5;
     private const int PentagramKind = 1;
@@ -126,6 +134,7 @@ public class ItemSerializerW32 : IItemSerializer
         SetSlots(target, item);
         BinaryPrimitives.WriteUInt32LittleEndian(target[ExpiryIndex..], item.GetExpiryUnixSeconds());
         SetElementalData(target, item);
+        SetMuunData(target[KindBlockIndex..], item);
         target[FlagsIndex] = GetFlags(target, item);
         return Length;
     }
@@ -195,6 +204,7 @@ public class ItemSerializerW32 : IItemSerializer
 
         ReadMasteryOptions(BinaryPrimitives.ReadUInt16LittleEndian(source[ExcellentIndex..]), source[MasteryBonusIndex], persistenceContext, item);
         ReadWingGrades(source[KindBlockIndex..], persistenceContext, item);
+        ReadMuunData(source[KindBlockIndex..], persistenceContext, item);
 
         if (definition.MaximumSockets == 0)
         {
@@ -360,6 +370,41 @@ public class ItemSerializerW32 : IItemSerializer
             }
         }
     }
+
+    private static void SetMuunData(Span<byte> block, Item item)
+    {
+        if (item.TimedOptionExpiresAt is { } timedOptionEnd)
+        {
+            BinaryPrimitives.WriteUInt32LittleEndian(block, ToUnixSeconds(timedOptionEnd));
+        }
+        else if (MuunService.GetEvolutionTarget(item) is { } target)
+        {
+            BinaryPrimitives.WriteUInt16LittleEndian(block, (ushort)target);
+        }
+    }
+
+    private static void ReadMuunData(ReadOnlySpan<byte> block, IContext persistenceContext, Item item)
+    {
+        if (item.Definition is not { } definition)
+        {
+            return;
+        }
+
+        if (HasPossibleOption(definition, Season21ItemOptionTypes.MuunEvolutionTarget))
+        {
+            if (BinaryPrimitives.ReadUInt16LittleEndian(block) is var target and > 0)
+            {
+                MuunService.SetEvolutionTarget(item, (short)target, persistenceContext);
+            }
+        }
+        else if (definition.Group == MuunGroup && BinaryPrimitives.ReadUInt32LittleEndian(block) is var seconds and > 0)
+        {
+            item.TimedOptionExpiresAt = DateTimeOffset.FromUnixTimeSeconds(seconds).UtcDateTime;
+        }
+    }
+
+    private static uint ToUnixSeconds(DateTime utc)
+        => (uint)Math.Clamp(new DateTimeOffset(DateTime.SpecifyKind(utc, DateTimeKind.Utc)).ToUnixTimeSeconds(), 1, uint.MaxValue);
 
     private static void SetSlotLevel(Span<byte> target, int slot, int level)
     {

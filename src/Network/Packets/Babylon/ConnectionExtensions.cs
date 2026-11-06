@@ -423,6 +423,242 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="MuunItemMove" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="fromStorage">0 the inventory, 1 the Muun inventory.</param>
+    /// <param name="fromSlot">The from slot.</param>
+    /// <param name="toStorage">0 the inventory, 1 the Muun inventory.</param>
+    /// <param name="toSlot">The to slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player moves an item between the inventory and the Muun inventory, or within the Muun inventory; slots 0 and 1 equip a Muun.
+    /// Causes reaction on server side: The server moves it and answers with MuunItemMoveResponse.
+    /// </remarks>
+    public static async ValueTask SendMuunItemMoveAsync(this IConnection? connection, byte @fromStorage, byte @fromSlot, byte @toStorage, byte @toSlot)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuunItemMoveRef.Length;
+            var packet = new MuunItemMoveRef(connection.Output.GetSpan(length)[..length]);
+            packet.FromStorage = @fromStorage;
+            packet.FromSlot = @fromSlot;
+            packet.ToStorage = @toStorage;
+            packet.ToSlot = @toSlot;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MuunItemMoveResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun.</param>
+    /// <param name="fromStorage">0 the inventory, 1 the Muun inventory.</param>
+    /// <param name="fromSlot">The from slot.</param>
+    /// <param name="toStorage">0 the inventory, 1 the Muun inventory.</param>
+    /// <param name="toSlot">The to slot.</param>
+    /// <param name="itemData">The item in the W32 item format; 0xFF when there is none.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a MuunItemMove.
+    /// Causes reaction on client side: On success, the client shows the item at its new place; the inventory side also gets the Season 6 item removed / item added packets.
+    /// </remarks>
+    public static async ValueTask SendMuunItemMoveResponseAsync(this IConnection? connection, byte @result, byte @fromStorage, byte @fromSlot, byte @toStorage, byte @toSlot, Memory<byte> @itemData)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuunItemMoveResponseRef.Length;
+            var packet = new MuunItemMoveResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.FromStorage = @fromStorage;
+            packet.FromSlot = @fromSlot;
+            packet.ToStorage = @toStorage;
+            packet.ToSlot = @toSlot;
+            @itemData.Span.CopyTo(packet.ItemData);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MuunRideRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="ride">True to mount, false to dismount.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player mounts or dismounts the Muun of the main slot (Ctrl+Z in Season 21).
+    /// Causes reaction on server side: The server answers with MuunActionResponse (action 6) and shows MuunAppearance to the player and the players around.
+    /// </remarks>
+    public static async ValueTask SendMuunRideRequestAsync(this IConnection? connection, bool @ride)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuunRideRequestRef.Length;
+            var packet = new MuunRideRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Ride = @ride;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MuunItemUse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="action">1 level up, 2 evolve, 3 charge energy, 4 restore.</param>
+    /// <param name="sourceStorage">0 the inventory, 1 the Muun inventory.</param>
+    /// <param name="sourceSlot">The source slot.</param>
+    /// <param name="targetStorage">0 the inventory, 1 the Muun inventory.</param>
+    /// <param name="targetSlot">The target slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player drops an item on a Muun item: a Muun of level 1 on the same Muun (level up), an evolution stone on a Muun (evolve), a Muun or an evolution stone on a Muun energy converter (charge), a jewel of life on a Muun (restore).
+    /// Causes reaction on server side: The server uses up the source item, changes the target item and answers with MuunActionResponse.
+    /// </remarks>
+    public static async ValueTask SendMuunItemUseAsync(this IConnection? connection, byte @action, byte @sourceStorage, byte @sourceSlot, byte @targetStorage, byte @targetSlot)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuunItemUseRef.Length;
+            var packet = new MuunItemUseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Action = @action;
+            packet.SourceStorage = @sourceStorage;
+            packet.SourceSlot = @sourceSlot;
+            packet.TargetStorage = @targetStorage;
+            packet.TargetSlot = @targetSlot;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MuunActionResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="action">1 level up, 2 evolve, 3 charge energy, 4 restore or health changed, 5 exchange, 6 ride.</param>
+    /// <param name="result">0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun.</param>
+    /// <param name="storage">0 the inventory, 1 the Muun inventory.</param>
+    /// <param name="slot">The slot.</param>
+    /// <param name="itemData">The item in the W32 item format; 0xFF when there is none.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a MuunItemUse, a MuunExchangeRequest or a MuunRideRequest, and when an equipped Muun lost health (action 4).
+    /// Causes reaction on client side: The client shows the changed or created item at its place.
+    /// </remarks>
+    public static async ValueTask SendMuunActionResponseAsync(this IConnection? connection, byte @action, byte @result, byte @storage, byte @slot, Memory<byte> @itemData)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuunActionResponseRef.Length;
+            var packet = new MuunActionResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Action = @action;
+            packet.Result = @result;
+            packet.Storage = @storage;
+            packet.Slot = @slot;
+            @itemData.Span.CopyTo(packet.ItemData);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MuunAppearance" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerId">The player id.</param>
+    /// <param name="itemGroup">16; 0xFF when the player has no main Muun.</param>
+    /// <param name="itemNumber">The item number.</param>
+    /// <param name="itemLevel">The level of the Muun.</param>
+    /// <param name="isRiding">The is riding.</param>
+    /// <remarks>
+    /// Is sent by the server when: When a player with a Muun comes into view, and when the main Muun of a player changes or it mounts or dismounts.
+    /// Causes reaction on client side: The client shows the Muun beside the player, or the player riding it.
+    /// </remarks>
+    public static async ValueTask SendMuunAppearanceAsync(this IConnection? connection, ushort @playerId, byte @itemGroup, ushort @itemNumber, byte @itemLevel, bool @isRiding)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuunAppearanceRef.Length;
+            var packet = new MuunAppearanceRef(connection.Output.GetSpan(length)[..length]);
+            packet.PlayerId = @playerId;
+            packet.ItemGroup = @itemGroup;
+            packet.ItemNumber = @itemNumber;
+            packet.ItemLevel = @itemLevel;
+            packet.IsRiding = @isRiding;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MuunExchangeRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="offerIndex">The offer index.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player takes an offer of the Muun exchange NPC.
+    /// Causes reaction on server side: The server takes the items, puts the evolution stone into the bag of the Muun inventory and answers with MuunActionResponse (action 5).
+    /// </remarks>
+    public static async ValueTask SendMuunExchangeRequestAsync(this IConnection? connection, byte @offerIndex)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuunExchangeRequestRef.Length;
+            var packet = new MuunExchangeRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.OfferIndex = @offerIndex;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="GremoryCaseItemAdded" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
