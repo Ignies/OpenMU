@@ -64,6 +64,8 @@ public static class ForkInfo
         "s21_mixes",
         "level_rewards",
         "event_contribution",
+        "pentagram_elements",
+        "earrings",
     ];
 
     /// <summary>

@@ -75,6 +75,8 @@ Rules:
 | `s21_mixes` | The mastery item mixes, the fourth wings combination and the wing core enhancement, the grade rates (update "Add the item mixes of Season 21", plugin "Item rules of Season 21") |
 | `level_rewards` | The level rewards of Season 21: a Muun at every 50 total levels from 950 to 1750, into the gremory case (update "Add the level rewards and event contribution boxes of Season 21", plugin "Level rewards of Season 21", `src/GameLogic/Rewards`) |
 | `event_contribution` | The event contribution points of Season 21 (blood castle, chaos castle, devil square, illusion temple, imperial guardian, doppelganger) and the Mastery Boxes they give at the end of an event, into the gremory case (same update, plugin "Event contribution boxes of Season 21") |
+| `pentagram_elements` | The elements: elemental damage and defense of characters and monsters, pentagrams, errtels and the elemental refinery (update "Add the elements, pentagrams and errtels", plugin "Elements (Season 21)", section "Elements, pentagrams and earrings") |
+| `earrings` | The earrings with their slots, options and links (update "Add the earrings", same section) |
 
 ## Balance
 
@@ -235,8 +237,8 @@ keeps its Season 6 meaning; the fields of later seasons stay zero until their sy
 | 12 | socket bonus option (0xFF: a socket item without bonus) |
 | 13-17 | five slots: socket option index over all elements (0-49), 0xFE empty, 0xFF no slot |
 | 18-20 | five slot levels, 4 bits each (slot 0 = byte 18 low nibble): sphere level 1-10 (1-15 representable) |
-| 21 | element (bits 0-3), element kind (bits 4-7) |
-| 22-27 | kind block. Fourth and fifth wings: three grade options, each option number (u8, 0-10, 0xFF none) and grade (u8, 0-3); the others (earring links, Muun, errtel) stay zero |
+| 21 | element (bits 0-3), element kind (bits 4-7), see "Elements, pentagrams and earrings" |
+| 22-27 | kind block. Fourth and fifth wings: three grade options, each option number (u8, 0-10, 0xFF none) and grade (u8, 0-3); errtels and earrings: see "Elements, pentagrams and earrings"; the others stay zero |
 | 28-31 | expiry, u32 LE Unix seconds UTC, 0 = never |
 
 ## Wide items
@@ -334,3 +336,73 @@ mix request `C1 86` with the crafting number starts a mix; the mix of the items 
 
 No new packet is needed: every option rides in the W32 item, and every packet which carries an item sizes it by the
 serializer. Season 6 clients keep every packet byte for byte (the visibility tests and the Season 6 serializer tests).
+
+## Elements, pentagrams and earrings
+
+Features `pentagram_elements` (update "Add the elements, pentagrams and errtels", plugin "Elements (Season 21)",
+`src/GameLogic/Elements`) and `earrings` (update "Add the earrings"). Pentagrams, errtels and earrings are wide
+items: a Season 6 client never gets one, and its own fights only meet the elements of the monsters (below).
+
+- **Slots.** Pentagram 236, right earring 237, left earring 238 (Item.xml `Slot`), after the personal store
+  (204-235), so no stored bag, extension or store slot shifts. `InventoryConstants.ExtraEquippedSlots` and
+  `IsEquippedSlot`; the inventory holds them as a storage of three single slots. The inventory list sends them
+  with their slot like any other item.
+- **Element.** A character's element is its pentagram's (option type `Element`, 1 fire, 2 water, 3 earth, 4 wind,
+  5 darkness, rolled when it drops); a monster's comes from Monster.xml `ElementalAttribute` (6: one of the five by
+  its object id, new with each spawn).
+- **Elemental damage.** Every hit of an attacker with an element carries an elemental part: its own success roll
+  (elemental attack rate against elemental defense rate, shaped like the normal hit), damage between minimum and
+  maximum plus the bonuses, times the increase, the element wheel, the skill's imprint (Skill.xml
+  `ElementImprintBonus`) and 1.3 against a player, minus the defender's elemental defense with its bonuses. The
+  elemental part is a part of the hit's damage (Season 6 clients see the sum); `C1 EE 84 ElementalDamage` shows it
+  to the attacker and the defender. Wheel (attacker rows; Webzen EX700 guide, wind against wind taken as 100 %):
+
+  | | fire | water | earth | wind | darkness | none |
+  |---|---|---|---|---|---|---|
+  | fire | 100 | 80 | 90 | 90 | 120 | 120 |
+  | water | 120 | 100 | 80 | 80 | 110 | 120 |
+  | earth | 110 | 120 | 100 | 100 | 90 | 120 |
+  | wind | 90 | 110 | 120 | 100 | 80 | 120 |
+  | darkness | 80 | 90 | 110 | 110 | 100 | 120 |
+
+- **Pentagrams** (25, Item.xml slot 236): `DamageMin/Max` the elemental damage, `Defense` the elemental defense,
+  `ElementalAttack` / `ElementalDefense` the rates. Up to five sockets (1-5 when they drop); socket 0 anger,
+  1 blessing, 2 integrity, 3 divinity, 4 radiance. The pentagram options of PentagramOption.xml are data in
+  `Elements.json`, not applied yet.
+- **Errtels** (13): an element and rank options (PentagramJewelOption.xml, values of the levels 0-10): rank 1 rolled
+  when it drops, the next ranks by the rank up. `C1 EE 81 ErrtelSocketRequest` puts an errtel into the socket of its
+  kind of a pentagram of its element (the errtel is used up, its options move into the pentagram) or takes it out
+  (PentagramJewelMixRate.txt chances by level and rank; on failure the errtel is gone); `C1 EE 83 PentagramResult`
+  answers, `C1 EE 86` / `C1 EE 85 PentagramErrtels` list the errtels of a pentagram's sockets.
+- **Refinery** (chaos goblin, crafting numbers 140-164 of the mix request `C1 86`): 140-153 the upgrades to the
+  mastery pentagrams and errtels (ElementalUpgrade.xml: emblem, bless and soul x30, creation x10 as packed jewels;
+  keeps element, sockets, errtels), 154-163 the errtel level up from level 0-9 (elemental runes 12/288 by rank,
+  money by level), 164 the rank up (chance by the level of the highest rank).
+- **Earrings** (16): base stats (design: the damage range as base damage by its middle, the defense as elemental
+  defense), one random option and two more by 20 % each (the source's 70 / 20 / 10 % for one / two / three options
+  has the same average), and a link set per tier: a left and a right earring of one tier add enemy defense ignore and
+  all stats (EarringItemOption.txt). The options 28-31 of the later tiers are named nowhere and have no effect yet;
+  the enhancement to +15 (section 4) is not built.
+
+W32 fields:
+
+| Item | Byte 21 | Slots 13-17 / levels 18-20 | Kind block 22-27 |
+|---|---|---|---|
+| pentagram | element, kind 1 | per socket: rank count of its errtel (1-5), 0xFE empty, 0xFF no socket; level of the errtel | zero |
+| errtel | element, kind 2-6 (anger to radiance) | per rank: option number (0xFF none); its level | rank count, socket |
+| earring | zero | none | option count, five option numbers (0xFF none) |
+
+Packets (80-8F):
+
+```
+C1 08 EE 81  ErrtelSocketRequest (client)   C1 08 EE 83  PentagramResult (server)
+  4  u8  mode: 0 insert, 1 take out            4  u8  mode
+  5  u8  pentagram slot                        5  u8  0 success, 1 failed (errtel gone), 2 refused
+  6  u8  errtel slot (insert)                  6  u8  pentagram slot
+  7  u8  socket 0-4                            7  u8  socket
+C1 0B EE 84  ElementalDamage (server)       C1 05 EE 86  PentagramErrtelsRequest (client)
+  4  u16 BE  target id                         4  u8  pentagram slot
+  6  u8      element                         C1 .. EE 85  PentagramErrtels (server)
+  7  u32 LE  damage                            4 u8 pentagram slot, 5 u8 count, then 14 bytes per errtel:
+                                               socket u8, errtel number u16 LE, rank count u8, 5 x (option, level)
+```

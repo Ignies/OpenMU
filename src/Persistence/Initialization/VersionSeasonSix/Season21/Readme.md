@@ -79,7 +79,7 @@ according to the [MU Online history](https://github.com/Khdoop/mu-online-history
 Columns the configuration has no field for: the displayed monster level, the
 magic defense (0 for all), the attack types of skills which aren't implemented,
 the item and money rates (the drops come from the drop groups of the map), the
-elemental attributes, the critical and excellent damage resistances, the spawn
+elemental attributes (applied by the elements update, below), the critical and excellent damage resistances, the spawn
 element and the gates' maximum level and reset columns.
 
 Content which needs systems which don't exist yet: the event copies of Acheron
@@ -287,3 +287,25 @@ in `Item/Item.xml`.
   Blood Castle gate (131) and statue (132), the Imperial Guardian bosses (504-511) and the Doppelganger ice walker (531).
   The update "Add the level rewards and event contribution boxes of Season 21" (`Season21RewardsInitializer`) needs the
   economy update.
+
+## Elements, pentagrams and earrings
+
+`Generator/season21-elements.mjs --data <S21Emu Data>` writes `Resources/Season21/Elements.json` from Item.xml
+(the pentagrams, slot 236), `Pentagram - Settings` (PentagramOption, PentagramJewelOption, PentagramJewelMixRate),
+`ElementalItemRefinemen - Settings` (ElementalUpgrade, ElementalItemRefinemenMixRate), Monster.xml (the element
+columns), Skill.xml (`ElementImprintBonus`) and EarringItemOption.txt. `Season21ElementsInitializer` maps it:
+
+- `AddSeason21ElementsUpdatePlugIn` (depends on the item catalog): the element stats, the pentagram slot type (236),
+  25 pentagrams (element option, 5 sockets, base stats), 13 errtels (element, rank options with 11 level values),
+  the element columns of every monster of the configuration which has a row (857 rows), the refinery craftings at
+  the chaos goblin (140-164) and the configuration of the elements plugin, which it turns on.
+- `AddSeason21EarringsUpdatePlugIn` (depends on the item catalog and the mastery options, for the all stats bonus):
+  the earring slot types (237 right, 238 left), 16 earrings (base stats, a first option and two more by 20 %), and
+  8 link sets of a left and a right earring of one tier.
+
+Decisions (design where no source gives a number): the errtel option stats by their index (rank 1 the flat value of
+the kind, rank 2 the five "against element" options, rank 3 PvP and "in raids" = PvM); the earring options by their
+index after Webzen's guide of the first earrings (28-31 without effect); the earring base stats; the packed jewels
+for the jewels x30 / x10 of the upgrades; success 100 % for the mastery upgrades (the data gives no rate). The
+pentagram options, errtel set options, radiance effects and the earring enhancement are data only (see
+`GameLogic/Elements/Readme.md`).
