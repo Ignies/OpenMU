@@ -1225,4 +1225,13 @@ Inventory Extensions: {18}</value>
   <data name="FieldBossSpawnFailed" xml:space="preserve">
     <value>{0} could not spawn (its map or monster is missing).</value>
   </data>
+  <data name="FieldBossEntryItemMissing" xml:space="preserve">
+    <value>You need a {0} to enter.</value>
+  </data>
+  <data name="FieldBossEntryItemBought" xml:space="preserve">
+    <value>You got a {0} for {1} zen.</value>
+  </data>
+  <data name="FieldBossEntryItemNotBought" xml:space="preserve">
+    <value>A {0} costs {1} zen, and needs room in your inventory.</value>
+  </data>
 </root>

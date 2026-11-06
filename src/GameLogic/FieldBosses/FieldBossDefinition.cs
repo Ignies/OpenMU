@@ -40,6 +40,32 @@ public class FieldBossDefinition
     public short EntryNpcNumber { get; set; }
 
     /// <summary>
+    /// Gets or sets the places the boss spawns at, one at random; empty for the first stage's point.
+    /// </summary>
+    public List<FieldBossGround> Grounds { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the group of the item each player needs to enter the arena by the entry NPC (consumed); -1 for none.
+    /// </summary>
+    public short EntryItemGroup { get; set; } = -1;
+
+    /// <summary>
+    /// Gets or sets the number of the item each player needs to enter the arena by the entry NPC.
+    /// </summary>
+    public short EntryItemNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of the NPC which hands out the entry item; 0 for none.
+    /// </summary>
+    public short EntryItemNpcNumber { get; set; }
+
+    /// <summary>
+    /// Gets or sets the zen the entry item costs at that NPC.
+    /// </summary>
+    [Range(0, int.MaxValue)]
+    public int EntryItemPrice { get; set; }
+
+    /// <summary>
     /// Gets or sets the minutes the players have from the first hit; 0 for no limit.
     /// </summary>
     [Range(0, 1440)]

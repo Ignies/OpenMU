@@ -5745,5 +5745,50 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("FieldBossChatCommandPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to State file.
+        /// </summary>
+        public static string FieldBossConfiguration_StateFile_Name {
+            get {
+                return ResourceManager.GetString("FieldBossConfiguration_StateFile_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Debuffs of the elites.
+        /// </summary>
+        public static string EliteZoneConfiguration_Debuffs_Name {
+            get {
+                return ResourceManager.GetString("EliteZoneConfiguration_Debuffs_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Weekly drop limits.
+        /// </summary>
+        public static string EliteZoneConfiguration_DropLimits_Name {
+            get {
+                return ResourceManager.GetString("EliteZoneConfiguration_DropLimits_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Day the weekly limits reset.
+        /// </summary>
+        public static string EliteZoneConfiguration_WeekStartsOn_Name {
+            get {
+                return ResourceManager.GetString("EliteZoneConfiguration_WeekStartsOn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to State file.
+        /// </summary>
+        public static string EliteZoneConfiguration_StateFile_Name {
+            get {
+                return ResourceManager.GetString("EliteZoneConfiguration_StateFile_Name", resourceCulture);
+            }
+        }
     }
 }

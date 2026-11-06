@@ -93,6 +93,16 @@ public sealed class FieldBossState
     internal int ShownHealthBucket { get; set; } = 10;
 
     /// <summary>
+    /// Gets or sets the distance of the chosen ground from the first stage's point.
+    /// </summary>
+    internal (int X, int Y) GroundOffset { get; set; }
+
+    /// <summary>
+    /// Gets the times at which the special skills of the current stage may be tried again.
+    /// </summary>
+    internal Dictionary<FieldBossAbility, DateTime> AbilityDueAt { get; } = [];
+
+    /// <summary>
     /// Gets the lock which orders the changes of this state.
     /// </summary>
     internal SemaphoreSlim Lock { get; } = new(1, 1);

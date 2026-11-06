@@ -51,6 +51,12 @@ public class FieldBossConfiguration
     public bool Announce { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets the file which keeps the boss timers over a restart, relative to the server directory; empty for none.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.FieldBossConfiguration_StateFile_Name))]
+    public string StateFile { get; set; } = "state/field_bosses.json";
+
+    /// <summary>
     /// Gets or sets the bosses.
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.FieldBossConfiguration_Bosses_Name))]

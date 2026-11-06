@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests.FieldBosses;
 
 using System.ComponentModel;
+using System.IO;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
@@ -143,6 +144,92 @@ public class FieldBossesTest
     }
 
     /// <summary>
+    /// In a fight, an area strike hits the players near the stage monster, and a summon keeps its maximum of monsters.
+    /// </summary>
+    [Test]
+    public async Task AbilitiesStrikeAndSummonAsync()
+    {
+        var (plugIn, gameContext, player) = await this.CreateAsync().ConfigureAwait(false);
+        var stage = plugIn.Configuration!.Bosses[0].Stages[0];
+        stage.Abilities.Add(new FieldBossAbility { Kind = FieldBossAbilityKind.AreaStrike, Distance = 5, DamagePercent = 100, IntervalSeconds = 2 });
+        stage.Abilities.Add(new FieldBossAbility { Kind = FieldBossAbilityKind.Summon, MaximumAlive = 3, IntervalSeconds = 2, Summons = [new FieldBossSummon { MonsterNumber = BossNumber, Count = 2, X1 = 95, Y1 = 95, X2 = 105, Y2 = 105 }] });
+        var state = plugIn.GetStates(gameContext).Single();
+        await plugIn.ExecuteTaskAsync(gameContext).ConfigureAwait(false);
+        plugIn.AttackableGotHit(state.StageMonster!, player, default);
+        await WaitUntilAsync(() => state.Status == FieldBossStatus.Engaged).ConfigureAwait(false);
+        player.Position = state.StageMonster!.Position;
+        var health = player.Attributes![Stats.CurrentHealth];
+
+        await plugIn.ExecuteTaskAsync(gameContext).ConfigureAwait(false);
+        Assert.That(player.Attributes[Stats.CurrentHealth], Is.LessThan(health), "The strike hit.");
+        Assert.That(await CountAsync(gameContext, BossNumber).ConfigureAwait(false), Is.EqualTo(2));
+
+        this._now += TimeSpan.FromSeconds(1);
+        await plugIn.ExecuteTaskAsync(gameContext).ConfigureAwait(false);
+        Assert.That(await CountAsync(gameContext, BossNumber).ConfigureAwait(false), Is.EqualTo(2), "Not before its interval.");
+
+        this._now += TimeSpan.FromSeconds(1);
+        await plugIn.ExecuteTaskAsync(gameContext).ConfigureAwait(false);
+        Assert.That(await CountAsync(gameContext, BossNumber).ConfigureAwait(false), Is.EqualTo(3), "Up to its maximum.");
+    }
+
+    /// <summary>
+    /// A boss with grounds spawns on one of them; its stages and summons move along.
+    /// </summary>
+    [Test]
+    public async Task BossSpawnsOnItsGroundAsync()
+    {
+        var (plugIn, gameContext, _) = await this.CreateAsync().ConfigureAwait(false);
+        plugIn.Configuration!.Bosses[0].Grounds.Add(new FieldBossGround { X = 150, Y = 160 });
+        var state = plugIn.GetStates(gameContext).Single();
+
+        await plugIn.ExecuteTaskAsync(gameContext).ConfigureAwait(false);
+
+        Assert.That(state.StageMonster!.IsInRange(new Point(150, 160), 2), Is.True);
+        var map = await gameContext.GetMapAsync(0).ConfigureAwait(false);
+        Assert.That(map!.GetAttackablesInRange(new Point(150, 160), 7).OfType<Monster>().Count(m => m.Definition.Number == MinionNumber), Is.EqualTo(2), "The summons moved along.");
+    }
+
+    /// <summary>
+    /// The entry item is sold for its price and taken one at a time.
+    /// </summary>
+    [Test]
+    public async Task EntryItemIsSoldAndTakenAsync()
+    {
+        var (_, gameContext, player) = await this.CreateAsync().ConfigureAwait(false);
+        var shard = new MUnique.OpenMU.Persistence.BasicModel.ItemDefinition { Group = 14, Number = 390, Width = 1, Height = 1, Durability = 5, Name = "Spirit Nixie's Shard" };
+        gameContext.Configuration.Items.Add(shard);
+        player.Money = 150;
+
+        Assert.That(await FieldBossEntryItems.GiveAsync(player, shard, 100).ConfigureAwait(false), Is.True);
+        Assert.That(player.Money, Is.EqualTo(50));
+        Assert.That(await FieldBossEntryItems.GiveAsync(player, shard, 100).ConfigureAwait(false), Is.False, "Not enough zen.");
+        Assert.That(FieldBossEntryItems.Has(player, shard), Is.True);
+        Assert.That(await FieldBossEntryItems.TakeAsync(player, shard).ConfigureAwait(false), Is.True);
+        Assert.That(await FieldBossEntryItems.TakeAsync(player, shard).ConfigureAwait(false), Is.False);
+    }
+
+    /// <summary>
+    /// The state file keeps the timers over a restart: a killed boss waits for its respawn, a living one spawns again.
+    /// </summary>
+    [Test]
+    public async Task RestartKeepsTheRespawnTimerAsync()
+    {
+        var (plugIn, gameContext, killer) = await this.CreateAsync().ConfigureAwait(false);
+        var state = plugIn.GetStates(gameContext).Single();
+        await plugIn.ExecuteTaskAsync(gameContext).ConfigureAwait(false);
+        await state.StageMonster!.ReflectDamageAsync(killer, Health * 10).ConfigureAwait(false);
+        await state.StageMonster!.ReflectDamageAsync(killer, Health * 10).ConfigureAwait(false);
+        var respawnAt = state.RespawnAt;
+
+        var restarted = new FieldBossesFeaturePlugIn { UtcNow = () => this._now, Configuration = plugIn.Configuration };
+        var restored = restarted.GetStates(gameContext).Single();
+
+        Assert.That(restored.Status, Is.EqualTo(FieldBossStatus.Waiting));
+        Assert.That(restored.NextChangeAt, Is.EqualTo(respawnAt));
+    }
+
+    /// <summary>
     /// The game master command spawns a boss by its name.
     /// </summary>
     [Test]
@@ -177,6 +264,8 @@ public class FieldBossesTest
     {
         var definition = new MonsterDefinition { Id = Guid.NewGuid(), Number = number, ObjectKind = NpcObjectKind.Monster, Designation = $"Monster {number}" };
         definition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.MaximumHealth, Value = Health });
+        definition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.MinimumPhysBaseDmg, Value = 10 });
+        definition.Attributes.Add(new MonsterAttribute { AttributeDefinition = Stats.MaximumPhysBaseDmg, Value = 10 });
         return definition;
     }
 
@@ -213,7 +302,7 @@ public class FieldBossesTest
         gameContext.FeaturePlugIns.AddPlugIn(new FieldBossesFeaturePlugIn(), true);
         var plugIn = FieldBossesFeaturePlugIn.Get(gameContext)!;
         plugIn.UtcNow = () => this._now;
-        plugIn.Configuration = new FieldBossConfiguration { SpawnOnStart = spawnOnStart, Bosses = [boss] };
+        plugIn.Configuration = new FieldBossConfiguration { SpawnOnStart = spawnOnStart, Bosses = [boss], StateFile = Path.Combine(Path.GetTempPath(), $"openmu-bosses-{Guid.NewGuid():N}.json") };
         var player = await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
         player.Position = new Point(10, 10);
         return (plugIn, gameContext, player);

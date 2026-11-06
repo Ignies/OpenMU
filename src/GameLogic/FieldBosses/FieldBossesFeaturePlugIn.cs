@@ -5,8 +5,10 @@
 namespace MUnique.OpenMU.GameLogic.FieldBosses;
 
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -36,6 +38,8 @@ public class FieldBossesFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
     private readonly ConditionalWeakTable<IGameContext, World> _worlds = [];
 
     private FieldBossConfiguration? _configuration;
+
+    private WorldStateFile? _stateFile;
 
     private volatile bool _forceSpawn;
 
@@ -74,6 +78,7 @@ public class FieldBossesFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
         set
         {
             this._configuration = value;
+            this._stateFile = string.IsNullOrWhiteSpace(value?.StateFile) ? null : new WorldStateFile(value.StateFile);
             this._worlds.Clear();
         }
     }
@@ -131,6 +136,9 @@ public class FieldBossesFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
                         break;
                     case FieldBossStatus.Engaged when now >= state.NextChangeAt:
                         await this.FailCoreAsync(gameContext, state).ConfigureAwait(false);
+                        break;
+                    case FieldBossStatus.Engaged:
+                        await this.UseAbilitiesAsync(gameContext, state, now).ConfigureAwait(false);
                         break;
                     case FieldBossStatus.Defeated when now >= state.NextChangeAt:
                         await this.MoveOutAsync(gameContext, state.Definition).ConfigureAwait(false);
@@ -270,11 +278,20 @@ public class FieldBossesFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
     /// <inheritdoc />
     public async ValueTask PlayerTalksToNpcAsync(Player player, NonPlayerCharacter npc, NpcTalkEventArgs eventArgs)
     {
-        if (this.Configuration is null
-            || npc.Definition.Number == 0
-            || player.CurrentMap is not { } map
-            || this.GetWorld(player.GameContext).States.FirstOrDefault(s =>
-                s.Definition.EntryNpcNumber == npc.Definition.Number && s.Definition.MapNumber == map.Definition.Number && s.Definition.Arena is not null) is not { } state)
+        if (this.Configuration is null || npc.Definition.Number == 0 || player.CurrentMap is not { } map)
+        {
+            return;
+        }
+
+        var states = this.GetWorld(player.GameContext).States;
+        if (states.FirstOrDefault(s => s.Definition.EntryItemNpcNumber == npc.Definition.Number) is { } seller)
+        {
+            eventArgs.HasBeenHandled = true;
+            await SellEntryItemAsync(player, seller.Definition).ConfigureAwait(false);
+            return;
+        }
+
+        if (states.FirstOrDefault(s => s.Definition.EntryNpcNumber == npc.Definition.Number && s.Definition.MapNumber == map.Definition.Number && s.Definition.Arena is not null) is not { } state)
         {
             return;
         }
@@ -287,15 +304,24 @@ public class FieldBossesFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
             return;
         }
 
+        var item = FieldBossEntryItems.GetDefinition(player.GameContext, state.Definition);
+        if (item is not null && !FieldBossEntryItems.Has(player, item))
+        {
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.FieldBossEntryItemMissing), item.Name.GetTranslation(player.Culture)).ConfigureAwait(false);
+            return;
+        }
+
         var arena = state.Definition.Arena!;
         var gate = new ExitGate { Map = map.Definition, X1 = arena.EntryX, X2 = arena.EntryX, Y1 = arena.EntryY, Y2 = arena.EntryY };
         var members = player.Party?.PartyList.OfType<Player>()
             .Where(p => p != player && p.CurrentMap == map && p.IsInRange(npc.Position, PartyEntryRange) && !arena.Contains(p.Position))
             .ToList() ?? [];
-        await player.WarpToAsync(gate).ConfigureAwait(false);
-        foreach (var member in members)
+        foreach (var entering in members.Prepend(player))
         {
-            await member.WarpToAsync(gate).ConfigureAwait(false);
+            if (item is null || await FieldBossEntryItems.TakeAsync(entering, item).ConfigureAwait(false))
+            {
+                await entering.WarpToAsync(gate).ConfigureAwait(false);
+            }
         }
     }
 
@@ -358,6 +384,31 @@ public class FieldBossesFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
         await player.ShowLocalizedBlueMessageAsync(key, bossName).ConfigureAwait(false);
     }
 
+    private static byte Clip(int value) => (byte)Math.Clamp(value, 0, 255);
+
+    private static (int X, int Y) ChooseGround(FieldBossDefinition boss)
+    {
+        if (boss.Grounds.Count == 0 || boss.Stages.Count == 0)
+        {
+            return (0, 0);
+        }
+
+        var ground = boss.Grounds[Rand.NextInt(0, boss.Grounds.Count)];
+        return (ground.X - boss.Stages[0].X, ground.Y - boss.Stages[0].Y);
+    }
+
+    private static async ValueTask SellEntryItemAsync(Player player, FieldBossDefinition boss)
+    {
+        if (FieldBossEntryItems.GetDefinition(player.GameContext, boss) is not { } item)
+        {
+            return;
+        }
+
+        var name = item.Name.GetTranslation(player.Culture);
+        var sold = await FieldBossEntryItems.GiveAsync(player, item, boss.EntryItemPrice).ConfigureAwait(false);
+        await player.ShowLocalizedBlueMessageAsync(sold ? nameof(PlayerMessage.FieldBossEntryItemBought) : nameof(PlayerMessage.FieldBossEntryItemNotBought), name, boss.EntryItemPrice).ConfigureAwait(false);
+    }
+
     private static ExitGate? GetExitGate(GameMap map, FieldBossArena arena)
     {
         var gates = map.Definition.ExitGates.Where(g => g.IsSpawnGate && !arena.Contains(new Point(g.X1, g.Y1))).ToList();
@@ -401,8 +452,34 @@ public class FieldBossesFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
         return map.GetPlayers().Where(p => arena.Contains(p.Position)).ToList();
     }
 
+    private static string KeyOf(IGameContext gameContext, FieldBossDefinition boss)
+        => $"{(gameContext as IGameServerContext)?.Id ?? 0}:{boss.Name}";
+
     private World GetWorld(IGameContext gameContext)
-        => this._worlds.GetValue(gameContext, _ => new World(this.Configuration, this.UtcNow(), this.GetRespawnDelay));
+        => this._worlds.GetValue(gameContext, context =>
+        {
+            var saved = this._stateFile?.Load<Dictionary<string, FieldBossSavedState>>() ?? [];
+            return new World(this.Configuration, this.UtcNow(), this.GetRespawnDelay, boss => saved.GetValueOrDefault(KeyOf(context, boss)));
+        });
+
+    private void Save(IGameContext gameContext, FieldBossState state)
+    {
+        if (this._stateFile is not { } file)
+        {
+            return;
+        }
+
+        try
+        {
+            var saved = file.Load<Dictionary<string, FieldBossSavedState>>() ?? [];
+            saved[KeyOf(gameContext, state.Definition)] = new FieldBossSavedState(state.Status, state.NextChangeAt, state.RespawnAt);
+            file.Save(saved);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            gameContext.LoggerFactory.CreateLogger<FieldBossesFeaturePlugIn>().LogWarning(ex, "Field boss {Boss}: the state file {File} can't be written.", state.Definition, file.Path);
+        }
+    }
 
     private (IGameContext GameContext, FieldBossState State)? FindByMonster(Monster monster)
     {
@@ -457,6 +534,7 @@ public class FieldBossesFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
         }
 
         await DespawnAsync(state).ConfigureAwait(false);
+        state.GroundOffset = ChooseGround(state.Definition);
         state.KillerName = null;
         state.Status = FieldBossStatus.Alive;
         state.NextChangeAt = DateTime.MaxValue;
@@ -535,7 +613,9 @@ public class FieldBossesFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
         state.StageIndex = index;
         state.StartedPhases.Clear();
         state.ShownHealthBucket = 10;
-        var monster = await this.SpawnMonsterAsync(gameContext, state, stage.MonsterNumber, (byte)Math.Max(0, stage.X - StageSpawnRadius), (byte)Math.Max(0, stage.Y - StageSpawnRadius), (byte)Math.Min(255, stage.X + StageSpawnRadius), (byte)Math.Min(255, stage.Y + StageSpawnRadius)).ConfigureAwait(false);
+        state.AbilityDueAt.Clear();
+        var (x, y) = (stage.X + state.GroundOffset.X, stage.Y + state.GroundOffset.Y);
+        var monster = await this.SpawnMonsterAsync(gameContext, state, stage.MonsterNumber, Clip(x - StageSpawnRadius), Clip(y - StageSpawnRadius), Clip(x + StageSpawnRadius), Clip(y + StageSpawnRadius)).ConfigureAwait(false);
         state.StageMonster = monster;
         if (monster is null)
         {
@@ -552,7 +632,8 @@ public class FieldBossesFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
         {
             for (var i = 0; i < summon.Count; i++)
             {
-                await this.SpawnMonsterAsync(gameContext, state, summon.MonsterNumber, summon.X1, summon.Y1, summon.X2, summon.Y2).ConfigureAwait(false);
+                var (dx, dy) = state.GroundOffset;
+                await this.SpawnMonsterAsync(gameContext, state, summon.MonsterNumber, Clip(summon.X1 + dx), Clip(summon.Y1 + dy), Clip(summon.X2 + dx), Clip(summon.Y2 + dy)).ConfigureAwait(false);
             }
         }
     }
@@ -595,6 +676,49 @@ public class FieldBossesFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
         await map.AddAsync(monster).ConfigureAwait(false);
         monster.OnSpawn();
         return monster;
+    }
+
+    private async ValueTask UseAbilitiesAsync(IGameContext gameContext, FieldBossState state, DateTime now)
+    {
+        if (state.StageMonster is not { IsAlive: true } boss)
+        {
+            return;
+        }
+
+        foreach (var ability in state.Definition.Stages[state.StageIndex].Abilities)
+        {
+            if (now < state.AbilityDueAt.GetValueOrDefault(ability, DateTime.MinValue))
+            {
+                continue;
+            }
+
+            state.AbilityDueAt[ability] = now.AddSeconds(ability.IntervalSeconds);
+            if (!Rand.NextRandomBool(ability.ChancePercent))
+            {
+                continue;
+            }
+
+            if (ability.Kind == FieldBossAbilityKind.AreaStrike)
+            {
+                var average = (boss.Attributes[Stats.MinimumPhysBaseDmg] + boss.Attributes[Stats.MaximumPhysBaseDmg]) / 2;
+                var damage = (uint)Math.Max(1, average * ability.DamagePercent / 100);
+                foreach (var player in boss.CurrentMap.GetPlayers().Where(p => p.IsAlive && p.IsInRange(boss.Position, ability.Distance)).ToList())
+                {
+                    await player.ReflectDamageAsync(boss, damage).ConfigureAwait(false);
+                }
+
+                continue;
+            }
+
+            var numbers = ability.Summons.Select(s => s.MonsterNumber).ToHashSet();
+            var free = ability.MaximumAlive - state.Monsters.Keys.Count(m => m.IsAlive && numbers.Contains(m.Definition.Number));
+            foreach (var summon in ability.Summons)
+            {
+                var count = Math.Min(summon.Count, free);
+                free -= count;
+                await this.SpawnSummonsAsync(gameContext, state, [new FieldBossSummon { MonsterNumber = summon.MonsterNumber, Count = count, X1 = summon.X1, Y1 = summon.Y1, X2 = summon.X2, Y2 = summon.Y2 }]).ConfigureAwait(false);
+            }
+        }
     }
 
     private async Task OnStageHitAsync(IGameContext gameContext, FieldBossState state, Monster monster)
@@ -642,6 +766,7 @@ public class FieldBossesFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
 
     private async ValueTask ShowStateAsync(IGameContext gameContext, FieldBossState state)
     {
+        this.Save(gameContext, state);
         if (await gameContext.GetMapAsync((ushort)state.Definition.MapNumber, false).ConfigureAwait(false) is not { } map)
         {
             return;
@@ -664,12 +789,23 @@ public class FieldBossesFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
     /// </summary>
     private sealed class World
     {
-        public World(FieldBossConfiguration? configuration, DateTime now, Func<TimeSpan> respawnDelay)
+        public World(FieldBossConfiguration? configuration, DateTime now, Func<TimeSpan> respawnDelay, Func<FieldBossDefinition, FieldBossSavedState?> saved)
         {
             var firstSpawn = configuration?.SpawnOnStart is false ? now + respawnDelay() : now;
-            this.States = configuration?.Bosses.Select(b => new FieldBossState(b, firstSpawn)).ToList() ?? [];
+            this.States = configuration?.Bosses.Select(b => new FieldBossState(b, FirstChange(saved(b), firstSpawn))).ToList() ?? [];
         }
 
         public IReadOnlyList<FieldBossState> States { get; }
+
+        /// <summary>
+        /// A killed or waiting boss keeps its timer; a living one spawns again at once, at full health.
+        /// </summary>
+        private static DateTime FirstChange(FieldBossSavedState? saved, DateTime firstSpawn) => saved switch
+        {
+            { Status: FieldBossStatus.Waiting } => saved.NextChangeAt,
+            { Status: FieldBossStatus.Defeated } => saved.RespawnAt,
+            { } => DateTime.MinValue,
+            _ => firstSpawn,
+        };
     }
 }

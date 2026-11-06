@@ -3351,5 +3351,32 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("FieldBossSpawnFailed", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You need a {0} to enter..
+        /// </summary>
+        public static string FieldBossEntryItemMissing {
+            get {
+                return ResourceManager.GetString("FieldBossEntryItemMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You got a {0} for {1} zen..
+        /// </summary>
+        public static string FieldBossEntryItemBought {
+            get {
+                return ResourceManager.GetString("FieldBossEntryItemBought", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A {0} costs {1} zen, and needs room in your inventory..
+        /// </summary>
+        public static string FieldBossEntryItemNotBought {
+            get {
+                return ResourceManager.GetString("FieldBossEntryItemNotBought", resourceCulture);
+            }
+        }
     }
 }

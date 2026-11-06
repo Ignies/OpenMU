@@ -33,4 +33,9 @@ public class FieldBossStage
     /// Gets or sets the health phases.
     /// </summary>
     public List<FieldBossHealthPhase> Phases { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the special skills.
+    /// </summary>
+    public List<FieldBossAbility> Abilities { get; set; } = [];
 }

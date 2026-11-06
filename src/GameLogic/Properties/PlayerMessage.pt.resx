@@ -1225,4 +1225,13 @@ Extensões de inventário: {18}</value>
   <data name="FieldBossSpawnFailed" xml:space="preserve">
     <value>{0} não pôde surgir (falta o mapa ou o monstro).</value>
   </data>
+  <data name="FieldBossEntryItemMissing" xml:space="preserve">
+    <value>Você precisa de um {0} para entrar.</value>
+  </data>
+  <data name="FieldBossEntryItemBought" xml:space="preserve">
+    <value>Você recebeu um {0} por {1} zen.</value>
+  </data>
+  <data name="FieldBossEntryItemNotBought" xml:space="preserve">
+    <value>Um {0} custa {1} zen e precisa de espaço no seu inventário.</value>
+  </data>
 </root>
