@@ -15,6 +15,16 @@ using MUnique.OpenMU.GameLogic.Views.NPC;
 public class MountSeedSphereCrafting : SimpleItemCraftingHandler
 {
     /// <summary>
+    /// The item number of the first seed sphere of the sphere levels 6 to 10 (Season 21 data, group 12).
+    /// </summary>
+    internal const int WideSeedSphereNumberStart = 311;
+
+    /// <summary>
+    /// The sphere level of the seed spheres from <see cref="WideSeedSphereNumberStart"/>.
+    /// </summary>
+    internal const int WideSeedSphereFirstLevel = 6;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="MountSeedSphereCrafting"/> class.
     /// </summary>
     /// <param name="settings">The settings.</param>
@@ -50,7 +60,7 @@ public class MountSeedSphereCrafting : SimpleItemCraftingHandler
         seedSphere.ThrowNotInitializedProperty(seedSphere.Definition is null, nameof(seedSphere.Definition));
         socketItem.ThrowNotInitializedProperty(socketItem.Definition is null, nameof(socketItem.Definition));
 
-        var seedOption = seedSphere.Definition.PossibleItemOptions.Single();
+        var seedOption = seedSphere.Definition.PossibleItemOptions.Single(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.SocketOption));
         if (socketItem.Definition.PossibleItemOptions.All(iod => iod != seedOption))
         {
             return CraftingResult.IncorrectMixItems;
@@ -65,13 +75,29 @@ public class MountSeedSphereCrafting : SimpleItemCraftingHandler
     /// <remarks>
     /// The item level of a seed sphere defines the kind of option (see <see cref="SeedSphereCrafting"/>),
     /// while the level of the option is defined by the sphere which was used to create the seed sphere.
-    /// The seed spheres are ordered by their sphere level, with one seed sphere per seed type.
+    /// The seed spheres are ordered by their sphere level, with one seed sphere per seed type. The levels 6 to 10 of
+    /// the later seasons start at <see cref="WideSeedSphereNumberStart"/>.
     /// </remarks>
     /// <param name="seedSphereDefinition">The seed sphere definition.</param>
     /// <returns>The level of the socket option, starting at 1.</returns>
     internal static int GetSphereLevel(ItemDefinition seedSphereDefinition)
     {
-        return ((seedSphereDefinition.Number - SeedSphereCrafting.SeedSphereNumberStart) / SeedSphereCrafting.SeedTypes) + 1;
+        return seedSphereDefinition.Number >= WideSeedSphereNumberStart
+            ? ((seedSphereDefinition.Number - WideSeedSphereNumberStart) / SeedSphereCrafting.SeedTypes) + WideSeedSphereFirstLevel
+            : ((seedSphereDefinition.Number - SeedSphereCrafting.SeedSphereNumberStart) / SeedSphereCrafting.SeedTypes) + 1;
+    }
+
+    /// <summary>
+    /// Gets the item number of the seed sphere of an element and a sphere level.
+    /// </summary>
+    /// <param name="level">The sphere level, 1 to 10.</param>
+    /// <param name="element">The element, the index of the seed type.</param>
+    /// <returns>The item number in group 12.</returns>
+    internal static int GetSeedSphereNumber(int level, int element)
+    {
+        return level >= WideSeedSphereFirstLevel
+            ? WideSeedSphereNumberStart + ((level - WideSeedSphereFirstLevel) * SeedSphereCrafting.SeedTypes) + element
+            : SeedSphereCrafting.SeedSphereNumberStart + ((level - 1) * SeedSphereCrafting.SeedTypes) + element;
     }
 
     /// <inheritdoc />

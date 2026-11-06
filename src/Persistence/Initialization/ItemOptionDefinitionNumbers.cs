@@ -224,4 +224,39 @@ internal static class ItemOptionDefinitionNumbers
     /// Gets the dark horse option number.
     /// </summary>
     public static short Horse => 0x82;
+
+    /// <summary>
+    /// Gets the number of the mastery options of the weapons (Season 21).
+    /// </summary>
+    public static short MasteryWeapon => 0x90;
+
+    /// <summary>
+    /// Gets the number of the mastery options of the armors (Season 21).
+    /// </summary>
+    public static short MasteryArmor => 0x91;
+
+    /// <summary>
+    /// Gets the number of the mastery bonus option of the weapons (Season 21).
+    /// </summary>
+    public static short MasteryWeaponBonus => 0x92;
+
+    /// <summary>
+    /// Gets the number of the mastery bonus option of the armors (Season 21).
+    /// </summary>
+    public static short MasteryArmorBonus => 0x93;
+
+    /// <summary>
+    /// Gets the number of the grade options of the fourth wings (Season 21).
+    /// </summary>
+    public static short WingGrade4th => 0x94;
+
+    /// <summary>
+    /// Gets the number of the grade options of the fifth wings (Season 21).
+    /// </summary>
+    public static short WingGrade5th => 0x95;
+
+    /// <summary>
+    /// Gets the number of the marker of the items which only the wide item format carries.
+    /// </summary>
+    public static short WideFormat => 0x96;
 }

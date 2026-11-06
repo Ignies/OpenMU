@@ -92,6 +92,12 @@ public class Stats
     public static AttributeDefinition TotalStrengthAndAgility { get; } = new(new Guid("4DFA4E4A-D185-4BCE-952C-5E78A92DC4AF"), "Total Strength and Agility", string.Empty);
 
     /// <summary>
+    /// Gets the all stats bonus attribute definition: a bonus of the later seasons (e.g. of a mastery weapon) which
+    /// raises the strength, agility, vitality, energy and command at once, through the relationships of the classes.
+    /// </summary>
+    public static AttributeDefinition AllStatsBonus { get; } = new(new Guid("6E3B1C47-92A5-4D08-B7F1-3A8C5E20D914"), "All Stats Bonus", "A bonus which raises the strength, agility, vitality, energy and command at once.");
+
+    /// <summary>
     /// Gets the level attribute definition.
     /// </summary>
     public static AttributeDefinition Level { get; } = new(new Guid("560931AD-0901-4342-B7F4-FD2E2FCC0563"), "Level", "The level of the character.");

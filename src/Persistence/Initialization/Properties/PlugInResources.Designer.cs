@@ -1075,6 +1075,30 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddSeason21ItemCatalogUpdatePlugIn_Description text.</summary>
         public static string AddSeason21ItemCatalogUpdatePlugIn_Description => ResourceManager.GetString("AddSeason21ItemCatalogUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized ActivateSeason21WideItemsUpdatePlugIn_Name text.</summary>
+        public static string ActivateSeason21WideItemsUpdatePlugIn_Name => ResourceManager.GetString("ActivateSeason21WideItemsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized ActivateSeason21WideItemsUpdatePlugIn_Description text.</summary>
+        public static string ActivateSeason21WideItemsUpdatePlugIn_Description => ResourceManager.GetString("ActivateSeason21WideItemsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSeason21MasteryOptionsUpdatePlugIn_Name text.</summary>
+        public static string AddSeason21MasteryOptionsUpdatePlugIn_Name => ResourceManager.GetString("AddSeason21MasteryOptionsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSeason21MasteryOptionsUpdatePlugIn_Description text.</summary>
+        public static string AddSeason21MasteryOptionsUpdatePlugIn_Description => ResourceManager.GetString("AddSeason21MasteryOptionsUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSeason21WingGradesUpdatePlugIn_Name text.</summary>
+        public static string AddSeason21WingGradesUpdatePlugIn_Name => ResourceManager.GetString("AddSeason21WingGradesUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSeason21WingGradesUpdatePlugIn_Description text.</summary>
+        public static string AddSeason21WingGradesUpdatePlugIn_Description => ResourceManager.GetString("AddSeason21WingGradesUpdatePlugIn_Description", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSeason21SphereLevelsUpdatePlugIn_Name text.</summary>
+        public static string AddSeason21SphereLevelsUpdatePlugIn_Name => ResourceManager.GetString("AddSeason21SphereLevelsUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSeason21SphereLevelsUpdatePlugIn_Description text.</summary>
+        public static string AddSeason21SphereLevelsUpdatePlugIn_Description => ResourceManager.GetString("AddSeason21SphereLevelsUpdatePlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized AddSeason21EventRulesUpdatePlugIn_Name text.</summary>
         public static string AddSeason21EventRulesUpdatePlugIn_Name => ResourceManager.GetString("AddSeason21EventRulesUpdatePlugIn_Name", resourceCulture)!;
 
