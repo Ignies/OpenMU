@@ -19,6 +19,8 @@ public class InventoryStorage : Storage, IInventoryStorage
 
     private readonly Player _player;
 
+    private readonly Storage _extraEquipment;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="InventoryStorage" /> class.
     /// </summary>
@@ -35,20 +37,19 @@ public class InventoryStorage : Storage, IInventoryStorage
         this.EquippedItemsChanged += async eventArgs => await this.UpdateItemsOnChangeAsync(eventArgs.Item, eventArgs.IsEquipped).ConfigureAwait(false);
         this._gameContext = context;
 
-        if (player.SelectedCharacter.InventoryExtensions > 0)
+        var extensions = new List<Storage>(player.SelectedCharacter.InventoryExtensions + 1);
+        var sizePerExtension = RowsOfOneExtension * RowSize;
+        for (int i = 0; i < player.SelectedCharacter.InventoryExtensions; i++)
         {
-            var extensions = new List<Storage>(player.SelectedCharacter.InventoryExtensions);
-
-            var sizePerExtension = RowsOfOneExtension * RowSize;
-            for (int i = 0; i < player.SelectedCharacter.InventoryExtensions; i++)
-            {
-                var offset = FirstExtensionItemSlotIndex + (i * sizePerExtension);
-                var extension = new Storage(sizePerExtension, 0, offset, this.ItemStorage);
-                extensions.Add(extension);
-            }
-
-            this.Extensions = extensions;
+            var offset = FirstExtensionItemSlotIndex + (i * sizePerExtension);
+            var extension = new Storage(sizePerExtension, 0, offset, this.ItemStorage);
+            extensions.Add(extension);
         }
+
+        // The equipped slots of the later seasons (pentagram, earrings) lie after the personal store; they hold single items, no box.
+        this._extraEquipment = new Storage(ExtraEquippedSlots.Count, ExtraEquippedSlots.Count, ExtraEquippedSlots[0], this.ItemStorage);
+        extensions.Add(this._extraEquipment);
+        this.Extensions = extensions;
 
         this.InitializePowerUps();
     }
@@ -66,6 +67,14 @@ public class InventoryStorage : Storage, IInventoryStorage
                 if (this.ItemArray[i] is not null)
                 {
                     yield return this.ItemArray[i]!;
+                }
+            }
+
+            foreach (var slot in ExtraEquippedSlots)
+            {
+                if (this._extraEquipment.GetItem(slot) is { } item)
+                {
+                    yield return item;
                 }
             }
         }
@@ -153,7 +162,7 @@ public class InventoryStorage : Storage, IInventoryStorage
 
     private bool IsWearingSlot(int slot)
     {
-        return slot >= FirstEquippableItemSlotIndex && slot <= LastEquippableItemSlotIndex;
+        return IsEquippedSlot(slot);
     }
 
     private async ValueTask UpdateItemsOnChangeAsync(Item item, bool isEquipped)

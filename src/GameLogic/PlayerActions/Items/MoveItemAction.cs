@@ -171,7 +171,7 @@ public class MoveItemAction
 
     private async ValueTask<bool> MoveNormalAsync(Player player, Storages fromStorage, byte fromSlot, Storages toStorage, byte toSlot, IStorage fromItemStorage, Item item, IStorage toItemStorage)
     {
-        var wasEquipped = fromItemStorage == player.Inventory && fromSlot <= LastEquippableItemSlotIndex;
+        var wasEquipped = fromItemStorage == player.Inventory && IsEquippedSlot(fromSlot);
         await fromItemStorage.RemoveItemAsync(item).ConfigureAwait(false);
         var wasAdded = await toItemStorage.AddItemAsync(toSlot, item).ConfigureAwait(false);
         if (!wasAdded || (wasEquipped && !this.CompliesWithMapRequirements(player)))
@@ -315,7 +315,7 @@ public class MoveItemAction
         }
 
         var storage = toStorage.Storage;
-        if (toStorage.Storage == player.Inventory && toSlot <= LastEquippableItemSlotIndex)
+        if (toStorage.Storage == player.Inventory && IsEquippedSlot(toSlot))
         {
             var itemDefinition = item.Definition;
             if (storage.GetItem(toSlot) != null || itemDefinition?.ItemSlot is null)

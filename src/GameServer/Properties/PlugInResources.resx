@@ -2933,4 +2933,28 @@
   <data name="MerchantStoreTabSelectHandlerPlugIn_Description" xml:space="preserve">
     <value>Shows another tab of the store of the opened merchant (C1 EE 75).</value>
   </data>
+  <data name="ElementalDamageBabylonPlugIn_Name" xml:space="preserve">
+    <value>Elemental damage (Babylon)</value>
+  </data>
+  <data name="ElementalDamageBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the elemental part of a hit to the Babylon client.</value>
+  </data>
+  <data name="PentagramBabylonPlugIn_Name" xml:space="preserve">
+    <value>Pentagram (Babylon)</value>
+  </data>
+  <data name="PentagramBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the errtels of a pentagram and the results of errtel socket requests to the Babylon client.</value>
+  </data>
+  <data name="ErrtelSocketHandlerPlugIn_Name" xml:space="preserve">
+    <value>Errtel socket request (Babylon)</value>
+  </data>
+  <data name="ErrtelSocketHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the Babylon client to put an errtel into a pentagram or take it out.</value>
+  </data>
+  <data name="PentagramErrtelsRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Pentagram errtels request (Babylon)</value>
+  </data>
+  <data name="PentagramErrtelsRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the Babylon client for the errtels of a pentagram.</value>
+  </data>
 </root>

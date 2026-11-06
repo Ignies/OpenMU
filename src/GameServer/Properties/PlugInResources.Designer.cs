@@ -8371,5 +8371,77 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("MerchantStoreTabSelectHandlerPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elemental damage (Babylon).
+        /// </summary>
+        public static string ElementalDamageBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ElementalDamageBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the elemental part of a hit to the Babylon client..
+        /// </summary>
+        public static string ElementalDamageBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ElementalDamageBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pentagram (Babylon).
+        /// </summary>
+        public static string PentagramBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PentagramBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the errtels of a pentagram and the results of errtel socket requests to the Babylon client..
+        /// </summary>
+        public static string PentagramBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PentagramBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Errtel socket request (Babylon).
+        /// </summary>
+        public static string ErrtelSocketHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ErrtelSocketHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the Babylon client to put an errtel into a pentagram or take it out..
+        /// </summary>
+        public static string ErrtelSocketHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ErrtelSocketHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pentagram errtels request (Babylon).
+        /// </summary>
+        public static string PentagramErrtelsRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PentagramErrtelsRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the Babylon client for the errtels of a pentagram..
+        /// </summary>
+        public static string PentagramErrtelsRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PentagramErrtelsRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

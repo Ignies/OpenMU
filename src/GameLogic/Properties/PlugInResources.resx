@@ -2289,4 +2289,46 @@
   <data name="ContributionBox_MaximumPoints_Name" xml:space="preserve">
     <value>Most points (0 for no bound)</value>
   </data>
+  <data name="ElementsFeaturePlugIn_Name" xml:space="preserve">
+    <value>Elements (Season 21)</value>
+  </data>
+  <data name="ElementsFeaturePlugIn_Description" xml:space="preserve">
+    <value>The elemental damage and defense of Season 21: characters get their element from the pentagram and its errtels, monsters from their definition; the element wheel decides the multiplier.</value>
+  </data>
+  <data name="ElementsConfiguration_Wheel_Name" xml:space="preserve">
+    <value>Element wheel</value>
+  </data>
+  <data name="ElementsConfiguration_PvpMultiplier_Name" xml:space="preserve">
+    <value>PvP multiplier</value>
+  </data>
+  <data name="ElementsConfiguration_MinimumHitChance_Name" xml:space="preserve">
+    <value>Minimum hit chance</value>
+  </data>
+  <data name="ElementsConfiguration_SkillImprints_Name" xml:space="preserve">
+    <value>Skill imprints</value>
+  </data>
+  <data name="ElementsConfiguration_RemovalRates_Name" xml:space="preserve">
+    <value>Errtel removal rates</value>
+  </data>
+  <data name="ElementMultiplier_Attacker_Name" xml:space="preserve">
+    <value>Attacker element</value>
+  </data>
+  <data name="ElementMultiplier_Defender_Name" xml:space="preserve">
+    <value>Defender element</value>
+  </data>
+  <data name="ElementMultiplier_Multiplier_Name" xml:space="preserve">
+    <value>Multiplier</value>
+  </data>
+  <data name="SkillImprint_SkillNumber_Name" xml:space="preserve">
+    <value>Skill number</value>
+  </data>
+  <data name="SkillImprint_Percent_Name" xml:space="preserve">
+    <value>Percent</value>
+  </data>
+  <data name="ErrtelRemovalRate_Level_Name" xml:space="preserve">
+    <value>Errtel level</value>
+  </data>
+  <data name="ErrtelRemovalRate_Rates_Name" xml:space="preserve">
+    <value>Rates by rank (1/10000)</value>
+  </data>
 </root>

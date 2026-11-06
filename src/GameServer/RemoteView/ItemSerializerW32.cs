@@ -11,6 +11,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Elements;
 using MUnique.OpenMU.GameLogic.ItemExpiry;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
@@ -57,10 +58,15 @@ public class ItemSerializerW32 : IItemSerializer
     private const int SocketBonusIndex = 12;
     private const int SlotsIndex = 13;
     private const int SlotLevelsIndex = 18;
+    private const int ElementIndex = 21;
     private const int KindBlockIndex = 22;
     private const int WingGradeEntries = 3;
     private const byte NoWingGrade = 0xFF;
     private const int ExpiryIndex = 28;
+    private const byte NoOption = 0xFF;
+    private const int EarringOptionEntries = 5;
+    private const int PentagramKind = 1;
+    private const int FirstErrtelKind = 2;
 
     private const byte SkillFlag = 0x01;
     private const byte LuckFlag = 0x02;
@@ -119,6 +125,7 @@ public class ItemSerializerW32 : IItemSerializer
         target[SocketBonusIndex] = GetSocketBonusByte(item);
         SetSlots(target, item);
         BinaryPrimitives.WriteUInt32LittleEndian(target[ExpiryIndex..], item.GetExpiryUnixSeconds());
+        SetElementalData(target, item);
         target[FlagsIndex] = GetFlags(target, item);
         return Length;
     }
@@ -196,8 +203,17 @@ public class ItemSerializerW32 : IItemSerializer
         else
         {
             ReadSocketBonus(source[SocketBonusIndex], persistenceContext, item);
-            ReadSlots(source, persistenceContext, item);
+            if (item.IsPentagram())
+            {
+                item.SocketCount = MaximumSockets - source.Slice(SlotsIndex, MaximumSockets).Count(NoSocket);
+            }
+            else
+            {
+                ReadSlots(source, persistenceContext, item);
+            }
         }
+
+        ReadElementalData(source, persistenceContext, item);
 
         return item;
     }
@@ -299,6 +315,91 @@ public class ItemSerializerW32 : IItemSerializer
         return flags;
     }
 
+    /// <summary>
+    /// Writes the element byte and, by the kind of item, the errtels of a pentagram, the rank options of an errtel or
+    /// the options of an earring (see docs/babylon.md, "Elements, pentagrams and earrings").
+    /// </summary>
+    private static void SetElementalData(Span<byte> target, Item item)
+    {
+        var element = (int)item.GetElement();
+        if (item.IsPentagram())
+        {
+            target[ElementIndex] = (byte)(element | (PentagramKind << 4));
+            for (var socket = 0; socket < Math.Min(item.SocketCount, MaximumSockets); socket++)
+            {
+                var rankOptions = item.GetRankOptions(socket).ToList();
+                target[SlotsIndex + socket] = rankOptions.Count == 0 ? EmptySocket : (byte)rankOptions.Count;
+                SetSlotLevel(target, socket, rankOptions.GetErrtelLevel());
+            }
+
+            return;
+        }
+
+        if (item.Definition is { } definition && Pentagrams.GetErrtelSocket(definition) is { } errtelSocket)
+        {
+            target[ElementIndex] = (byte)(element | ((FirstErrtelKind + errtelSocket) << 4));
+            var rankOptions = item.GetRankOptions().Take(MaximumSockets).ToList();
+            for (var rank = 0; rank < MaximumSockets; rank++)
+            {
+                target[SlotsIndex + rank] = rank < rankOptions.Count ? (byte)rankOptions[rank].ItemOption!.Number : NoOption;
+                SetSlotLevel(target, rank, rank < rankOptions.Count ? rankOptions[rank].Level : 0);
+            }
+
+            target[KindBlockIndex] = (byte)rankOptions.Count;
+            target[KindBlockIndex + 1] = (byte)errtelSocket;
+            return;
+        }
+
+        var earringOptions = item.ItemOptions.Where(o => o.ItemOption?.OptionType == Season21ItemOptionTypes.EarringOption).Take(EarringOptionEntries).ToList();
+        if (earringOptions.Count > 0)
+        {
+            target[KindBlockIndex] = (byte)earringOptions.Count;
+            for (var entry = 0; entry < EarringOptionEntries; entry++)
+            {
+                target[KindBlockIndex + 1 + entry] = entry < earringOptions.Count ? (byte)earringOptions[entry].ItemOption!.Number : NoOption;
+            }
+        }
+    }
+
+    private static void SetSlotLevel(Span<byte> target, int slot, int level)
+    {
+        var levelNibble = (byte)Math.Clamp(level, 0, NibbleMask);
+        target[SlotLevelsIndex + (slot / 2)] |= slot % 2 == 0 ? levelNibble : (byte)(levelNibble << 4);
+    }
+
+    private static void ReadElementalData(ReadOnlySpan<byte> source, IContext persistenceContext, Item item)
+    {
+        var options = item.Definition!.PossibleItemOptions.SelectMany(o => o.PossibleOptions).ToList();
+        var element = source[ElementIndex] & NibbleMask;
+        if (element != 0 && options.FirstOrDefault(o => o.OptionType == Season21ItemOptionTypes.Element && o.Number == element) is { } elementOption)
+        {
+            AddLink(elementOption, 0, 0, persistenceContext, item);
+        }
+
+        if (Pentagrams.GetErrtelSocket(item.Definition) is not null)
+        {
+            for (var rank = 0; rank < MaximumSockets; rank++)
+            {
+                var number = source[SlotsIndex + rank];
+                if (number != NoOption && options.FirstOrDefault(o => o.OptionType == Season21ItemOptionTypes.ErrtelRank && o.Number == number) is { } rankOption)
+                {
+                    AddLink(rankOption, GetSlotLevel(source, rank), rankOption.SubOptionType - 1, persistenceContext, item);
+                }
+            }
+
+            return;
+        }
+
+        for (var entry = 0; entry < Math.Min((int)source[KindBlockIndex], EarringOptionEntries); entry++)
+        {
+            var number = source[KindBlockIndex + 1 + entry];
+            if (options.FirstOrDefault(o => o.OptionType == Season21ItemOptionTypes.EarringOption && o.Number == number) is { } earringOption)
+            {
+                AddLink(earringOption, 0, 0, persistenceContext, item);
+            }
+        }
+    }
+
     private static void ReadSlots(ReadOnlySpan<byte> source, IContext persistenceContext, Item item)
     {
         var socketCount = 0;
@@ -343,8 +444,7 @@ public class ItemSerializerW32 : IItemSerializer
             }
 
             target[SlotsIndex + slot] = optionIndex;
-            var levelNibble = (byte)Math.Clamp(level, 0, NibbleMask);
-            target[SlotLevelsIndex + (slot / 2)] |= slot % 2 == 0 ? levelNibble : (byte)(levelNibble << 4);
+            SetSlotLevel(target, slot, level);
         }
     }
 }

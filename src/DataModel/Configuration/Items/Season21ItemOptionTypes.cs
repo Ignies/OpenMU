@@ -35,7 +35,23 @@ public static class Season21ItemOptionTypes
     public static ItemOptionType WideFormat { get; } = new() { Name = "Wide Item Format", Id = new Guid("{F09B2C64-81D5-4A7E-93C0-5B6E4D2A17F8}") };
 
     /// <summary>
+    /// Gets the element option type: the element of a pentagram or an errtel (the option number, 1 fire to 5 darkness).
+    /// </summary>
+    public static ItemOptionType Element { get; } = new() { Name = "Element", Id = new Guid("{2ADE9FF2-960F-4AD9-B9A5-F69F666F9DE0}"), IsVisible = true };
+
+    /// <summary>
+    /// Gets the errtel rank option type: an option of a rank of an errtel (the sub option type is the rank, the link
+    /// level the level). On an errtel, the link index is the rank minus 1; in a pentagram, it is the socket.
+    /// </summary>
+    public static ItemOptionType ErrtelRank { get; } = new() { Name = "Errtel Rank Option", Id = new Guid("{6BBC206A-ADE2-4AEB-B9D4-AF5237063DF1}"), IsVisible = true };
+
+    /// <summary>
+    /// Gets the earring option type: a random option of an earring (the option number is the Season 21 option index).
+    /// </summary>
+    public static ItemOptionType EarringOption { get; } = new() { Name = "Earring Option", Id = new Guid("{4A6375C2-3641-4A7C-A5C6-B284EFA6A9FA}"), IsVisible = true };
+
+    /// <summary>
     /// Gets all types of this class.
     /// </summary>
-    public static IReadOnlyList<ItemOptionType> All { get; } = [Mastery, MasteryBonus, WingGrade, WideFormat];
+    public static IReadOnlyList<ItemOptionType> All { get; } = [Mastery, MasteryBonus, WingGrade, WideFormat, Element, ErrtelRank, EarringOption];
 }

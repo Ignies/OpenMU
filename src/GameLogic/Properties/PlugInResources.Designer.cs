@@ -6402,5 +6402,131 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ContributionBox_MaximumPoints_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elements (Season 21).
+        /// </summary>
+        public static string ElementsFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("ElementsFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The elemental damage and defense of Season 21: characters get their element from the pentagram and its errtels, monsters from their definition; the element wheel decides the multiplier..
+        /// </summary>
+        public static string ElementsFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("ElementsFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Element wheel.
+        /// </summary>
+        public static string ElementsConfiguration_Wheel_Name {
+            get {
+                return ResourceManager.GetString("ElementsConfiguration_Wheel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to PvP multiplier.
+        /// </summary>
+        public static string ElementsConfiguration_PvpMultiplier_Name {
+            get {
+                return ResourceManager.GetString("ElementsConfiguration_PvpMultiplier_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum hit chance.
+        /// </summary>
+        public static string ElementsConfiguration_MinimumHitChance_Name {
+            get {
+                return ResourceManager.GetString("ElementsConfiguration_MinimumHitChance_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skill imprints.
+        /// </summary>
+        public static string ElementsConfiguration_SkillImprints_Name {
+            get {
+                return ResourceManager.GetString("ElementsConfiguration_SkillImprints_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Errtel removal rates.
+        /// </summary>
+        public static string ElementsConfiguration_RemovalRates_Name {
+            get {
+                return ResourceManager.GetString("ElementsConfiguration_RemovalRates_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attacker element.
+        /// </summary>
+        public static string ElementMultiplier_Attacker_Name {
+            get {
+                return ResourceManager.GetString("ElementMultiplier_Attacker_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Defender element.
+        /// </summary>
+        public static string ElementMultiplier_Defender_Name {
+            get {
+                return ResourceManager.GetString("ElementMultiplier_Defender_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Multiplier.
+        /// </summary>
+        public static string ElementMultiplier_Multiplier_Name {
+            get {
+                return ResourceManager.GetString("ElementMultiplier_Multiplier_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skill number.
+        /// </summary>
+        public static string SkillImprint_SkillNumber_Name {
+            get {
+                return ResourceManager.GetString("SkillImprint_SkillNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Percent.
+        /// </summary>
+        public static string SkillImprint_Percent_Name {
+            get {
+                return ResourceManager.GetString("SkillImprint_Percent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Errtel level.
+        /// </summary>
+        public static string ErrtelRemovalRate_Level_Name {
+            get {
+                return ResourceManager.GetString("ErrtelRemovalRate_Level_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rates by rank (1/10000).
+        /// </summary>
+        public static string ErrtelRemovalRate_Rates_Name {
+            get {
+                return ResourceManager.GetString("ErrtelRemovalRate_Rates_Name", resourceCulture);
+            }
+        }
     }
 }

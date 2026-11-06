@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Elements;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Pet;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -67,9 +68,13 @@ public static class AttackableExtensions
     /// </returns>
     public static async ValueTask<HitInfo> CalculateDamageAsync(this IAttacker attacker, IAttackable defender, SkillEntry? skill, bool isCombo, double damageFactor = 1.0)
     {
+        var (elementalDamage, element) = attacker.CalculateElementalDamage(defender, skill);
         if (!attacker.IsAttackSuccessfulTo(defender))
         {
-            return new HitInfo(0, 0, DamageAttributes.Undefined, 0, 0, skill);
+            // The elemental hit has a success roll of its own.
+            return elementalDamage == 0
+                ? new HitInfo(0, 0, DamageAttributes.Undefined, 0, 0, skill)
+                : defender.GetHitInfo(elementalDamage, DamageAttributes.Undefined, attacker, 0, skill) with { ElementalDamage = elementalDamage, Element = element };
         }
 
         Player? attackerPlayer = attacker is AttackerSurrogate surrogate ? surrogate.Owner : (attacker is Player player ? player : null);
@@ -313,7 +318,8 @@ public static class AttackableExtensions
             }
         }
 
-        return defender.GetHitInfo((uint)dmg, attributes, attacker, (uint)manaToll, skill, (uint)petDamage);
+        var hitInfo = defender.GetHitInfo((uint)dmg + elementalDamage, attributes, attacker, (uint)manaToll, skill, (uint)petDamage);
+        return elementalDamage == 0 ? hitInfo : hitInfo with { ElementalDamage = elementalDamage, Element = element };
     }
 
     /// <summary>
@@ -734,6 +740,24 @@ public static class AttackableExtensions
     public static float GetDefenseRatePvm(this IAttackable defender)
     {
         return defender.Attributes[Stats.DefenseRatePvm] + defender.Attributes[Stats.IncreaseBlockBonus];
+    }
+
+    /// <summary>
+    /// Calculates the elemental damage of a hit, when the <see cref="ElementsFeaturePlugIn"/> is active.
+    /// </summary>
+    private static (uint Damage, Element Element) CalculateElementalDamage(this IAttacker attacker, IAttackable defender, SkillEntry? skill)
+    {
+        var attackerPlayer = attacker is AttackerSurrogate surrogate ? surrogate.Owner : attacker as Player;
+        if ((attackerPlayer ?? defender as Player)?.GameContext is not { } gameContext || ElementsFeaturePlugIn.GetConfiguration(gameContext) is not { } configuration)
+        {
+            return (0, Element.None);
+        }
+
+        var isPvp = attackerPlayer is not null && defender is Player;
+        var element = attacker.Attributes.GetElement(attacker.Id);
+        var defenderElement = defender.Attributes.GetElement(defender.Id);
+        var damage = ElementalDamageCalculator.Calculate(attacker.Attributes, element, defender.Attributes, defenderElement, isPvp, configuration.GetImprintPercent(skill?.Skill?.Number), configuration);
+        return (damage, damage == 0 ? Element.None : element);
     }
 
     private static bool IsAttackSuccessfulTo(this IAttacker attacker, IAttackable defender)

@@ -1272,5 +1272,41 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21RewardsUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the elements, pentagrams and errtels (Season 21 data).
+        /// </summary>
+        public static string AddSeason21ElementsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21ElementsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gives the pentagrams of Season 21 the pentagram slot (236), a random element, up to five sockets and their elemental damage, defense and rates; gives the errtels an element and their rank options (rank 1 when they drop); adds the elemental attack and defense of every monster of the Season 21 data, the element imprints of the skills and the errtel removal rates, and turns on the elements feature. Pentagrams and errtels are shown to the Babylon client only..
+        /// </summary>
+        public static string AddSeason21ElementsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21ElementsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the earrings (Season 21 data).
+        /// </summary>
+        public static string AddSeason21EarringsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21EarringsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gives the earrings of Season 21 their slots (right 237, left 238), their base stats, one to three random options and the link options of a left and right earring of the same tier (enemy defense ignore, all stats). Earrings are shown to the Babylon client only..
+        /// </summary>
+        public static string AddSeason21EarringsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21EarringsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

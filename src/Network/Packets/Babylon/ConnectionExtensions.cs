@@ -719,4 +719,132 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ErrtelSocketRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="mode">0 inserts the errtel of ErrtelSlot, 1 takes the errtel of SocketIndex out.</param>
+    /// <param name="pentagramSlot">The inventory slot of the pentagram (also the equipped slot 236).</param>
+    /// <param name="errtelSlot">The inventory slot of the errtel to insert; ignored when taking out.</param>
+    /// <param name="socketIndex">The socket of the pentagram, 0-4 (the socket of the errtel's kind: anger, blessing, integrity, divinity, radiance).</param>
+    /// <remarks>
+    /// Is sent by the client when: The player puts an errtel into a socket of a pentagram, or takes one out.
+    /// Causes reaction on server side: The server checks the pentagram, the errtel and the socket, moves the errtel and answers with PentagramResult.
+    /// </remarks>
+    public static async ValueTask SendErrtelSocketRequestAsync(this IConnection? connection, byte @mode, byte @pentagramSlot, byte @errtelSlot, byte @socketIndex)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ErrtelSocketRequestRef.Length;
+            var packet = new ErrtelSocketRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Mode = @mode;
+            packet.PentagramSlot = @pentagramSlot;
+            packet.ErrtelSlot = @errtelSlot;
+            packet.SocketIndex = @socketIndex;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PentagramResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="mode">The mode of the request: 0 insert, 1 take out.</param>
+    /// <param name="result">0 success, 1 failed (taking out destroyed the errtel), 2 refused (wrong item, element, socket, or no space).</param>
+    /// <param name="pentagramSlot">The pentagram slot.</param>
+    /// <param name="socketIndex">The socket index.</param>
+    /// <remarks>
+    /// Is sent by the server when: After an ErrtelSocketRequest.
+    /// Causes reaction on client side: The client shows the result; the changed items come with the usual item packets.
+    /// </remarks>
+    public static async ValueTask SendPentagramResultAsync(this IConnection? connection, byte @mode, byte @result, byte @pentagramSlot, byte @socketIndex)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PentagramResultRef.Length;
+            var packet = new PentagramResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Mode = @mode;
+            packet.Result = @result;
+            packet.PentagramSlot = @pentagramSlot;
+            packet.SocketIndex = @socketIndex;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ElementalDamage" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="targetId">The id of the object which took the damage, as in the Season 6 hit packet.</param>
+    /// <param name="element">1 fire, 2 water, 3 earth, 4 wind, 5 darkness.</param>
+    /// <param name="damage">The damage.</param>
+    /// <remarks>
+    /// Is sent by the server when: A hit of the own character, or a hit on it, deals elemental damage, on a world with the elements.
+    /// Causes reaction on client side: The client shows the elemental damage beside the hit, in the color of its element. The damage is a part of the hit's damage, not an extra.
+    /// </remarks>
+    public static async ValueTask SendElementalDamageAsync(this IConnection? connection, ushort @targetId, byte @element, uint @damage)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ElementalDamageRef.Length;
+            var packet = new ElementalDamageRef(connection.Output.GetSpan(length)[..length]);
+            packet.TargetId = @targetId;
+            packet.Element = @element;
+            packet.Damage = @damage;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="PentagramErrtelsRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="pentagramSlot">The inventory slot of the pentagram.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client needs the errtels in the sockets of a pentagram, e.g. for its tooltip.
+    /// Causes reaction on server side: The server answers with PentagramErrtels.
+    /// </remarks>
+    public static async ValueTask SendPentagramErrtelsRequestAsync(this IConnection? connection, byte @pentagramSlot)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = PentagramErrtelsRequestRef.Length;
+            var packet = new PentagramErrtelsRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.PentagramSlot = @pentagramSlot;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

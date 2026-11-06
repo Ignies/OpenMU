@@ -20,4 +20,14 @@ public record struct HitInfo(
     /// Gets the total damage.
     /// </summary>
     public readonly uint TotalDamage => this.HealthDamage + this.ShieldDamage;
+
+    /// <summary>
+    /// Gets the part of the <see cref="TotalDamage"/> which is elemental damage (see <see cref="Elements.ElementalDamageCalculator"/>).
+    /// </summary>
+    public uint ElementalDamage { get; init; }
+
+    /// <summary>
+    /// Gets the element of the <see cref="ElementalDamage"/>.
+    /// </summary>
+    public Elements.Element Element { get; init; }
 }

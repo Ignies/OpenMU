@@ -241,6 +241,36 @@
         </Field>
       </Fields>
     </Structure>
+    <Structure>
+      <Name>SocketedErrtel</Name>
+      <Description>An errtel in a socket of a pentagram, with its rank options.</Description>
+      <Length>14</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>SocketIndex</Name>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ErrtelNumber</Name>
+          <Description>The item number of the errtel (group 12).</Description>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>RankCount</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Binary</Type>
+          <Name>RankOptions</Name>
+          <Description>Five pairs of option number and level, by rank; 0xFF 0 for a rank the errtel doesn't have. The option numbers are the S21 errtel option indexes, as in the W32 slots of an errtel.</Description>
+          <Length>10</Length>
+        </Field>
+      </Fields>
+    </Structure>
   </Structures>
   <Packets>
     <Packet>
@@ -1087,6 +1117,151 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>Tab</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>81</SubCode>
+      <Name>ErrtelSocketRequest</Name>
+      <Length>8</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player puts an errtel into a socket of a pentagram, or takes one out.</SentWhen>
+      <CausedReaction>The server checks the pentagram, the errtel and the socket, moves the errtel and answers with PentagramResult.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Mode</Name>
+          <Description>0 inserts the errtel of ErrtelSlot, 1 takes the errtel of SocketIndex out.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>PentagramSlot</Name>
+          <Description>The inventory slot of the pentagram (also the equipped slot 236).</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>ErrtelSlot</Name>
+          <Description>The inventory slot of the errtel to insert; ignored when taking out.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>SocketIndex</Name>
+          <Description>The socket of the pentagram, 0-4 (the socket of the errtel's kind: anger, blessing, integrity, divinity, radiance).</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>83</SubCode>
+      <Name>PentagramResult</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After an ErrtelSocketRequest.</SentWhen>
+      <CausedReaction>The client shows the result; the changed items come with the usual item packets.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Mode</Name>
+          <Description>The mode of the request: 0 insert, 1 take out.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 success, 1 failed (taking out destroyed the errtel), 2 refused (wrong item, element, socket, or no space).</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>PentagramSlot</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>SocketIndex</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>84</SubCode>
+      <Name>ElementalDamage</Name>
+      <Length>11</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A hit of the own character, or a hit on it, deals elemental damage, on a world with the elements.</SentWhen>
+      <CausedReaction>The client shows the elemental damage beside the hit, in the color of its element. The damage is a part of the hit's damage, not an extra.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>TargetId</Name>
+          <Description>The id of the object which took the damage, as in the Season 6 hit packet.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Element</Name>
+          <Description>1 fire, 2 water, 3 earth, 4 wind, 5 darkness.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Damage</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>86</SubCode>
+      <Name>PentagramErrtelsRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client needs the errtels in the sockets of a pentagram, e.g. for its tooltip.</SentWhen>
+      <CausedReaction>The server answers with PentagramErrtels.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>PentagramSlot</Name>
+          <Description>The inventory slot of the pentagram.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>85</SubCode>
+      <Name>PentagramErrtels</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a PentagramErrtelsRequest, and after an errtel was put into or taken out of the pentagram.</SentWhen>
+      <CausedReaction>The client shows the errtels of the pentagram's sockets.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>PentagramSlot</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ErrtelCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Structure[]</Type>
+          <TypeName>SocketedErrtel</TypeName>
+          <Name>Errtels</Name>
+          <ItemCountField>ErrtelCount</ItemCountField>
         </Field>
       </Fields>
     </Packet>

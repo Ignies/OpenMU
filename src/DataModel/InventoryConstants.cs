@@ -85,6 +85,27 @@ public static class InventoryConstants
     public static readonly byte Ring2Slot = 11;
 
     /// <summary>
+    /// The pentagram inventory slot index (Season 21). It lies after the personal store, so no stored slot shifts.
+    /// </summary>
+    public static readonly byte PentagramSlot = 236;
+
+    /// <summary>
+    /// The right earring inventory slot index (Season 21, Item.xml <c>Slot="237"</c>).
+    /// </summary>
+    public static readonly byte RightEarringSlot = 237;
+
+    /// <summary>
+    /// The left earring inventory slot index (Season 21, Item.xml <c>Slot="238"</c>).
+    /// </summary>
+    public static readonly byte LeftEarringSlot = 238;
+
+    /// <summary>
+    /// The equipped slots after the Season 6 ones (<see cref="FirstEquippableItemSlotIndex"/> to
+    /// <see cref="LastEquippableItemSlotIndex"/>), in their order; see <see cref="IsEquippedSlot"/>.
+    /// </summary>
+    public static readonly IReadOnlyList<byte> ExtraEquippedSlots = [PentagramSlot, RightEarringSlot, LeftEarringSlot];
+
+    /// <summary>
     /// The size of a row.
     /// </summary>
     public static readonly int RowSize = 8;
@@ -161,6 +182,15 @@ public static class InventoryConstants
     /// The number of warehouse item slots.
     /// </summary>
     public static readonly byte WarehouseSize = (byte)(WarehouseRows * RowSize);
+
+    /// <summary>
+    /// Determines whether an inventory slot is an equipped slot: one of the Season 6 slots or of the <see cref="ExtraEquippedSlots"/>.
+    /// </summary>
+    /// <param name="slot">The inventory slot.</param>
+    /// <returns><c>true</c>, if an item in this slot is worn.</returns>
+    public static bool IsEquippedSlot(int slot)
+        => (slot >= FirstEquippableItemSlotIndex && slot <= LastEquippableItemSlotIndex)
+           || (slot >= PentagramSlot && slot <= LeftEarringSlot);
 
     /// <summary>
     /// Gets the size of the inventory with the specified number of extensions.

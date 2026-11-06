@@ -27,7 +27,7 @@ public abstract class ItemModifyConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
             return false;
         }
 
-        if (targetItem.ItemSlot <= InventoryConstants.LastEquippableItemSlotIndex)
+        if (InventoryConstants.IsEquippedSlot(targetItem.ItemSlot))
         {
             // It shouldn't be possible to upgrade an equipped item.
             // The original server allowed this, however people managed to downgrade their maxed out weapons to +6 when some

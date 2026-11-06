@@ -98,6 +98,121 @@ public class Stats
     public static AttributeDefinition AllStatsBonus { get; } = new(new Guid("6E3B1C47-92A5-4D08-B7F1-3A8C5E20D914"), "All Stats Bonus", "A bonus which raises the strength, agility, vitality, energy and command at once.");
 
     /// <summary>
+    /// Gets the element attribute definition: the element of a character (by its pentagram) or a monster, see <see cref="Elements.Element"/>.
+    /// </summary>
+    public static AttributeDefinition Element { get; } = new(new Guid("0DDCF2ED-F7B9-4D08-A09A-4FE65A7CC6B1"), "Element", "The element of a character (given by its pentagram) or of a monster: 0 none, 1 fire, 2 water, 3 earth, 4 wind, 5 darkness; 6 lets a monster take a random one.");
+
+    /// <summary>
+    /// Gets the minimum elemental damage attribute definition.
+    /// </summary>
+    public static AttributeDefinition ElementDamageMin { get; } = new(new Guid("D524402E-DC1A-463E-A6C4-4F6E0DB63CF4"), "Elemental Damage (min)", "The minimum elemental damage, e.g. of a pentagram.");
+
+    /// <summary>
+    /// Gets the maximum elemental damage attribute definition.
+    /// </summary>
+    public static AttributeDefinition ElementDamageMax { get; } = new(new Guid("14EE879B-DE3F-4B4A-86B7-D73C713CCD46"), "Elemental Damage (max)", "The maximum elemental damage, e.g. of a pentagram.");
+
+    /// <summary>
+    /// Gets the elemental damage bonus attribute definition, which is added to every elemental hit.
+    /// </summary>
+    public static AttributeDefinition ElementDamageBonus { get; } = new(new Guid("0A91523B-5E15-481B-B02C-8F13C30F9B43"), "Elemental Damage Bonus", "A bonus which is added to the elemental damage of every hit, e.g. of an errtel.");
+
+    /// <summary>
+    /// Gets the elemental defense attribute definition.
+    /// </summary>
+    public static AttributeDefinition ElementDefense { get; } = new(new Guid("0A5BB443-7101-45D3-968F-DFE8370AB939"), "Elemental Defense", "The elemental defense, which reduces the elemental damage of every hit.");
+
+    /// <summary>
+    /// Gets the elemental attack rate attribute definition.
+    /// </summary>
+    public static AttributeDefinition ElementAttackRate { get; } = new(new Guid("535E6007-708B-4744-ADE2-E64491A0525D"), "Elemental Attack Rate", "The elemental attack success rate, against the elemental defense rate of the target.");
+
+    /// <summary>
+    /// Gets the elemental defense rate attribute definition.
+    /// </summary>
+    public static AttributeDefinition ElementDefenseRate { get; } = new(new Guid("5D396598-9A0D-4684-BB37-DAA59A2A9997"), "Elemental Defense Rate", "The elemental defense success rate, against the elemental attack rate of the attacker.");
+
+    /// <summary>
+    /// Gets the elemental damage bonus against players attribute definition.
+    /// </summary>
+    public static AttributeDefinition ElementDamagePvp { get; } = new(new Guid("2C2CD8FF-F035-4C64-ADB0-830A55960422"), "Elemental Damage Bonus (PvP)", "A bonus which is added to the elemental damage against players.");
+
+    /// <summary>
+    /// Gets the elemental damage bonus against monsters attribute definition (the "in raids" options).
+    /// </summary>
+    public static AttributeDefinition ElementDamagePvm { get; } = new(new Guid("25A854E3-19D2-4A56-86C1-74FB2277729D"), "Elemental Damage Bonus (PvM)", "A bonus which is added to the elemental damage against monsters.");
+
+    /// <summary>
+    /// Gets the elemental defense bonus against players attribute definition.
+    /// </summary>
+    public static AttributeDefinition ElementDefensePvp { get; } = new(new Guid("EEA38CBC-5D67-4768-80D6-BA63AD36998D"), "Elemental Defense Bonus (PvP)", "A bonus to the elemental defense against players.");
+
+    /// <summary>
+    /// Gets the elemental defense bonus against monsters attribute definition (the "in raids" options).
+    /// </summary>
+    public static AttributeDefinition ElementDefensePvm { get; } = new(new Guid("40B82AE2-6B83-45A9-9068-051A03FEA514"), "Elemental Defense Bonus (PvM)", "A bonus to the elemental defense against monsters.");
+
+    /// <summary>
+    /// Gets the elemental damage increase attribute definition, a factor added to 1 (0.05 = +5 %).
+    /// </summary>
+    public static AttributeDefinition ElementDamageIncrease { get; } = new(new Guid("83250DCC-891B-42EF-A972-70E7E72A0C5A"), "Elemental Damage Increase", "Increases the elemental damage by this factor (0.05 = +5 %).");
+
+    /// <summary>
+    /// Gets the elemental defense increase attribute definition, a factor added to 1 (0.05 = +5 %).
+    /// </summary>
+    public static AttributeDefinition ElementDefenseIncrease { get; } = new(new Guid("0D774B26-F77E-4022-A446-41295A63FD8D"), "Elemental Defense Increase", "Increases the elemental defense by this factor (0.05 = +5 %).");
+
+    /// <summary>
+    /// Gets the elemental damage bonus against targets of the fire element.
+    /// </summary>
+    public static AttributeDefinition ElementDamageAgainstFire { get; } = new(new Guid("B130CD58-0331-4688-9512-B38123885A04"), "Elemental Damage Against Fire", "A bonus to the elemental damage against a target of the fire element.");
+
+    /// <summary>
+    /// Gets the elemental damage bonus against targets of the water element.
+    /// </summary>
+    public static AttributeDefinition ElementDamageAgainstWater { get; } = new(new Guid("7B105A94-9267-4D05-800E-9A9A69E26A15"), "Elemental Damage Against Water", "A bonus to the elemental damage against a target of the water element.");
+
+    /// <summary>
+    /// Gets the elemental damage bonus against targets of the earth element.
+    /// </summary>
+    public static AttributeDefinition ElementDamageAgainstEarth { get; } = new(new Guid("50B3623C-4608-4631-B0D6-801FBDD538C4"), "Elemental Damage Against Earth", "A bonus to the elemental damage against a target of the earth element.");
+
+    /// <summary>
+    /// Gets the elemental damage bonus against targets of the wind element.
+    /// </summary>
+    public static AttributeDefinition ElementDamageAgainstWind { get; } = new(new Guid("FABF973E-2B68-4B40-82A6-EEE3D5E0A142"), "Elemental Damage Against Wind", "A bonus to the elemental damage against a target of the wind element.");
+
+    /// <summary>
+    /// Gets the elemental damage bonus against targets of the darkness element.
+    /// </summary>
+    public static AttributeDefinition ElementDamageAgainstDarkness { get; } = new(new Guid("2CEA417C-D29C-45E1-B946-79D94C79DA62"), "Elemental Damage Against Darkness", "A bonus to the elemental damage against a target of the darkness element.");
+
+    /// <summary>
+    /// Gets the elemental defense bonus against attackers of the fire element.
+    /// </summary>
+    public static AttributeDefinition ElementDefenseAgainstFire { get; } = new(new Guid("0CDDD1A2-33B4-4917-B8D2-77603073916E"), "Elemental Defense Against Fire", "A bonus to the elemental defense against an attacker of the fire element.");
+
+    /// <summary>
+    /// Gets the elemental defense bonus against attackers of the water element.
+    /// </summary>
+    public static AttributeDefinition ElementDefenseAgainstWater { get; } = new(new Guid("61D72761-5FA8-443F-B80E-9CFFF6856CA2"), "Elemental Defense Against Water", "A bonus to the elemental defense against an attacker of the water element.");
+
+    /// <summary>
+    /// Gets the elemental defense bonus against attackers of the earth element.
+    /// </summary>
+    public static AttributeDefinition ElementDefenseAgainstEarth { get; } = new(new Guid("5E172432-9BB3-4B4D-B546-62100D2A51B4"), "Elemental Defense Against Earth", "A bonus to the elemental defense against an attacker of the earth element.");
+
+    /// <summary>
+    /// Gets the elemental defense bonus against attackers of the wind element.
+    /// </summary>
+    public static AttributeDefinition ElementDefenseAgainstWind { get; } = new(new Guid("AAF824C0-BB35-4426-AE3C-38E11DB46C37"), "Elemental Defense Against Wind", "A bonus to the elemental defense against an attacker of the wind element.");
+
+    /// <summary>
+    /// Gets the elemental defense bonus against attackers of the darkness element.
+    /// </summary>
+    public static AttributeDefinition ElementDefenseAgainstDarkness { get; } = new(new Guid("980D3FA8-DD94-4ADC-A3B6-CB82FD9C87CA"), "Elemental Defense Against Darkness", "A bonus to the elemental defense against an attacker of the darkness element.");
+
+    /// <summary>
     /// Gets the level attribute definition.
     /// </summary>
     public static AttributeDefinition Level { get; } = new(new Guid("560931AD-0901-4342-B7F4-FD2E2FCC0563"), "Level", "The level of the character.");
