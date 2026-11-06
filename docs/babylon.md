@@ -78,6 +78,7 @@ Rules:
 | `pentagram_elements` | The elements: elemental damage and defense of characters and monsters, pentagrams, errtels and the elemental refinery (update "Add the elements, pentagrams and errtels", plugin "Elements (Season 21)", section "Elements, pentagrams and earrings") |
 | `earrings` | The earrings with their slots, options and links (update "Add the earrings", same section) |
 | `muun` | The Muuns of Season 21: the Muun inventory with two equipped Muuns, their options on the owner, level up, evolution, the energy converter, Monica's exchange and the mounts (update "Add the Muuns of Season 21", plugin "Muuns of Season 21", `src/GameLogic/Muuns`) |
+| `mining` | The Pandora mining: 51 spots in the safe zones of six maps, five stages, Jewels of Bless (update "Add the mining of Season 21", plugin "Mining (Season 21)", `src/GameLogic/Mining`) |
 
 ## Balance
 
@@ -184,7 +185,11 @@ Season 6 packets (golden notices for a spawn, a kill and a lost battle, blue not
   (0 waiting, 1 alive, 2 in a fight, 3 defeated), health percent of the current stage at 9, seconds left (u32 LE) at 10:
   to the spawn, to the end of the battle or to the move out of the arena (0 unknown). Sent on entering the boss map and
   on every change (spawn, stage, each tenth of health, kill, lost battle, back to waiting).
-- A2-A4 stay kept for mining and the invasion notice.
+- `C1 EE A2 MiningRequest` (client, 7): spot object id (u16 BE) at 4, action at 6 (0 mine the next stage, 1 stop and collect).
+- `C1 EE A3 MiningResult` (server, 12): spot object id (u16 BE) at 4, result at 6 (0 opened, 1 stage mined, 2 failed and the pending
+  jewels lost, 3 collected, 4 no pickaxe, 5 pickaxe worn, 6 no spot in reach, 7 another player mines it, 8 off), stage at 7,
+  jewels (u16 LE) at 8, jackpot (u16 LE) at 10. Sent when the character talks to a spot (result 0) and after each request.
+- A4 stays kept for the invasion notice.
 
 ### Muuns (range 50-5F)
 

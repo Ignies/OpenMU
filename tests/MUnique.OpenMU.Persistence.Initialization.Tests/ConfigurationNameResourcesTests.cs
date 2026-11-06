@@ -115,7 +115,7 @@ internal class ConfigurationNameResourcesTests
             var configuration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
             if (version == "Season6")
             {
-                // The names of the maps, classes, evolution quests, elites, bosses and the Muun NPC of the later seasons are used by optional updates, which a new database leaves pending.
+                // The names of the maps, classes, evolution quests, elites, bosses, the Muun NPC and the mining spots of the later seasons are used by optional updates, which a new database leaves pending.
                 await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
                 await new AddSeason21ClassesUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
                 await new AddSeason21EvolutionQuestsUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
@@ -123,6 +123,8 @@ internal class ConfigurationNameResourcesTests
                 await new AddSeason21EliteZonesUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
                 await new AddSeason21FieldBossesUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
                 await new AddSeason21MuunsUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
+                await new AddSeason21ShopsUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
+                await new AddSeason21MiningUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
             }
 
             var names = LocalizedCaption.FindAll(configuration).Select(caption => caption.Value)

@@ -528,4 +528,10 @@
   <data name="AddSeason21MuunsUpdatePlugIn_Description" xml:space="preserve">
     <value>Configures the Muun system of Season 21 (386 Muuns, their options and additional options, the energy converter, six exchange offers), adds the evolution target to the evolution stones and places Monica, the exchange NPC, in Elbeland; switches the Muun system on. A configuration with Muuns stays. Optional.</value>
   </data>
+  <data name="AddSeason21MiningUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the mining of Season 21</value>
+  </data>
+  <data name="AddSeason21MiningUpdatePlugIn_Description" xml:space="preserve">
+    <value>Adds the mining spots of Season 21 (small, medium, large) to the safe zones of Lost Tower, Tarkan, Aida, Swamp of Calmness, Raklion and Kubera Mine, sells the Pandora Pick of Bolo at its full durability and turns the mining on, with the stages of the Season 21 data.</value>
+  </data>
 </root>

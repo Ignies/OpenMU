@@ -67,6 +67,7 @@ public static class ForkInfo
         "pentagram_elements",
         "earrings",
         "muun",
+        "mining",
     ];
 
     /// <summary>

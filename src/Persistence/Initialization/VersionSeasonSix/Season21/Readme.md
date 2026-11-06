@@ -13,6 +13,8 @@ them, as optional updates of a Season 6 database:
 * `AddSeason21EconomyUpdatePlugIn` adds Priest James and the Ruud shop and switches on the gremory case, Ruud and the
   item expiry (`Season21EconomyInitializer`); `AddSeason21ShopsUpdatePlugIn` sets the NPC shops with their tabs
   (`Season21ShopsInitializer`). Both need the item catalog; see "Economy".
+* `AddSeason21MiningUpdatePlugIn` places the mining spots and turns the mining on (`Season21MiningInitializer`); it needs
+  the shops (Bolo sells the Pandora Pick). See `GameLogic/Mining/Readme.md`.
 
 They run on a new database too (`RunsOnNewDatabase`), but as they are optional,
 a new database leaves them pending. So a Season 6 server only changes when its

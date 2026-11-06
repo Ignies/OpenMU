@@ -1326,5 +1326,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21MuunsUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the mining of Season 21.
+        /// </summary>
+        public static string AddSeason21MiningUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21MiningUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds the mining spots of Season 21 (small, medium, large) to the safe zones of Lost Tower, Tarkan, Aida, Swamp of Calmness, Raklion and Kubera Mine, sells the Pandora Pick of Bolo at its full durability and turns the mining on, with the stages of the Season 21 data..
+        /// </summary>
+        public static string AddSeason21MiningUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21MiningUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

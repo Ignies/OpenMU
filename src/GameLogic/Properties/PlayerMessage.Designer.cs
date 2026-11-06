@@ -3459,5 +3459,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("MuunNeedsNewerClient", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mining needs the Babylon client..
+        /// </summary>
+        public static string MiningNeedsBabylonClient {
+            get {
+                return ResourceManager.GetString("MiningNeedsBabylonClient", resourceCulture);
+            }
+        }
     }
 }

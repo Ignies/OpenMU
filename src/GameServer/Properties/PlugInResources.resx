@@ -2999,4 +2999,16 @@
   <data name="MuunExchangeRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles an offer taken at the Muun exchange NPC (EE 59).</value>
   </data>
+  <data name="MiningBabylonPlugIn_Name" xml:space="preserve">
+    <value>Mining view (Babylon)</value>
+  </data>
+  <data name="MiningBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the mining window of a mining spot to the Babylon client: the stage reached, the pending jewels, the loss or the collect.</value>
+  </data>
+  <data name="MiningRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Mining request handler (Babylon)</value>
+  </data>
+  <data name="MiningRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the mining request of the Babylon client: mines the next stage of a spot, or stops and collects.</value>
+  </data>
 </root>

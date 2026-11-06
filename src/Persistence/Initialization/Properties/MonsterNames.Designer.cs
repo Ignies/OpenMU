@@ -4453,5 +4453,26 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("Monica", resourceCulture);
             }
         }
+
+        /// <summary>Gets MiningAreaSmall from the configuration name resources.</summary>
+        public static string MiningAreaSmall {
+            get {
+                return ResourceManager.GetString("MiningAreaSmall", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets MiningAreaMedium from the configuration name resources.</summary>
+        public static string MiningAreaMedium {
+            get {
+                return ResourceManager.GetString("MiningAreaMedium", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets MiningAreaLarge from the configuration name resources.</summary>
+        public static string MiningAreaLarge {
+            get {
+                return ResourceManager.GetString("MiningAreaLarge", resourceCulture);
+            }
+        }
     }
 }

@@ -2583,4 +2583,67 @@
   <data name="MuunConfiguration_HeroSlotHeroMuunsOnly_Name" xml:space="preserve">
     <value>Hero slot takes hero Muuns only</value>
   </data>
+  <data name="MiningFeaturePlugIn_Name" xml:space="preserve">
+    <value>Mining (Season 21)</value>
+  </data>
+  <data name="MiningFeaturePlugIn_Description" xml:space="preserve">
+    <value>The mining spots of Season 21 in the safe zones of Lost Tower, Tarkan, Aida, Swamp of Calmness, Raklion and Kubera Mine: a character with a Pandora Pick mines them stage by stage for Jewels of Bless, may stop after each stage and loses the pending jewels when a stage fails.</value>
+  </data>
+  <data name="MiningConfiguration_PickaxeGroup_Name" xml:space="preserve">
+    <value>Pickaxe item group</value>
+  </data>
+  <data name="MiningConfiguration_PickaxeNumber_Name" xml:space="preserve">
+    <value>Pickaxe item number</value>
+  </data>
+  <data name="MiningConfiguration_JewelGroup_Name" xml:space="preserve">
+    <value>Mined item group</value>
+  </data>
+  <data name="MiningConfiguration_JewelNumber_Name" xml:space="preserve">
+    <value>Mined item number</value>
+  </data>
+  <data name="MiningConfiguration_MaximumDistance_Name" xml:space="preserve">
+    <value>Maximum distance to the spot</value>
+  </data>
+  <data name="MiningConfiguration_OneMinerPerSpot_Name" xml:space="preserve">
+    <value>One miner per spot</value>
+  </data>
+  <data name="MiningConfiguration_Spots_Name" xml:space="preserve">
+    <value>Spots</value>
+  </data>
+  <data name="MiningConfiguration_Bundles_Name" xml:space="preserve">
+    <value>Packed items</value>
+  </data>
+  <data name="MiningSpotDefinition_NpcNumber_Name" xml:space="preserve">
+    <value>NPC number</value>
+  </data>
+  <data name="MiningSpotDefinition_Stages_Name" xml:space="preserve">
+    <value>Stages</value>
+  </data>
+  <data name="MiningStage_DurabilityCost_Name" xml:space="preserve">
+    <value>Pickaxe durability per attempt</value>
+  </data>
+  <data name="MiningStage_SuccessRate_Name" xml:space="preserve">
+    <value>Success rate (1/10000)</value>
+  </data>
+  <data name="MiningStage_ItemCount_Name" xml:space="preserve">
+    <value>Items when stopping after the stage</value>
+  </data>
+  <data name="MiningStage_BonusRate_Name" xml:space="preserve">
+    <value>Jackpot rate (1/10000)</value>
+  </data>
+  <data name="MiningStage_BonusCount_Name" xml:space="preserve">
+    <value>Jackpot items</value>
+  </data>
+  <data name="MiningBundle_ItemGroup_Name" xml:space="preserve">
+    <value>Item group</value>
+  </data>
+  <data name="MiningBundle_ItemNumber_Name" xml:space="preserve">
+    <value>Item number</value>
+  </data>
+  <data name="MiningBundle_ItemLevel_Name" xml:space="preserve">
+    <value>Item level</value>
+  </data>
+  <data name="MiningBundle_JewelCount_Name" xml:space="preserve">
+    <value>Jewels per item</value>
+  </data>
 </root>

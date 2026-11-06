@@ -1261,4 +1261,7 @@ Inventory Extensions: {18}</value>
   <data name="MuunNeedsNewerClient" xml:space="preserve">
     <value>The Muun exchange needs a newer game client.</value>
   </data>
+  <data name="MiningNeedsBabylonClient" xml:space="preserve">
+    <value>Mining needs the Babylon client.</value>
+  </data>
 </root>

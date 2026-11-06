@@ -7284,5 +7284,194 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("MuunConfiguration_HeroSlotHeroMuunsOnly_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mining (Season 21).
+        /// </summary>
+        public static string MiningFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("MiningFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The mining spots of Season 21 in the safe zones of Lost Tower, Tarkan, Aida, Swamp of Calmness, Raklion and Kubera Mine: a character with a Pandora Pick mines them stage by stage for Jewels of Bless, may stop after each stage and loses the pending jewels when a stage fails..
+        /// </summary>
+        public static string MiningFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("MiningFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pickaxe item group.
+        /// </summary>
+        public static string MiningConfiguration_PickaxeGroup_Name {
+            get {
+                return ResourceManager.GetString("MiningConfiguration_PickaxeGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pickaxe item number.
+        /// </summary>
+        public static string MiningConfiguration_PickaxeNumber_Name {
+            get {
+                return ResourceManager.GetString("MiningConfiguration_PickaxeNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mined item group.
+        /// </summary>
+        public static string MiningConfiguration_JewelGroup_Name {
+            get {
+                return ResourceManager.GetString("MiningConfiguration_JewelGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mined item number.
+        /// </summary>
+        public static string MiningConfiguration_JewelNumber_Name {
+            get {
+                return ResourceManager.GetString("MiningConfiguration_JewelNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum distance to the spot.
+        /// </summary>
+        public static string MiningConfiguration_MaximumDistance_Name {
+            get {
+                return ResourceManager.GetString("MiningConfiguration_MaximumDistance_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to One miner per spot.
+        /// </summary>
+        public static string MiningConfiguration_OneMinerPerSpot_Name {
+            get {
+                return ResourceManager.GetString("MiningConfiguration_OneMinerPerSpot_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spots.
+        /// </summary>
+        public static string MiningConfiguration_Spots_Name {
+            get {
+                return ResourceManager.GetString("MiningConfiguration_Spots_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Packed items.
+        /// </summary>
+        public static string MiningConfiguration_Bundles_Name {
+            get {
+                return ResourceManager.GetString("MiningConfiguration_Bundles_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NPC number.
+        /// </summary>
+        public static string MiningSpotDefinition_NpcNumber_Name {
+            get {
+                return ResourceManager.GetString("MiningSpotDefinition_NpcNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stages.
+        /// </summary>
+        public static string MiningSpotDefinition_Stages_Name {
+            get {
+                return ResourceManager.GetString("MiningSpotDefinition_Stages_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pickaxe durability per attempt.
+        /// </summary>
+        public static string MiningStage_DurabilityCost_Name {
+            get {
+                return ResourceManager.GetString("MiningStage_DurabilityCost_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success rate (1/10000).
+        /// </summary>
+        public static string MiningStage_SuccessRate_Name {
+            get {
+                return ResourceManager.GetString("MiningStage_SuccessRate_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Items when stopping after the stage.
+        /// </summary>
+        public static string MiningStage_ItemCount_Name {
+            get {
+                return ResourceManager.GetString("MiningStage_ItemCount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jackpot rate (1/10000).
+        /// </summary>
+        public static string MiningStage_BonusRate_Name {
+            get {
+                return ResourceManager.GetString("MiningStage_BonusRate_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jackpot items.
+        /// </summary>
+        public static string MiningStage_BonusCount_Name {
+            get {
+                return ResourceManager.GetString("MiningStage_BonusCount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item group.
+        /// </summary>
+        public static string MiningBundle_ItemGroup_Name {
+            get {
+                return ResourceManager.GetString("MiningBundle_ItemGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number.
+        /// </summary>
+        public static string MiningBundle_ItemNumber_Name {
+            get {
+                return ResourceManager.GetString("MiningBundle_ItemNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item level.
+        /// </summary>
+        public static string MiningBundle_ItemLevel_Name {
+            get {
+                return ResourceManager.GetString("MiningBundle_ItemLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jewels per item.
+        /// </summary>
+        public static string MiningBundle_JewelCount_Name {
+            get {
+                return ResourceManager.GetString("MiningBundle_JewelCount_Name", resourceCulture);
+            }
+        }
     }
 }

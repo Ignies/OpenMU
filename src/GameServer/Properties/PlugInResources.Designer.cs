@@ -8569,5 +8569,41 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("MuunExchangeRequestHandlerPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mining view (Babylon).
+        /// </summary>
+        public static string MiningBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MiningBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the mining window of a mining spot to the Babylon client: the stage reached, the pending jewels, the loss or the collect..
+        /// </summary>
+        public static string MiningBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MiningBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mining request handler (Babylon).
+        /// </summary>
+        public static string MiningRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MiningRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the mining request of the Babylon client: mines the next stage of a spot, or stops and collects..
+        /// </summary>
+        public static string MiningRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MiningRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }
