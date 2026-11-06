@@ -2885,4 +2885,52 @@
   <data name="FieldBossStateBabylonPlugIn_Description" xml:space="preserve">
     <value>Shows the state of a field boss of the map to the Babylon client (C1 EE A1).</value>
   </data>
+  <data name="GremoryCaseBabylonPlugIn_Name" xml:space="preserve">
+    <value>Babylon: gremory case</value>
+  </data>
+  <data name="GremoryCaseBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the gremory cases of the character and the account to the Babylon client (C2 EE 60, C1 EE 61, 63, 64).</value>
+  </data>
+  <data name="ItemExpiredBabylonPlugIn_Name" xml:space="preserve">
+    <value>Babylon: item expired</value>
+  </data>
+  <data name="ItemExpiredBabylonPlugIn_Description" xml:space="preserve">
+    <value>Tells the Babylon client which item expired (C1 EE 31).</value>
+  </data>
+  <data name="RuudBabylonPlugIn_Name" xml:space="preserve">
+    <value>Babylon: Ruud and Ruud shop</value>
+  </data>
+  <data name="RuudBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the Ruud of the character and the Ruud shop to the Babylon client (C1 EE 70, C2 EE 71, C1 EE 73).</value>
+  </data>
+  <data name="MerchantStoreTabsBabylonPlugIn_Name" xml:space="preserve">
+    <value>Babylon: merchant store tabs</value>
+  </data>
+  <data name="MerchantStoreTabsBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the tabs of the store of a merchant to the Babylon client (C1 EE 74).</value>
+  </data>
+  <data name="GremoryCaseClaimHandlerPlugIn_Name" xml:space="preserve">
+    <value>Babylon: gremory case claim handler</value>
+  </data>
+  <data name="GremoryCaseClaimHandlerPlugIn_Description" xml:space="preserve">
+    <value>Moves a reward of a gremory case into the inventory (C1 EE 62).</value>
+  </data>
+  <data name="GremoryCaseListRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Babylon: gremory case list request handler</value>
+  </data>
+  <data name="GremoryCaseListRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Sends the content of the gremory cases again (C1 EE 65).</value>
+  </data>
+  <data name="RuudShopBuyHandlerPlugIn_Name" xml:space="preserve">
+    <value>Babylon: Ruud shop purchase handler</value>
+  </data>
+  <data name="RuudShopBuyHandlerPlugIn_Description" xml:space="preserve">
+    <value>Buys an item of the Ruud shop (C1 EE 72).</value>
+  </data>
+  <data name="MerchantStoreTabSelectHandlerPlugIn_Name" xml:space="preserve">
+    <value>Babylon: merchant store tab handler</value>
+  </data>
+  <data name="MerchantStoreTabSelectHandlerPlugIn_Description" xml:space="preserve">
+    <value>Shows another tab of the store of the opened merchant (C1 EE 75).</value>
+  </data>
 </root>

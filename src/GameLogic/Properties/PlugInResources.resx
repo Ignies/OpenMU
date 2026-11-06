@@ -2085,4 +2085,148 @@
   <data name="EliteZoneConfiguration_StateFile_Name" xml:space="preserve">
     <value>State file</value>
   </data>
+  <data name="ItemExpiryPlugIn_Name" xml:space="preserve">
+    <value>Item expiry</value>
+  </data>
+  <data name="ItemExpiryPlugIn_Description" xml:space="preserve">
+    <value>Removes the expired items (timed items, rewards) from the inventory, the vault and the gremory cases of the players in the world.</value>
+  </data>
+  <data name="ItemExpiryConfiguration_Interval_Name" xml:space="preserve">
+    <value>Check interval</value>
+  </data>
+  <data name="GremoryCaseFeaturePlugIn_Name" xml:space="preserve">
+    <value>Gremory case</value>
+  </data>
+  <data name="GremoryCaseFeaturePlugIn_Description" xml:space="preserve">
+    <value>The gremory case of Season 21: the character and account storage through which rewards are delivered, claimed into the inventory before they expire. Only for clients which show it; others get their rewards as before.</value>
+  </data>
+  <data name="GremoryCaseConfiguration_CharacterCapacity_Name" xml:space="preserve">
+    <value>Capacity of the character case</value>
+  </data>
+  <data name="GremoryCaseConfiguration_AccountCapacity_Name" xml:space="preserve">
+    <value>Capacity of the account case</value>
+  </data>
+  <data name="GremoryCaseConfiguration_Duration_Name" xml:space="preserve">
+    <value>Time to claim a reward</value>
+  </data>
+  <data name="GremoryCaseConfiguration_MiniGameRewards_Name" xml:space="preserve">
+    <value>Mini game item rewards go into the case</value>
+  </data>
+  <data name="RuudFeaturePlugIn_Name" xml:space="preserve">
+    <value>Ruud</value>
+  </data>
+  <data name="RuudFeaturePlugIn_Description" xml:space="preserve">
+    <value>Ruud, the second currency of Season 21: the Ruud shop at its NPC (Priest James), the Ruud of killed monsters and of Ruud boxes.</value>
+  </data>
+  <data name="RuudConfiguration_ShopNpcNumber_Name" xml:space="preserve">
+    <value>Number of the shop NPC</value>
+  </data>
+  <data name="RuudConfiguration_MaximumRuud_Name" xml:space="preserve">
+    <value>Maximum Ruud of a character</value>
+  </data>
+  <data name="RuudConfiguration_ShopEntries_Name" xml:space="preserve">
+    <value>Shop items</value>
+  </data>
+  <data name="RuudConfiguration_MonsterRewards_Name" xml:space="preserve">
+    <value>Ruud of monsters</value>
+  </data>
+  <data name="RuudConfiguration_BoxRewards_Name" xml:space="preserve">
+    <value>Ruud of boxes</value>
+  </data>
+  <data name="RuudShopEntry_Class_Name" xml:space="preserve">
+    <value>Class (empty for every class)</value>
+  </data>
+  <data name="RuudShopEntry_Group_Name" xml:space="preserve">
+    <value>Item group</value>
+  </data>
+  <data name="RuudShopEntry_Number_Name" xml:space="preserve">
+    <value>Item number</value>
+  </data>
+  <data name="RuudShopEntry_Level_Name" xml:space="preserve">
+    <value>Item level</value>
+  </data>
+  <data name="RuudShopEntry_Count_Name" xml:space="preserve">
+    <value>Count (0 for the default durability)</value>
+  </data>
+  <data name="RuudShopEntry_LuckChance_Name" xml:space="preserve">
+    <value>Luck chance (%)</value>
+  </data>
+  <data name="RuudShopEntry_OptionChance_Name" xml:space="preserve">
+    <value>Option chance (%)</value>
+  </data>
+  <data name="RuudShopEntry_OptionLevel_Name" xml:space="preserve">
+    <value>Highest option level</value>
+  </data>
+  <data name="RuudShopEntry_Price_Name" xml:space="preserve">
+    <value>Price (Ruud)</value>
+  </data>
+  <data name="RuudMonsterReward_MonsterNumber_Name" xml:space="preserve">
+    <value>Monster number</value>
+  </data>
+  <data name="RuudMonsterReward_Minimum_Name" xml:space="preserve">
+    <value>Minimum Ruud</value>
+  </data>
+  <data name="RuudMonsterReward_Maximum_Name" xml:space="preserve">
+    <value>Maximum Ruud</value>
+  </data>
+  <data name="RuudBoxReward_Amount_Name" xml:space="preserve">
+    <value>Ruud</value>
+  </data>
+  <data name="RuudBoxConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Opens a Ruud box: the character gets the Ruud which the configuration of the Ruud plugin sets for the box.</value>
+  </data>
+  <data name="RuudBox10ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ruud box [10] consume handler</value>
+  </data>
+  <data name="RuudBox50ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ruud box [50] consume handler</value>
+  </data>
+  <data name="RuudBox100ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ruud box [100] consume handler</value>
+  </data>
+  <data name="RuudBox400ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ruud box [400] consume handler</value>
+  </data>
+  <data name="RuudBox500ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ruud box [500] consume handler</value>
+  </data>
+  <data name="RuudBox1000ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ruud box [1,000] consume handler</value>
+  </data>
+  <data name="RuudBox1500ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ruud box [1,500] consume handler</value>
+  </data>
+  <data name="RuudBox2000ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ruud box [2,000] consume handler</value>
+  </data>
+  <data name="RuudBox3000ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ruud box [3,000] consume handler</value>
+  </data>
+  <data name="RuudBox10000ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ruud box [10,000] consume handler</value>
+  </data>
+  <data name="SetRuudChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chat command: /setruud</value>
+  </data>
+  <data name="SetRuudChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Sets the Ruud of a character: /setruud &lt;character&gt; &lt;amount&gt;.</value>
+  </data>
+  <data name="GremoryGiftChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chat command: /gremgif</value>
+  </data>
+  <data name="GremoryGiftChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Puts an item into a gremory case: /gremgif &lt;character&gt; &lt;case: 1 account, 2 character&gt; &lt;group&gt; &lt;number&gt; [level].</value>
+  </data>
+  <data name="ZenSinksFeaturePlugIn_Name" xml:space="preserve">
+    <value>Zen sinks of Season 21</value>
+  </data>
+  <data name="ZenSinksFeaturePlugIn_Description" xml:space="preserve">
+    <value>Against the zen inflation of the later maps: a tax on the zen sales of personal stores and less money from monsters, with the numbers of Season 21 as defaults.</value>
+  </data>
+  <data name="ZenSinksConfiguration_PersonalStoreTaxPercent_Name" xml:space="preserve">
+    <value>Personal store tax (%)</value>
+  </data>
+  <data name="ZenSinksConfiguration_MoneyDropPercent_Name" xml:space="preserve">
+    <value>Money drop of monsters (%)</value>
+  </data>
 </root>

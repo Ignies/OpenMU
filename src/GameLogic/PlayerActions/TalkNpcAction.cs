@@ -9,6 +9,7 @@ using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Economy;
 using MUnique.OpenMU.GameLogic.Views.Guild;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.GameLogic.Views.Quest;
@@ -50,11 +51,16 @@ public class TalkNpcAction
         }
 
         player.OpenedNpc = npc;
+        player.MerchantTab = 0;
         if (npcStats.MerchantStore != null && npcStats.MerchantStore.Items.Count > 0)
         {
             await Task.Delay(500).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IOpenNpcWindowPlugIn>(p => p.OpenNpcWindowAsync(npcStats.NpcWindow != NpcWindow.Undefined ? npcStats.NpcWindow : NpcWindow.Merchant)).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(p => p.ShowMerchantStoreItemListAsync(npcStats.MerchantStore.GetOfferedItems(), StoreKind.Normal)).ConfigureAwait(false);
+            if (npcStats.GetStoreTabCount() is var tabCount and > 1)
+            {
+                await player.InvokeViewPlugInAsync<IMerchantStoreTabsPlugIn>(p => p.ShowMerchantStoreTabsAsync(tabCount, 0)).ConfigureAwait(false);
+            }
         }
         else
         {

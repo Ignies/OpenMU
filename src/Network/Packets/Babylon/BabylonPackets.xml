@@ -169,6 +169,78 @@
         </Field>
       </Fields>
     </Structure>
+    <Structure>
+      <Name>GremoryCaseItem</Name>
+      <Description>A reward in a gremory case.</Description>
+      <Length>37</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+          <Description>The slot of the reward in the case, which a claim refers to.</Description>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ExpiresAt</Name>
+          <Description>The point in time at which the reward expires, in seconds since 1970-01-01 UTC.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+          <Description>The item in the W32 item format.</Description>
+          <Length>32</Length>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
+      <Name>RuudShopItem</Name>
+      <Description>An item of the Ruud shop.</Description>
+      <Length>12</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Index</Name>
+          <Description>The index of the item in the shop, which a purchase refers to.</Description>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>Byte</Type>
+          <Name>ItemGroup</Name>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ItemNumber</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ItemLevel</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+          <Description>The count (durability) of the item; 0 for the durability of its definition.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Flags</Name>
+          <Description>Bit 0: the item may get luck; bit 1: the item may get the additional option.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Price</Name>
+          <Description>The price in Ruud.</Description>
+        </Field>
+      </Fields>
+    </Structure>
   </Structures>
   <Packets>
     <Packet>
@@ -691,6 +763,330 @@
           <Type>IntegerLittleEndian</Type>
           <Name>SecondsLeft</Name>
           <Description>The seconds to the spawn (waiting), to the end of the battle (in a fight) or to the move out of the arena (defeated); 0 when unknown.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>31</SubCode>
+      <Name>ItemExpired</Name>
+      <Length>9</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>An item of the character or its account expired and was removed (fork worlds with item expiry).</SentWhen>
+      <CausedReaction>The client tells the player which item expired. The removal itself is sent as usual (item removed, gremory case expired).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Storage</Name>
+          <Description>0 inventory, 1 vault, 2 gremory case of the character, 3 gremory case of the account.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+          <Description>The slot of the item in its storage.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>ItemGroup</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ItemNumber</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>60</SubCode>
+      <Name>GremoryCaseList</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the character enters a map, and on request, for each of the two cases.</SentWhen>
+      <CausedReaction>The client shows the rewards of the case.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Kind</Name>
+          <Description>0 the case of the character, 1 the case of the account.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Capacity</Name>
+          <Description>The number of rewards the case holds.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>ItemCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>GremoryCaseItem</TypeName>
+          <Name>Items</Name>
+          <ItemCountField>ItemCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>61</SubCode>
+      <Name>GremoryCaseItemAdded</Name>
+      <Length>42</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A reward was put into a gremory case of the character or its account.</SentWhen>
+      <CausedReaction>The client adds the reward to the case and tells the player about it.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Kind</Name>
+          <Description>0 the case of the character, 1 the case of the account.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ExpiresAt</Name>
+          <Description>The point in time at which the reward expires, in seconds since 1970-01-01 UTC.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Binary</Type>
+          <Name>ItemData</Name>
+          <Description>The item in the W32 item format.</Description>
+          <Length>32</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>62</SubCode>
+      <Name>GremoryCaseClaim</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to take a reward of a gremory case into the inventory.</SentWhen>
+      <CausedReaction>The server moves the reward into the inventory and answers with GremoryCaseClaimResponse.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Kind</Name>
+          <Description>0 the case of the character, 1 the case of the account.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>63</SubCode>
+      <Name>GremoryCaseClaimResponse</Name>
+      <Length>7</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a claim of a reward of a gremory case.</SentWhen>
+      <CausedReaction>On success, the client removes the reward from the case; the item appears in the inventory by the usual packet.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Kind</Name>
+          <Description>0 the case of the character, 1 the case of the account.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 claimed, 1 inventory full, 2 no such reward, 3 expired, 4 the case is off.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>64</SubCode>
+      <Name>GremoryCaseItemExpired</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A reward of a gremory case expired before it was claimed.</SentWhen>
+      <CausedReaction>The client removes the reward from the case.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Kind</Name>
+          <Description>0 the case of the character, 1 the case of the account.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>65</SubCode>
+      <Name>GremoryCaseListRequest</Name>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client wants the content of the gremory cases again, e.g. when the player opens the window.</SentWhen>
+      <CausedReaction>The server sends GremoryCaseList for both cases.</CausedReaction>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>70</SubCode>
+      <Name>RuudChanged</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the character enters a map, when the Ruud shop opens, and when the Ruud of the character changed.</SentWhen>
+      <CausedReaction>The client shows the Ruud of the character.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Ruud</Name>
+          <Description>The Ruud of the character.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Change</Name>
+          <Description>The change which led to it, signed (two's complement); 0 when it is just shown.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>71</SubCode>
+      <Name>RuudShopList</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player talked to the NPC of the Ruud shop (Priest James).</SentWhen>
+      <CausedReaction>The client opens the Ruud shop with the items which the class of the character may buy.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ItemCount</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Structure[]</Type>
+          <TypeName>RuudShopItem</TypeName>
+          <Name>Items</Name>
+          <ItemCountField>ItemCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>72</SubCode>
+      <Name>RuudShopBuy</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to buy an item of the Ruud shop.</SentWhen>
+      <CausedReaction>The server answers with RuudShopBuyResponse.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Index</Name>
+          <Description>The index of the item, as in RuudShopList.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>73</SubCode>
+      <Name>RuudShopBuyResponse</Name>
+      <Length>11</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a purchase in the Ruud shop.</SentWhen>
+      <CausedReaction>The client shows the result; the item appears in the inventory by the usual packet.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 bought, 1 not enough Ruud, 2 inventory full, 3 no such item for the class, 4 the shop is closed.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Index</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Ruud</Name>
+          <Description>The Ruud of the character after the purchase.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>74</SubCode>
+      <Name>MerchantStoreTabs</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the item list of a merchant whose store has more than one tab, and before the item list of another tab.</SentWhen>
+      <CausedReaction>The client shows the tabs; the next store item list (C2 31) holds the items of the active tab.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>TabCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ActiveTab</Name>
+          <Description>The tab whose items the next store item list holds; 0 is the first.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>75</SubCode>
+      <Name>MerchantStoreTabSelect</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player selected another tab of the store of the opened merchant.</SentWhen>
+      <CausedReaction>The server answers with MerchantStoreTabs and the store item list of the tab; purchases then refer to its items.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Tab</Name>
         </Field>
       </Fields>
     </Packet>

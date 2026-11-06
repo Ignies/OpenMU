@@ -225,6 +225,11 @@ public class Character
     public bool IsStoreOpened { get; set; }
 
     /// <summary>
+    /// Gets or sets the amount of Ruud, the second currency of the later seasons.
+    /// </summary>
+    public int Ruud { get; set; }
+
+    /// <summary>
     /// Gets or sets the stat attributes.
     /// </summary>
     /// <remarks>
@@ -251,6 +256,12 @@ public class Character
     /// </summary>
     [MemberOfAggregate]
     public virtual ItemStorage? Inventory { get; set; }
+
+    /// <summary>
+    /// Gets or sets the gremory case of the character: the rewards which wait to be claimed by it.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ItemStorage? GremoryCase { get; set; }
 
     /// <summary>
     /// Gets or sets the drop item groups.

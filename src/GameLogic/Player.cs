@@ -351,6 +351,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     /// </summary>
     public NonPlayerCharacter? OpenedNpc { get; set; }
 
+    /// <summary>
+    /// Gets or sets the tab of the store of the <see cref="OpenedNpc"/> which the player looks at; 0 is the first.
+    /// </summary>
+    public byte MerchantTab { get; set; }
+
     /// <inheritdoc/>
     public StateMachine PlayerState { get; } = new(GameLogic.PlayerState.Initial);
 

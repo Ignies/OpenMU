@@ -26,4 +26,22 @@ public static class MerchantStoreExtensions
 
         return merchantStore.Items.Where(item => item.Definition?.IsActive is not false).ToList();
     }
+
+    /// <summary>
+    /// Gets the items of a tab of the store of a merchant. The tab 0 is the <see cref="MonsterDefinition.MerchantStore"/>,
+    /// the further ones are its <see cref="MonsterDefinition.MerchantStoreTabs"/>.
+    /// </summary>
+    /// <param name="merchant">The definition of the merchant.</param>
+    /// <param name="tab">The index of the tab.</param>
+    /// <returns>The items of the tab, or <c>null</c> if the merchant has no such tab.</returns>
+    public static ItemStorage? GetStoreTab(this MonsterDefinition merchant, byte tab)
+        => tab == 0 ? merchant.MerchantStore : merchant.MerchantStoreTabs?.FirstOrDefault(t => t.Index == tab)?.Items;
+
+    /// <summary>
+    /// Gets the number of tabs of the store of a merchant: one more than the highest index of a tab with items, at least 1.
+    /// </summary>
+    /// <param name="merchant">The definition of the merchant.</param>
+    /// <returns>The number of tabs.</returns>
+    public static byte GetStoreTabCount(this MonsterDefinition merchant)
+        => (byte)(merchant.MerchantStoreTabs?.Where(t => t.Items?.Items.Count > 0).Select(t => t.Index + 1).DefaultIfEmpty(1).Max() ?? 1);
 }

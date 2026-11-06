@@ -66,6 +66,12 @@ Rules:
 | `mastery` | The mastery options and mastery bonus options of the 890 mastery items (update "Add the mastery options") |
 | `wing_grades` | The grade options of the fourth and fifth wings (update "Add the grade options of the fourth and fifth wings") |
 | `sockets_10` | The sphere levels 6 to 10 and the seed sphere enhancement (update "Add the sphere levels 6 to 10") |
+| `item_expiry` | Timed items: `Item.ExpiresAt`, removed by the plugin "Item expiry" from the inventory, vault and gremory cases (`src/GameLogic/ItemExpiry`) |
+| `gremory` | The gremory case of Season 21: the character and account reward storage, claimed into the inventory within 7 days; mini game item rewards and `/gremgif` go into it (plugin "Gremory case", `src/GameLogic/GremoryCase`) |
+| `ruud` | Ruud (`Character.Ruud`), the Ruud shop of Priest James with the 200 rows of Season 21, the Ruud of 64 monsters and 10 Ruud boxes, `/setruud` (update "Add the gremory case, Ruud and the Ruud shop of Season 21", plugin "Ruud", `src/GameLogic/Ruud`) |
+| `npc_shop_tabs` | Merchant stores with up to five tabs (`MonsterDefinition.MerchantStoreTabs`; the tab 0 is the Season 6 store) |
+| `s21_shops` | The 29 NPC shops of Season 21 with their tabs, 1772 rows (update "Set the shops of Season 21") |
+| `zen_sinks` | The zen sinks of Season 21: 1 % tax on the zen sales of personal stores, monsters drop 50 % of the money (plugin "Zen sinks of Season 21") |
 
 ## Balance
 
@@ -173,6 +179,36 @@ Season 6 packets (golden notices for a spawn, a kill and a lost battle, blue not
   to the spawn, to the end of the battle or to the move out of the arena (0 unknown). Sent on entering the boss map and
   on every change (spawn, stage, each tenth of health, kill, lost battle, back to waiting).
 - A2-A4 stay kept for mining and the invasion notice.
+
+### Economy (ranges 30-3F, 60-7F)
+
+The gremory case, Ruud, the merchant store tabs and the item expiry (`src/GameLogic/GremoryCase`, `Ruud`, `ItemExpiry`,
+`ZenSinks`). A Season 6 client gets none of these packets: its rewards keep their Season 6 way (inventory or ground), Ruud
+reaches it as a message, and a merchant shows it the first tab only, which is the Season 6 store (test
+`EconomyPacketsTest.OnlyTheBabylonClientGetsTheEconomyViews`). Item data is 32 bytes in the connection's item format (W32);
+W32 carries the expiry at bytes 28-31 and flag bit 7.
+
+- `C1 EE 31 ItemExpired` (server, 9): storage at 4 (0 inventory, 1 vault, 2 character case, 3 account case), slot at 5, item
+  group at 6, item number (u16 LE) at 7. The removal itself follows the usual packet (item removed, case item expired).
+- `C2 EE 60 GremoryCaseList` (server): kind at 5 (0 character, 1 account), capacity at 6, count at 7, then per reward 37 bytes:
+  slot (u8), expiry (u32 LE, Unix seconds UTC), item data (32). Sent for both cases when the character enters a map and on
+  `C1 EE 65 GremoryCaseListRequest` (client, 4).
+- `C1 EE 61 GremoryCaseItemAdded` (server, 42): kind at 4, slot at 5, expiry (u32 LE) at 6, item data at 10.
+- `C1 EE 62 GremoryCaseClaim` (client, 6): kind at 4, slot at 5. Answered by `C1 EE 63 GremoryCaseClaimResponse` (server, 7):
+  kind at 4, slot at 5, result at 6 (0 claimed, 1 inventory full, 2 no such reward, 3 expired, 4 off). A claimed item appears
+  in the inventory by the Season 6 packet and doesn't expire anymore.
+- `C1 EE 64 GremoryCaseItemExpired` (server, 6): kind at 4, slot at 5.
+- `C1 EE 70 RuudChanged` (server, 12): Ruud (u32 LE) at 4, change (i32 LE) at 8, 0 when it's just shown. Sent on map entry,
+  when the Ruud shop opens and on every change.
+- `C2 EE 71 RuudShopList` (server): count at 5, then per item 12 bytes: index (u16 LE, the purchase refers to it), group,
+  number (u16 LE), level, count (0 the default durability), flags (bit 0 may get luck, bit 1 may get the option), price in
+  Ruud (u32 LE). Sent when the character talks to the Ruud NPC (Priest James, 725), with the items of its class.
+- `C1 EE 72 RuudShopBuy` (client, 6): index (u16 LE) at 4. Answered by `C1 EE 73 RuudShopBuyResponse` (server, 11): result
+  at 4 (0 bought, 1 not enough Ruud, 2 inventory full, 3 no such item for the class, 4 shop closed), index at 5, Ruud at 7.
+- `C1 EE 74 MerchantStoreTabs` (server, 6): tab count at 4, active tab at 5. Sent after the store item list of a merchant
+  with more than one tab, and before the store item list (Season 6 `C2 31`) of a selected tab.
+- `C1 EE 75 MerchantStoreTabSelect` (client, 5): tab at 4. The server answers with EE 74 and the store item list of the tab;
+  purchases (Season 6 `C1 32`) then refer to the slots of that tab (OpenMU issue 653: the tab 0 is the Season 6 store).
 
 ### W32
 

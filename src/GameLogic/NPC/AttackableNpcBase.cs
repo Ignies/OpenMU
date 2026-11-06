@@ -11,6 +11,7 @@ using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.GameLogic.ZenSinks;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
@@ -468,7 +469,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
         var (generatedItems, droppedMoney) = await this._dropGenerator.GenerateItemDropsAsync(this.Definition, exp, killer).ConfigureAwait(false);
         if (droppedMoney > 0)
         {
-            await this.HandleMoneyDropAsync(droppedMoney.Value, killer, experienceShares).ConfigureAwait(false);
+            await this.HandleMoneyDropAsync(ZenSinksFeaturePlugIn.ScaleMoneyDrop(killer.GameContext, droppedMoney.Value), killer, experienceShares).ConfigureAwait(false);
         }
 
         var firstItem = !droppedMoney.HasValue;

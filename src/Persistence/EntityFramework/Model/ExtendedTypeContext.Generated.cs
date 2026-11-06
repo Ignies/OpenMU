@@ -87,6 +87,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MagicEffectDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MasterSkillDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MasterSkillRoot>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MerchantStoreTab>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MiniGameChangeEvent>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MiniGameDefinition>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Configuration.MiniGameReward>();
@@ -142,6 +143,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
 
         // All members which are marked with the MemberOfAggregateAttribute, should be defined with ON DELETE CASCADE.
         modelBuilder.Entity<Account>().HasOne(entity => entity.RawVault).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Account>().HasOne(entity => entity.RawGremoryCase).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Account>().HasMany(entity => entity.RawCharacters).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Account>().HasMany(entity => entity.RawAttributes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Account>().HasMany(entity => entity.RawAttributeGrants).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -152,6 +154,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<Character>().HasMany(entity => entity.RawLetters).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Character>().HasMany(entity => entity.RawLearnedSkills).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Character>().HasOne(entity => entity.RawInventory).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Character>().HasOne(entity => entity.RawGremoryCase).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Character>().HasMany(entity => entity.RawQuestStates).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CharacterQuestState>().HasMany(entity => entity.RawRequirementStates).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Item>().HasMany(entity => entity.RawItemOptions).WithOne().OnDelete(DeleteBehavior.Cascade);
@@ -222,12 +225,14 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<MagicEffectDefinition>().HasMany(entity => entity.RawPowerUpDefinitions).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MagicEffectDefinition>().HasMany(entity => entity.RawPowerUpDefinitionsPvp).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MasterSkillDefinition>().HasMany(entity => entity.RawPassivePowerUps).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<MerchantStoreTab>().HasOne(entity => entity.RawItems).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MiniGameChangeEvent>().HasOne(entity => entity.RawSpawnArea).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MiniGameChangeEvent>().HasMany(entity => entity.RawTerrainChanges).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MiniGameDefinition>().HasMany(entity => entity.RawRewards).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MiniGameDefinition>().HasMany(entity => entity.RawSpawnWaves).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MiniGameDefinition>().HasMany(entity => entity.RawChangeEvents).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MonsterDefinition>().HasOne(entity => entity.RawMerchantStore).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.RawMerchantStoreTabs).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.RawItemCraftings).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.RawAttributes).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<MonsterDefinition>().HasMany(entity => entity.RawQuests).WithOne().OnDelete(DeleteBehavior.Cascade);

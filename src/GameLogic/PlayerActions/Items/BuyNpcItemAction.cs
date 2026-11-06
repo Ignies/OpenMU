@@ -38,14 +38,14 @@ public class BuyNpcItemAction
             return;
         }
 
-        var npcDefinition = player.OpenedNpc.Definition;
-        if (npcDefinition?.MerchantStore is null || npcDefinition.MerchantStore.Items.Count == 0)
+        var store = player.OpenedNpc.Definition?.GetStoreTab(player.MerchantTab);
+        if (store is null || store.Items.Count == 0)
         {
             await player.InvokeViewPlugInAsync<IBuyNpcItemFailedPlugIn>(p => p.BuyNpcItemFailedAsync()).ConfigureAwait(false);
             return;
         }
 
-        var storeItem = npcDefinition.MerchantStore.Items.FirstOrDefault(i => i.ItemSlot == slot);
+        var storeItem = store.Items.FirstOrDefault(i => i.ItemSlot == slot);
         if (storeItem is null || storeItem.Definition is { IsActive: false } || !player.CanSee(storeItem))
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemUnknown)).ConfigureAwait(false);

@@ -82,6 +82,12 @@ public partial class Item
     public int PetExperience { get; set; }
 
     /// <summary>
+    /// Gets or sets the point in time (UTC) at which the item expires and is removed, e.g. a timed reward.
+    /// It's <c>null</c> for an item which doesn't expire.
+    /// </summary>
+    public DateTime? ExpiresAt { get; set; }
+
+    /// <summary>
     /// Assigns the values of another item to this item.
     /// </summary>
     /// <param name="otherItem">The other item.</param>

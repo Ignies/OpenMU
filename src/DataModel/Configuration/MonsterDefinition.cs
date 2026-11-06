@@ -340,6 +340,13 @@ public partial class MonsterDefinition
     public virtual ItemStorage? MerchantStore { get; set; }
 
     /// <summary>
+    /// Gets or sets the further tabs of the merchant store. The <see cref="MerchantStore"/> is the first tab (0),
+    /// which is the only one a client before Season 21 shows.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ICollection<MerchantStoreTab> MerchantStoreTabs { get; protected set; } = null!;
+
+    /// <summary>
     /// Gets or sets the item craftings. Is only relevant for crafting NPCs (chaos goblin etc.).
     /// </summary>
     [MemberOfAggregate]

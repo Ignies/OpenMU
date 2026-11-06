@@ -377,7 +377,7 @@ public class MapInitializer : IMapInitializer
                 await o.ForEachObservingAsync<Player>(
                     async player =>
                     {
-                        if (player.OpenedNpc == o)
+                        if (player.OpenedNpc == o && player.MerchantTab == 0)
                         {
                             await player.InvokeViewPlugInAsync<IShowMerchantStoreItemListPlugIn>(
                                     plugin => plugin.ShowMerchantStoreItemListAsync(itemStorage.GetOfferedItems(), StoreKind.Normal))

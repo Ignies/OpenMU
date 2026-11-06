@@ -26,7 +26,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition),
                 baseEntityType,
                 propertyCount: 19,
-                navigationCount: 7,
+                navigationCount: 8,
                 foreignKeyCount: 3,
                 unnamedIndexCount: 3,
                 keyCount: 1);

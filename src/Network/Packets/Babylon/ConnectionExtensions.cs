@@ -386,4 +386,337 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ItemExpired" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="storage">0 inventory, 1 vault, 2 gremory case of the character, 3 gremory case of the account.</param>
+    /// <param name="slot">The slot of the item in its storage.</param>
+    /// <param name="itemGroup">The item group.</param>
+    /// <param name="itemNumber">The item number.</param>
+    /// <remarks>
+    /// Is sent by the server when: An item of the character or its account expired and was removed (fork worlds with item expiry).
+    /// Causes reaction on client side: The client tells the player which item expired. The removal itself is sent as usual (item removed, gremory case expired).
+    /// </remarks>
+    public static async ValueTask SendItemExpiredAsync(this IConnection? connection, byte @storage, byte @slot, byte @itemGroup, ushort @itemNumber)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ItemExpiredRef.Length;
+            var packet = new ItemExpiredRef(connection.Output.GetSpan(length)[..length]);
+            packet.Storage = @storage;
+            packet.Slot = @slot;
+            packet.ItemGroup = @itemGroup;
+            packet.ItemNumber = @itemNumber;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GremoryCaseItemAdded" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="kind">0 the case of the character, 1 the case of the account.</param>
+    /// <param name="slot">The slot.</param>
+    /// <param name="expiresAt">The point in time at which the reward expires, in seconds since 1970-01-01 UTC.</param>
+    /// <param name="itemData">The item in the W32 item format.</param>
+    /// <remarks>
+    /// Is sent by the server when: A reward was put into a gremory case of the character or its account.
+    /// Causes reaction on client side: The client adds the reward to the case and tells the player about it.
+    /// </remarks>
+    public static async ValueTask SendGremoryCaseItemAddedAsync(this IConnection? connection, byte @kind, byte @slot, uint @expiresAt, Memory<byte> @itemData)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GremoryCaseItemAddedRef.Length;
+            var packet = new GremoryCaseItemAddedRef(connection.Output.GetSpan(length)[..length]);
+            packet.Kind = @kind;
+            packet.Slot = @slot;
+            packet.ExpiresAt = @expiresAt;
+            @itemData.Span.CopyTo(packet.ItemData);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GremoryCaseClaim" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="kind">0 the case of the character, 1 the case of the account.</param>
+    /// <param name="slot">The slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to take a reward of a gremory case into the inventory.
+    /// Causes reaction on server side: The server moves the reward into the inventory and answers with GremoryCaseClaimResponse.
+    /// </remarks>
+    public static async ValueTask SendGremoryCaseClaimAsync(this IConnection? connection, byte @kind, byte @slot)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GremoryCaseClaimRef.Length;
+            var packet = new GremoryCaseClaimRef(connection.Output.GetSpan(length)[..length]);
+            packet.Kind = @kind;
+            packet.Slot = @slot;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GremoryCaseClaimResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="kind">0 the case of the character, 1 the case of the account.</param>
+    /// <param name="slot">The slot.</param>
+    /// <param name="result">0 claimed, 1 inventory full, 2 no such reward, 3 expired, 4 the case is off.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a claim of a reward of a gremory case.
+    /// Causes reaction on client side: On success, the client removes the reward from the case; the item appears in the inventory by the usual packet.
+    /// </remarks>
+    public static async ValueTask SendGremoryCaseClaimResponseAsync(this IConnection? connection, byte @kind, byte @slot, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GremoryCaseClaimResponseRef.Length;
+            var packet = new GremoryCaseClaimResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Kind = @kind;
+            packet.Slot = @slot;
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GremoryCaseItemExpired" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="kind">0 the case of the character, 1 the case of the account.</param>
+    /// <param name="slot">The slot.</param>
+    /// <remarks>
+    /// Is sent by the server when: A reward of a gremory case expired before it was claimed.
+    /// Causes reaction on client side: The client removes the reward from the case.
+    /// </remarks>
+    public static async ValueTask SendGremoryCaseItemExpiredAsync(this IConnection? connection, byte @kind, byte @slot)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GremoryCaseItemExpiredRef.Length;
+            var packet = new GremoryCaseItemExpiredRef(connection.Output.GetSpan(length)[..length]);
+            packet.Kind = @kind;
+            packet.Slot = @slot;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="GremoryCaseListRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client wants the content of the gremory cases again, e.g. when the player opens the window.
+    /// Causes reaction on server side: The server sends GremoryCaseList for both cases.
+    /// </remarks>
+    public static async ValueTask SendGremoryCaseListRequestAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GremoryCaseListRequestRef.Length;
+            var packet = new GremoryCaseListRequestRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RuudChanged" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="ruud">The Ruud of the character.</param>
+    /// <param name="change">The change which led to it, signed (two's complement); 0 when it is just shown.</param>
+    /// <remarks>
+    /// Is sent by the server when: When the character enters a map, when the Ruud shop opens, and when the Ruud of the character changed.
+    /// Causes reaction on client side: The client shows the Ruud of the character.
+    /// </remarks>
+    public static async ValueTask SendRuudChangedAsync(this IConnection? connection, uint @ruud, uint @change)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RuudChangedRef.Length;
+            var packet = new RuudChangedRef(connection.Output.GetSpan(length)[..length]);
+            packet.Ruud = @ruud;
+            packet.Change = @change;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RuudShopBuy" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="index">The index of the item, as in RuudShopList.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to buy an item of the Ruud shop.
+    /// Causes reaction on server side: The server answers with RuudShopBuyResponse.
+    /// </remarks>
+    public static async ValueTask SendRuudShopBuyAsync(this IConnection? connection, ushort @index)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RuudShopBuyRef.Length;
+            var packet = new RuudShopBuyRef(connection.Output.GetSpan(length)[..length]);
+            packet.Index = @index;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RuudShopBuyResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">0 bought, 1 not enough Ruud, 2 inventory full, 3 no such item for the class, 4 the shop is closed.</param>
+    /// <param name="index">The index.</param>
+    /// <param name="ruud">The Ruud of the character after the purchase.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a purchase in the Ruud shop.
+    /// Causes reaction on client side: The client shows the result; the item appears in the inventory by the usual packet.
+    /// </remarks>
+    public static async ValueTask SendRuudShopBuyResponseAsync(this IConnection? connection, byte @result, ushort @index, uint @ruud)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RuudShopBuyResponseRef.Length;
+            var packet = new RuudShopBuyResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.Index = @index;
+            packet.Ruud = @ruud;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MerchantStoreTabs" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="tabCount">The tab count.</param>
+    /// <param name="activeTab">The tab whose items the next store item list holds; 0 is the first.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the item list of a merchant whose store has more than one tab, and before the item list of another tab.
+    /// Causes reaction on client side: The client shows the tabs; the next store item list (C2 31) holds the items of the active tab.
+    /// </remarks>
+    public static async ValueTask SendMerchantStoreTabsAsync(this IConnection? connection, byte @tabCount, byte @activeTab)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MerchantStoreTabsRef.Length;
+            var packet = new MerchantStoreTabsRef(connection.Output.GetSpan(length)[..length]);
+            packet.TabCount = @tabCount;
+            packet.ActiveTab = @activeTab;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MerchantStoreTabSelect" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="tab">The tab.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player selected another tab of the store of the opened merchant.
+    /// Causes reaction on server side: The server answers with MerchantStoreTabs and the store item list of the tab; purchases then refer to its items.
+    /// </remarks>
+    public static async ValueTask SendMerchantStoreTabSelectAsync(this IConnection? connection, byte @tab)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MerchantStoreTabSelectRef.Length;
+            var packet = new MerchantStoreTabSelectRef(connection.Output.GetSpan(length)[..length]);
+            packet.Tab = @tab;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

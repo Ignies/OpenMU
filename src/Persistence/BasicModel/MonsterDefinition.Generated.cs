@@ -26,6 +26,27 @@ public partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuration.
     public Guid Id { get; set; }
     
     /// <summary>
+    /// Gets the raw collection of <see cref="MerchantStoreTabs" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("merchantStoreTabs")]
+    public ICollection<MerchantStoreTab> RawMerchantStoreTabs { get; } = new List<MerchantStoreTab>();
+    
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.MerchantStoreTab> MerchantStoreTabs
+    {
+        get => base.MerchantStoreTabs ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MerchantStoreTab, MerchantStoreTab>(this.RawMerchantStoreTabs);
+        protected set
+        {
+            this.MerchantStoreTabs.Clear();
+            foreach (var item in value)
+            {
+                this.MerchantStoreTabs.Add(item);
+            }
+        }
+    }
+
+    /// <summary>
     /// Gets the raw collection of <see cref="ItemCraftings" />.
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("itemCraftings")]

@@ -34,6 +34,15 @@ internal partial class MonsterDefinition : MUnique.OpenMU.DataModel.Configuratio
     public Guid Id { get; set; }
     
     /// <summary>
+    /// Gets the raw collection of <see cref="MerchantStoreTabs" />.
+    /// </summary>
+    public ICollection<MerchantStoreTab> RawMerchantStoreTabs { get; } = new EntityFramework.List<MerchantStoreTab>();
+    
+    /// <inheritdoc/>
+    [NotMapped]
+    public override ICollection<MUnique.OpenMU.DataModel.Configuration.MerchantStoreTab> MerchantStoreTabs => base.MerchantStoreTabs ??= new CollectionAdapter<MUnique.OpenMU.DataModel.Configuration.MerchantStoreTab, MerchantStoreTab>(this.RawMerchantStoreTabs);
+
+    /// <summary>
     /// Gets the raw collection of <see cref="ItemCraftings" />.
     /// </summary>
     public ICollection<ItemCrafting> RawItemCraftings { get; } = new EntityFramework.List<ItemCrafting>();

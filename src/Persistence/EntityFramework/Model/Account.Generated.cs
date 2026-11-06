@@ -86,6 +86,32 @@ internal partial class Account : MUnique.OpenMU.DataModel.Entities.Account, IIde
         }
     }
 
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="GremoryCase"/>.
+    /// </summary>
+    public Guid? GremoryCaseId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="GremoryCase" />.
+    /// </summary>
+    [ForeignKey(nameof(GremoryCaseId))]
+    public ItemStorage RawGremoryCase
+    {
+        get => base.GremoryCase as ItemStorage;
+        set => base.GremoryCase = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Entities.ItemStorage GremoryCase
+    {
+        get => base.GremoryCase;set
+        {
+            base.GremoryCase = value;
+            this.GremoryCaseId = this.RawGremoryCase?.Id;
+        }
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

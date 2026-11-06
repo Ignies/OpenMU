@@ -5790,5 +5790,437 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("EliteZoneConfiguration_StateFile_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item expiry.
+        /// </summary>
+        public static string ItemExpiryPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ItemExpiryPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Removes the expired items (timed items, rewards) from the inventory, the vault and the gremory cases of the players in the world..
+        /// </summary>
+        public static string ItemExpiryPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ItemExpiryPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Check interval.
+        /// </summary>
+        public static string ItemExpiryConfiguration_Interval_Name {
+            get {
+                return ResourceManager.GetString("ItemExpiryConfiguration_Interval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gremory case.
+        /// </summary>
+        public static string GremoryCaseFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("GremoryCaseFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The gremory case of Season 21: the character and account storage through which rewards are delivered, claimed into the inventory before they expire. Only for clients which show it; others get their rewards as before..
+        /// </summary>
+        public static string GremoryCaseFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("GremoryCaseFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Capacity of the character case.
+        /// </summary>
+        public static string GremoryCaseConfiguration_CharacterCapacity_Name {
+            get {
+                return ResourceManager.GetString("GremoryCaseConfiguration_CharacterCapacity_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Capacity of the account case.
+        /// </summary>
+        public static string GremoryCaseConfiguration_AccountCapacity_Name {
+            get {
+                return ResourceManager.GetString("GremoryCaseConfiguration_AccountCapacity_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time to claim a reward.
+        /// </summary>
+        public static string GremoryCaseConfiguration_Duration_Name {
+            get {
+                return ResourceManager.GetString("GremoryCaseConfiguration_Duration_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mini game item rewards go into the case.
+        /// </summary>
+        public static string GremoryCaseConfiguration_MiniGameRewards_Name {
+            get {
+                return ResourceManager.GetString("GremoryCaseConfiguration_MiniGameRewards_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud.
+        /// </summary>
+        public static string RuudFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("RuudFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud, the second currency of Season 21: the Ruud shop at its NPC (Priest James), the Ruud of killed monsters and of Ruud boxes..
+        /// </summary>
+        public static string RuudFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("RuudFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of the shop NPC.
+        /// </summary>
+        public static string RuudConfiguration_ShopNpcNumber_Name {
+            get {
+                return ResourceManager.GetString("RuudConfiguration_ShopNpcNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum Ruud of a character.
+        /// </summary>
+        public static string RuudConfiguration_MaximumRuud_Name {
+            get {
+                return ResourceManager.GetString("RuudConfiguration_MaximumRuud_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shop items.
+        /// </summary>
+        public static string RuudConfiguration_ShopEntries_Name {
+            get {
+                return ResourceManager.GetString("RuudConfiguration_ShopEntries_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud of monsters.
+        /// </summary>
+        public static string RuudConfiguration_MonsterRewards_Name {
+            get {
+                return ResourceManager.GetString("RuudConfiguration_MonsterRewards_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud of boxes.
+        /// </summary>
+        public static string RuudConfiguration_BoxRewards_Name {
+            get {
+                return ResourceManager.GetString("RuudConfiguration_BoxRewards_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Class (empty for every class).
+        /// </summary>
+        public static string RuudShopEntry_Class_Name {
+            get {
+                return ResourceManager.GetString("RuudShopEntry_Class_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item group.
+        /// </summary>
+        public static string RuudShopEntry_Group_Name {
+            get {
+                return ResourceManager.GetString("RuudShopEntry_Group_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number.
+        /// </summary>
+        public static string RuudShopEntry_Number_Name {
+            get {
+                return ResourceManager.GetString("RuudShopEntry_Number_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item level.
+        /// </summary>
+        public static string RuudShopEntry_Level_Name {
+            get {
+                return ResourceManager.GetString("RuudShopEntry_Level_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Count (0 for the default durability).
+        /// </summary>
+        public static string RuudShopEntry_Count_Name {
+            get {
+                return ResourceManager.GetString("RuudShopEntry_Count_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Luck chance (%).
+        /// </summary>
+        public static string RuudShopEntry_LuckChance_Name {
+            get {
+                return ResourceManager.GetString("RuudShopEntry_LuckChance_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option chance (%).
+        /// </summary>
+        public static string RuudShopEntry_OptionChance_Name {
+            get {
+                return ResourceManager.GetString("RuudShopEntry_OptionChance_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Highest option level.
+        /// </summary>
+        public static string RuudShopEntry_OptionLevel_Name {
+            get {
+                return ResourceManager.GetString("RuudShopEntry_OptionLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Price (Ruud).
+        /// </summary>
+        public static string RuudShopEntry_Price_Name {
+            get {
+                return ResourceManager.GetString("RuudShopEntry_Price_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster number.
+        /// </summary>
+        public static string RuudMonsterReward_MonsterNumber_Name {
+            get {
+                return ResourceManager.GetString("RuudMonsterReward_MonsterNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum Ruud.
+        /// </summary>
+        public static string RuudMonsterReward_Minimum_Name {
+            get {
+                return ResourceManager.GetString("RuudMonsterReward_Minimum_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum Ruud.
+        /// </summary>
+        public static string RuudMonsterReward_Maximum_Name {
+            get {
+                return ResourceManager.GetString("RuudMonsterReward_Maximum_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud.
+        /// </summary>
+        public static string RuudBoxReward_Amount_Name {
+            get {
+                return ResourceManager.GetString("RuudBoxReward_Amount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opens a Ruud box: the character gets the Ruud which the configuration of the Ruud plugin sets for the box..
+        /// </summary>
+        public static string RuudBoxConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RuudBoxConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud box [10] consume handler.
+        /// </summary>
+        public static string RuudBox10ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RuudBox10ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud box [50] consume handler.
+        /// </summary>
+        public static string RuudBox50ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RuudBox50ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud box [100] consume handler.
+        /// </summary>
+        public static string RuudBox100ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RuudBox100ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud box [400] consume handler.
+        /// </summary>
+        public static string RuudBox400ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RuudBox400ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud box [500] consume handler.
+        /// </summary>
+        public static string RuudBox500ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RuudBox500ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud box [1,000] consume handler.
+        /// </summary>
+        public static string RuudBox1000ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RuudBox1000ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud box [1,500] consume handler.
+        /// </summary>
+        public static string RuudBox1500ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RuudBox1500ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud box [2,000] consume handler.
+        /// </summary>
+        public static string RuudBox2000ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RuudBox2000ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud box [3,000] consume handler.
+        /// </summary>
+        public static string RuudBox3000ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RuudBox3000ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud box [10,000] consume handler.
+        /// </summary>
+        public static string RuudBox10000ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RuudBox10000ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command: /setruud.
+        /// </summary>
+        public static string SetRuudChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SetRuudChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the Ruud of a character: /setruud &lt;character&gt; &lt;amount&gt;..
+        /// </summary>
+        public static string SetRuudChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SetRuudChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command: /gremgif.
+        /// </summary>
+        public static string GremoryGiftChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GremoryGiftChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Puts an item into a gremory case: /gremgif &lt;character&gt; &lt;case: 1 account, 2 character&gt; &lt;group&gt; &lt;number&gt; [level]..
+        /// </summary>
+        public static string GremoryGiftChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GremoryGiftChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zen sinks of Season 21.
+        /// </summary>
+        public static string ZenSinksFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("ZenSinksFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Against the zen inflation of the later maps: a tax on the zen sales of personal stores and less money from monsters, with the numbers of Season 21 as defaults..
+        /// </summary>
+        public static string ZenSinksFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("ZenSinksFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Personal store tax (%).
+        /// </summary>
+        public static string ZenSinksConfiguration_PersonalStoreTaxPercent_Name {
+            get {
+                return ResourceManager.GetString("ZenSinksConfiguration_PersonalStoreTaxPercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Money drop of monsters (%).
+        /// </summary>
+        public static string ZenSinksConfiguration_MoneyDropPercent_Name {
+            get {
+                return ResourceManager.GetString("ZenSinksConfiguration_MoneyDropPercent_Name", resourceCulture);
+            }
+        }
     }
 }

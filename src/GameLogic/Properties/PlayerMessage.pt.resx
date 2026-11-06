@@ -1234,4 +1234,25 @@ Extensões de inventário: {18}</value>
   <data name="FieldBossEntryItemNotBought" xml:space="preserve">
     <value>Um {0} custa {1} zen e precisa de espaço no seu inventário.</value>
   </data>
+  <data name="ItemExpired" xml:space="preserve">
+    <value>Seu item {0} expirou.</value>
+  </data>
+  <data name="RuudGained" xml:space="preserve">
+    <value>Você recebeu {0} Ruud ({1} no total).</value>
+  </data>
+  <data name="RuudShopNeedsNewerClient" xml:space="preserve">
+    <value>A loja de Ruud precisa de um cliente de jogo mais novo. Você tem {0} Ruud.</value>
+  </data>
+  <data name="RuudFeatureOff" xml:space="preserve">
+    <value>Ruud não está ativo neste servidor.</value>
+  </data>
+  <data name="SetRuudResult" xml:space="preserve">
+    <value>{0} tem {1} Ruud agora.</value>
+  </data>
+  <data name="GremoryGiftSent" xml:space="preserve">
+    <value>{0} foi colocado no baú de Gremory de {1}.</value>
+  </data>
+  <data name="GremoryGiftFailed" xml:space="preserve">
+    <value>O baú de Gremory de {0} está cheio, desativado ou não é exibido pelo seu cliente de jogo.</value>
+  </data>
 </root>

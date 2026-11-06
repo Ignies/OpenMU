@@ -120,6 +120,13 @@ public class Account
     public virtual ItemStorage? Vault { get; set; }
 
     /// <summary>
+    /// Gets or sets the gremory case of the account: the rewards which wait to be claimed by any of its characters.
+    /// </summary>
+    [MemberOfAggregate]
+    [HiddenAtCreation]
+    public virtual ItemStorage? GremoryCase { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether this instance is vault extended.
     /// </summary>
     public bool IsVaultExtended { get; set; }

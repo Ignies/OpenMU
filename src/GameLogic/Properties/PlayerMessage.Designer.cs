@@ -3378,5 +3378,68 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("FieldBossEntryItemNotBought", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your item {0} expired..
+        /// </summary>
+        public static string ItemExpired {
+            get {
+                return ResourceManager.GetString("ItemExpired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You got {0} Ruud ({1} in total)..
+        /// </summary>
+        public static string RuudGained {
+            get {
+                return ResourceManager.GetString("RuudGained", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Ruud shop needs a newer game client. You have {0} Ruud..
+        /// </summary>
+        public static string RuudShopNeedsNewerClient {
+            get {
+                return ResourceManager.GetString("RuudShopNeedsNewerClient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ruud is not active on this server..
+        /// </summary>
+        public static string RuudFeatureOff {
+            get {
+                return ResourceManager.GetString("RuudFeatureOff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has {1} Ruud now..
+        /// </summary>
+        public static string SetRuudResult {
+            get {
+                return ResourceManager.GetString("SetRuudResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} was put into the gremory case of {1}..
+        /// </summary>
+        public static string GremoryGiftSent {
+            get {
+                return ResourceManager.GetString("GremoryGiftSent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The gremory case of {0} is full, off, or not shown by its game client..
+        /// </summary>
+        public static string GremoryGiftFailed {
+            get {
+                return ResourceManager.GetString("GremoryGiftFailed", resourceCulture);
+            }
+        }
     }
 }

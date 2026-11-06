@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("f7f8b383-ff32-43f8-baec-11c76e079c81"), entityTypeCount: 129)
+            : base(skipDetectChanges: false, modelId: new Guid("dd273b20-09f4-4645-889c-d34fc0b0d6d6"), entityTypeCount: 130)
         {
         }
 
@@ -118,6 +118,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var masterSkillDefinition = MasterSkillDefinitionEntityType.Create(this);
             var masterSkillDefinitionSkill = MasterSkillDefinitionSkillEntityType.Create(this);
             var masterSkillRoot = MasterSkillRootEntityType.Create(this);
+            var merchantStoreTab = MerchantStoreTabEntityType.Create(this);
             var miniGameChangeEvent = MiniGameChangeEventEntityType.Create(this);
             var miniGameDefinition = MiniGameDefinitionEntityType.Create(this);
             var miniGameRankingEntry = MiniGameRankingEntryEntityType.Create(this);
@@ -149,6 +150,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var warpInfo = WarpInfoEntityType.Create(this);
 
             AccountEntityType.CreateForeignKey1(account, itemStorage);
+            AccountEntityType.CreateForeignKey2(account, itemStorage);
             AccountAttributeGrantEntityType.CreateForeignKey1(accountAttributeGrant, account);
             AccountAttributeGrantEntityType.CreateForeignKey2(accountAttributeGrant, attributeDefinition);
             AccountCharacterClassEntityType.CreateForeignKey1(accountCharacterClass, account);
@@ -206,6 +208,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             CharacterEntityType.CreateForeignKey2(character, characterClass);
             CharacterEntityType.CreateForeignKey3(character, gameMapDefinition);
             CharacterEntityType.CreateForeignKey4(character, itemStorage);
+            CharacterEntityType.CreateForeignKey5(character, itemStorage);
             CharacterClassEntityType.CreateForeignKey1(characterClass, skillComboDefinition);
             CharacterClassEntityType.CreateForeignKey2(characterClass, gameConfiguration);
             CharacterClassEntityType.CreateForeignKey3(characterClass, gameMapDefinition);
@@ -341,6 +344,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             MasterSkillDefinitionSkillEntityType.CreateForeignKey1(masterSkillDefinitionSkill, masterSkillDefinition);
             MasterSkillDefinitionSkillEntityType.CreateForeignKey2(masterSkillDefinitionSkill, skill);
             MasterSkillRootEntityType.CreateForeignKey1(masterSkillRoot, gameConfiguration);
+            MerchantStoreTabEntityType.CreateForeignKey1(merchantStoreTab, itemStorage);
+            MerchantStoreTabEntityType.CreateForeignKey2(merchantStoreTab, monsterDefinition);
             MiniGameChangeEventEntityType.CreateForeignKey1(miniGameChangeEvent, miniGameDefinition);
             MiniGameChangeEventEntityType.CreateForeignKey2(miniGameChangeEvent, monsterSpawnArea);
             MiniGameChangeEventEntityType.CreateForeignKey3(miniGameChangeEvent, monsterDefinition);
@@ -504,6 +509,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             MasterSkillDefinitionEntityType.CreateAnnotations(masterSkillDefinition);
             MasterSkillDefinitionSkillEntityType.CreateAnnotations(masterSkillDefinitionSkill);
             MasterSkillRootEntityType.CreateAnnotations(masterSkillRoot);
+            MerchantStoreTabEntityType.CreateAnnotations(merchantStoreTab);
             MiniGameChangeEventEntityType.CreateAnnotations(miniGameChangeEvent);
             MiniGameDefinitionEntityType.CreateAnnotations(miniGameDefinition);
             MiniGameRankingEntryEntityType.CreateAnnotations(miniGameRankingEntry);

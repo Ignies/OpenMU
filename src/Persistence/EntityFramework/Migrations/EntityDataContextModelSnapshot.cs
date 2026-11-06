@@ -38,6 +38,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("GoblinPoints")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("GremoryCaseId")
+                        .HasColumnType("uuid");
+
                     b.Property<bool>("IsBot")
                         .HasColumnType("boolean");
 
@@ -93,6 +96,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GremoryCaseId")
+                        .IsUnique();
 
                     b.HasIndex("LoginName")
                         .IsUnique();
@@ -1078,6 +1084,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<long>("Experience")
                         .HasColumnType("bigint");
 
+                    b.Property<Guid?>("GremoryCaseId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("InventoryExtensions")
                         .HasColumnType("integer");
 
@@ -1119,6 +1128,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<byte>("PositionY")
                         .HasColumnType("smallint");
 
+                    b.Property<int>("Ruud")
+                        .HasColumnType("integer");
+
                     b.Property<int>("State")
                         .HasColumnType("integer");
 
@@ -1141,6 +1153,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("CharacterClassId");
 
                     b.HasIndex("CurrentMapId");
+
+                    b.HasIndex("GremoryCaseId")
+                        .IsUnique();
 
                     b.HasIndex("InventoryId")
                         .IsUnique();
@@ -2275,6 +2290,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<double>("Durability")
                         .HasColumnType("double precision");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("HasSkill")
                         .HasColumnType("boolean");
@@ -3533,6 +3551,31 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.ToTable("MasterSkillRoot", "config");
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MerchantStoreTab", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<byte>("Index")
+                        .HasColumnType("smallint");
+
+                    b.Property<Guid?>("ItemsId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("MonsterDefinitionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemsId")
+                        .IsUnique();
+
+                    b.HasIndex("MonsterDefinitionId");
+
+                    b.ToTable("MerchantStoreTab", "config");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameChangeEvent", b =>
                 {
                     b.Property<Guid>("Id")
@@ -4628,10 +4671,17 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", b =>
                 {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage", "RawGremoryCase")
+                        .WithOne()
+                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", "GremoryCaseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage", "RawVault")
                         .WithOne()
                         .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", "VaultId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("RawGremoryCase");
 
                     b.Navigation("RawVault");
                 });
@@ -5035,6 +5085,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithMany()
                         .HasForeignKey("CurrentMapId");
 
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage", "RawGremoryCase")
+                        .WithOne()
+                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", "GremoryCaseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage", "RawInventory")
                         .WithOne()
                         .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", "InventoryId")
@@ -5043,6 +5098,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawCharacterClass");
 
                     b.Navigation("RawCurrentMap");
+
+                    b.Navigation("RawGremoryCase");
 
                     b.Navigation("RawInventory");
                 });
@@ -6094,6 +6151,21 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MerchantStoreTab", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage", "RawItems")
+                        .WithOne()
+                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.MerchantStoreTab", "ItemsId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MonsterDefinition", null)
+                        .WithMany("RawMerchantStoreTabs")
+                        .HasForeignKey("MonsterDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("RawItems");
+                });
+
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameChangeEvent", b =>
                 {
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.MiniGameDefinition", null)
@@ -6829,6 +6901,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Navigation("RawBuffs");
 
                     b.Navigation("RawItemCraftings");
+
+                    b.Navigation("RawMerchantStoreTabs");
 
                     b.Navigation("RawQuests");
                 });

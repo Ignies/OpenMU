@@ -6,6 +6,10 @@ namespace MUnique.OpenMU.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.GremoryCase;
+using MUnique.OpenMU.GameLogic.ItemExpiry;
+using MUnique.OpenMU.GameLogic.Ruud;
+using MUnique.OpenMU.GameLogic.ZenSinks;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
@@ -46,6 +50,10 @@ public static class GameContextTestHelper
                 IsActive = true,
             },
         };
+
+        // The economy of Season 21 changes Season 6 ways (rewards, prices, money drops); off, as on a new world.
+        plugInConfigurations.AddRange(new[] { typeof(GremoryCaseFeaturePlugIn), typeof(RuudFeaturePlugIn), typeof(ItemExpiryPlugIn), typeof(ZenSinksFeaturePlugIn) }
+            .Select(type => new PlugInConfiguration { TypeId = type.GUID, IsActive = false }));
 
         if (additionalPlugInConfigurations is { })
         {

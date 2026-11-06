@@ -127,6 +127,24 @@ public partial class Account : MUnique.OpenMU.DataModel.Entities.Account, IIdent
         set => base.Vault = value;
     }
 
+    /// <summary>
+    /// Gets the raw object of <see cref="GremoryCase" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("gremoryCase")]
+    public ItemStorage RawGremoryCase
+    {
+        get => base.GremoryCase as ItemStorage;
+        set => base.GremoryCase = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Entities.ItemStorage GremoryCase
+    {
+        get => base.GremoryCase;
+        set => base.GremoryCase = value;
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

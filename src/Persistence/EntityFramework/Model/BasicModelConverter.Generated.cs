@@ -130,6 +130,7 @@ internal sealed class BasicModelConverter
             MagicEffectDefinition value => this.Convert(value),
             MasterSkillDefinition value => this.Convert(value),
             MasterSkillRoot value => this.Convert(value),
+            MerchantStoreTab value => this.Convert(value),
             MiniGameChangeEvent value => this.Convert(value),
             MiniGameDefinition value => this.Convert(value),
             MiniGameRankingEntry value => this.Convert(value),
@@ -189,6 +190,7 @@ internal sealed class BasicModelConverter
         target.TimeZone = source.TimeZone;
         target.VaultPassword = source.VaultPassword;
         target.Vault = (MUnique.OpenMU.DataModel.Entities.ItemStorage)this.ConvertObject(source.Vault)!;
+        target.GremoryCase = (MUnique.OpenMU.DataModel.Entities.ItemStorage)this.ConvertObject(source.GremoryCase)!;
         target.IsVaultExtended = source.IsVaultExtended;
         target.WCoinC = source.WCoinC;
         target.WCoinP = source.WCoinP;
@@ -833,6 +835,7 @@ internal sealed class BasicModelConverter
         target.MuHelperConfiguration = source.MuHelperConfiguration;
         target.StoreName = source.StoreName;
         target.IsStoreOpened = source.IsStoreOpened;
+        target.Ruud = source.Ruud;
         if (source.Attributes is { } attributesItems)
         {
             foreach (var item in attributesItems)
@@ -851,6 +854,7 @@ internal sealed class BasicModelConverter
         }
 
         target.Inventory = (MUnique.OpenMU.DataModel.Entities.ItemStorage)this.ConvertObject(source.Inventory)!;
+        target.GremoryCase = (MUnique.OpenMU.DataModel.Entities.ItemStorage)this.ConvertObject(source.GremoryCase)!;
         if (source.DropItemGroups is { } dropItemGroupsItems)
         {
             foreach (var item in dropItemGroupsItems)
@@ -1824,6 +1828,7 @@ internal sealed class BasicModelConverter
         target.StorePriceItemDefinition = (MUnique.OpenMU.DataModel.Configuration.Items.ItemDefinition)this.ConvertObject(source.StorePriceItemDefinition)!;
         target.StorePriceCoinType = source.StorePriceCoinType;
         target.PetExperience = source.PetExperience;
+        target.ExpiresAt = source.ExpiresAt;
         return target;
     }
 
@@ -2593,6 +2598,21 @@ internal sealed class BasicModelConverter
         return target;
     }
 
+    private BasicModel.MerchantStoreTab Convert(MerchantStoreTab source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.MerchantStoreTab)converted;
+        }
+
+        var target = new BasicModel.MerchantStoreTab();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.Index = source.Index;
+        target.Items = (MUnique.OpenMU.DataModel.Entities.ItemStorage)this.ConvertObject(source.Items)!;
+        return target;
+    }
+
     private BasicModel.MiniGameChangeEvent Convert(MiniGameChangeEvent source)
     {
         if (this._converted.TryGetValue(source, out var converted))
@@ -2803,6 +2823,14 @@ internal sealed class BasicModelConverter
         target.IntelligenceTypeName = source.IntelligenceTypeName;
         target.AttackSkill = (MUnique.OpenMU.DataModel.Configuration.Skill)this.ConvertObject(source.AttackSkill)!;
         target.MerchantStore = (MUnique.OpenMU.DataModel.Entities.ItemStorage)this.ConvertObject(source.MerchantStore)!;
+        if (source.MerchantStoreTabs is { } merchantStoreTabsItems)
+        {
+            foreach (var item in merchantStoreTabsItems)
+            {
+                target.MerchantStoreTabs.Add((MUnique.OpenMU.DataModel.Configuration.MerchantStoreTab)this.ConvertObject(item)!);
+            }
+        }
+
         if (source.ItemCraftings is { } itemCraftingsItems)
         {
             foreach (var item in itemCraftingsItems)

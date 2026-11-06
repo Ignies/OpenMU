@@ -8227,5 +8227,149 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("FieldBossStateBabylonPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: gremory case.
+        /// </summary>
+        public static string GremoryCaseBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GremoryCaseBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the gremory cases of the character and the account to the Babylon client (C2 EE 60, C1 EE 61, 63, 64)..
+        /// </summary>
+        public static string GremoryCaseBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GremoryCaseBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: item expired.
+        /// </summary>
+        public static string ItemExpiredBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ItemExpiredBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tells the Babylon client which item expired (C1 EE 31)..
+        /// </summary>
+        public static string ItemExpiredBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ItemExpiredBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: Ruud and Ruud shop.
+        /// </summary>
+        public static string RuudBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RuudBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the Ruud of the character and the Ruud shop to the Babylon client (C1 EE 70, C2 EE 71, C1 EE 73)..
+        /// </summary>
+        public static string RuudBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RuudBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: merchant store tabs.
+        /// </summary>
+        public static string MerchantStoreTabsBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MerchantStoreTabsBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the tabs of the store of a merchant to the Babylon client (C1 EE 74)..
+        /// </summary>
+        public static string MerchantStoreTabsBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MerchantStoreTabsBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: gremory case claim handler.
+        /// </summary>
+        public static string GremoryCaseClaimHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GremoryCaseClaimHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Moves a reward of a gremory case into the inventory (C1 EE 62)..
+        /// </summary>
+        public static string GremoryCaseClaimHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GremoryCaseClaimHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: gremory case list request handler.
+        /// </summary>
+        public static string GremoryCaseListRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GremoryCaseListRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the content of the gremory cases again (C1 EE 65)..
+        /// </summary>
+        public static string GremoryCaseListRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GremoryCaseListRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: Ruud shop purchase handler.
+        /// </summary>
+        public static string RuudShopBuyHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RuudShopBuyHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buys an item of the Ruud shop (C1 EE 72)..
+        /// </summary>
+        public static string RuudShopBuyHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RuudShopBuyHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: merchant store tab handler.
+        /// </summary>
+        public static string MerchantStoreTabSelectHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MerchantStoreTabSelectHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows another tab of the store of the opened merchant (C1 EE 75)..
+        /// </summary>
+        public static string MerchantStoreTabSelectHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MerchantStoreTabSelectHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

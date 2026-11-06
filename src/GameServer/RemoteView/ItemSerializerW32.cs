@@ -11,6 +11,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.ItemExpiry;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.Persistence;
 using MUnique.OpenMU.PlugIns;
@@ -24,7 +25,7 @@ using static ItemSerializerHelper;
 /// <remarks>
 /// Every field which Season 6 knows keeps its Season 6 meaning, so the client reads both layouts into the same item.
 /// Of the fields of later seasons, the mastery options, the mastery bonus, the sphere levels up to 10 and the grade
-/// options of the fourth and fifth wings (kind block) are filled; the elements, the other kind blocks and the expiry
+/// options of the fourth and fifth wings (kind block) are filled; the elements and the other kind blocks
 /// stay zero until the systems which fill them exist.
 /// </remarks>
 [Guid("5C1B8E2A-7F4D-4A93-B6E0-3D9A2C8F1E57")]
@@ -59,6 +60,7 @@ public class ItemSerializerW32 : IItemSerializer
     private const int KindBlockIndex = 22;
     private const int WingGradeEntries = 3;
     private const byte NoWingGrade = 0xFF;
+    private const int ExpiryIndex = 28;
 
     private const byte SkillFlag = 0x01;
     private const byte LuckFlag = 0x02;
@@ -67,6 +69,7 @@ public class ItemSerializerW32 : IItemSerializer
     private const byte HarmonyFlag = 0x10;
     private const byte GuardianFlag = 0x20;
     private const byte SocketsFlag = 0x40;
+    private const byte TimedFlag = 0x80;
 
     private const byte NibbleMask = 0x0F;
     private const byte AncientBonusLevelMask = 0b1100;
@@ -115,6 +118,7 @@ public class ItemSerializerW32 : IItemSerializer
         target[HarmonyIndex] = GetHarmonyByte(item);
         target[SocketBonusIndex] = GetSocketBonusByte(item);
         SetSlots(target, item);
+        BinaryPrimitives.WriteUInt32LittleEndian(target[ExpiryIndex..], item.GetExpiryUnixSeconds());
         target[FlagsIndex] = GetFlags(target, item);
         return Length;
     }
@@ -291,6 +295,7 @@ public class ItemSerializerW32 : IItemSerializer
         flags |= target[HarmonyIndex] != 0 ? HarmonyFlag : (byte)0;
         flags |= item.ItemOptions.Any(o => o.ItemOption?.OptionType == ItemOptionTypes.GuardianOption) ? GuardianFlag : (byte)0;
         flags |= item.SocketCount > 0 ? SocketsFlag : (byte)0;
+        flags |= item.ExpiresAt is not null ? TimedFlag : (byte)0;
         return flags;
     }
 

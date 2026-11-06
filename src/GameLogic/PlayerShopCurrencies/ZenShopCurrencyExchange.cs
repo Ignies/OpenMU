@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerShopCurrencies;
 
 using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.GameLogic.ZenSinks;
 
 /// <summary>
 /// Pays prices in zen, by transferring the zen of the inventory of the buyer to the one of the seller.
@@ -25,7 +26,7 @@ public sealed class ZenShopCurrencyExchange : IShopCurrencyExchange
             return ValueTask.FromResult(ShopPaymentResult.LackOfCurrency);
         }
 
-        if (!purchase.Seller.TryAddMoney(purchase.Price.Amount))
+        if (!purchase.Seller.TryAddMoney(ZenSinksFeaturePlugIn.GetSellerIncome(purchase.Seller.GameContext, purchase.Price.Amount)))
         {
             purchase.Buyer.TryAddMoney(purchase.Price.Amount);
             return ValueTask.FromResult(ShopPaymentResult.SellerOverflow);
