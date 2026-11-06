@@ -133,6 +133,9 @@ internal class Season21EventsDataTest
         }
 
         Assert.That(this._gameConfiguration.MiniGameDefinitions.Where(d => d.Type == MiniGameType.ImperialGuardian).Select(d => d.MinimumCharacterLevel), Has.All.EqualTo(1000));
+        var crywolf = this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(GameLogic.Crywolf.CrywolfPlugIn).GUID)
+            .GetConfiguration<GameLogic.Crywolf.CrywolfEventDefinition>(new GameConfigurationReferenceHandler(this._gameConfiguration))!;
+        Assert.That(crywolf.WeeklyElements, Has.Count.EqualTo(5));
     }
 
     /// <summary>
@@ -175,6 +178,7 @@ internal class Season21EventsDataTest
         new AddSeason21BossBattleUpdatePlugIn(),
         new AddSeason21AcheronGuardianUpdatePlugIn(),
         new AddSeason21ImperialGuardianReworkUpdatePlugIn(),
+        new AddSeason21CrywolfUpdatePlugIn(),
     ];
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6Async()

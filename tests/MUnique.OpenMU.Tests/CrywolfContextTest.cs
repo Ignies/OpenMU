@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Crywolf;
+using MUnique.OpenMU.GameLogic.Elements;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.Pathfinding;
 using MonsterAttribute = MUnique.OpenMU.Persistence.BasicModel.MonsterAttribute;
@@ -317,6 +318,69 @@ public class CrywolfContextTest
 
         var balgass = context.Map!.GetNpcsInRange(new Point(110, 79), 3).OfType<Monster>().FirstOrDefault(monster => monster.Definition.Number == 349);
         Assert.That(balgass, Is.Null);
+    }
+
+    /// <summary>
+    /// Tests that the army takes the element of the week of the Season 21 renewal.
+    /// </summary>
+    [Test]
+    public async Task ArmyTakesTheElementOfTheWeekAsync()
+    {
+        var (context, player, _) = await CreateContextAsync(configure: definition =>
+        {
+            definition.WeeklyElements = [Element.Earth, Element.Wind];
+            definition.ElementRotationStart = DateTime.Now.Date;
+        }).ConfigureAwait(false);
+
+        var balgass = await LetBalgassAppearAsync(context, player).ConfigureAwait(false);
+
+        Assert.That(balgass.Attributes.GetElement(balgass.Id), Is.EqualTo(Element.Earth));
+    }
+
+    /// <summary>
+    /// Tests that the army of Season 6 has no element.
+    /// </summary>
+    [Test]
+    public async Task ArmyOfSeason6HasNoElementAsync()
+    {
+        var (context, player, _) = await CreateContextAsync().ConfigureAwait(false);
+
+        var balgass = await LetBalgassAppearAsync(context, player).ConfigureAwait(false);
+
+        Assert.That(balgass.Attributes.GetElement(balgass.Id), Is.EqualTo(Element.None));
+    }
+
+    /// <summary>
+    /// Tests that the reward of a contractor goes to the player instead of the ground, when the renewal asks for it.
+    /// </summary>
+    /// <param name="intoGremoryCase">If set to <c>true</c>, the rewards go into the gremory case.</param>
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task ContractorRewardAsync(bool intoGremoryCase)
+    {
+        var gameContext = (GameContext)GameContextTestHelper.CreateGameContext();
+        gameContext.Configuration.Items.Add(new Persistence.BasicModel.ItemDefinition { Group = 14, Number = 13, Width = 1, Height = 1, Durability = 1 });
+        var (context, player, _) = await CreateContextAsync(gameContext, configure: definition => definition.RewardsIntoGremoryCase = intoGremoryCase).ConfigureAwait(false);
+
+        var balgass = await LetBalgassAppearAsync(context, player).ConfigureAwait(false);
+        await balgass.ApplyPoisonDamageAsync(player, (uint)balgass.Health + 1).ConfigureAwait(false);
+        await context.TickAsync().ConfigureAwait(false);
+
+        Assert.That(context.Occupation, Is.EqualTo(CrywolfOccupationState.Peace));
+        var inInventory = player.Inventory!.Items.Any(item => item.Definition is { Group: 14, Number: 13 });
+        var onGround = context.Map!.GetDropsInRange(player.Position, 3).Count > 0;
+        Assert.That((inInventory, onGround), Is.EqualTo((intoGremoryCase, !intoGremoryCase)));
+    }
+
+    private static async ValueTask<Monster> LetBalgassAppearAsync(CrywolfContext context, Player contractor)
+    {
+        await ProceedToAsync(context, CrywolfState.Ready).ConfigureAwait(false);
+        await context.ContractAltarAsync(contractor, context.Altars[0].Npc.Id).ConfigureAwait(false);
+        await context.TickAsync().ConfigureAwait(false);
+        await ProceedToAsync(context, CrywolfState.Start).ConfigureAwait(false);
+        context.SkipWaitingTime();
+        await context.TickAsync().ConfigureAwait(false);
+        return context.Map!.GetNpcsInRange(new Point(110, 79), 3).OfType<Monster>().Single(monster => monster.Definition.Number == 349);
     }
 
     private static async ValueTask ProceedToAsync(CrywolfContext context, CrywolfState state)

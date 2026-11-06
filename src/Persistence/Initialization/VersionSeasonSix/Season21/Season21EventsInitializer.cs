@@ -6,6 +6,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
 using System.Text.Json;
 using MUnique.OpenMU.GameLogic.Classes;
+using MUnique.OpenMU.GameLogic.Crywolf;
+using MUnique.OpenMU.GameLogic.Elements;
 using MUnique.OpenMU.GameLogic.EvolutionQuests;
 using MUnique.OpenMU.GameLogic.MiniGames.ImperialGuardian;
 using MUnique.OpenMU.GameLogic.MiniGames.Season21;
@@ -229,6 +231,44 @@ internal class Season21EventsInitializer
             new() { Group = 20, Number = 94, Count = 2, Chance = 40 },
             new() { Group = 20, Number = 95, Count = 1, Chance = 40 },
         ];
+        plugIn.SetConfiguration(configuration, referenceHandler);
+    }
+
+    /// <summary>
+    /// Applies the Crywolf renewal of Season 21 Part 1 Update 3 (webzen guide 425): the army takes the element of the week
+    /// (fire, water, earth, wind, darkness, from Thursday 00:00), Balgass appears 6:40 into the battle and the rewards go
+    /// into the gremory case; the state durations are the ones of S21Emu <c>Event/Crywolf.dat</c>. Keeps a renewal the
+    /// operator already set.
+    /// </summary>
+    public void ApplyCrywolfRenewal()
+    {
+        var plugIn = this.GetOrCreatePlugIn(typeof(CrywolfPlugIn).GUID);
+        var referenceHandler = new Updates.GameConfigurationReferenceHandler(this._gameConfiguration);
+        CrywolfEventDefinition configuration;
+        try
+        {
+            configuration = plugIn.GetConfiguration<CrywolfEventDefinition>(referenceHandler) ?? new CrywolfEventDefinition();
+        }
+        catch (JsonException)
+        {
+            // A configuration which can't be read is the operator's; it stays.
+            return;
+        }
+
+        if (configuration.WeeklyElements.Count > 0)
+        {
+            return;
+        }
+
+        configuration.WeeklyElements = [Element.Fire, Element.Water, Element.Earth, Element.Wind, Element.Darkness];
+        configuration.BalgassAppearanceDelay = TimeSpan.FromMinutes(6) + TimeSpan.FromSeconds(40);
+        configuration.RewardsIntoGremoryCase = true;
+        configuration.Notify1Duration = TimeSpan.FromSeconds(300);
+        configuration.Notify2Duration = TimeSpan.FromSeconds(60);
+        configuration.ReadyDuration = TimeSpan.FromSeconds(120);
+        configuration.BattleDuration = TimeSpan.FromSeconds(900);
+        configuration.EndDuration = TimeSpan.FromSeconds(15);
+        configuration.EndCycleDuration = TimeSpan.FromSeconds(10);
         plugIn.SetConfiguration(configuration, referenceHandler);
     }
 

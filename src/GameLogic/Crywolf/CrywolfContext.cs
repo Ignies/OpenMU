@@ -6,7 +6,9 @@ namespace MUnique.OpenMU.GameLogic.Crywolf;
 
 using System.Collections.Concurrent;
 using System.Threading;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Elements;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Properties;
 using MUnique.OpenMU.GameLogic.Views;
@@ -859,6 +861,12 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
 
     private async ValueTask DropRewardAsync(Player player)
     {
+        if (this._definition.RewardsIntoGremoryCase)
+        {
+            await CrywolfRewards.GiveAsync(player, this._definition).ConfigureAwait(false);
+            return;
+        }
+
         if (player.CurrentMap is not { } map
             || this._gameContext.Configuration.Items.FirstOrDefault(item => item.IsActive && item.Group == this._definition.RewardItemGroup && item.Number == this._definition.RewardItemNumber) is not { } definition)
         {
@@ -1236,6 +1244,7 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
         try
         {
             monster.Initialize();
+            this.ApplyElementOfTheWeek(monster);
             await map.AddAsync(monster).ConfigureAwait(false);
             monster.OnSpawn();
 
@@ -1251,6 +1260,19 @@ public sealed class CrywolfContext : IEventStateProvider, IDisposable
             monster.Dispose();
             return null;
         }
+    }
+
+    private void ApplyElementOfTheWeek(Monster monster)
+    {
+        var element = this._definition.GetElementOfTheWeek(DateTime.Now);
+        if (element == Element.None)
+        {
+            return;
+        }
+
+        // The element of the week replaces the one of the monster definition.
+        var difference = (int)element - (int)monster.Attributes[Stats.Element];
+        monster.Attributes.AddElement(new ConstantElement(difference, AggregateType.AddFinal), Stats.Element);
     }
 
     private async ValueTask RemoveEventMonstersAsync()

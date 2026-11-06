@@ -4,6 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.Crywolf;
 
+using MUnique.OpenMU.GameLogic.Elements;
+
 /// <summary>
 /// Describes the run of the crywolf event.
 /// </summary>
@@ -300,6 +302,24 @@ public class CrywolfEventDefinition
     public short RewardItemNumber { get; set; } = 13;
 
     /// <summary>
+    /// Gets or sets a value indicating whether the rewards of the contractors and heroes go into the gremory case
+    /// (or the inventory, when the case isn't available) instead of dropping on the ground, like in Season 21.
+    /// </summary>
+    public bool RewardsIntoGremoryCase { get; set; }
+
+    /// <summary>
+    /// Gets or sets the elements, which the army takes week by week (Season 21). When it's empty, the army keeps the
+    /// elements of its monster definitions, like in Season 6.
+    /// </summary>
+    public IList<Element> WeeklyElements { get; set; } = new List<Element>();
+
+    /// <summary>
+    /// Gets or sets the local date and time of the server, at which the first of the <see cref="WeeklyElements"/> applies.
+    /// The element changes every seven days after it. The default is the first Thursday after Season 21 Part 1 Update 3.
+    /// </summary>
+    public DateTime ElementRotationStart { get; set; } = new(2026, 9, 3);
+
+    /// <summary>
     /// Gets or sets the numbers of the NPCs of the crywolf map, which stay visible when the fortress is occupied.
     /// </summary>
     public IList<short> AlwaysVisibleNpcNumbers { get; set; } = new List<short> { 406, 407 };
@@ -361,6 +381,23 @@ public class CrywolfEventDefinition
         var earlier = time.Add(TimeSpan.FromSeconds(-5));
         return this.StartDays.Contains(localTime.DayOfWeek)
                && this.StartTimes.Any(startTime => startTime.IsBetween(earlier, time));
+    }
+
+    /// <summary>
+    /// Gets the element of the army in the week of the specified local time of the server.
+    /// </summary>
+    /// <param name="localTime">The local time of the server.</param>
+    /// <returns>The element, or <see cref="Element.None"/> when the elements don't rotate.</returns>
+    public Element GetElementOfTheWeek(DateTime localTime)
+    {
+        if (this.WeeklyElements.Count == 0)
+        {
+            return Element.None;
+        }
+
+        var week = (long)Math.Floor((localTime - this.ElementRotationStart).TotalDays / 7);
+        var count = this.WeeklyElements.Count;
+        return this.WeeklyElements[(int)(((week % count) + count) % count)];
     }
 
     /// <summary>

@@ -80,6 +80,7 @@ public static class ForkInfo
         "boss_battle",
         "acheron_guardian",
         "imperial_guardian_s18",
+        "crywolf_s21",
     ];
 
     /// <summary>

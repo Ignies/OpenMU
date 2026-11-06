@@ -1542,5 +1542,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21ImperialGuardianReworkUpdatePlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Crywolf of Season 21 Part 1 Update 3: the army takes the element of the week (fire, water, earth, wind, darkness, changing on Thursday 00:00), Balgass appears 6:40 into the battle, the rewards go into the gremory case, and the state durations of the Season 21 data. Keeps a renewal the operator set..
+        /// </summary>
+        public static string AddSeason21CrywolfUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21CrywolfUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Apply the Crywolf renewal of Season 21.
+        /// </summary>
+        public static string AddSeason21CrywolfUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21CrywolfUpdatePlugIn_Name", resourceCulture);
+            }
+        }
     }
 }

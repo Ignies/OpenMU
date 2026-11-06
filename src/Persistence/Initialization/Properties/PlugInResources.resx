@@ -600,4 +600,10 @@
   <data name="AddSeason21ImperialGuardianReworkUpdatePlugIn_Description" xml:space="preserve">
     <value>Every day of the Imperial Guardian from total level 1000 (Season 21 data), and at its completion four or two Artifact Upgrade Stones or a Spider Artifact Fragment (20 / 40 / 40 %), into the gremory case when it's on. Keeps rewards the operator set.</value>
   </data>
+  <data name="AddSeason21CrywolfUpdatePlugIn_Name" xml:space="preserve">
+    <value>Apply the Crywolf renewal of Season 21</value>
+  </data>
+  <data name="AddSeason21CrywolfUpdatePlugIn_Description" xml:space="preserve">
+    <value>Crywolf of Season 21 Part 1 Update 3: the army takes the element of the week (fire, water, earth, wind, darkness, changing on Thursday 00:00), Balgass appears 6:40 into the battle, the rewards go into the gremory case, and the state durations of the Season 21 data. Keeps a renewal the operator set.</value>
+  </data>
 </root>

@@ -109,10 +109,19 @@ Spider Artifact Fragment (20/95, 40 %), into the gremory case when it's on. The 
 its four maps, zones and day rotation. Not ported: the monster level 145 and its multipliers of the data (OpenMU scales
 the monsters by the players' level instead).
 
+### Crywolf renewal of Season 21 (fork feature `crywolf_s21`)
+
+Update "Apply the Crywolf renewal of Season 21" (webzen guide 425, S21-1 Update 3; S21Emu `Event/Crywolf.dat` for the
+timings): the army of the event takes the element of the week (`CrywolfEventDefinition.WeeklyElements`: fire, water,
+earth, wind, darkness, changing every seven days from `ElementRotationStart`, a Thursday 00:00), Balgass appears 6:40
+into the battle, the rewards of the contractors and heroes go into the gremory case or the inventory
+(`RewardsIntoGremoryCase`, `CrywolfRewards`), and the states last 300, 60, 120, 900, 15 and 10 seconds. Without the
+update the event stays Season 6. Not ported: Balgass's immunity to debuffs (the effect definitions have no debuff
+flag), the altar registration on Monday 09:30 and the auto move of the Event Map window.
+
 ### Not ported (no data)
 
 - Arca War: S21Emu `ArcaBattle.xml` has the schedule and trophies but no obelisk monsters, guild registration rules or
   capture logic the client could show; logged, not built.
 - Chaos Castle Survival of the Fittest: `ChaosCastleSurvival.dat` has the schedule and stages only; map 97 has no
   stage or ranking data. Logged, not built.
-- The S21 Crywolf renewal: see `src/GameLogic/Crywolf` (element of the week, timings, gremory rewards).

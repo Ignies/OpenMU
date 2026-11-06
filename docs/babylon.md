@@ -91,6 +91,7 @@ Rules:
 | `boss_battle` | The Boss Battle Together of Season 21 (map 139): one of five bosses for everybody, rewards for damage, top damage and the last hit (update "Add the Boss Battle Together of Season 21"; event type 11) |
 | `acheron_guardian` | The Protector of Acheron of Season 21 (maps 92 and 96): 30 waves of monsters, a bag reward for 100 points (update "Add the Protector of Acheron of Season 21"; event type 12) |
 | `imperial_guardian_s18` | The Imperial Guardian rework of Season 18: from total level 1000, artifact rewards at the completion (update "Apply the Imperial Guardian rework of Season 18") |
+| `crywolf_s21` | The Crywolf renewal of Season 21: the army takes the element of the week, Balgass at 6:40, the rewards into the gremory case, the Season 21 timings (update "Apply the Crywolf renewal of Season 21") |
 
 ## Balance
 
