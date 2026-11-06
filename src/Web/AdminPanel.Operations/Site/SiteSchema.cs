@@ -112,8 +112,9 @@ internal static class SiteSchema
     private static string? Text(object item, Type type, string name)
         => type.GetProperty(name)?.GetValue(item) switch
         {
-            string { Length: > 0 } text => text,
-            LocalizedString { Value: { Length: > 0 } localized } => localized,
+            // names are localized strings ("Spider||de=Spinne||@src=..."): the caption is the neutral one
+            string { Length: > 0 } text => new LocalizedString(text).ValueInNeutralLanguage,
+            LocalizedString { Value: { Length: > 0 } } localized => localized.ValueInNeutralLanguage,
             _ => null,
         };
 

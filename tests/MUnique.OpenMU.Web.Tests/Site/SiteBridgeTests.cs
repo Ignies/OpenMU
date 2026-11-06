@@ -43,7 +43,7 @@ public sealed class SiteBridgeTests
         this._config.Attributes.Add(this._healthDefinition);
         this._monster = context.CreateNew<MonsterDefinition>();
         this._monster.Number = 7;
-        this._monster.Designation = "Spider";
+        this._monster.Designation = "Spider||de=Spinne||@src=MonsterNames/Spider";
         this._health = context.CreateNew<MonsterAttribute>();
         this._health.AttributeDefinition = this._healthDefinition;
         this._health.Value = 100;
