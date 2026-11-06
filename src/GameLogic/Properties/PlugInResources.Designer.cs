@@ -7473,5 +7473,104 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("MiningBundle_JewelCount_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hunting record and ranking (Season 21).
+        /// </summary>
+        public static string HuntingRecordPlugIn_Name {
+            get {
+                return ResourceManager.GetString("HuntingRecordPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Records per character, map and day the time spent, the monsters killed, the experience and the damage on the hunting maps of Season 21, and ranks the characters by total level and by the kills and experience of the week. The Babylon client shows both windows..
+        /// </summary>
+        public static string HuntingRecordPlugIn_Description {
+            get {
+                return ResourceManager.GetString("HuntingRecordPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Recorded maps.
+        /// </summary>
+        public static string HuntingRecordConfiguration_Maps_Name {
+            get {
+                return ResourceManager.GetString("HuntingRecordConfiguration_Maps_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monsters which don't count.
+        /// </summary>
+        public static string HuntingRecordConfiguration_ExcludedMonsters_Name {
+            get {
+                return ResourceManager.GetString("HuntingRecordConfiguration_ExcludedMonsters_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Days kept.
+        /// </summary>
+        public static string HuntingRecordConfiguration_DaysKept_Name {
+            get {
+                return ResourceManager.GetString("HuntingRecordConfiguration_DaysKept_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Day the weekly rankings start.
+        /// </summary>
+        public static string HuntingRecordConfiguration_WeekStartsOn_Name {
+            get {
+                return ResourceManager.GetString("HuntingRecordConfiguration_WeekStartsOn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Characters per ranking page.
+        /// </summary>
+        public static string HuntingRecordConfiguration_PageSize_Name {
+            get {
+                return ResourceManager.GetString("HuntingRecordConfiguration_PageSize_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Characters per ranking.
+        /// </summary>
+        public static string HuntingRecordConfiguration_MaximumRanks_Name {
+            get {
+                return ResourceManager.GetString("HuntingRecordConfiguration_MaximumRanks_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ranking refresh interval.
+        /// </summary>
+        public static string HuntingRecordConfiguration_RankingRefreshInterval_Name {
+            get {
+                return ResourceManager.GetString("HuntingRecordConfiguration_RankingRefreshInterval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum time between writes of the state file.
+        /// </summary>
+        public static string HuntingRecordConfiguration_SaveInterval_Name {
+            get {
+                return ResourceManager.GetString("HuntingRecordConfiguration_SaveInterval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to State file.
+        /// </summary>
+        public static string HuntingRecordConfiguration_StateFile_Name {
+            get {
+                return ResourceManager.GetString("HuntingRecordConfiguration_StateFile_Name", resourceCulture);
+            }
+        }
     }
 }

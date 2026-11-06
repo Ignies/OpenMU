@@ -1362,5 +1362,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21GoldenInvasionUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the hunting record of Season 21.
+        /// </summary>
+        public static string AddSeason21HuntingRecordUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21HuntingRecordUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the 59 hunting maps and the excluded event monsters of the Season 21 hunting record and turns the hunting record and the ranking on. A configuration with maps stays. Optional..
+        /// </summary>
+        public static string AddSeason21HuntingRecordUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21HuntingRecordUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

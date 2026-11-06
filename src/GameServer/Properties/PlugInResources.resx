@@ -3011,4 +3011,22 @@
   <data name="MiningRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the mining request of the Babylon client: mines the next stage of a spot, or stops and collects.</value>
   </data>
+  <data name="HuntingRecordBabylonPlugIn_Name" xml:space="preserve">
+    <value>Hunting record and ranking view (Babylon)</value>
+  </data>
+  <data name="HuntingRecordBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the hunting record of a map and the pages of the ranking to the Babylon client.</value>
+  </data>
+  <data name="RankingRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ranking request handler (Babylon)</value>
+  </data>
+  <data name="RankingRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the Babylon client for a page of a ranking.</value>
+  </data>
+  <data name="HuntingRecordRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Hunting record request handler (Babylon)</value>
+  </data>
+  <data name="HuntingRecordRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the Babylon client for the hunting record of a map.</value>
+  </data>
 </root>

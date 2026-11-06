@@ -2646,4 +2646,37 @@
   <data name="MiningBundle_JewelCount_Name" xml:space="preserve">
     <value>Jewels per item</value>
   </data>
+  <data name="HuntingRecordPlugIn_Name" xml:space="preserve">
+    <value>Hunting record and ranking (Season 21)</value>
+  </data>
+  <data name="HuntingRecordPlugIn_Description" xml:space="preserve">
+    <value>Records per character, map and day the time spent, the monsters killed, the experience and the damage on the hunting maps of Season 21, and ranks the characters by total level and by the kills and experience of the week. The Babylon client shows both windows.</value>
+  </data>
+  <data name="HuntingRecordConfiguration_Maps_Name" xml:space="preserve">
+    <value>Recorded maps</value>
+  </data>
+  <data name="HuntingRecordConfiguration_ExcludedMonsters_Name" xml:space="preserve">
+    <value>Monsters which don't count</value>
+  </data>
+  <data name="HuntingRecordConfiguration_DaysKept_Name" xml:space="preserve">
+    <value>Days kept</value>
+  </data>
+  <data name="HuntingRecordConfiguration_WeekStartsOn_Name" xml:space="preserve">
+    <value>Day the weekly rankings start</value>
+  </data>
+  <data name="HuntingRecordConfiguration_PageSize_Name" xml:space="preserve">
+    <value>Characters per ranking page</value>
+  </data>
+  <data name="HuntingRecordConfiguration_MaximumRanks_Name" xml:space="preserve">
+    <value>Characters per ranking</value>
+  </data>
+  <data name="HuntingRecordConfiguration_RankingRefreshInterval_Name" xml:space="preserve">
+    <value>Ranking refresh interval</value>
+  </data>
+  <data name="HuntingRecordConfiguration_SaveInterval_Name" xml:space="preserve">
+    <value>Minimum time between writes of the state file</value>
+  </data>
+  <data name="HuntingRecordConfiguration_StateFile_Name" xml:space="preserve">
+    <value>State file</value>
+  </data>
 </root>

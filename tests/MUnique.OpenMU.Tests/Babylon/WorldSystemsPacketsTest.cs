@@ -5,11 +5,14 @@
 namespace MUnique.OpenMU.Tests.Babylon;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.Classes;
+using MUnique.OpenMU.GameLogic.HuntingRecord;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.RemoteView.World;
+using MUnique.OpenMU.Network.Packets.Babylon;
 using MiningResultPacket = MUnique.OpenMU.Network.Packets.Babylon.MiningResult;
 
 /// <summary>
@@ -35,6 +38,58 @@ public class WorldSystemsPacketsTest
         Assert.That(player.ViewPlugIns.GetPlugIn<IMiningViewPlugIn>(), Is.Null);
     }
 
+    /// <summary>
+    /// Only the Babylon client gets the hunting record and ranking view.
+    /// </summary>
+    [Test]
+    public void OnlyTheBabylonClientGetsTheHuntingRecordView()
+    {
+        var (player, _) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        player.GameContext.PlugInManager.RegisterPlugIn<IViewPlugIn, HuntingRecordBabylonPlugIn>();
+
+        player.ClientVersion = BabylonClient.Version;
+        Assert.That(player.ViewPlugIns.GetPlugIn<IHuntingRecordViewPlugIn>(), Is.InstanceOf<HuntingRecordBabylonPlugIn>());
+
+        player.ClientVersion = new(6, 3, Network.PlugIns.ClientLanguage.English);
+        Assert.That(player.ViewPlugIns.GetPlugIn<IHuntingRecordViewPlugIn>(), Is.Null);
+    }
+
+    /// <summary>
+    /// The hunting record list carries one row a day with its time, kills, experience and damage.
+    /// </summary>
+    [Test]
+    public async ValueTask HuntingRecordListHasItsFieldsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(BabylonClient.Version);
+        var day = new HuntingDay { Map = 122, Day = new DateTime(2026, 11, 6, 0, 0, 0, DateTimeKind.Utc), Seconds = 3600, Kills = 420, Experience = 5_000_000_000, Damage = 9_000_000_000 };
+
+        await new HuntingRecordBabylonPlugIn(player).ShowHuntingRecordAsync(122, [day]).ConfigureAwait(false);
+
+        var packet = new HuntingRecordList(output.ToArray());
+        Assert.That((packet.Header.Code, packet.Header.SubCode), Is.EqualTo(((byte)0xEE, (byte)0xD1)));
+        Assert.That((packet.MapNumber, packet.DayCount), Is.EqualTo(((ushort)122, (byte)1)));
+        var shown = packet[0];
+        Assert.That((shown.Day, shown.Seconds, shown.Kills), Is.EqualTo((1793923200u, 3600u, 420u)));
+        Assert.That((shown.Experience, shown.Damage), Is.EqualTo((5_000_000_000ul, 9_000_000_000ul)));
+    }
+
+    /// <summary>
+    /// The ranking page carries the kind, the paging, the own rank and the characters with their class code.
+    /// </summary>
+    [Test]
+    public async ValueTask RankingPageHasItsFieldsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(BabylonClient.Version);
+
+        await new HuntingRecordBabylonPlugIn(player).ShowRankingPageAsync(RankingKind.WeeklyKills, 1, 3, 12, [new GameLogic.HuntingRecord.RankingEntry(11, "Hunter", 4, 7000)]).ConfigureAwait(false);
+
+        var packet = new RankingPage(output.ToArray());
+        Assert.That((packet.Header.Code, packet.Header.SubCode), Is.EqualTo(((byte)0xEE, (byte)0xD0)));
+        Assert.That((packet.Kind, packet.Page, packet.PageCount, packet.OwnRank, packet.EntryCount), Is.EqualTo(((byte)1, (byte)1, (byte)3, (ushort)12, (byte)1)));
+        var entry = packet[0];
+        Assert.That((entry.Rank, entry.Name, entry.Value), Is.EqualTo(((ushort)11, "Hunter", 7000u)));
+        Assert.That(entry.ClassCode, Is.EqualTo(ClassCodes.ToCode(4)), "The class code of the Dark Knight.");
+    }
     /// <summary>
     /// The mining result carries the spot, the result, the stage and the jewels.
     /// </summary>

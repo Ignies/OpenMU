@@ -8605,5 +8605,59 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("MiningRequestHandlerPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hunting record and ranking view (Babylon).
+        /// </summary>
+        public static string HuntingRecordBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("HuntingRecordBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the hunting record of a map and the pages of the ranking to the Babylon client..
+        /// </summary>
+        public static string HuntingRecordBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("HuntingRecordBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ranking request handler (Babylon).
+        /// </summary>
+        public static string RankingRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RankingRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the Babylon client for a page of a ranking..
+        /// </summary>
+        public static string RankingRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RankingRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hunting record request handler (Babylon).
+        /// </summary>
+        public static string HuntingRecordRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("HuntingRecordRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the Babylon client for the hunting record of a map..
+        /// </summary>
+        public static string HuntingRecordRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("HuntingRecordRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

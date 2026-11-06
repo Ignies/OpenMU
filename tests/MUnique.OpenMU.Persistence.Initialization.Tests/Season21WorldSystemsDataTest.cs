@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.HuntingRecord;
 using MUnique.OpenMU.GameLogic.Mining;
 using MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
@@ -119,6 +120,48 @@ internal class Season21WorldSystemsDataTest
         var before = (plugIn.CustomConfiguration, gameConfiguration.Monsters.Count, gameConfiguration.DropItemGroups.Count);
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.That((plugIn.CustomConfiguration, gameConfiguration.Monsters.Count, gameConfiguration.DropItemGroups.Count), Is.EqualTo(before));
+        Assert.That(update.IsMandatory, Is.False);
+    }
+
+    /// <summary>
+    /// The hunting record update sets the 59 maps and the 64 excluded monsters of <c>HuntingRecord.txt</c> and switches the hunting record on.
+    /// </summary>
+    [Test]
+    public async Task HuntingRecordUpdateSetsTheMapsOfTheDataAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+
+        await new AddSeason21HuntingRecordUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var configuration = GetConfiguration<HuntingRecordConfiguration>(gameConfiguration, typeof(HuntingRecordPlugIn).GUID, out var plugIn);
+        Assert.That(plugIn.IsActive, Is.True);
+        Assert.That(configuration.Maps, Has.Count.EqualTo(59));
+        Assert.That(configuration.Maps.Take(4), Is.EqualTo(new short[] { 0, 3, 51, 2 }), "Lorencia, Noria, Elbeland, Davias.");
+        Assert.That(configuration.Maps, Does.Contain((short)143).And.Not.Contain((short)9), "Kardamahal counts, Devil Square doesn't.");
+        Assert.That(configuration.ExcludedMonsters, Has.Count.EqualTo(64));
+        Assert.That(configuration.ExcludedMonsters.Take(2), Is.EqualTo(new short[] { 413, 463 }));
+        Assert.That(GameLogic.ForkInfo.Has("ranking"), Is.True);
+    }
+
+    /// <summary>
+    /// Applied twice, the hunting record update keeps the maps and the switch of the operator; it is optional.
+    /// </summary>
+    [Test]
+    public async Task HuntingRecordUpdateKeepsTheOperatorsMapsAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+        var update = new AddSeason21HuntingRecordUpdatePlugIn();
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var plugIn = gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(HuntingRecordPlugIn).GUID);
+        var custom = plugIn.GetConfiguration<HuntingRecordConfiguration>(new IdIgnoringReferenceHandler())!;
+        custom.Maps = [7];
+        plugIn.SetConfiguration(custom, null);
+        plugIn.IsActive = false;
+
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(GetConfiguration<HuntingRecordConfiguration>(gameConfiguration, typeof(HuntingRecordPlugIn).GUID, out _).Maps, Is.EqualTo(new short[] { 7 }));
+        Assert.That(plugIn.IsActive, Is.False);
         Assert.That(update.IsMandatory, Is.False);
     }
 

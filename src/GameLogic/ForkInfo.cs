@@ -69,6 +69,7 @@ public static class ForkInfo
         "muun",
         "mining",
         "golden_invasions_s21",
+        "ranking",
     ];
 
     /// <summary>

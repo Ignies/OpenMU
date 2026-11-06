@@ -540,4 +540,10 @@
   <data name="AddSeason21GoldenInvasionUpdatePlugIn_Description" xml:space="preserve">
     <value>Adds the ten later golden monsters (Golden Dark Knight, Devil, Stone Golem, Crust, Satyros, Twin Tail, Iron Knight, Napin, Great Golden Dragon, Golden Rabbit) with their Box of Kundun and the Golden Derkon in Elbeland to the golden invasion. A golden invasion with the Season 6 roster gets the roster and timetable of Season 21 (every four hours from 00:25, 10 minutes); one you changed keeps your numbers and only gets the missing monsters and maps.</value>
   </data>
+  <data name="AddSeason21HuntingRecordUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the hunting record of Season 21</value>
+  </data>
+  <data name="AddSeason21HuntingRecordUpdatePlugIn_Description" xml:space="preserve">
+    <value>Sets the 59 hunting maps and the excluded event monsters of the Season 21 hunting record and turns the hunting record and the ranking on. A configuration with maps stays. Optional.</value>
+  </data>
 </root>

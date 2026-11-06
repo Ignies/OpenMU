@@ -80,6 +80,7 @@ Rules:
 | `muun` | The Muuns of Season 21: the Muun inventory with two equipped Muuns, their options on the owner, level up, evolution, the energy converter, Monica's exchange and the mounts (update "Add the Muuns of Season 21", plugin "Muuns of Season 21", `src/GameLogic/Muuns`) |
 | `mining` | The Pandora mining: 51 spots in the safe zones of six maps, five stages, Jewels of Bless (update "Add the mining of Season 21", plugin "Mining (Season 21)", `src/GameLogic/Mining`) |
 | `golden_invasions_s21` | The golden invasion of Season 21: the ten later golden monsters 493-502 with their Box of Kundun, the Golden Derkon in Elbeland, 19 kinds every four hours from 00:25 for 10 minutes (update "Add the golden invasion of Season 21"; the Season 6 plugin "Golden Invasion" runs it) |
+| `ranking` | The hunting record (time, kills, experience and damage per character, map and day on the 59 hunting maps, kept 7 days) and the in-game ranking by total level and by the kills and hunting experience of the week (update "Add the hunting record of Season 21", plugin "Hunting record and ranking (Season 21)", `src/GameLogic/HuntingRecord`) |
 
 ## Balance
 
@@ -191,6 +192,15 @@ Season 6 packets (golden notices for a spawn, a kill and a lost battle, blue not
   jewels lost, 3 collected, 4 no pickaxe, 5 pickaxe worn, 6 no spot in reach, 7 another player mines it, 8 off), stage at 7,
   jewels (u16 LE) at 8, jackpot (u16 LE) at 10. Sent when the character talks to a spot (result 0) and after each request.
 - A4 stays kept for the invasion notice.
+
+Social and ranking packets (range D0-DF):
+
+- `C1 EE D3 RankingRequest` (client, 6): kind at 4 (0 total level, 1 monster kills of the week, 2 hunting experience of the
+  week), page from 0 at 5. Answered by `C2 EE D0 RankingPage`: kind at 5, page at 6, page count at 7, own rank (u16 LE, 0
+  not ranked) at 8, count at 10, then per entry 17 bytes: rank (u16 LE), name (10), class code, value (u32 LE).
+- `C1 EE D4 HuntingRecordRequest` (client, 6): map number (u16 LE, 0xFFFF the current map) at 4. Answered by
+  `C2 EE D1 HuntingRecordList`: map number (u16 LE) at 5, count at 7, then per day, newest first, 28 bytes: day start
+  (u32 LE, UTC seconds), seconds on the map, kills (u32 LE each), experience and damage (u64 LE each).
 
 ### Muuns (range 50-5F)
 
