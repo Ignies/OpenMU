@@ -74,7 +74,7 @@ public sealed class MiniGameManager : IMiniGameManager
 
             switch (miniGameDefinition.Type)
             {
-                case MiniGameType.ChaosCastle:
+                case MiniGameType.ChaosCastle or MiniGameType.ChaosCastleSurvival:
                     miniGameContext = new ChaosCastleContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
                     break;
                 case MiniGameType.DevilSquare:

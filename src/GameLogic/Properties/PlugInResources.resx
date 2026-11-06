@@ -3057,4 +3057,16 @@
   <data name="LabyrinthLeaguePlugIn_Description" xml:space="preserve">
     <value>The points, floor boxes and weekly leagues of the Labyrinth of Dimensions: groups of five characters per tier, promotion and demotion every week, the reward of the tier on the reward day (S21Emu LabyrinthOfDimension_League.xml).</value>
   </data>
+  <data name="ChaosCastleSurvivalPlugIn_Name" xml:space="preserve">
+    <value>Chaos Castle Survival of the Fittest (Season 21)</value>
+  </data>
+  <data name="ChaosCastleSurvivalPlugIn_Description" xml:space="preserve">
+    <value>The monthly tournament of the Chaos Castle Survival on map 97: try-outs, semi-finals and the final by the day of the month, points for monster kills, player kills and the win, the best 20 of the try-outs and the best 10 of the semi-finals go on, the Conqueror's Badge for the champion.</value>
+  </data>
+  <data name="ChaosCastleSurvivalStartPlugIn_Name" xml:space="preserve">
+    <value>Chaos Castle Survival start</value>
+  </data>
+  <data name="ChaosCastleSurvivalStartPlugIn_Description" xml:space="preserve">
+    <value>Opens the Chaos Castle Survival by its timetable on the days of the tournament; the final only at its own time.</value>
+  </data>
 </root>

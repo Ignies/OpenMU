@@ -1085,4 +1085,10 @@
   <data name="GodOfDarknessBattle" xml:space="preserve">
     <value>God of Darkness (Boss Battle)</value>
   </data>
+  <data name="ChaosCastle15" xml:space="preserve">
+    <value>Chaos Castle 15</value>
+  </data>
+  <data name="ChaosCastle16" xml:space="preserve">
+    <value>Chaos Castle 16</value>
+  </data>
 </root>

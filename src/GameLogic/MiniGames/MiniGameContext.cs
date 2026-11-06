@@ -224,6 +224,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// <returns>A value indicating whether entering had success.</returns>
     public async ValueTask<EnterResult> TryEnterAsync(Player player)
     {
+        if (!await this.MayEnterAsync(player).ConfigureAwait(false))
+        {
+            return EnterResult.Failed;
+        }
+
         var result = await this._players.TryEnterAsync(player, this.AreEquippedItemsAllowedAsync, () => this.AllowEnterWhilePlaying).ConfigureAwait(false);
         if (result != EnterResult.Success)
         {
@@ -235,6 +240,13 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
         return EnterResult.Success;
     }
+
+    /// <summary>
+    /// Determines whether the player may enter this game, beyond the rules of the definition.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c>, if the player may enter.</returns>
+    protected virtual ValueTask<bool> MayEnterAsync(Player player) => ValueTask.FromResult(true);
 
     /// <summary>
     /// Skips the currently running timed wait of this game, e.g. the entering phase, the

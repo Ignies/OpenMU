@@ -618,4 +618,10 @@
   <data name="AddSeason21LabyrinthLeagueUpdatePlugIn_Description" xml:space="preserve">
     <value>The points of the labyrinth floors (first and repeated clear of the day, first play, fast finish), a Maze of Dimensions box per floor which opens into the items of its bag, and the weekly leagues in groups of five with the rewards of the tiers (S21Emu LabyrinthOfDimension_League.xml). Keeps the configuration and the switch the operator set.</value>
   </data>
+  <data name="AddSeason21ChaosCastleSurvivalUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the Chaos Castle Survival of Season 21</value>
+  </data>
+  <data name="AddSeason21ChaosCastleSurvivalUpdatePlugIn_Description" xml:space="preserve">
+    <value>Map 97 with its monsters and gate 443, the Chaos Castle Survival of the Fittest for up to 70 players from level 280 (5 minutes to enter, 10 to play), its timetable of S21Emu ChaosCastleSurvival.dat and the monthly tournament: try-outs on the 8th to 10th, semi-finals on the 11th and 12th, the final on the 13th at 1:25. Keeps what the operator set.</value>
+  </data>
 </root>

@@ -1273,4 +1273,7 @@ Inventory Extensions: {18}</value>
   <data name="SoulConverterWeeklyLimitReached" xml:space="preserve">
     <value>No more monster soul converters can be activated this week.</value>
   </data>
+  <data name="ChaosCastleSurvivalNotQualified" xml:space="preserve">
+    <value>You haven't qualified for this stage of the Chaos Castle Survival.</value>
+  </data>
 </root>

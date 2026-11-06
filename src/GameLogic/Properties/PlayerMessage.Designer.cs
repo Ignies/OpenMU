@@ -3495,5 +3495,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("SoulConverterWeeklyLimitReached", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You haven't qualified for this stage of the Chaos Castle Survival..
+        /// </summary>
+        public static string ChaosCastleSurvivalNotQualified {
+            get {
+                return ResourceManager.GetString("ChaosCastleSurvivalNotQualified", resourceCulture);
+            }
+        }
     }
 }

@@ -1596,5 +1596,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21LabyrinthLeagueUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the Chaos Castle Survival of Season 21.
+        /// </summary>
+        public static string AddSeason21ChaosCastleSurvivalUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21ChaosCastleSurvivalUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map 97 with its monsters and gate 443, the Chaos Castle Survival of the Fittest for up to 70 players from level 280 (5 minutes to enter, 10 to play), its timetable of S21Emu ChaosCastleSurvival.dat and the monthly tournament: try-outs on the 8th to 10th, semi-finals on the 11th and 12th, the final on the 13th at 1:25. Keeps what the operator set..
+        /// </summary>
+        public static string AddSeason21ChaosCastleSurvivalUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21ChaosCastleSurvivalUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

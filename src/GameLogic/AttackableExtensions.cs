@@ -294,7 +294,7 @@ public static class AttackableExtensions
             dmg += (int)attacker.Attributes[Stats.FinalDamageIncreasePvp];
             dmg += GetMasterSkillTreeMasteryPvpDamageBonus(attacker);
 
-            if (attackerPlayer!.CurrentMiniGame?.Definition.Type == MiniGameType.ChaosCastle)
+            if (attackerPlayer!.CurrentMiniGame?.Definition.Type is MiniGameType.ChaosCastle or MiniGameType.ChaosCastleSurvival)
             {
                 // In Chaos Castle PvP damage is halved (except for raven)
                 dmg /= 2;
@@ -317,7 +317,7 @@ public static class AttackableExtensions
                 attributes |= DamageAttributes.Double;
             }
 
-            if (isClassicPvp && attackerPlayer!.CurrentMiniGame?.Definition.Type == MiniGameType.ChaosCastle)
+            if (isClassicPvp && attackerPlayer!.CurrentMiniGame?.Definition.Type is MiniGameType.ChaosCastle or MiniGameType.ChaosCastleSurvival)
             {
                 // Further halve damage in Chaos Castle for classic PvP
                 dmg /= 2;

@@ -150,4 +150,7 @@
   <data name="AcheronGuardian2" xml:space="preserve">
     <value>Protector of Acheron (Deventer)</value>
   </data>
+  <data name="ChaosCastleSurvival" xml:space="preserve">
+    <value>Chaos Castle Survival of the Fittest</value>
+  </data>
 </root>

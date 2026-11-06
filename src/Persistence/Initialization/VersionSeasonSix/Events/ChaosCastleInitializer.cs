@@ -105,7 +105,11 @@ internal class ChaosCastleInitializer : InitializerBase
         return chaosCastle;
     }
 
-    private void CreateEvents(MiniGameDefinition chaosCastle)
+    /// <summary>
+    /// Adds the stages of a chaos castle: the safezone at the start and the shrinking floor after 60, 70 and 80 kills.
+    /// </summary>
+    /// <param name="chaosCastle">The definition of the chaos castle.</param>
+    internal void CreateEvents(MiniGameDefinition chaosCastle)
     {
         AddStage(0, 0);
         AddSafezoneToggle(0, 23, 75, 44, 108, false);

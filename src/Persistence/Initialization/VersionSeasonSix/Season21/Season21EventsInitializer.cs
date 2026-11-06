@@ -241,6 +241,48 @@ internal class Season21EventsInitializer
     }
 
     /// <summary>
+    /// Adds the Chaos Castle Survival of the Fittest: map 97, a Chaos Castle for up to 70 players from level 280, its stages
+    /// and the tournament, and switches its start and tournament on.
+    /// </summary>
+    public void AddChaosCastleSurvival()
+    {
+        new Season21MapsInitializer(this._context, this._gameConfiguration, this._gameServers).Initialize(Season21ChaosCastleSurvivalData.Castle);
+        if (this._gameConfiguration.Maps.FirstOrDefault(m => m.Number == Season21ChaosCastleSurvivalData.MapNumber && m.Discriminator == 0) is not { } map
+            || this.FindSpawnGate(Season21ChaosCastleSurvivalData.MapNumber) is not { } entrance)
+        {
+            return;
+        }
+
+        // The game spawns the monsters of the castle at its start, like in every chaos castle.
+        foreach (var spawn in map.MonsterSpawns.Where(s => s.MonsterDefinition?.ObjectKind == NpcObjectKind.Monster))
+        {
+            spawn.SpawnTrigger = SpawnTrigger.ManuallyForEvent;
+        }
+
+        var definition = this.GetOrCreateDefinition(MiniGameType.ChaosCastleSurvival, 1, LocalizedString.FromResource(() => MiniGameNames.ChaosCastleSurvival), LocalizedString.FromResource(() => MiniGameDescriptions.ChaosCastleSurvival), entrance);
+        if (definition.MaximumPlayerCount != 0)
+        {
+            return;
+        }
+
+        definition.MapCreationPolicy = MiniGameMapCreationPolicy.Shared;
+        definition.MaximumPlayerCount = 70;
+        definition.MinimumPlayerCount = 5;
+        definition.MinimumCharacterLevel = 280;
+        definition.MaximumCharacterLevel = 400;
+        definition.MinimumSpecialCharacterLevel = 280;
+        definition.MaximumSpecialCharacterLevel = 400;
+        definition.EnterDuration = TimeSpan.FromMinutes(5);
+        definition.GameDuration = TimeSpan.FromMinutes(10);
+        definition.ExitDuration = TimeSpan.FromMinutes(4);
+        definition.SaveRankingStatistics = true;
+        definition.AllowParty = false;
+        new VersionSeasonSix.Events.ChaosCastleInitializer(this._context, this._gameConfiguration).CreateEvents(definition);
+        this.SwitchOn(typeof(ChaosCastleSurvivalPlugIn).GUID);
+        this.SwitchOn(typeof(ChaosCastleSurvivalStartPlugIn).GUID);
+    }
+
+    /// <summary>
     /// Applies the Crywolf renewal of Season 21 Part 1 Update 3 (webzen guide 425): the army takes the element of the week
     /// (fire, water, earth, wind, darkness, from Thursday 00:00), Balgass appears 6:40 into the battle, is immune to debuffs
     /// and the rewards go into the gremory case; the altars open on Monday 9:30. The state durations are the ones of S21Emu

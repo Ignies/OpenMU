@@ -8706,5 +8706,41 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("LabyrinthLeaguePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chaos Castle Survival of the Fittest (Season 21).
+        /// </summary>
+        public static string ChaosCastleSurvivalPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ChaosCastleSurvivalPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The monthly tournament of the Chaos Castle Survival on map 97: try-outs, semi-finals and the final by the day of the month, points for monster kills, player kills and the win, the best 20 of the try-outs and the best 10 of the semi-finals go on, the Conqueror's Badge for the champion..
+        /// </summary>
+        public static string ChaosCastleSurvivalPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ChaosCastleSurvivalPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chaos Castle Survival start.
+        /// </summary>
+        public static string ChaosCastleSurvivalStartPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ChaosCastleSurvivalStartPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opens the Chaos Castle Survival by its timetable on the days of the tournament; the final only at its own time..
+        /// </summary>
+        public static string ChaosCastleSurvivalStartPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ChaosCastleSurvivalStartPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

@@ -145,9 +145,24 @@ a monster with it takes no magic effect, since all of a monster's effects come f
 so the event starts on Monday at 9:30 minus the two notifications (9:24), unless the operator changed the Season 6
 schedule. Not ported: the auto move of the Event Map window (client).
 
+### Chaos Castle Survival of the Fittest (fork feature `chaos_castle_survival`)
+
+Update "Add the Chaos Castle Survival of Season 21" (S21Emu `Event/ChaosCastleSurvival.dat`, webzen guide 161): map 97
+(`Terrain98.att`, gate 443) with Chaos Castle 15 and 16 (644, 645) at the 99 places of the data, spawned by the game; a
+Chaos Castle (`MiniGameType.ChaosCastleSurvival`, run by `ChaosCastleContext` with its stages, rules and PvP halving) for
+5 to 70 players from level 280, 5 minutes to enter, 10 to play, 4 to leave. `ChaosCastleSurvivalStartPlugIn` opens it at
+1:25, 4:35, 5:00, 7:00 and every two hours from 9:00 (21:04) on the days of the tournament.
+
+The plugin "Chaos Castle Survival of the Fittest (Season 21)" (`ChaosCastleSurvivalPlugIn`, server time) makes the games of
+a month a tournament: try-outs on the 8th to 10th, semi-finals on the 11th and 12th, the final on the 13th at 1:25 only
+(the days of the data). A game counts 1 point per killed monster, 2 per killed player and 3 for the win; the try-out
+points add up, the best 20 of them may enter the semi-finals, the best 10 of those the final (`MayEnterAsync` refuses the
+others), and the winner of the final gets the Conqueror's Badge (13/276) into the gremory case or the inventory. The
+points are kept in `state/chaos_castle_survival.json`.
+
+Not ported: the Hall of Fame, the Battle Core exchange of the event items and the `ExperienceTable` of the data (no
+meaning given).
+
 ### Not ported (no data)
 
-- Arca War: S21Emu `ArcaBattle.xml` has the schedule and trophies but no obelisk monsters, guild registration rules or
-  capture logic the client could show; logged, not built.
-- Chaos Castle Survival of the Fittest: `ChaosCastleSurvival.dat` has the schedule and stages only; map 97 has no
-  stage or ranking data. Logged, not built.
+- Arca War: plan in the S21 hub notes ("[E2] Arca War").

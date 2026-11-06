@@ -370,5 +370,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AcheronGuardian2", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chaos Castle Survival of the Fittest.
+        /// </summary>
+        public static string ChaosCastleSurvival {
+            get {
+                return ResourceManager.GetString("ChaosCastleSurvival", resourceCulture);
+            }
+        }
     }
 }

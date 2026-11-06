@@ -89,6 +89,7 @@ Rules:
 | `instance_zone` | The Instance Zone of Season 21 (map 114): the entrances of the fourth and fifth class trials and of the labyrinth (update "Add the Instance Zone and the Labyrinth of Dimensions of Season 21") |
 | `labyrinth` | The Labyrinth of Dimensions of Season 21 (map 115): a solo instance of 41 floors with Ruud and boxes (same update; event type 10) |
 | `labyrinth_league` | The scores and weekly leagues of the labyrinth: floor points by the daily record, first play and fast finish, a Maze of Dimensions box per floor, groups of five per tier (Bronze, Silver, Gold, Legend), two up and the fifth down every week, the tier reward on the 29th (update "Add the leagues of the Labyrinth of Dimensions of Season 21", plugin "Labyrinth of Dimensions league (Season 21)", off by default; `C1 EE B5 LabyrinthLeague`) |
+| `chaos_castle_survival` | The Chaos Castle Survival of the Fittest of Season 21 (map 97, gate 443): a Chaos Castle for up to 70 players from level 280 whose games are the try-outs (8th-10th), semi-finals (11th-12th) and final (13th, 1:25) of a monthly tournament; 1 point a monster, 2 a player, 3 the win; the best 20 and 10 go on; the Conqueror's Badge for the champion (update "Add the Chaos Castle Survival of Season 21", plugins "Chaos Castle Survival of the Fittest (Season 21)" and "Chaos Castle Survival start", off by default; event type 13 of the event packets, the castle itself shows the Chaos Castle states) |
 | `boss_battle` | The Boss Battle Together of Season 21 (map 139): one of five bosses for everybody, rewards for damage, top damage and the last hit (update "Add the Boss Battle Together of Season 21"; event type 11) |
 | `acheron_guardian` | The Protector of Acheron of Season 21 (maps 92 and 96): 30 waves of monsters, a bag reward for 100 points (update "Add the Protector of Acheron of Season 21"; event type 12) |
 | `imperial_guardian_s18` | The Imperial Guardian rework of Season 18: from total level 1000, artifact rewards at the completion (update "Apply the Imperial Guardian rework of Season 18") |
@@ -285,7 +286,8 @@ bytes in the connection's item format (W32); 0xFF for no item.
 ### Events (range B0-BF)
 
 The events and party instances of Season 21 share five packets; the event type is the server's `MiniGameType`
-(8 party instance, 9 Tormented Square, 10 Labyrinth of Dimensions, 11 Boss Battle Together, 12 Protector of Acheron). A Season 6 client gets none of them: it is told in words.
+(8 party instance, 9 Tormented Square, 10 Labyrinth of Dimensions, 11 Boss Battle Together, 12 Protector of Acheron,
+13 Chaos Castle Survival). A Season 6 client gets none of them: it is told in words.
 
 ```
 C1 0C EE B0  EventState (server)          C1 07 EE B1  EventEnterRequest (client)

@@ -74,4 +74,10 @@ public enum MiniGameType
     /// The Protector of Acheron of Season 21: waves of monsters in Acheron and Deventer.
     /// </summary>
     AcheronGuardian,
+
+    /// <summary>
+    /// The Chaos Castle Survival of the Fittest of Season 21: a Chaos Castle on map 97 whose games are the stages of a
+    /// monthly tournament.
+    /// </summary>
+    ChaosCastleSurvival,
 }

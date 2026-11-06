@@ -8,6 +8,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.Pathfinding;
 using Nito.Disposables.Internals;
@@ -56,6 +57,8 @@ public sealed class ChaosCastleContext : MiniGameContext
     private readonly IMapInitializer _mapInitializer;
     private readonly ConcurrentDictionary<string, PlayerGameState> _gameStates = new();
     private readonly ConcurrentDictionary<Monster, byte> _monsters = new();
+    private readonly ChaosCastleSurvivalPlugIn? _survival;
+    private readonly ChaosCastleSurvivalStage _survivalStage;
 
     private IReadOnlyCollection<(string Name, int Score, int BonusExp, int BonusMoney)>? _highScoreTable;
     private TimeSpan _remainingTime;
@@ -75,6 +78,11 @@ public sealed class ChaosCastleContext : MiniGameContext
     {
         this._gameContext = gameContext;
         this._mapInitializer = mapInitializer;
+        if (definition.Type == MiniGameType.ChaosCastleSurvival && ChaosCastleSurvivalPlugIn.Get(gameContext) is { } survival)
+        {
+            this._survival = survival;
+            this._survivalStage = survival.GetStage(survival.GetLocalNow(gameContext));
+        }
 
         this.Logger.LogDebug("Event {0} created, game id {1}", this.Definition.Name, (this._gameContext as IGameServerContext)?.Id ?? 0);
     }
@@ -89,7 +97,7 @@ public sealed class ChaosCastleContext : MiniGameContext
     protected override TimeSpan RemainingTime => this._remainingTime;
 
     /// <inheritdoc />
-    protected override int MinimumPlayerCount => 1;
+    protected override int MinimumPlayerCount => this.Definition.Type == MiniGameType.ChaosCastleSurvival ? base.MinimumPlayerCount : 1;
 
     /// <inheritdoc />
     public override bool IsItemAllowedToEquip(Item item)
@@ -230,7 +238,28 @@ public sealed class ChaosCastleContext : MiniGameContext
         this._highScoreTable = scoreList.AsReadOnly();
 
         await this.SaveRankingAsync(sortedFinishers.Select(state => (state.Rank, state.Player.SelectedCharacter!, state.Score))).ConfigureAwait(false);
+        if (this._survival is { } survival)
+        {
+            var results = this._gameStates.Values
+                .Where(state => state.Player.SelectedCharacter is not null)
+                .Select(state => (state.Player, new ChaosCastleSurvivalResult(state.Player.SelectedCharacter!.Id, state.MonsterKillCount, state.PlayerKillCount, state.Player == this._winner)))
+                .ToList();
+            await survival.RecordAsync(this._gameContext, this._survivalStage, results).ConfigureAwait(false);
+        }
+
         await base.GameEndedAsync(finishers).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    protected override async ValueTask<bool> MayEnterAsync(Player player)
+    {
+        if (this._survival is not { } survival || survival.IsQualified(player, this._survivalStage))
+        {
+            return true;
+        }
+
+        await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ChaosCastleSurvivalNotQualified)).ConfigureAwait(false);
+        return false;
     }
 
     /// <inheritdoc />

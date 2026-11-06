@@ -137,4 +137,7 @@
   <data name="DeventerArca" xml:space="preserve">
     <value>Deventer (Arca)</value>
   </data>
+  <data name="ChaosCastleSurvival" xml:space="preserve">
+    <value>Chaos Castle Survival</value>
+  </data>
 </root>

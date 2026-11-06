@@ -363,5 +363,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AcheronGuardian", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Chaos Castle Survival of the Fittest of Season 21: the try-outs, semi-finals and final of a monthly tournament on map 97..
+        /// </summary>
+        public static string ChaosCastleSurvival {
+            get {
+                return ResourceManager.GetString("ChaosCastleSurvival", resourceCulture);
+            }
+        }
     }
 }

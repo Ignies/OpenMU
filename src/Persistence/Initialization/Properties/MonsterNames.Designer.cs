@@ -4679,5 +4679,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("GodOfDarknessBattle", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chaos Castle 15.
+        /// </summary>
+        public static string ChaosCastle15 {
+            get {
+                return ResourceManager.GetString("ChaosCastle15", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chaos Castle 16.
+        /// </summary>
+        public static string ChaosCastle16 {
+            get {
+                return ResourceManager.GetString("ChaosCastle16", resourceCulture);
+            }
+        }
     }
 }

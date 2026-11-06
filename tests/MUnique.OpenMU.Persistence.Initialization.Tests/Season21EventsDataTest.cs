@@ -160,6 +160,27 @@ internal class Season21EventsDataTest
     }
 
     /// <summary>
+    /// The Chaos Castle Survival is a chaos castle on map 97 with the monsters of the data, which the game spawns, for up to
+    /// 70 players from level 280; its start and tournament are on.
+    /// </summary>
+    [Test]
+    public void ChaosCastleSurvivalHasItsCastle()
+    {
+        var map = this._gameConfiguration.Maps.Single(m => m.Number == 97);
+        var monsters = map.MonsterSpawns.Where(s => s.MonsterDefinition?.ObjectKind == NpcObjectKind.Monster).ToList();
+        Assert.That(monsters, Has.Count.EqualTo(99));
+        Assert.That(monsters.Select(s => s.SpawnTrigger), Has.All.EqualTo(SpawnTrigger.ManuallyForEvent));
+        Assert.That(monsters.Select(s => s.MonsterDefinition!.Number).Distinct().Order(), Is.EqualTo(new short[] { 644, 645 }));
+        var definition = this._gameConfiguration.MiniGameDefinitions.Single(d => d.Type == MiniGameType.ChaosCastleSurvival);
+        Assert.That((definition.Entrance?.Map?.Number, definition.Entrance?.X1, definition.Entrance?.Y1, definition.Entrance?.X2, definition.Entrance?.Y2), Is.EqualTo(((short?)97, (byte?)31, (byte?)88, (byte?)36, (byte?)95)));
+        Assert.That((definition.MaximumPlayerCount, definition.MinimumCharacterLevel, definition.GameDuration), Is.EqualTo((70, 280, TimeSpan.FromMinutes(10))));
+        Assert.That(definition.ChangeEvents, Has.Count.EqualTo(4));
+        Assert.That(
+            this._gameConfiguration.PlugInConfigurations.Where(c => c.TypeId == typeof(GameLogic.MiniGames.Season21.ChaosCastleSurvivalPlugIn).GUID || c.TypeId == typeof(GameLogic.MiniGames.Season21.ChaosCastleSurvivalStartPlugIn).GUID).Select(c => c.IsActive),
+            Is.EqualTo(new[] { true, true }));
+    }
+
+    /// <summary>
     /// A Crywolf schedule which the operator changed stays when the renewal runs again.
     /// </summary>
     [Test]
@@ -231,6 +252,7 @@ internal class Season21EventsDataTest
         new AddSeason21ImperialGuardianReworkUpdatePlugIn(),
         new AddSeason21CrywolfUpdatePlugIn(),
         new AddSeason21LabyrinthLeagueUpdatePlugIn(),
+        new AddSeason21ChaosCastleSurvivalUpdatePlugIn(),
     ];
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6Async()

@@ -86,6 +86,7 @@ public static class ForkInfo
         "creatable_classes",
         "level_penalties",
         "labyrinth_league",
+        "chaos_castle_survival",
     ];
 
     /// <summary>

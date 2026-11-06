@@ -37,7 +37,8 @@ public class UpdateMiniGameStateViewViewPlugIn : IUpdateMiniGameStateViewPlugIn
 
     private static bool TryGetState(MiniGameType type, MiniGameState state, out UpdateMiniGameState.MiniGameTypeState miniGameState)
     {
-        switch (type, state)
+        // The castle of the Chaos Castle Survival shows the states of a Chaos Castle.
+        switch (type == MiniGameType.ChaosCastleSurvival ? MiniGameType.ChaosCastle : type, state)
         {
             case (MiniGameType.DevilSquare, MiniGameState.Closed):
                 miniGameState = UpdateMiniGameState.MiniGameTypeState.DevilSquareClosed;

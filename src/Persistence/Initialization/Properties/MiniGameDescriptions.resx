@@ -147,4 +147,7 @@
   <data name="AcheronGuardian" xml:space="preserve">
     <value>30 waves of monsters in the areas of Acheron and Deventer; 100 points give an item of the Protection of Acheron.</value>
   </data>
+  <data name="ChaosCastleSurvival" xml:space="preserve">
+    <value>The Chaos Castle Survival of the Fittest of Season 21: the try-outs, semi-finals and final of a monthly tournament on map 97.</value>
+  </data>
 </root>
