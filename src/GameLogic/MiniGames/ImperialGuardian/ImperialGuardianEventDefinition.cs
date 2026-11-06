@@ -96,6 +96,12 @@ public class ImperialGuardianEventDefinition
     };
 
     /// <summary>
+    /// Gets or sets the items of which a player gets one when the event has been completed (Season 18 rework), into the
+    /// gremory case when it's on; empty in Season 6.
+    /// </summary>
+    public IList<ImperialGuardianItemReward> CompletionRewards { get; set; } = new List<ImperialGuardianItemReward>();
+
+    /// <summary>
     /// Gets or sets the multiplier of the experience reward on sunday.
     /// </summary>
     public int SundayExperienceMultiplier { get; set; } = 2;

@@ -102,6 +102,10 @@ public sealed class MiniGameManager : IMiniGameManager
                     when Season21EventsFeaturePlugIn.GetConfiguration(this._gameContext).GetRounds(miniGameDefinition.Type, miniGameDefinition.GameLevel) is { } rounds:
                     miniGameContext = new Season21RoundsContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer, rounds);
                     break;
+                case MiniGameType.BossBattle
+                    when Season21EventsFeaturePlugIn.GetConfiguration(this._gameContext).BossBattle is { } bossBattle:
+                    miniGameContext = new BossBattleContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer, bossBattle);
+                    break;
                 default:
                     miniGameContext = new MiniGameContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
                     break;

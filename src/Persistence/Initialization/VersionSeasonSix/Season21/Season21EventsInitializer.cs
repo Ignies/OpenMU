@@ -5,6 +5,9 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
 using System.Text.Json;
+using MUnique.OpenMU.GameLogic.Classes;
+using MUnique.OpenMU.GameLogic.EvolutionQuests;
+using MUnique.OpenMU.GameLogic.MiniGames.ImperialGuardian;
 using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
@@ -62,6 +65,216 @@ internal class Season21EventsInitializer
         {
             this.SwitchOn(typeof(TormentedSquareStartPlugIn).GUID);
         }
+    }
+
+    /// <summary>
+    /// Adds the Instance Zone (map 114) with the entrances of the fourth and fifth class trials and the Labyrinth of
+    /// Dimensions (map 115, a solo instance of 41 floors behind the Portal of Dimension). Sent and Eunice in the towns
+    /// then take a character to the Instance Zone, and Cent and Eunice there into the party instance of the trial.
+    /// </summary>
+    public void AddInstanceZone()
+    {
+        new Season21MapsInitializer(this._context, this._gameConfiguration, this._gameServers).Initialize(Season21InstanceZoneData.Maps);
+        this.RouteTrialsThroughTheInstanceZone();
+        if (this.FindSpawnGate(Season21InstanceZoneData.LabyrinthMap) is not { } entrance)
+        {
+            return;
+        }
+
+        var definition = this.GetOrCreateDefinition(MiniGameType.LabyrinthOfDimensions, 1, LocalizedString.FromResource(() => MiniGameNames.LabyrinthOfDimensions), LocalizedString.FromResource(() => MiniGameDescriptions.LabyrinthOfDimensions), entrance);
+        if (definition.MaximumPlayerCount == 0)
+        {
+            definition.MapCreationPolicy = MiniGameMapCreationPolicy.OnePerPlayer;
+            definition.MaximumPlayerCount = 1;
+            definition.MinimumPlayerCount = 1;
+            definition.MinimumCharacterLevel = 400;
+            definition.MinimumSpecialCharacterLevel = 400;
+            definition.EnterDuration = TimeSpan.FromSeconds(10);
+            definition.GameDuration = TimeSpan.FromMinutes(60);
+            definition.ExitDuration = TimeSpan.FromMinutes(1);
+        }
+
+        this.UpdateEvents(events =>
+        {
+            var changed = false;
+            if (events.Labyrinth is null)
+            {
+                events.Labyrinth = Season21InstanceZoneData.CreateLabyrinth();
+                changed = true;
+            }
+
+            if (events.Entrances.All(e => e.NpcNumber != Season21InstanceZoneData.PortalOfDimension))
+            {
+                events.Entrances.Add(new EventEntrance { NpcNumber = Season21InstanceZoneData.PortalOfDimension, Type = MiniGameType.LabyrinthOfDimensions, GameLevel = 1 });
+                changed = true;
+            }
+
+            return changed;
+        });
+    }
+
+    /// <summary>
+    /// Adds the Boss Battle Together: map 139, the event for up to 100 players from total level 800 for 10,000,000 zen,
+    /// its five bosses and rewards, and switches its start on.
+    /// </summary>
+    public void AddBossBattle()
+    {
+        new Season21MapsInitializer(this._context, this._gameConfiguration, this._gameServers).Initialize(Season21BossBattleData.Zone);
+        if (this.FindSpawnGate(Season21BossBattleData.MapNumber) is not { } entrance)
+        {
+            return;
+        }
+
+        var definition = this.GetOrCreateDefinition(MiniGameType.BossBattle, 1, LocalizedString.FromResource(() => MiniGameNames.BossBattle), LocalizedString.FromResource(() => MiniGameDescriptions.BossBattle), entrance);
+        if (definition.MaximumPlayerCount == 0)
+        {
+            definition.MapCreationPolicy = MiniGameMapCreationPolicy.Shared;
+            definition.MaximumPlayerCount = 100;
+            definition.MinimumPlayerCount = 1;
+            definition.MinimumCharacterLevel = 800;
+            definition.MinimumSpecialCharacterLevel = 800;
+            definition.EntranceFee = 10_000_000;
+            definition.EnterDuration = TimeSpan.FromMinutes(5);
+            definition.GameDuration = TimeSpan.FromMinutes(5);
+            definition.ExitDuration = TimeSpan.FromMinutes(1);
+            definition.AllowParty = true;
+        }
+
+        if (this.UpdateEvents(events => events.BossBattle is null && (events.BossBattle = Season21BossBattleData.CreateDefinition()) is not null))
+        {
+            this.SwitchOn(typeof(BossBattleStartPlugIn).GUID);
+        }
+    }
+
+    /// <summary>
+    /// Adds the Protector of Acheron: the event copies of Acheron (map 92) and Deventer (map 96), one game level each, 30
+    /// waves of their area monsters, the reward bag for 100 points, and switches its start on.
+    /// </summary>
+    public void AddAcheronGuardian()
+    {
+        new Season21MapsInitializer(this._context, this._gameConfiguration, this._gameServers).Initialize(Season21AcheronGuardianData.Maps);
+        var rewards = Season21ItemBags.GetOrCreate(this._context, this._gameConfiguration, Season21AcheronGuardianData.RewardBag, Season21AcheronGuardianData.RewardItems);
+        LocalizedString[] names = [LocalizedString.FromResource(() => MiniGameNames.AcheronGuardian1), LocalizedString.FromResource(() => MiniGameNames.AcheronGuardian2)];
+        for (var index = 0; index < Season21AcheronGuardianData.Levels.Count; index++)
+        {
+            if (this.FindSpawnGate(Season21AcheronGuardianData.Levels[index].Map) is not { } entrance)
+            {
+                return;
+            }
+
+            var definition = this.GetOrCreateDefinition(MiniGameType.AcheronGuardian, (byte)(index + 1), names[index], LocalizedString.FromResource(() => MiniGameDescriptions.AcheronGuardian), entrance);
+            if (definition.MaximumPlayerCount != 0)
+            {
+                continue;
+            }
+
+            definition.MapCreationPolicy = MiniGameMapCreationPolicy.Shared;
+            definition.MaximumPlayerCount = 50;
+            definition.MinimumPlayerCount = 1;
+            definition.MinimumCharacterLevel = 450;
+            definition.MinimumSpecialCharacterLevel = 450;
+            definition.EnterDuration = TimeSpan.FromMinutes(5);
+            definition.GameDuration = TimeSpan.FromMinutes(30);
+            definition.ExitDuration = TimeSpan.FromMinutes(1);
+            definition.AllowParty = true;
+            var reward = this._context.CreateNew<MiniGameReward>();
+            reward.RewardType = MiniGameRewardType.Item;
+            reward.RewardAmount = 1;
+            reward.ItemReward = rewards;
+            definition.Rewards.Add(reward);
+        }
+
+        if (this.UpdateEvents(events => events.AcheronGuardian.Count == 0 && AddWaves(events)))
+        {
+            this.SwitchOn(typeof(AcheronGuardianStartPlugIn).GUID);
+        }
+    }
+
+    /// <summary>
+    /// Applies the Season 18 rework of the Imperial Guardian (S21Emu <c>Event/ImperialGuardian/ImperialGuardianRenewal.xml</c>):
+    /// every day from total level 1000, and at the completion one of the rewards of the data: four (20 %) or two (40 %)
+    /// Artifact Upgrade Stones (20/94) or a Spider Artifact Fragment (20/95, 40 %).
+    /// </summary>
+    public void ApplyImperialGuardianRework()
+    {
+        foreach (var definition in this._gameConfiguration.MiniGameDefinitions.Where(d => d.Type == MiniGameType.ImperialGuardian))
+        {
+            definition.MinimumCharacterLevel = 1000;
+            definition.MinimumSpecialCharacterLevel = 1000;
+            definition.MaximumCharacterLevel = int.MaxValue;
+            definition.MaximumSpecialCharacterLevel = int.MaxValue;
+        }
+
+        var plugIn = this.GetOrCreatePlugIn(typeof(ImperialGuardianFeaturePlugIn).GUID);
+        var referenceHandler = new Updates.GameConfigurationReferenceHandler(this._gameConfiguration);
+        ImperialGuardianEventDefinition configuration;
+        try
+        {
+            configuration = plugIn.GetConfiguration<ImperialGuardianEventDefinition>(referenceHandler) ?? new ImperialGuardianEventDefinition();
+        }
+        catch (JsonException)
+        {
+            // A configuration which can't be read is the operator's; it stays.
+            return;
+        }
+
+        if (configuration.CompletionRewards.Count > 0)
+        {
+            return;
+        }
+
+        configuration.CompletionRewards =
+        [
+            new() { Group = 20, Number = 94, Count = 4, Chance = 20 },
+            new() { Group = 20, Number = 94, Count = 2, Chance = 40 },
+            new() { Group = 20, Number = 95, Count = 1, Chance = 40 },
+        ];
+        plugIn.SetConfiguration(configuration, referenceHandler);
+    }
+
+    private static bool AddWaves(Season21EventsConfiguration events)
+    {
+        events.AcheronGuardian.AddRange(Season21AcheronGuardianData.Levels.Select(level => Season21AcheronGuardianData.CreateDefinition(level.Areas)));
+        return true;
+    }
+
+    private void RouteTrialsThroughTheInstanceZone()
+    {
+        var typeId = typeof(EvolutionQuestFeaturePlugIn).GUID;
+        if (this._gameConfiguration.PlugInConfigurations.FirstOrDefault(c => c.TypeId == typeId) is not { } plugIn)
+        {
+            plugIn = this.GetOrCreatePlugIn(typeId);
+            plugIn.IsActive = true;
+        }
+
+        EvolutionQuestConfiguration configuration;
+        try
+        {
+            configuration = plugIn.GetConfiguration<EvolutionQuestConfiguration>(new Updates.IdIgnoringReferenceHandler()) ?? new EvolutionQuestConfiguration();
+        }
+        catch (JsonException)
+        {
+            // A configuration which can't be read is the operator's; it stays.
+            return;
+        }
+
+        if (configuration.Entrances.Any(e => e.NpcNumber == Season21InstanceZoneData.CentEntrance))
+        {
+            return;
+        }
+
+        foreach (var (town, evolution, gate) in new[] { ((short)764, ClassEvolution.Fourth, (238, 237, 239, 238)), ((short)939, ClassEvolution.Fifth, (116, 236, 120, 238)) })
+        {
+            if (configuration.Entrances.FirstOrDefault(e => e.NpcNumber == town) is { } row)
+            {
+                row.Map = Season21InstanceZoneData.InstanceZoneMap;
+                (row.X1, row.Y1, row.X2, row.Y2) = ((byte)gate.Item1, (byte)gate.Item2, (byte)gate.Item3, (byte)gate.Item4);
+            }
+        }
+
+        configuration.Entrances.Add(new EvolutionTrialEntrance { NpcNumber = Season21InstanceZoneData.CentEntrance, Evolution = ClassEvolution.Fourth, Map = EvolutionQuestConfiguration.Season21TrialMap, X1 = 147, Y1 = 27, X2 = 148, Y2 = 28 });
+        configuration.Entrances.Add(new EvolutionTrialEntrance { NpcNumber = Season21InstanceZoneData.EuniceEntrance, Evolution = ClassEvolution.Fifth, Map = EvolutionQuestConfiguration.Season21TrialMap, X1 = 101, Y1 = 27, X2 = 105, Y2 = 28 });
+        plugIn.SetConfiguration(configuration, null);
     }
 
     private ExitGate? FindSpawnGate(byte mapNumber)

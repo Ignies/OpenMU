@@ -2850,4 +2850,16 @@
   <data name="TormentedSquareStartPlugIn_Description" xml:space="preserve">
     <value>Opens the Tormented Square of Season 21 by its timetable: fifteen rounds of monsters on map 102, ranked by points.</value>
   </data>
+  <data name="BossBattleStartPlugIn_Name" xml:space="preserve">
+    <value>Boss Battle Together start (Season 21)</value>
+  </data>
+  <data name="BossBattleStartPlugIn_Description" xml:space="preserve">
+    <value>Opens the Boss Battle Together of Season 21 by its timetable: one boss on map 139 which everybody fights together.</value>
+  </data>
+  <data name="AcheronGuardianStartPlugIn_Name" xml:space="preserve">
+    <value>Protector of Acheron start (Season 21)</value>
+  </data>
+  <data name="AcheronGuardianStartPlugIn_Description" xml:space="preserve">
+    <value>Opens the Protector of Acheron of Season 21 by its timetable: 30 waves of monsters in the event copies of Acheron and Deventer.</value>
+  </data>
 </root>

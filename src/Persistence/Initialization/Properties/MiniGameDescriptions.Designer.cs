@@ -342,5 +342,26 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("TormentedSquare", resourceCulture);
             }
         }
+
+        /// <summary>Gets LabyrinthOfDimensions from the configuration name resources.</summary>
+        public static string LabyrinthOfDimensions {
+            get {
+                return ResourceManager.GetString("LabyrinthOfDimensions", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BossBattle from the configuration name resources.</summary>
+        public static string BossBattle {
+            get {
+                return ResourceManager.GetString("BossBattle", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AcheronGuardian from the configuration name resources.</summary>
+        public static string AcheronGuardian {
+            get {
+                return ResourceManager.GetString("AcheronGuardian", resourceCulture);
+            }
+        }
     }
 }

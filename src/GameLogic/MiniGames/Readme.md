@@ -61,3 +61,58 @@ points per kill 300 to 200,000, round points 3,000 to 45,000, ten golden monster
 a round, 10 s pause (20 s after a boss round); a party is a team. Timetable 11:44, 17:30, 19:00, 20:30, 22:00, 23:30
 (`TormentedSquareStartPlugIn`). Not ported: the monthly tournament stages (eliminations, semi-finals, final) and their
 rewards, which the data names but doesn't list; the definition has no item rewards until the operator adds them.
+
+### Instance Zone and Labyrinth of Dimensions (fork features `instance_zone`, `labyrinth`)
+
+Update "Add the Instance Zone and the Labyrinth of Dimensions of Season 21": map 114 (`Terrain115.att`) with Cent
+(765), Eunice (940), Jerint (522) and the Portal of Dimension (758) at their S21Emu places, gates 537, 691, 680 and 533.
+Sent (764) and Eunice (939) in the towns now take a character to the zone (gates 537 and 691), and Cent and Eunice there
+into the trial instance of its party (stored configuration of "Evolution quests"; worlds without the update keep the
+direct way). The Portal of Dimension enters the labyrinth (`Season21EventsConfiguration.Entrances`, the Season 6 client
+has no event window).
+
+The labyrinth is map 115 (`Terrain116.att`), a solo instance (`OnePerPlayer`, total level 400): 41 floors of the data,
+each the mission monsters (Great Sword 754 x2, Soldier 755 x3, Lancer 756 x3 of Kundun) and by 20 % the goblin (757,
+2,000 points), with the floor's health, damage and defense multipliers, five minutes a floor; a cleared floor gives
+50 points per floor number, the Ruud of the first seven floors (30 to 400) and at the floors 10, 20 and 30 one item of the
+lower, medium and higher Maze of Dimensions box (bags 240-242); a floor which runs out ends the run.
+Not ported: the 10 x 10 rooms of a floor which the server opens along `LabyrinthOfDimension_Path.xml` (the run is played
+in the first room), Elena's Letter, the daily floor reset and the weekly leagues.
+
+### Boss Battle Together (fork feature `boss_battle`)
+
+Update "Add the Boss Battle Together of Season 21" (S21Emu `Event/BossBattleEvent.xml`): map 139 (`Terrain140.att`,
+gate 681), up to 100 players from total level 800 for 10,000,000 zen, 5 minutes to enter and 5 to fight
+(`BossBattleContext`). One of the five bosses (copies 919-924 of Illusion of Kundun, Medusa, Selupan, Nix and the God of
+Darkness) spawns at 124/149 with 80,000,000 health and 2,000,000 more for every three players. The plugin
+"Boss Battle damage" counts each player's damage on it (`EE B2` once a second). At the end, 1,000,000 damage gives a
+Jewel of Harmony Box (20/78) and a Group Boss Battle Bonus Box (20/110), the most damage and the last hit two more bonus
+boxes each, into the gremory case when it's on (`RewardDelivery`). Timetable 00:05 (`BossBattleStartPlugIn`).
+Not ported: the 4th class and ticket requirement of Global (S21Emu has neither), the 145,690,000 health of Global (the
+data keeps 80,000,000).
+
+### Protector of Acheron (fork feature `acheron_guardian`)
+
+Update "Add the Protector of Acheron of Season 21" (S21Emu `Event/AcheronGuardian.dat`): the event copies of Acheron
+(map 92, `Terrain93.att`) and Deventer (map 96, `Terrain97.att`), game level 1 and 2, from total level 450, 30 minutes.
+A rounds event of 30 one-minute waves, each ten monsters in every area of the data (Alkmaar 89/41, Ubaid 188/101,
+Deventer 162/54) from the monsters of that area; a kill is 10 points, 100 points give an item of the Protection of
+Acheron bag (164). Timetable 4:29, 12:00, 23:06 (`AcheronGuardianStartPlugIn`).
+Not ported: the obelisks and free PvP of Global (the data has no obelisk monster), and the entry by Sir Lesnar.
+
+### Imperial Guardian rework of Season 18 (fork feature `imperial_guardian_s18`)
+
+Update "Apply the Imperial Guardian rework of Season 18" (S21Emu `Event/ImperialGuardian/ImperialGuardianRenewal.xml`):
+every day from total level 1000, and at the completion one reward chosen by its chance
+(`ImperialGuardianEventDefinition.CompletionRewards`): four (20 %) or two (40 %) Artifact Upgrade Stones (20/94) or a
+Spider Artifact Fragment (20/95, 40 %), into the gremory case when it's on. The event already was a party instance with
+its four maps, zones and day rotation. Not ported: the monster level 145 and its multipliers of the data (OpenMU scales
+the monsters by the players' level instead).
+
+### Not ported (no data)
+
+- Arca War: S21Emu `ArcaBattle.xml` has the schedule and trophies but no obelisk monsters, guild registration rules or
+  capture logic the client could show; logged, not built.
+- Chaos Castle Survival of the Fittest: `ChaosCastleSurvival.dat` has the schedule and stages only; map 97 has no
+  stage or ranking data. Logged, not built.
+- The S21 Crywolf renewal: see `src/GameLogic/Crywolf` (element of the week, timings, gremory rewards).

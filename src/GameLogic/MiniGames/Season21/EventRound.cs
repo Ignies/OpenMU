@@ -70,4 +70,9 @@ public class EventRound
     /// Gets or sets the items which every player gets when the round is cleared in time, into the gremory case when it's on.
     /// </summary>
     public List<RewardItem> ClearRewards { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets items of which every player gets one at random when the round is cleared in time (an item bag).
+    /// </summary>
+    public List<RewardItem> ClearRandomItems { get; set; } = [];
 }

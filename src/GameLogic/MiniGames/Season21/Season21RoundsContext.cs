@@ -219,6 +219,11 @@ public sealed class Season21RoundsContext : MiniGameContext
             {
                 await RewardDelivery.DeliverAsync(player, reward).ConfigureAwait(false);
             }
+
+            if (round.ClearRandomItems.Count > 0)
+            {
+                await RewardDelivery.DeliverAsync(player, round.ClearRandomItems[Rand.NextInt(0, round.ClearRandomItems.Count)]).ConfigureAwait(false);
+            }
         }
 
         await this.ShowScoreAsync(player).ConfigureAwait(false);

@@ -26,6 +26,16 @@ public class Season21EventsConfiguration
     public List<RoundsEventDefinition> AcheronGuardian { get; set; } = [];
 
     /// <summary>
+    /// Gets or sets the Boss Battle Together.
+    /// </summary>
+    public BossBattleDefinition? BossBattle { get; set; }
+
+    /// <summary>
+    /// Gets or sets the NPCs which let the players enter an event (the Season 6 client has no event window).
+    /// </summary>
+    public List<EventEntrance> Entrances { get; set; } = [];
+
+    /// <summary>
     /// Gets the definition of a rounds event.
     /// </summary>
     /// <param name="type">The type.</param>

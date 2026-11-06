@@ -1470,5 +1470,77 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21TormentedSquareUpdatePlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add the Instance Zone and the Labyrinth of Dimensions of Season 21.
+        /// </summary>
+        public static string AddSeason21InstanceZoneUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21InstanceZoneUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Map 114 with Cent, Eunice, Jerint and the Portal of Dimension; the town NPCs of the fourth and fifth class quests take a character there, Cent and Eunice into the trial instance of its party. Map 115 with the Labyrinth of Dimensions, a solo instance of 41 floors with Ruud and boxes..
+        /// </summary>
+        public static string AddSeason21InstanceZoneUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21InstanceZoneUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add the Boss Battle Together of Season 21.
+        /// </summary>
+        public static string AddSeason21BossBattleUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21BossBattleUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Map 139 with the Boss Battle Together: up to 100 players from total level 800 for 10,000,000 zen fight one of five bosses (80,000,000 health, more for more players) for 5 minutes; 1,000,000 damage, the top damage and the last hit give their boxes, into the gremory case when it's on. Switches its timetable on (00:05)..
+        /// </summary>
+        public static string AddSeason21BossBattleUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21BossBattleUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add the Protector of Acheron of Season 21.
+        /// </summary>
+        public static string AddSeason21AcheronGuardianUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21AcheronGuardianUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The event copies of Acheron (map 92) and Deventer (map 96) with the Protector of Acheron: from total level 450, 30 waves of the area monsters for 30 minutes, an item of the Protection of Acheron bag for 100 points. Switches its timetable on (4:29, 12:00, 23:06)..
+        /// </summary>
+        public static string AddSeason21AcheronGuardianUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21AcheronGuardianUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Apply the Imperial Guardian rework of Season 18.
+        /// </summary>
+        public static string AddSeason21ImperialGuardianReworkUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21ImperialGuardianReworkUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Every day of the Imperial Guardian from total level 1000 (Season 21 data), and at its completion four or two Artifact Upgrade Stones or a Spider Artifact Fragment (20 / 40 / 40 %), into the gremory case when it's on. Keeps rewards the operator set..
+        /// </summary>
+        public static string AddSeason21ImperialGuardianReworkUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21ImperialGuardianReworkUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

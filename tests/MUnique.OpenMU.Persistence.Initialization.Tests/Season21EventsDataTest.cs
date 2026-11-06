@@ -73,7 +73,8 @@ internal class Season21EventsDataTest
         Assert.That(definitions.Select(d => (d.MinimumCharacterLevel, d.MaximumCharacterLevel, d.MinimumPlayerCount)), Has.All.EqualTo((50, int.MaxValue, 2)));
         var json = this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(GameLogic.MiniGames.Doppelganger.DoppelgangerFeaturePlugIn).GUID).CustomConfiguration;
         Assert.That(json, Does.Contain("240000").And.Contain("FinalChestItems"));
-        Assert.That(this._gameConfiguration.DropItemGroups.Count(g => g.Description.ValueInNeutralLanguage == "Event reward of Season 21"), Is.EqualTo(14));
+        var otherEventBags = this._gameConfiguration.MiniGameDefinitions.Where(d => d.Type != MiniGameType.Doppelganger).SelectMany(d => d.Rewards).Select(r => r.ItemReward).ToList();
+        Assert.That(this._gameConfiguration.DropItemGroups.Count(g => g.Description.ValueInNeutralLanguage == "Event reward of Season 21" && !otherEventBags.Contains(g)), Is.EqualTo(14));
     }
 
     /// <summary>
@@ -89,6 +90,49 @@ internal class Season21EventsDataTest
         var events = this.Events();
         Assert.That(events.TormentedSquare?.Rounds, Has.Count.EqualTo(15));
         Assert.That(this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(GameLogic.MiniGames.Season21.TormentedSquareStartPlugIn).GUID).IsActive, Is.True);
+    }
+
+    /// <summary>
+    /// The Instance Zone holds the entrances; the town NPCs of the trials lead there, Cent and Eunice into the trial, the
+    /// Portal of Dimension into the labyrinth.
+    /// </summary>
+    [Test]
+    public void InstanceZoneHoldsTheEntrances()
+    {
+        var zone = this._gameConfiguration.Maps.Single(m => m.Number == 114);
+        Assert.That(zone.MonsterSpawns.Select(s => s.MonsterDefinition?.Number), Is.SupersetOf(new short?[] { 758, 765, 522, 940 }));
+        var quests = this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(GameLogic.EvolutionQuests.EvolutionQuestFeaturePlugIn).GUID)
+            .GetConfiguration<GameLogic.EvolutionQuests.EvolutionQuestConfiguration>(new IdIgnoringReferenceHandler())!;
+        Assert.That(quests.Entrances.Single(e => e.NpcNumber == 764).Map, Is.EqualTo(114));
+        Assert.That(quests.Entrances.Single(e => e.NpcNumber == 765).Map, Is.EqualTo(121));
+        Assert.That(quests.Entrances.Single(e => e.NpcNumber == 940).Map, Is.EqualTo(121));
+        var labyrinth = this._gameConfiguration.MiniGameDefinitions.Single(d => d.Type == MiniGameType.LabyrinthOfDimensions);
+        Assert.That((labyrinth.Entrance?.Map?.Number, labyrinth.MapCreationPolicy, labyrinth.MaximumPlayerCount), Is.EqualTo(((short?)115, MiniGameMapCreationPolicy.OnePerPlayer, 1)));
+        Assert.That(this.Events().Labyrinth?.Rounds, Has.Count.EqualTo(41));
+    }
+
+    /// <summary>
+    /// The Boss Battle is on map 139 with its bosses, the Protector of Acheron on the event copies 92 and 96 with its
+    /// reward bag, both scheduled; every day of the Imperial Guardian starts at total level 1000.
+    /// </summary>
+    [Test]
+    public void BossBattleAcheronAndImperialGuardianAreSet()
+    {
+        var boss = this._gameConfiguration.MiniGameDefinitions.Single(d => d.Type == MiniGameType.BossBattle);
+        Assert.That((boss.Entrance?.Map?.Number, boss.EntranceFee, boss.MinimumCharacterLevel), Is.EqualTo(((short?)139, 10_000_000, 800)));
+        Assert.That(this._gameConfiguration.Monsters.Where(m => m.Number is >= 919 and <= 924).Select(m => m.Number), Is.EquivalentTo(new short[] { 919, 921, 922, 923, 924 }));
+        Assert.That(this.Events().BossBattle?.Bosses, Has.Count.EqualTo(5));
+        var acheron = this._gameConfiguration.MiniGameDefinitions.Where(d => d.Type == MiniGameType.AcheronGuardian).OrderBy(d => d.GameLevel).ToList();
+        Assert.That(acheron.Select(d => d.Entrance?.Map?.Number), Is.EqualTo(new short?[] { 92, 96 }));
+        Assert.That(acheron.Select(d => d.Entrance!.Map!.TerrainData?.Length), Has.All.EqualTo(65539));
+        Assert.That(acheron.Select(d => d.Rewards.Single().ItemReward?.PossibleItems.Count), Has.All.GreaterThan(0));
+        Assert.That(this.Events().AcheronGuardian, Has.Count.EqualTo(2));
+        foreach (var typeId in new[] { typeof(GameLogic.MiniGames.Season21.BossBattleStartPlugIn).GUID, typeof(GameLogic.MiniGames.Season21.AcheronGuardianStartPlugIn).GUID })
+        {
+            Assert.That(this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeId).IsActive, Is.True);
+        }
+
+        Assert.That(this._gameConfiguration.MiniGameDefinitions.Where(d => d.Type == MiniGameType.ImperialGuardian).Select(d => d.MinimumCharacterLevel), Has.All.EqualTo(1000));
     }
 
     /// <summary>
@@ -127,6 +171,10 @@ internal class Season21EventsDataTest
         new AddSeason21InstancesUpdatePlugIn(),
         new AddSeason21DoppelgangerUpdatePlugIn(),
         new AddSeason21TormentedSquareUpdatePlugIn(),
+        new AddSeason21InstanceZoneUpdatePlugIn(),
+        new AddSeason21BossBattleUpdatePlugIn(),
+        new AddSeason21AcheronGuardianUpdatePlugIn(),
+        new AddSeason21ImperialGuardianReworkUpdatePlugIn(),
     ];
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6Async()

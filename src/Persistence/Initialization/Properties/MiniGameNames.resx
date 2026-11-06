@@ -138,4 +138,16 @@
   <data name="TormentedSquare" xml:space="preserve">
     <value>Tormented Square</value>
   </data>
+  <data name="LabyrinthOfDimensions" xml:space="preserve">
+    <value>Labyrinth of Dimensions</value>
+  </data>
+  <data name="BossBattle" xml:space="preserve">
+    <value>Boss Battle Together</value>
+  </data>
+  <data name="AcheronGuardian1" xml:space="preserve">
+    <value>Protector of Acheron (Acheron)</value>
+  </data>
+  <data name="AcheronGuardian2" xml:space="preserve">
+    <value>Protector of Acheron (Deventer)</value>
+  </data>
 </root>

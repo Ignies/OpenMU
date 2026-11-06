@@ -4571,5 +4571,113 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("GoldenHellMaine", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Great Sword of Kundun.
+        /// </summary>
+        public static string GreatSwordOfKundun {
+            get {
+                return ResourceManager.GetString("GreatSwordOfKundun", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Soldier of Kundun.
+        /// </summary>
+        public static string SoldierOfKundun {
+            get {
+                return ResourceManager.GetString("SoldierOfKundun", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Lancer of Kundun.
+        /// </summary>
+        public static string LancerOfKundun {
+            get {
+                return ResourceManager.GetString("LancerOfKundun", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Ruler of Kundun.
+        /// </summary>
+        public static string RulerOfKundun {
+            get {
+                return ResourceManager.GetString("RulerOfKundun", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Portal of Dimension.
+        /// </summary>
+        public static string PortalOfDimension {
+            get {
+                return ResourceManager.GetString("PortalOfDimension", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Cent (Entrance).
+        /// </summary>
+        public static string CentEntrance {
+            get {
+                return ResourceManager.GetString("CentEntrance", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Eunice (Entrance).
+        /// </summary>
+        public static string EuniceEntrance {
+            get {
+                return ResourceManager.GetString("EuniceEntrance", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Illusion of Kundun (Boss Battle).
+        /// </summary>
+        public static string IllusionOfKundunBattle {
+            get {
+                return ResourceManager.GetString("IllusionOfKundunBattle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Medusa (Boss Battle).
+        /// </summary>
+        public static string MedusaBattle {
+            get {
+                return ResourceManager.GetString("MedusaBattle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Selupan (Boss Battle).
+        /// </summary>
+        public static string SelupanBattle {
+            get {
+                return ResourceManager.GetString("SelupanBattle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Nix (Boss Battle).
+        /// </summary>
+        public static string NixBattle {
+            get {
+                return ResourceManager.GetString("NixBattle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to God of Darkness (Boss Battle).
+        /// </summary>
+        public static string GodOfDarknessBattle {
+            get {
+                return ResourceManager.GetString("GodOfDarknessBattle", resourceCulture);
+            }
+        }
     }
 }

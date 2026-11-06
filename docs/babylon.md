@@ -86,6 +86,11 @@ Rules:
 | `party_instances` | The party instances of Season 21: a copy of a map for each party with its own monsters and timer (`MiniGameType.PartyInstance`); the trial of the fourth and fifth class quest runs in one (update "Add the party instances of Season 21", `src/GameLogic/MiniGames/Readme.md`) |
 | `doppelganger_s21` | The Doppelganger of Season 21: seven rooms by total level with their multipliers, experience and chests, two players at least (update "Renew the Doppelganger for Season 21", `src/GameLogic/MiniGames/Readme.md`) |
 | `tormented_square` | The Tormented Square of Season 21: map 102, fifteen rounds of monsters, points and ranks, by its timetable (update "Add the Tormented Square of Season 21", plugins "Events of Season 21" and "Tormented Square start"; event type 9 of the event packets) |
+| `instance_zone` | The Instance Zone of Season 21 (map 114): the entrances of the fourth and fifth class trials and of the labyrinth (update "Add the Instance Zone and the Labyrinth of Dimensions of Season 21") |
+| `labyrinth` | The Labyrinth of Dimensions of Season 21 (map 115): a solo instance of 41 floors with Ruud and boxes (same update; event type 10) |
+| `boss_battle` | The Boss Battle Together of Season 21 (map 139): one of five bosses for everybody, rewards for damage, top damage and the last hit (update "Add the Boss Battle Together of Season 21"; event type 11) |
+| `acheron_guardian` | The Protector of Acheron of Season 21 (maps 92 and 96): 30 waves of monsters, a bag reward for 100 points (update "Add the Protector of Acheron of Season 21"; event type 12) |
+| `imperial_guardian_s18` | The Imperial Guardian rework of Season 18: from total level 1000, artifact rewards at the completion (update "Apply the Imperial Guardian rework of Season 18") |
 
 ## Balance
 

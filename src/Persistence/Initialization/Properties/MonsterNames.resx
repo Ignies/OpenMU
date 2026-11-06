@@ -1049,4 +1049,40 @@
   <data name="GoldenHellMaine" xml:space="preserve">
     <value>Golden Hell Maine</value>
   </data>
+  <data name="GreatSwordOfKundun" xml:space="preserve">
+    <value>Great Sword of Kundun</value>
+  </data>
+  <data name="SoldierOfKundun" xml:space="preserve">
+    <value>Soldier of Kundun</value>
+  </data>
+  <data name="LancerOfKundun" xml:space="preserve">
+    <value>Lancer of Kundun</value>
+  </data>
+  <data name="RulerOfKundun" xml:space="preserve">
+    <value>Ruler of Kundun</value>
+  </data>
+  <data name="PortalOfDimension" xml:space="preserve">
+    <value>Portal of Dimension</value>
+  </data>
+  <data name="CentEntrance" xml:space="preserve">
+    <value>Cent (Entrance)</value>
+  </data>
+  <data name="EuniceEntrance" xml:space="preserve">
+    <value>Eunice (Entrance)</value>
+  </data>
+  <data name="IllusionOfKundunBattle" xml:space="preserve">
+    <value>Illusion of Kundun (Boss Battle)</value>
+  </data>
+  <data name="MedusaBattle" xml:space="preserve">
+    <value>Medusa (Boss Battle)</value>
+  </data>
+  <data name="SelupanBattle" xml:space="preserve">
+    <value>Selupan (Boss Battle)</value>
+  </data>
+  <data name="NixBattle" xml:space="preserve">
+    <value>Nix (Boss Battle)</value>
+  </data>
+  <data name="GodOfDarknessBattle" xml:space="preserve">
+    <value>God of Darkness (Boss Battle)</value>
+  </data>
 </root>

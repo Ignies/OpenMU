@@ -8085,5 +8085,41 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("TormentedSquareStartPlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Boss Battle Together start (Season 21).
+        /// </summary>
+        public static string BossBattleStartPlugIn_Name {
+            get {
+                return ResourceManager.GetString("BossBattleStartPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Opens the Boss Battle Together of Season 21 by its timetable: one boss on map 139 which everybody fights together..
+        /// </summary>
+        public static string BossBattleStartPlugIn_Description {
+            get {
+                return ResourceManager.GetString("BossBattleStartPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Protector of Acheron start (Season 21).
+        /// </summary>
+        public static string AcheronGuardianStartPlugIn_Name {
+            get {
+                return ResourceManager.GetString("AcheronGuardianStartPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Opens the Protector of Acheron of Season 21 by its timetable: 30 waves of monsters in the event copies of Acheron and Deventer..
+        /// </summary>
+        public static string AcheronGuardianStartPlugIn_Description {
+            get {
+                return ResourceManager.GetString("AcheronGuardianStartPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

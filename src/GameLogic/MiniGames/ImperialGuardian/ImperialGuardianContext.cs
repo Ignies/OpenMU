@@ -285,6 +285,7 @@ public sealed class ImperialGuardianContext : MiniGameContext
             }
 
             await player.InvokeViewPlugInAsync<IImperialGuardianViewPlugIn>(p => p.ShowResultAsync(ImperialGuardianResult.Success, experience)).ConfigureAwait(false);
+            await ImperialGuardianItemReward.GiveOneAsync(player, this._definition.CompletionRewards).ConfigureAwait(false);
         }).ConfigureAwait(false);
 
         this.FinishEvent();

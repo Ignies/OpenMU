@@ -122,4 +122,19 @@
   <data name="TormentedSquare" xml:space="preserve">
     <value>Tormented Square</value>
   </data>
+  <data name="InstanceZone" xml:space="preserve">
+    <value>Instance Zone</value>
+  </data>
+  <data name="LabyrinthOfDimensions" xml:space="preserve">
+    <value>Labyrinth of Dimensions</value>
+  </data>
+  <data name="BossBattleZone" xml:space="preserve">
+    <value>Boss Battle Zone</value>
+  </data>
+  <data name="AcheronArca" xml:space="preserve">
+    <value>Acheron (Arca)</value>
+  </data>
+  <data name="DeventerArca" xml:space="preserve">
+    <value>Deventer (Arca)</value>
+  </data>
 </root>

@@ -808,5 +808,50 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("TormentedSquare", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Instance Zone.
+        /// </summary>
+        public static string InstanceZone {
+            get {
+                return ResourceManager.GetString("InstanceZone", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Labyrinth of Dimensions.
+        /// </summary>
+        public static string LabyrinthOfDimensions {
+            get {
+                return ResourceManager.GetString("LabyrinthOfDimensions", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Boss Battle Zone.
+        /// </summary>
+        public static string BossBattleZone {
+            get {
+                return ResourceManager.GetString("BossBattleZone", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Acheron (Arca).
+        /// </summary>
+        public static string AcheronArca {
+            get {
+                return ResourceManager.GetString("AcheronArca", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Deventer (Arca).
+        /// </summary>
+        public static string DeventerArca {
+            get {
+                return ResourceManager.GetString("DeventerArca", resourceCulture);
+            }
+        }
     }
 }

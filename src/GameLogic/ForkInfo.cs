@@ -75,6 +75,11 @@ public static class ForkInfo
         "party_instances",
         "doppelganger_s21",
         "tormented_square",
+        "instance_zone",
+        "labyrinth",
+        "boss_battle",
+        "acheron_guardian",
+        "imperial_guardian_s18",
     ];
 
     /// <summary>

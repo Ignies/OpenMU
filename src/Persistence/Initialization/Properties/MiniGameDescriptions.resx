@@ -138,4 +138,13 @@
   <data name="TormentedSquare" xml:space="preserve">
     <value>Fifteen rounds of monsters on map 102; points per kill and per cleared round decide the rank.</value>
   </data>
+  <data name="LabyrinthOfDimensions" xml:space="preserve">
+    <value>A solo instance of 41 floors: clear the monsters of a floor in five minutes for its points, Ruud and every ten floors a box.</value>
+  </data>
+  <data name="BossBattle" xml:space="preserve">
+    <value>Up to 100 players fight one boss together for five minutes; damage, the top damage and the last hit give boxes.</value>
+  </data>
+  <data name="AcheronGuardian" xml:space="preserve">
+    <value>30 waves of monsters in the areas of Acheron and Deventer; 100 points give an item of the Protection of Acheron.</value>
+  </data>
 </root>

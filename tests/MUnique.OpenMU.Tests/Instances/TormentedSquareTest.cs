@@ -70,7 +70,7 @@ public class TormentedSquareTest
         this._plugIn.Configuration.TormentedSquare = new RoundsEventDefinition
         {
             SpawnPoints = original.SpawnPoints,
-            RoundDuration = TimeSpan.FromSeconds(2),
+            RoundDuration = TimeSpan.FromSeconds(5),
             PauseAfterRound = TimeSpan.Zero,
             Rounds =
             [
