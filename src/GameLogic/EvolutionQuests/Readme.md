@@ -41,10 +41,15 @@ Season 21 data (S21Emu `Quest/Quest.xml` 7-12, `QuestObjective.txt`, `QuestRewar
   `C1 EE 13 ClassEvolved` to the player and its observers (docs/babylon.md). The Season 6 client uses the quest
   packets it knows (F6) and shows the fourth and fifth evolution as the third.
 
-## Stand-ins (no instance system)
+## Party instance
 
-- The Trial Area is one shared map, not an instance per party (S21: Instance Zone 114, then a party instance of 121).
-  Each player's steps spawn their own monsters; another player could still kill them.
+With the update "Add the party instances of Season 21" (feature `party_instances`) Sent and Eunice take the character into
+the copy of the Trial Area of its party (`MiniGameType.PartyInstance`, game level 2, up to 5 players,
+`src/GameLogic/MiniGames/Readme.md`): each party has its own monsters, and the copy goes away when the party left.
+Without the update the Trial Area stays one shared map, where each player's steps spawn their own monsters.
+
+## Stand-ins
+
 - The S21 damage and defense multipliers of the steps (quest 9: x1.3 / x1.2), the party damage rules and the giant
   mount quests 13-14 are not applied. Sent 763 has no experience level in the data and takes 800; Eunice 937 / 938
   are 10-health placeholders in the data and are kept.

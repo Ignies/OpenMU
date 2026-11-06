@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.GameLogic.Classes;
+using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 using MUnique.OpenMU.GameLogic.PlugIns;
@@ -151,6 +152,12 @@ public class EvolutionQuestFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigu
         // The warp changes the player state itself, so the talk action must leave it alone.
         eventArgs.LeavesDialogOpen = true;
         player.OpenedNpc = null;
+        if (PartyInstances.FindForMap(player.GameContext, map) is { } instance)
+        {
+            await PartyInstances.EnterAsync(player, instance).ConfigureAwait(false);
+            return;
+        }
+
         await player.WarpToAsync(new ExitGate { Map = map, X1 = entrance.X1, Y1 = entrance.Y1, X2 = entrance.X2, Y2 = entrance.Y2 }).ConfigureAwait(false);
     }
 

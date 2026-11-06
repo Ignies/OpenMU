@@ -126,6 +126,7 @@ internal class ConfigurationNameResourcesTests
                 await new AddSeason21ShopsUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
                 await new AddSeason21MiningUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
                 await new AddSeason21GoldenInvasionUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
+                await new AddSeason21InstancesUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
             }
 
             var names = LocalizedCaption.FindAll(configuration).Select(caption => caption.Value)

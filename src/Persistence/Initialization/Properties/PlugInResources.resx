@@ -558,4 +558,10 @@
   <data name="AddSeason21HelperPlusUpdatePlugIn_Description" xml:space="preserve">
     <value>Sets the 31 hunting grounds (with their warps) and the 330 hunting zones of the Season 21 MU Helper Plus and turns it on. A configuration with zones stays. Optional; needs the maps of the later seasons.</value>
   </data>
+  <data name="AddSeason21InstancesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the party instances of Season 21</value>
+  </data>
+  <data name="AddSeason21InstancesUpdatePlugIn_Description" xml:space="preserve">
+    <value>Turns the trial of the fourth and fifth class quest into a copy of the Trial Area for each party (Season 21 instance system). Needs the evolution quests of Season 21.</value>
+  </data>
 </root>

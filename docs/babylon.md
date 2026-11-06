@@ -83,6 +83,7 @@ Rules:
 | `ranking` | The hunting record (time, kills, experience and damage per character, map and day on the 59 hunting maps, kept 7 days) and the in-game ranking by total level and by the kills and hunting experience of the week (update "Add the hunting record of Season 21", plugin "Hunting record and ranking (Season 21)", `src/GameLogic/HuntingRecord`) |
 | `soul_converter` | The monster soul converter: five tiers (items 14/460-464, total level 400 to 1450), two soul missions drawn from the tier, souls absorbed by kills and shared in a party, the reward kinds Ruud, jewels, elemental options and accessories, three a week, expiring on Thursday (update "Add the monster soul converter of Season 21", plugin "Monster soul converter (Season 21)", `src/GameLogic/SoulConverter`) |
 | `helper_plus` | The MU Helper Plus: the rules of the helper for the Babylon client (the plus mode from total level 400, alone or as party leader, its ranges and cost in percent of the helper cost) and the moves of the plus mode into the 330 hunting zones of the 31 hunting grounds, with the level and zen of their warps (update "Add the MU Helper Plus of Season 21", plugin "MU Helper Plus (Season 21)", `src/GameLogic/HelperPlus`) |
+| `party_instances` | The party instances of Season 21: a copy of a map for each party with its own monsters and timer (`MiniGameType.PartyInstance`); the trial of the fourth and fifth class quest runs in one (update "Add the party instances of Season 21", `src/GameLogic/MiniGames/Readme.md`) |
 
 ## Balance
 
@@ -253,6 +254,29 @@ bytes in the connection's item format (W32); 0xFF for no item.
 - `C1 EE 5A MuunSkillUsed` (server, 13): player id (u16 BE) at 4, monster id (u16 BE) at 6, skill level at 8, damage (u32 LE) at 9.
   Sent to the owner and everyone who sees it when a Muun with an attack skill option hits the nearest monster (every
   10 s by default, less the cooldown reduction of its additional option).
+
+### Events (range B0-BF)
+
+The events and party instances of Season 21 share five packets; the event type is the server's `MiniGameType`
+(8 party instance; the later events append their own). A Season 6 client gets none of them: it is told in words.
+
+```
+C1 0C EE B0  EventState (server)          C1 07 EE B1  EventEnterRequest (client)
+  4  u16 LE  event type                     4  u16 LE  event type (8 and up; the Season 6 events keep their packets)
+  6  u8      game level                     6  u8      game level
+  7  u8      0 open, 1 closed, 2 playing, 3 ended
+  8  u32 LE  seconds to the next state    C1 07 EE B4  EventEnterResult (server)
+                                             4  u16 LE  event type
+C1 14 EE B2  EventScore (server)             6  u8      0 success, 1 failed, 2 not open, 3 level too high,
+  4  u16 LE  event type                                 4 level too low, 5 full, 6 not enough money, 7 player killer
+  6  u8      round / floor / stage
+  8  u32 LE  score (damage in the boss battle)  C1 14 EE B3  EventResult (server)
+  12 u16 LE  rank (0 unranked)                   4  u16 LE  event type, 6 bool success
+  14 u16 LE  players                             8  u32 LE  score, 12 u16 LE rank
+  16 u32 LE  seconds left                        16 u32 LE  experience of the reward
+```
+
+Item rewards go into the gremory case where Season 21 does (and the plugin is on), else into the inventory.
 
 ### Economy (ranges 30-3F, 60-7F)
 

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.MiniGames;
 
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -58,6 +59,10 @@ public class ShowMiniGameEnterResultViewPlugIn : IShowMiniGameEnterResultPlugIn
                 break;
             case MiniGameType.Kanturu:
                 await this._player.Connection.SendKanturuEnterResultAsync(enterResult.ToKanturuEnterResult()).ConfigureAwait(false);
+                break;
+            case >= MiniGameType.PartyInstance:
+                // The Season 6 client has no window for the events of Season 21; the refusal was told in words.
+                await this._player.InvokeViewPlugInAsync<ISeason21EventViewPlugIn>(p => p.ShowEnterResultAsync(miniGameType, enterResult)).ConfigureAwait(false);
                 break;
             case MiniGameType.Undefined:
                 throw new ArgumentException("undefined game type", nameof(miniGameType));

@@ -72,6 +72,7 @@ public static class ForkInfo
         "ranking",
         "soul_converter",
         "helper_plus",
+        "party_instances",
     ];
 
     /// <summary>

@@ -48,4 +48,10 @@ public enum MiniGameType
     /// The imperial guardian event (fortress of the imperial guardian).
     /// </summary>
     ImperialGuardian,
+
+    /// <summary>
+    /// A party instance of Season 21: a copy of a map for each party, with its own monsters and timer, e.g. the trial
+    /// of the fourth class quest.
+    /// </summary>
+    PartyInstance,
 }

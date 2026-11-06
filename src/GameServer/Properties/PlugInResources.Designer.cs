@@ -8767,5 +8767,41 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("HelperPlusModeRequestHandlerPlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Season 21 events (Babylon).
+        /// </summary>
+        public static string Season21EventBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("Season21EventBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the state, the score and the result of the Season 21 events and party instances to the Babylon client (EE B0, B2, B3, B4)..
+        /// </summary>
+        public static string Season21EventBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("Season21EventBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Event enter request (Babylon).
+        /// </summary>
+        public static string EventEnterRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("EventEnterRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the Babylon client to enter a Season 21 event or party instance (EE B1)..
+        /// </summary>
+        public static string EventEnterRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("EventEnterRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

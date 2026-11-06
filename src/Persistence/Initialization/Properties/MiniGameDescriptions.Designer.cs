@@ -328,5 +328,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("EventDefinitionForIllusionTempleEventLevel6", resourceCulture);
             }
         }
+
+        /// <summary>Gets Season21Trial from the configuration name resources.</summary>
+        public static string Season21Trial {
+            get {
+                return ResourceManager.GetString("Season21Trial", resourceCulture);
+            }
+        }
     }
 }

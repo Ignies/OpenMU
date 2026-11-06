@@ -132,4 +132,7 @@
   <data name="IllusionTemple6" xml:space="preserve">
     <value>Illusion Temple 6</value>
   </data>
+  <data name="Season21Trial" xml:space="preserve">
+    <value>Trial Area (party instance)</value>
+  </data>
 </root>

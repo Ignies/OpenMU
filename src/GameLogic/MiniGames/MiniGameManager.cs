@@ -94,6 +94,9 @@ public sealed class MiniGameManager : IMiniGameManager
                 case MiniGameType.ImperialGuardian:
                     miniGameContext = new ImperialGuardianContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
                     break;
+                case MiniGameType.PartyInstance:
+                    miniGameContext = new PartyInstanceContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
+                    break;
                 default:
                     miniGameContext = new MiniGameContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
                     break;

@@ -1604,4 +1604,172 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="EventState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="eventType">The mini game type of the server (docs/babylon.md, "Events").</param>
+    /// <param name="gameLevel">The game level.</param>
+    /// <param name="state">0 open (entrance), 1 closed, 2 playing, 3 ended.</param>
+    /// <param name="secondsLeft">The seconds until the next state; 0 when unknown.</param>
+    /// <remarks>
+    /// Is sent by the server when: When the state of a Season 21 event or party instance changes for the own character (entrance opened or closed, the game started or ended), and when the character talks to its entrance NPC.
+    /// Causes reaction on client side: The client shows the entry window or the state and timer of the event.
+    /// </remarks>
+    public static async ValueTask SendEventStateAsync(this IConnection? connection, ushort @eventType, byte @gameLevel, byte @state, uint @secondsLeft)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = EventStateRef.Length;
+            var packet = new EventStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.EventType = @eventType;
+            packet.GameLevel = @gameLevel;
+            packet.State = @state;
+            packet.SecondsLeft = @secondsLeft;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="EventEnterRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="eventType">The event type.</param>
+    /// <param name="gameLevel">The game level.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player wants to enter a Season 21 event or party instance of a game level, e.g. by the entry window.
+    /// Causes reaction on server side: The server checks the entry rules and warps the character into the event, or answers with EventEnterResult.
+    /// </remarks>
+    public static async ValueTask SendEventEnterRequestAsync(this IConnection? connection, ushort @eventType, byte @gameLevel)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = EventEnterRequestRef.Length;
+            var packet = new EventEnterRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.EventType = @eventType;
+            packet.GameLevel = @gameLevel;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="EventScore" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="eventType">The event type.</param>
+    /// <param name="round">The round, floor or stage of the event, 0 when it has none.</param>
+    /// <param name="score">The points, or the damage for the boss battle.</param>
+    /// <param name="rank">The rank of the own character (or its party), starting at 1; 0 when unranked.</param>
+    /// <param name="playerCount">The player count.</param>
+    /// <param name="secondsLeft">The seconds left.</param>
+    /// <remarks>
+    /// Is sent by the server when: While a Season 21 event runs: when the score, the round or the rank of the own character changes, and once a second for the timer.
+    /// Causes reaction on client side: The client updates the score window of the event.
+    /// </remarks>
+    public static async ValueTask SendEventScoreAsync(this IConnection? connection, ushort @eventType, byte @round, uint @score, ushort @rank, ushort @playerCount, uint @secondsLeft)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = EventScoreRef.Length;
+            var packet = new EventScoreRef(connection.Output.GetSpan(length)[..length]);
+            packet.EventType = @eventType;
+            packet.Round = @round;
+            packet.Score = @score;
+            packet.Rank = @rank;
+            packet.PlayerCount = @playerCount;
+            packet.SecondsLeft = @secondsLeft;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="EventResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="eventType">The event type.</param>
+    /// <param name="success">The success.</param>
+    /// <param name="score">The score.</param>
+    /// <param name="rank">The rank.</param>
+    /// <param name="experience">The experience of the reward, at most 4294967295.</param>
+    /// <remarks>
+    /// Is sent by the server when: When a Season 21 event or party instance ended for the own character.
+    /// Causes reaction on client side: The client shows the result window; item rewards arrive in the gremory case or the inventory by their own packets.
+    /// </remarks>
+    public static async ValueTask SendEventResultAsync(this IConnection? connection, ushort @eventType, bool @success, uint @score, ushort @rank, uint @experience)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = EventResultRef.Length;
+            var packet = new EventResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.EventType = @eventType;
+            packet.Success = @success;
+            packet.Score = @score;
+            packet.Rank = @rank;
+            packet.Experience = @experience;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="EventEnterResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="eventType">The event type.</param>
+    /// <param name="result">The enter result of the server: 0 success, 1 failed, 2 not open, 3 level too high, 4 level too low, 5 full, 6 not enough money, 7 player killers can not enter (docs/babylon.md, "Events").</param>
+    /// <remarks>
+    /// Is sent by the server when: When the entry into a Season 21 event or party instance failed.
+    /// Causes reaction on client side: The client shows why; the server also tells it in words.
+    /// </remarks>
+    public static async ValueTask SendEventEnterResultAsync(this IConnection? connection, ushort @eventType, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = EventEnterResultRef.Length;
+            var packet = new EventEnterResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.EventType = @eventType;
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

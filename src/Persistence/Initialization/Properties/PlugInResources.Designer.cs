@@ -1416,5 +1416,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21HelperPlusUpdatePlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add the party instances of Season 21.
+        /// </summary>
+        public static string AddSeason21InstancesUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21InstancesUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Turns the trial of the fourth and fifth class quest into a copy of the Trial Area for each party (Season 21 instance system). Needs the evolution quests of Season 21..
+        /// </summary>
+        public static string AddSeason21InstancesUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21InstancesUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

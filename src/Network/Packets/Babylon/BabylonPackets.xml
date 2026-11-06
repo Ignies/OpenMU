@@ -2412,5 +2412,168 @@
         </Field>
       </Fields>
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>B0</SubCode>
+      <Name>EventState</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the state of a Season 21 event or party instance changes for the own character (entrance opened or closed, the game started or ended), and when the character talks to its entrance NPC.</SentWhen>
+      <CausedReaction>The client shows the entry window or the state and timer of the event.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>EventType</Name>
+          <Description>The mini game type of the server (docs/babylon.md, "Events").</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>GameLevel</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>State</Name>
+          <Description>0 open (entrance), 1 closed, 2 playing, 3 ended.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>SecondsLeft</Name>
+          <Description>The seconds until the next state; 0 when unknown.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>B1</SubCode>
+      <Name>EventEnterRequest</Name>
+      <Length>7</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player wants to enter a Season 21 event or party instance of a game level, e.g. by the entry window.</SentWhen>
+      <CausedReaction>The server checks the entry rules and warps the character into the event, or answers with EventEnterResult.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>EventType</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>GameLevel</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>B2</SubCode>
+      <Name>EventScore</Name>
+      <Length>20</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>While a Season 21 event runs: when the score, the round or the rank of the own character changes, and once a second for the timer.</SentWhen>
+      <CausedReaction>The client updates the score window of the event.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>EventType</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Round</Name>
+          <Description>The round, floor or stage of the event, 0 when it has none.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Score</Name>
+          <Description>The points, or the damage for the boss battle.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Rank</Name>
+          <Description>The rank of the own character (or its party), starting at 1; 0 when unranked.</Description>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>PlayerCount</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>SecondsLeft</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>B3</SubCode>
+      <Name>EventResult</Name>
+      <Length>20</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When a Season 21 event or party instance ended for the own character.</SentWhen>
+      <CausedReaction>The client shows the result window; item rewards arrive in the gremory case or the inventory by their own packets.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>EventType</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Boolean</Type>
+          <Name>Success</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Score</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Rank</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Experience</Name>
+          <Description>The experience of the reward, at most 4294967295.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>B4</SubCode>
+      <Name>EventEnterResult</Name>
+      <Length>7</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the entry into a Season 21 event or party instance failed.</SentWhen>
+      <CausedReaction>The client shows why; the server also tells it in words.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>EventType</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>The enter result of the server: 0 success, 1 failed, 2 not open, 3 level too high, 4 level too low, 5 full, 6 not enough money, 7 player killers can not enter (docs/babylon.md, "Events").</Description>
+        </Field>
+      </Fields>
+    </Packet>
   </Packets>
 </PacketDefinitions>

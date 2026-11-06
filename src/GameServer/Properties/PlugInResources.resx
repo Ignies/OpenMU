@@ -3065,4 +3065,16 @@
   <data name="HelperPlusModeRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the switch of the plus mode of the helper (C1 EE E3).</value>
   </data>
+  <data name="Season21EventBabylonPlugIn_Name" xml:space="preserve">
+    <value>Season 21 events (Babylon)</value>
+  </data>
+  <data name="Season21EventBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the state, the score and the result of the Season 21 events and party instances to the Babylon client (EE B0, B2, B3, B4).</value>
+  </data>
+  <data name="EventEnterRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Event enter request (Babylon)</value>
+  </data>
+  <data name="EventEnterRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the Babylon client to enter a Season 21 event or party instance (EE B1).</value>
+  </data>
 </root>

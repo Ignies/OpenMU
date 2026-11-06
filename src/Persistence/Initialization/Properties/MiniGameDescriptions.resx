@@ -132,4 +132,7 @@
   <data name="EventDefinitionForIllusionTempleEventLevel6" xml:space="preserve">
     <value>Event definition for illusion temple, level 6.</value>
   </data>
+  <data name="Season21Trial" xml:space="preserve">
+    <value>The trial of the fourth and fifth class quest: a copy of the Trial Area for each party of up to five players.</value>
+  </data>
 </root>
