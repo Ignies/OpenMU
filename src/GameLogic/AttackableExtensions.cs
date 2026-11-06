@@ -208,6 +208,7 @@ public static class AttackableExtensions
         }
 
         dmg -= (int)(dmg * defender.Attributes[Stats.ArmorDamageDecrease]);
+        dmg -= (int)defender.Attributes[Stats.DamageDecreaseAbsolute];
 
         var attackerLevel = attacker is Player ? attacker.Attributes[Stats.TotalLevel] :
             attacker is AttackerSurrogate ? attackerPlayer!.Attributes![Stats.Level] : attacker.Attributes[Stats.Level];

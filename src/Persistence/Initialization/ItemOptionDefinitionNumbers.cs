@@ -259,4 +259,9 @@ internal static class ItemOptionDefinitionNumbers
     /// Gets the number of the marker of the items which only the wide item format carries.
     /// </summary>
     public static short WideFormat => 0x96;
+
+    /// <summary>
+    /// Gets the number of the mastery options of the weapons of the first tier (Season 21); the tiers follow, up to 0xA8.
+    /// </summary>
+    public static short MasteryWeaponTier => 0xA0;
 }

@@ -39,6 +39,12 @@ public class AddSeason21MasteryOptionsUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 06, 12, 02, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 06, 18, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     /// <remarks>The item catalog defines the mastery items.</remarks>
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21ItemCatalogUpdatePlugIn).GUID];
 

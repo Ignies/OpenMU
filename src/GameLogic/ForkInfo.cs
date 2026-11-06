@@ -61,6 +61,7 @@ public static class ForkInfo
         "npc_shop_tabs",
         "s21_shops",
         "zen_sinks",
+        "s21_mixes",
     ];
 
     /// <summary>

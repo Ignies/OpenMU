@@ -119,6 +119,42 @@ public class DropGeneratorTest
     }
 
     /// <summary>
+    /// Tests that a dropped fourth wing gets its grade options by the grade rates of the item rules of Season 21: with
+    /// only grade 3 weighted, every grade option has level 4; the first option always comes.
+    /// </summary>
+    [Test]
+    public async ValueTask TestWingGradesFollowTheRatesAsync()
+    {
+        var gradeOptions = new BasicModel.ItemOptionDefinition { AddsRandomly = true, AddChance = 1, MaximumOptionsPerItem = 2 };
+        for (short number = 0; number < 3; number++)
+        {
+            var option = new BasicModel.IncreasableItemOption { OptionType = Season21ItemOptionTypes.WingGrade, Number = number };
+            for (var level = 1; level <= 4; level++)
+            {
+                option.LevelDependentOptions.Add(new BasicModel.ItemOptionOfLevel { Level = level });
+            }
+
+            gradeOptions.PossibleOptions.Add(option);
+        }
+
+        var wings = new BasicModel.ItemDefinition { Group = 12, Number = 414, Durability = 1 };
+        wings.PossibleItemOptions.Add(gradeOptions);
+        var monster = this.GetMonster(1, 0);
+        monster.DropItemGroups.Add(this.CreateDropItemGroup(wings));
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<GameLogic.Views.Inventory.IItemFormatViewPlugIn>()!).Setup(p => p.CarriesWideItems).Returns(true);
+        player.GameContext.FeaturePlugIns.AddPlugIn(new GameLogic.WideItems.Season21ItemsFeaturePlugIn { Configuration = new() { GradeRates = [0, 0, 0, 1] } }, true);
+
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), Rand.GetRandomizer());
+        var (items, _) = await generator.GenerateItemDropsAsync(monster, 1, player).ConfigureAwait(false);
+
+        var grades = items.Single().ItemOptions.ToList();
+        Assert.That(grades, Has.Count.EqualTo(2));
+        Assert.That(grades.Select(g => g.Level), Has.All.EqualTo(4));
+        Assert.That(grades.Select(g => g.Index), Is.EqualTo(new[] { 0, 1 }));
+    }
+
+    /// <summary>
     /// Tests that a killer whose client carries the wide item format gets the wide items.
     /// </summary>
     [Test]

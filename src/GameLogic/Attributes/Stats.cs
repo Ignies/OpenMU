@@ -915,6 +915,12 @@ public class Stats
     public static AttributeDefinition FinalDamageReceiveDecrementPvm { get; } = new(new Guid("D7B1F149-494F-4047-9723-48E80CCA9258"), "Final Damage Receive Decrement (PvM)", "The fraction by which the final damage of monsters decreases.");
 
     /// <summary>
+    /// Gets the flat damage decrease attribute definition: a value of the later seasons (e.g. "Decrease DMG +45" of the
+    /// mastery armors) which is taken off every received hit after the defense and the damage decrease multipliers.
+    /// </summary>
+    public static AttributeDefinition DamageDecreaseAbsolute { get; } = new(new Guid("4B9E6D21-7C3A-4F85-A0D2-1E8C5B7A3F60"), "Damage Decrease (absolute)", "A value which is taken off every received hit, after the defense.");
+
+    /// <summary>
     /// Gets the damage receive decrement from dark horse attribute definition.
     /// </summary>
     public static AttributeDefinition DamageReceiveHorseDecrement { get; } = new(new Guid("041B2811-05C0-49DE-B083-4D1FBD7E6286"), "Damage Receive From Dark Horse Multiplier", string.Empty);

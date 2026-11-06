@@ -1099,6 +1099,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddSeason21SphereLevelsUpdatePlugIn_Description text.</summary>
         public static string AddSeason21SphereLevelsUpdatePlugIn_Description => ResourceManager.GetString("AddSeason21SphereLevelsUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddSeason21ItemMixesUpdatePlugIn_Name text.</summary>
+        public static string AddSeason21ItemMixesUpdatePlugIn_Name => ResourceManager.GetString("AddSeason21ItemMixesUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddSeason21ItemMixesUpdatePlugIn_Description text.</summary>
+        public static string AddSeason21ItemMixesUpdatePlugIn_Description => ResourceManager.GetString("AddSeason21ItemMixesUpdatePlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized AddSeason21EventRulesUpdatePlugIn_Name text.</summary>
         public static string AddSeason21EventRulesUpdatePlugIn_Name => ResourceManager.GetString("AddSeason21EventRulesUpdatePlugIn_Name", resourceCulture)!;
 

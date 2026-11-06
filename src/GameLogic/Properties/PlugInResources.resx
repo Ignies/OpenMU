@@ -1995,6 +1995,12 @@
   <data name="EvolveChatCommandPlugIn_Description" xml:space="preserve">
     <value>Evolves a character into its next class: /evolve [character]. For game masters; the level rules of the fourth and fifth evolution don't apply.</value>
   </data>
+  <data name="Season21ItemsFeaturePlugIn_Name" xml:space="preserve">
+    <value>Item rules of Season 21</value>
+  </data>
+  <data name="Season21ItemsFeaturePlugIn_Description" xml:space="preserve">
+    <value>The grade rates of the fourth and fifth wings and the mastery item mixes of the chaos goblin (Season 21 data).</value>
+  </data>
   <data name="EnhanceTreeFeaturePlugIn_Name" xml:space="preserve">
     <value>Skill enhancement tree (Season 21)</value>
   </data>

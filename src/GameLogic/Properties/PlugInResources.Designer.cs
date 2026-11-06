@@ -5522,6 +5522,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Item rules of Season 21
+        /// </summary>
+        public static string Season21ItemsFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("Season21ItemsFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The grade rates of the fourth and fifth wings and the mastery item mixes of the chaos goblin (Season 21 data).
+        /// </summary>
+        public static string Season21ItemsFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("Season21ItemsFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skill enhancement tree (Season 21).
         /// </summary>
         public static string EnhanceTreeFeaturePlugIn_Name {

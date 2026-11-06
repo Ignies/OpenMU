@@ -54,6 +54,12 @@ public class DefaultDropGenerator : IDropGenerator
     private bool _killerCarriesWideItems = true;
 
     /// <summary>
+    /// The grade rates of the wings of the item rules of Season 21 (<see cref="Season21ItemsFeaturePlugIn"/>) of the
+    /// current drop, or <c>null</c> for equal weights.
+    /// </summary>
+    private IReadOnlyList<int>? _gradeRates;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="DefaultDropGenerator" /> class.
     /// </summary>
     /// <param name="config">The configuration.</param>
@@ -88,6 +94,7 @@ public class DefaultDropGenerator : IDropGenerator
         this._chanceDropGroups.Clear();
         this._dropLevel = ProgressionFeaturePlugIn.GetWorld(player.GameContext)?.GetDropLevel(monster);
         this._killerCarriesWideItems = player.CarriesWideItems();
+        this._gradeRates = Season21ItemsFeaturePlugIn.GetConfiguration(player.GameContext)?.GradeRates;
 
         if (monster.ObjectKind == NpcObjectKind.Destructible)
         {
@@ -112,6 +119,7 @@ public class DefaultDropGenerator : IDropGenerator
         this._chanceDropGroups.Clear();
         this._dropLevel = null;
         this._killerCarriesWideItems = true;
+        this._gradeRates = null;
         return (droppedItems ?? Enumerable.Empty<Item>(), money > 0 ? money : null);
     }
 
@@ -175,7 +183,15 @@ public class DefaultDropGenerator : IDropGenerator
             !o.PossibleOptions.Any(po => object.Equals(po.OptionType, ItemOptionTypes.Excellent)) &&
             (this._killerCarriesWideItems || !o.PossibleOptions.Any(po => po.OptionType is { } type && Season21ItemOptionTypes.All.Contains(type)))))
         {
-            this.ApplyOption(item, option);
+            if (!WingGrades.IsGradeDefinition(option))
+            {
+                this.ApplyOption(item, option);
+            }
+        }
+
+        if (this._killerCarriesWideItems)
+        {
+            WingGrades.Roll(item, this._gradeRates, this._randomizer);
         }
 
         if (item.Definition.MaximumSockets > 0)

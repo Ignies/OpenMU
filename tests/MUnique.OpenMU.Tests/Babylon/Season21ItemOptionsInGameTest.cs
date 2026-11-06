@@ -13,6 +13,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -34,6 +35,7 @@ public class Season21ItemOptionsInGameTest
     private GameConfiguration _gameConfiguration = null!;
     private IPersistenceContextProvider _contextProvider = null!;
     private IGameContext _gameContext = null!;
+    private Season21ItemsFeaturePlugIn _items = null!;
 
     /// <summary>
     /// Sets up a Season 6 configuration with the items and the item options of Season 21.
@@ -50,10 +52,12 @@ public class Season21ItemOptionsInGameTest
             [
                 new AddSeason21GearUpdatePlugIn(),
                 new AddSeason21ItemCatalogUpdatePlugIn(),
+                new AddSeason21ClassesUpdatePlugIn(),
                 new ActivateSeason21WideItemsUpdatePlugIn(),
                 new AddSeason21MasteryOptionsUpdatePlugIn(),
                 new AddSeason21WingGradesUpdatePlugIn(),
                 new AddSeason21SphereLevelsUpdatePlugIn(),
+                new AddSeason21ItemMixesUpdatePlugIn(),
             ];
             foreach (var update in updates)
             {
@@ -69,6 +73,9 @@ public class Season21ItemOptionsInGameTest
         mapInitializer.PlugInManager = gameContext.PlugInManager;
         mapInitializer.PathFinderPool = gameContext.PathFinderPool;
         this._gameContext = gameContext;
+        var plugInConfiguration = this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(Season21ItemsFeaturePlugIn).GUID);
+        this._items = new Season21ItemsFeaturePlugIn { Configuration = plugInConfiguration.GetConfiguration<Season21ItemsConfiguration>(null) };
+        gameContext.FeaturePlugIns.AddPlugIn(this._items, true);
     }
 
     /// <summary>
@@ -204,6 +211,76 @@ public class Season21ItemOptionsInGameTest
     private static IEnumerable<(Guid Type, int Number, int Level)> Options(Item item)
         => item.ItemOptions.Select(o => (o.ItemOption!.OptionType!.Id, (int)o.ItemOption.Number, o.Level));
 
+    /// <summary>
+    /// A sealed Bloodangel armor and a Bloodangel soul give the Bloodangel knight armor; the mix is found by the items.
+    /// </summary>
+    [Test]
+    public async ValueTask MasteryMixUnsealsTheArmorAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        await this.AddAsync(player, this.Item(13, 351), 0).ConfigureAwait(false);
+        await this.AddAsync(player, this.Item(13, 407), 0).ConfigureAwait(false);
+
+        var (result, item) = await new MasteryItemMixCrafting().DoMixAsync(player, 0).ConfigureAwait(false);
+
+        Assert.That(result, Is.EqualTo(CraftingResult.Success));
+        Assert.That(item!.Definition, Is.EqualTo(this.Item(8, 98)));
+        Assert.That(player.TemporaryStorage!.Items, Is.EquivalentTo(new[] { item }), "the materials are used up");
+    }
+
+    /// <summary>
+    /// Items which form no mix are refused.
+    /// </summary>
+    [Test]
+    public async ValueTask MasteryMixRefusesOtherItemsAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        await this.AddAsync(player, this.Item(13, 351), 0).ConfigureAwait(false);
+
+        Assert.That(new MasteryItemMixCrafting().TryGetRequiredItems(player, out _, out _), Is.EqualTo(CraftingResult.IncorrectMixItems));
+    }
+
+    /// <summary>
+    /// A wing core and a wing core upgrade stone give the core of the next level.
+    /// </summary>
+    [Test]
+    public async ValueTask WingCoreEnhancementRaisesTheLevelAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IItemFormatViewPlugIn>()!).Setup(p => p.CarriesWideItems).Returns(true);
+        player.Money = 10_000_000;
+        var core = await this.AddAsync(player, this.Item(13, 182), 0).ConfigureAwait(false);
+        await this.AddAsync(player, this.Item(20, 161), 0).ConfigureAwait(false);
+
+        var (result, _) = await new SimpleItemCraftingHandler(this.CraftingSettings(120)).DoMixAsync(player, 0).ConfigureAwait(false);
+
+        Assert.That(result, Is.EqualTo(CraftingResult.Success));
+        Assert.That(core.Level, Is.EqualTo(1));
+        Assert.That(player.TemporaryStorage!.Items, Is.EquivalentTo(new[] { core }));
+    }
+
+    /// <summary>
+    /// A fourth wings relic and a higher magic stone give a Dark Knight of the fourth evolution the Wings of Flame God
+    /// with grade options; a third class gets nothing.
+    /// </summary>
+    [Test]
+    public async ValueTask FourthWingsFitTheClassAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IItemFormatViewPlugIn>()!).Setup(p => p.CarriesWideItems).Returns(true);
+        var crafting = new TestFourthWingCrafting(this.CraftingSettings(112));
+        await this.AddAsync(player, this.Item(20, 117), 0).ConfigureAwait(false);
+        await this.AddAsync(player, this.Item(12, 406), 0).ConfigureAwait(false);
+
+        player.SelectedCharacter!.CharacterClass = this._gameConfiguration.FindByClassCode(ClassCodes.GetCode(BaseClassCode.DarkKnight, ClassEvolution.Third));
+        Assert.That(crafting.TryGetRequiredItems(player, out _, out _), Is.EqualTo(CraftingResult.CharacterClassTooLow));
+
+        player.SelectedCharacter.CharacterClass = this._gameConfiguration.FindByClassCode(ClassCodes.GetCode(BaseClassCode.DarkKnight, ClassEvolution.Fourth));
+        var wings = await crafting.CraftAsync(player).ConfigureAwait(false);
+        Assert.That(wings.Definition, Is.EqualTo(this.Item(12, 415)));
+        Assert.That(wings.ItemOptions.Where(o => o.ItemOption!.OptionType == Season21ItemOptionTypes.WingGrade), Is.Not.Empty);
+    }
+
     private static void AddOption(Item item, ItemOptionType type, int number, int level, int index = 0)
     {
         var option = item.Definition!.PossibleItemOptions.SelectMany(o => o.PossibleOptions).Single(o => o.OptionType == type && o.Number == number);
@@ -239,6 +316,11 @@ public class Season21ItemOptionsInGameTest
     private async ValueTask<Item> AddAsync(Player player, ItemDefinition definition, byte level)
     {
         var item = this.CreateItem(player, definition, level);
+        if (item.IsStackable())
+        {
+            item.Durability = 1;
+        }
+
         Assert.That(await player.TemporaryStorage!.AddItemAsync(item).ConfigureAwait(false), Is.True);
         return item;
     }
@@ -259,6 +341,11 @@ public class Season21ItemOptionsInGameTest
     }
 
     private sealed class TestEnhanceCrafting(SimpleCraftingSettings settings) : SeedSphereEnhanceCrafting(settings)
+    {
+        public ValueTask<Item> CraftAsync(Player player) => Season21ItemOptionsInGameTest.CraftAsync(this, player, items => this.CreateOrModifyResultItemsAsync(items, player, 0, 100));
+    }
+
+    private sealed class TestFourthWingCrafting(SimpleCraftingSettings settings) : FourthWingCrafting(settings)
     {
         public ValueTask<Item> CraftAsync(Player player) => Season21ItemOptionsInGameTest.CraftAsync(this, player, items => this.CreateOrModifyResultItemsAsync(items, player, 0, 100));
     }

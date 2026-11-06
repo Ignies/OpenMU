@@ -14,3 +14,10 @@ carries, and whether a player's client can see an item:
 Who asks: the item views of the game server (lists, drops, trade, shops, appearance), the trade move, the merchant and
 player shop purchase, the pick-up, the drop generator (per killer) and the admin "give item". The places and what a
 Season 6 client gets instead are listed in `docs/babylon.md`, "Wide items".
+
+## Item rules of Season 21 (`Season21ItemsFeaturePlugIn`)
+
+Fork feature `s21_mixes`. Its configuration holds the grade rates of the wings (`WingGrades` rolls the grade options on
+drops and on the fourth wings combination) and the mastery item mixes (`MasteryMixRecipe`), which
+`PlayerActions/Craftings/MasteryItemMixCrafting` finds by the items in the chaos machine. `FourthWingCrafting` gives the
+wings of the player's class. Data, numbers and sources: `docs/babylon.md`, "Options (W32 only)" and "Mixes".

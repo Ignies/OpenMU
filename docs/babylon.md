@@ -72,6 +72,7 @@ Rules:
 | `npc_shop_tabs` | Merchant stores with up to five tabs (`MonsterDefinition.MerchantStoreTabs`; the tab 0 is the Season 6 store) |
 | `s21_shops` | The 29 NPC shops of Season 21 with their tabs, 1772 rows (update "Set the shops of Season 21") |
 | `zen_sinks` | The zen sinks of Season 21: 1 % tax on the zen sales of personal stores, monsters drop 50 % of the money (plugin "Zen sinks of Season 21") |
+| `s21_mixes` | The mastery item mixes, the fourth wings combination and the wing core enhancement, the grade rates (update "Add the item mixes of Season 21", plugin "Item rules of Season 21") |
 
 ## Balance
 
@@ -270,20 +271,64 @@ merchant an operator gives them to, and can be given by a game master to a Babyl
 
 ### Options (W32 only)
 
-- **Mastery** (`mastery`): weapons: option 6 damage + total level / 10, option 7 damage + 30; armors: option 6
-  health + 165, 7 mana + 165, 8 defense + 45 (the data's "damage decrease 45"), 9 zen x 1.45, 10 defense + total
-  level / 20. One option per item (always), a bonus option by 25 %: weapons all stats + 10 / 25 / 40, armors
-  defense + 25 / 50 / 75. The weapon values and the defense mappings are defaults (S21Emu names those options without
-  values); every value is configuration data. Elemental defense (11) and obsidian (12) wait for the element system.
+- **Mastery** (`mastery`, update version 2): one mastery option per item (always) and a bonus option by 25 %.
+
+  | Tier | Weapon: damage per 20 levels (option 6) | Weapon: damage (option 7) |
+  |---|---|---|
+  | Bloodangel | +1.5 | +42 |
+  | Darkangel | +1.6 | +45 |
+  | Holyangel | +1.8 | +51 |
+  | Soul | +2.0 | +57 |
+  | Blue Eye | +2.2 | +62 |
+  | Silver Heart | +2.4 | +68 |
+  | Manticore | +2.6 | +74 |
+  | Brilliant | +2.8 | +80 |
+  | Apocalypse | +3.0 | +85 |
+
+  Sources: Webzen guides "1st" to "9th Mastery Weapons" (muonline.webzen.com/en/gameinfo/guide/detail/131-136, 261,
+  294, 330); muonlinefanz.com "Mastery Weapons" agrees for Bloodangel, Darkangel and Holyangel. Both add to the attack
+  and the wizardry (`Stats.BaseDamageBonus`).
+  Armors, every tier: health + 165, mana + 165, damage decrease 45 (flat, new `Stats.DamageDecreaseAbsolute`, taken
+  off every received hit after the defense), zen + 45 %. Sources: S21Emu MasteryOptionRate.xml (165 / 165 / 45 / 45 %)
+  and muonlinefanz.com item db (Bloodangel and Holyangel armors: 165 / 165 / 45, zen 42 %); the older Webzen
+  "1st Mastery Armors" page (Season 14) lists 300 / 180 / 195 / 50 %, which the later data replaced; the S21 data wins.
+  Option 10 (defense + total level / 20) is a designed number: no source gives its value. Elemental defense (11) and
+  obsidian (12) wait for the element system.
+  Bonus options: weapons all stats + 10 / 25 / 40 (S21Emu MasteryOption.xml and the Webzen mastery bonus guide;
+  muonlinefanz.com says + 20 for the middle one), armors damage decrease 25 / 50 / 75 (S21Emu, muonlinefanz.com).
+  Version 1 had one weapon option set for all tiers (+30, + level / 10) and the damage decrease as defense; version 2
+  removes that set from the weapons and retargets the armor options.
 - **Wing grades** (`wing_grades`): eleven options (ItemGradeOption.xml): full mana / health recovery, damage return,
   ignore defense, attack speed, excellent damage, double damage chance, strength, vitality, energy, agility. Fourth
   wings up to three of them in grades 0-3 (level = grade + 1), fifth wings at their single grade.
+- **Who wears the fourth and fifth wings** (update "wing grades", version 2): the class ranks of Item.xml; rank r is
+  the class from its evolution r on, for the Season 6 classes and the classes of Season 21. Example: Wings of Flame God
+  (12/415) for the Dark Knight from the fourth evolution.
+- **Grade rates**: a grade option gets its grade by the weights 947500 / 30000 / 15000 / 7500 (grades 0-3, S21Emu
+  ItemGradeOption.xml RateList; configuration of the plugin "Item rules of Season 21"), on drops and on the fourth
+  wings combination. The first grade option always comes, up to two more by 50 % each (designed: no source gives the
+  count).
 - **Sphere levels 6-10** (`sockets_10`): every socket option gets the levels 6-10, its Season 6 level 5 value scaled by
   the Season 21 values of SocketItemOption.xml (a multiplier scales its bonus part). The seed spheres 12/311-340
   (level 6-10) can be mounted; the seed researcher enhances a seed sphere of level 5-9 with 7 / 8 / 9 / 10 / 11 sphere
   upgrade runes (12/401) and 25 / 28 / 31 / 34 / 37 million zen (SocketSystemCombinationMix.xml) to the next level.
   These are the crafting numbers 100-104 of the Season 6 mix request (`C1 86`); a client which can't carry the result
   gets "incorrect mix items".
+
+### Mixes (update "Add the item mixes of Season 21", chaos goblin)
+
+| Crafting number | Mix | Source |
+|---|---|---|
+| 110 | Mastery item combination: 2,476 mixes (unsealing, tier upgrades, mastery jewelry), found by the items; success rate, zen and what the result keeps per mix | S21Emu MasteryItemMix.xml (`Generator/season21-mixes.mjs` -> `Resources/Season21/MasteryMixes.json`); the 6 mixes with a random result bag are left out |
+| 111 | Fourth wings: Garuda's Feather, Garuda's Flame, Golden Crest x50, jewels of bless, soul, chaos and creation x30 each (as packed jewels x30), a higher magic stone; 40 %, 20 M zen | S21Emu GoblinCombination.xml mix 507 |
+| 112 | Fourth wings: Lv.4 Wing Relic and a higher magic stone; 24 %, 20 M zen | GoblinCombination.xml mix 2010 |
+| 120-134 | Wing core enhancement +1 to +15: the core, 1-5 wing core upgrade stones, 1-8 M zen, 100 % | WingCore.xml MixLevelUP kind 107 |
+
+The fourth wings combination gives the wings of the player's class (none: "class too low") with rolled grade options.
+Keep bits of a mastery mix: 1 excellent and mastery options, 2 luck, 4 set options, 8 new mastery options, 16 a new
+option (+4 to +16), 128 everything (CustomMix.xml). Designed, without a source: a failed mastery mix keeps the main
+material and uses up the others; only one higher magic stone counts; a failed core enhancement keeps the core. The S6
+mix request `C1 86` with the crafting number starts a mix; the mix of the items is also found without it.
 
 No new packet is needed: every option rides in the W32 item, and every packet which carries an item sizes it by the
 serializer. Season 6 clients keep every packet byte for byte (the visibility tests and the Season 6 serializer tests).

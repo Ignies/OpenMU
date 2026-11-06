@@ -10,11 +10,13 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Tests the updates of the Season 21 item options and the activation of the items of the wide item format.
@@ -38,13 +40,21 @@ public class Season21ItemOptionsTest
         this._gameConfiguration = (await this._context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
         await new AddSeason21GearUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
         await new AddSeason21ItemCatalogUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21ClassesUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
         Assert.That(this.Waiting().Where(d => d.IsActive), Is.Empty, "the catalog leaves them inactive");
+
+        // The state of version 1 of the mastery update: one weapon definition for all tiers.
+        var version1 = this._context.CreateNew<ItemOptionDefinition>();
+        version1.SetGuid(ItemOptionDefinitionNumbers.MasteryWeapon);
+        this._gameConfiguration.ItemOptions.Add(version1);
+        this.Item(0, 42).PossibleItemOptions.Add(version1);
         for (var run = 0; run < 2; run++)
         {
             await new ActivateSeason21WideItemsUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
             await new AddSeason21MasteryOptionsUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
             await new AddSeason21WingGradesUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
             await new AddSeason21SphereLevelsUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
+            await new AddSeason21ItemMixesUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
         }
     }
 
@@ -54,7 +64,7 @@ public class Season21ItemOptionsTest
     [Test]
     public void TheUpdatesAreOptional()
     {
-        UpdatePlugInBase[] updates = [new ActivateSeason21WideItemsUpdatePlugIn(), new AddSeason21MasteryOptionsUpdatePlugIn(), new AddSeason21WingGradesUpdatePlugIn(), new AddSeason21SphereLevelsUpdatePlugIn()];
+        UpdatePlugInBase[] updates = [new ActivateSeason21WideItemsUpdatePlugIn(), new AddSeason21MasteryOptionsUpdatePlugIn(), new AddSeason21WingGradesUpdatePlugIn(), new AddSeason21SphereLevelsUpdatePlugIn(), new AddSeason21ItemMixesUpdatePlugIn()];
         Assert.That(updates.Select(u => u.IsMandatory), Has.All.False);
         Assert.That(updates.Select(u => u.RunsOnNewDatabase), Has.All.True);
     }
@@ -95,7 +105,70 @@ public class Season21ItemOptionsTest
         var health = armor.PossibleItemOptions.SelectMany(o => o.PossibleOptions).Single(o => o.OptionType == Season21ItemOptionTypes.Mastery && o.Number == 6);
         Assert.That(health.PowerUpDefinition!.TargetAttribute, Is.EqualTo(Stats.MaximumHealth));
         Assert.That(health.PowerUpDefinition.Boost!.ConstantValue.Value, Is.EqualTo(165));
+        var decrease = armor.PossibleItemOptions.SelectMany(o => o.PossibleOptions).Single(o => o.OptionType == Season21ItemOptionTypes.Mastery && o.Number == 8);
+        Assert.That(decrease.PowerUpDefinition!.TargetAttribute, Is.EqualTo(Stats.DamageDecreaseAbsolute), "Decrease DMG +45 is flat");
+        Assert.That(decrease.PowerUpDefinition.Boost!.ConstantValue.Value, Is.EqualTo(45));
+        var bonus = armor.PossibleItemOptions.SelectMany(o => o.PossibleOptions).Single(o => o.OptionType == Season21ItemOptionTypes.MasteryBonus);
+        Assert.That(bonus.LevelDependentOptions.Select(l => l.PowerUpDefinition!.TargetAttribute), Has.All.EqualTo(Stats.DamageDecreaseAbsolute));
         Assert.That(this._gameConfiguration.ItemOptions.Count(o => o.Name.ValueInNeutralLanguage == "Mastery Armor Options"), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// The mastery weapons get the options of their tier: damage per 20 levels and damage of the Webzen guides.
+    /// </summary>
+    /// <param name="number">The number of a sword of the tier, group 0.</param>
+    /// <param name="perTwentyLevels">The damage per 20 levels.</param>
+    /// <param name="damage">The damage.</param>
+    [TestCase(42, 1.5f, 42)]
+    [TestCase(54, 1.6f, 45)]
+    [TestCase(57, 1.8f, 51)]
+    [TestCase(62, 2.0f, 57)]
+    [TestCase(78, 2.2f, 62)]
+    public void MasteryWeaponsHaveTheValuesOfTheirTier(short number, float perTwentyLevels, float damage)
+    {
+        var options = this.Item(0, number).PossibleItemOptions.SelectMany(o => o.PossibleOptions).Where(o => o.OptionType == Season21ItemOptionTypes.Mastery).ToList();
+        Assert.That(options, Has.Count.EqualTo(2));
+        var version1 = GuidHelper.CreateGuid<ItemOptionDefinition>(ItemOptionDefinitionNumbers.MasteryWeapon);
+        Assert.That(this.Item(0, number).PossibleItemOptions.Select(o => o.GetId()), Has.None.EqualTo(version1), "the definition of version 1 is gone");
+        Assert.That(options.Single(o => o.Number == 7).PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(damage));
+        Assert.That(options.Single(o => o.Number == 6).PowerUpDefinition!.Boost!.RelatedValues.Single().InputOperand, Is.EqualTo(perTwentyLevels / 20f).Within(0.0001f));
+    }
+
+    /// <summary>
+    /// A fourth wing is worn by its class from the fourth evolution on, a fifth wing from the fifth.
+    /// </summary>
+    [Test]
+    public void WingsAreWornFromTheirEvolution()
+    {
+        var flameGod = this.Item(12, 415);
+        var evolutions = flameGod.QualifiedCharacters.Select(c => (ClassCodes.GetBaseClass(c.Number), ClassCodes.GetEvolution(c.Number))).ToList();
+        Assert.That(evolutions, Does.Contain((BaseClassCode.DarkKnight, ClassEvolution.Fourth)).And.Contain((BaseClassCode.DarkKnight, ClassEvolution.Fifth)));
+        Assert.That(evolutions.Select(e => e.Item1), Has.All.EqualTo(BaseClassCode.DarkKnight));
+        Assert.That(evolutions.Select(e => e.Item2), Has.None.EqualTo(ClassEvolution.Third));
+
+        var fifth = Season21ItemCatalog.Items.First(r => r.KindA == 106);
+        Assert.That(this.Item(fifth.Group, fifth.Number).QualifiedCharacters.Select(c => ClassCodes.GetEvolution(c.Number)), Is.Not.Empty.And.All.EqualTo(ClassEvolution.Fifth));
+    }
+
+    /// <summary>
+    /// The mixes: the mastery mix table, the mastery combination, the fourth wings and the wing core enhancement at the
+    /// chaos goblin, each once.
+    /// </summary>
+    [Test]
+    public void MixesAreAtTheChaosGoblin()
+    {
+        var plugIn = this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(Season21ItemsFeaturePlugIn).GUID);
+        Assert.That(plugIn.IsActive, Is.True);
+        var configuration = plugIn.GetConfiguration<Season21ItemsConfiguration>(null)!;
+        Assert.That(configuration.MasteryMixes, Has.Count.EqualTo(2476));
+        Assert.That(configuration.GradeRates, Is.EqualTo(new[] { 947500, 30000, 15000, 7500 }));
+
+        var goblin = this._gameConfiguration.Monsters.First(m => m.NpcWindow == NpcWindow.ChaosMachine);
+        Assert.That(goblin.ItemCraftings.Count(c => c.Number == 110), Is.EqualTo(1));
+        Assert.That(goblin.ItemCraftings.Single(c => c.Number == 111).SimpleCraftingSettings!.ResultItems, Has.Count.EqualTo(Season21ItemCatalog.Items.Count(r => r.KindA == 76)));
+        var cores = goblin.ItemCraftings.Where(c => c.Number is >= 120 and < 135).ToList();
+        Assert.That(cores, Has.Count.EqualTo(15));
+        Assert.That(cores.Select(c => c.SimpleCraftingSettings!.RequiredItems.Single(r => r.Reference == 0).MinimumAmount), Is.EqualTo(new byte[] { 1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 5 }));
     }
 
     /// <summary>

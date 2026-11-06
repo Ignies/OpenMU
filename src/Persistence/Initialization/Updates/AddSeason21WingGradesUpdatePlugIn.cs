@@ -39,8 +39,14 @@ public class AddSeason21WingGradesUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 06, 12, 03, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    /// <remarks>The wings wait for the wide item format.</remarks>
-    public override IEnumerable<UpdateDependency> DependsOn => [typeof(ActivateSeason21WideItemsUpdatePlugIn).GUID];
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 06, 18, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    /// <remarks>The wings wait for the wide item format; version 2 qualifies the classes of Season 21 too.</remarks>
+    public override IEnumerable<UpdateDependency> DependsOn => [typeof(ActivateSeason21WideItemsUpdatePlugIn).GUID, typeof(AddSeason21ClassesUpdatePlugIn).GUID];
 
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)

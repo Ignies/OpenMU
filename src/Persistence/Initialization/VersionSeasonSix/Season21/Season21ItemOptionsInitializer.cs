@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
+using System.Text.Json;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Attributes;
@@ -11,7 +12,12 @@ using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
+using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+using MUnique.OpenMU.GameLogic.WideItems;
+using MUnique.OpenMU.Persistence.Initialization.Updates;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Adds the item options of Season 21 which only the wide item format carries, and activates the items which wait
@@ -45,6 +51,39 @@ internal class Season21ItemOptionsInitializer
     private const int FifthWingKind = 106;
 
     private const float Percent = 0.01f;
+
+    private const byte MasteryMixCraftingNumber = 110;
+
+    private const byte FourthWingCraftingNumber = 111;
+
+    private const byte WingCoreCraftingNumber = 120;
+
+    private const int WingCoreKind = 107;
+
+    private const byte PackedThirtyLevel = 2;
+
+    /// <summary>
+    /// The mastery options of the weapons by tier (0 Bloodangel to 8 Apocalypse): damage per 20 levels and damage
+    /// (Webzen guides "1st" to "9th Mastery Weapons", muonlinefanz.com "Mastery Weapons").
+    /// </summary>
+    private static readonly (float PerTwentyLevels, float Damage)[] MasteryWeaponTiers =
+    [
+        (1.5f, 42), (1.6f, 45), (1.8f, 51), (2.0f, 57), (2.2f, 62), (2.4f, 68), (2.6f, 74), (2.8f, 80), (3.0f, 85),
+    ];
+
+    private static readonly string[] MasteryTierNames =
+        ["Bloodangel", "Darkangel", "Holyangel", "Soul", "Blue Eye", "Silver Heart", "Manticore", "Brilliant", "Apocalypse"];
+
+    /// <summary>
+    /// The wing core enhancement from the level 0 to 1, ..., 14 to 15: zen and wing core upgrade stones
+    /// (S21Emu WingCore.xml, MixLevelUP of kind 107, 100 %).
+    /// </summary>
+    private static readonly (int Money, byte Stones)[] WingCoreLevels =
+    [
+        (1_000_000, 1), (1_500_000, 2), (2_000_000, 2), (2_500_000, 2), (3_000_000, 3), (3_500_000, 3), (4_000_000, 4),
+        (4_500_000, 4), (5_000_000, 4), (5_500_000, 5), (6_000_000, 5), (6_500_000, 5), (7_000_000, 5), (7_500_000, 5),
+        (8_000_000, 5),
+    ];
 
     /// <summary>
     /// The values of the socket options of the Season 21 data at the sphere levels 5 to 10 (SocketItemOption.xml,
@@ -149,28 +188,31 @@ internal class Season21ItemOptionsInitializer
     }
 
     /// <summary>
-    /// Adds the mastery options and the mastery bonus options to the mastery items.
+    /// Adds the mastery options and the mastery bonus options to the mastery items. Version 2: the weapon options per
+    /// tier and the flat damage decrease of the armors (see docs/babylon.md, "Options (W32 only)", for the sources).
     /// </summary>
     public void AddMasteryOptions()
     {
         this.EnsureAllStatsBonus();
-        var weapon = this.GetOrCreateDefinition(ItemOptionDefinitionNumbers.MasteryWeapon, "Mastery Weapon Options", 1, 1.0f, definition =>
-        {
-            definition.PossibleOptions.Add(this.CreateRelatedOption(Season21ItemOptionTypes.Mastery, 6, ItemOptionDefinitionNumbers.MasteryWeapon, Stats.BaseDamageBonus, Stats.TotalLevel, 1f / 10f));
-            definition.PossibleOptions.Add(this.CreateOption(Season21ItemOptionTypes.Mastery, 7, ItemOptionDefinitionNumbers.MasteryWeapon, Stats.BaseDamageBonus, 30, AggregateType.AddRaw));
-        });
+        this.EnsureAttribute(Stats.DamageDecreaseAbsolute);
+        var weapons = Enumerable.Range(0, MasteryWeaponTiers.Length).Select(this.GetOrCreateWeaponTier).ToList();
         var armor = this.GetOrCreateDefinition(ItemOptionDefinitionNumbers.MasteryArmor, "Mastery Armor Options", 1, 1.0f, definition =>
         {
             definition.PossibleOptions.Add(this.CreateOption(Season21ItemOptionTypes.Mastery, 6, ItemOptionDefinitionNumbers.MasteryArmor, Stats.MaximumHealth, 165, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateOption(Season21ItemOptionTypes.Mastery, 7, ItemOptionDefinitionNumbers.MasteryArmor, Stats.MaximumMana, 165, AggregateType.AddRaw));
-            definition.PossibleOptions.Add(this.CreateOption(Season21ItemOptionTypes.Mastery, 8, ItemOptionDefinitionNumbers.MasteryArmor, Stats.DefenseFinal, 45, AggregateType.AddRaw));
+            definition.PossibleOptions.Add(this.CreateOption(Season21ItemOptionTypes.Mastery, 8, ItemOptionDefinitionNumbers.MasteryArmor, Stats.DamageDecreaseAbsolute, 45, AggregateType.AddRaw));
             definition.PossibleOptions.Add(this.CreateOption(Season21ItemOptionTypes.Mastery, 9, ItemOptionDefinitionNumbers.MasteryArmor, Stats.MoneyAmountRate, 1.45f, AggregateType.Multiplicate));
             definition.PossibleOptions.Add(this.CreateRelatedOption(Season21ItemOptionTypes.Mastery, 10, ItemOptionDefinitionNumbers.MasteryArmor, Stats.DefenseFinal, Stats.TotalLevel, 1f / 20f));
         });
         var weaponBonus = this.GetOrCreateDefinition(ItemOptionDefinitionNumbers.MasteryWeaponBonus, "Mastery Weapon Bonus Option", 1, 0.25f, definition =>
             definition.PossibleOptions.Add(this.CreateLevelOption(Season21ItemOptionTypes.MasteryBonus, 0, ItemOptionDefinitionNumbers.MasteryWeaponBonus, Stats.AllStatsBonus, false, 10, 25, 40)));
         var armorBonus = this.GetOrCreateDefinition(ItemOptionDefinitionNumbers.MasteryArmorBonus, "Mastery Armor Bonus Option", 1, 0.25f, definition =>
-            definition.PossibleOptions.Add(this.CreateLevelOption(Season21ItemOptionTypes.MasteryBonus, 1, ItemOptionDefinitionNumbers.MasteryArmorBonus, Stats.DefenseFinal, false, 25, 50, 75)));
+            definition.PossibleOptions.Add(this.CreateLevelOption(Season21ItemOptionTypes.MasteryBonus, 1, ItemOptionDefinitionNumbers.MasteryArmorBonus, Stats.DamageDecreaseAbsolute, false, 25, 50, 75)));
+
+        // Version 1 had one weapon definition for all tiers and mapped the damage decrease to the defense.
+        var version1Weapon = this._gameConfiguration.ItemOptions.FirstOrDefault(o => o.GetId() == GuidHelper.CreateGuid<ItemOptionDefinition>(ItemOptionDefinitionNumbers.MasteryWeapon));
+        this.Retarget(armor, 8, Stats.DamageDecreaseAbsolute);
+        this.Retarget(armorBonus, 1, Stats.DamageDecreaseAbsolute);
 
         foreach (var row in Season21ItemCatalog.Items.Where(row => row.Mastery is { Length: 2 }))
         {
@@ -180,13 +222,19 @@ internal class Season21ItemOptionsInitializer
             }
 
             var isWeapon = row.Mastery![0] == 0;
-            AddOnce(definition, isWeapon ? weapon : armor);
+            if (version1Weapon is not null)
+            {
+                definition.PossibleItemOptions.Remove(version1Weapon);
+            }
+
+            AddOnce(definition, isWeapon ? weapons[Math.Clamp(row.Mastery[1], 0, weapons.Count - 1)] : armor);
             AddOnce(definition, isWeapon ? weaponBonus : armorBonus);
         }
     }
 
     /// <summary>
-    /// Adds the grade options to the fourth and fifth wings.
+    /// Adds the grade options to the fourth and fifth wings. Version 2: the classes which wear them, by the class
+    /// ranks of Item.xml (rank r: the class from its evolution r on, also the classes of Season 21).
     /// </summary>
     public void AddWingGrades()
     {
@@ -214,6 +262,7 @@ internal class Season21ItemOptionsInitializer
             {
                 AddOnce(definition, row.KindA == FourthWingKind ? fourth : fifth);
                 definition.ItemSlot ??= wingSlot;
+                this.QualifyByRank(definition, row);
             }
         }
     }
@@ -256,6 +305,39 @@ internal class Season21ItemOptionsInitializer
         this.AddSphereEnhancements();
     }
 
+    /// <summary>
+    /// Adds the item rules and the mixes of Season 21: the configuration of <see cref="Season21ItemsFeaturePlugIn"/>
+    /// (grade rates, mastery mixes), the mastery mix, the fourth wing creation and the wing core enhancement at the
+    /// chaos goblin.
+    /// </summary>
+    /// <param name="plugIn">The configuration of the feature plugin.</param>
+    public void AddItemMixes(PlugInConfiguration plugIn)
+    {
+        Season21ItemsConfiguration? existing;
+        try
+        {
+            existing = plugIn.GetConfiguration<Season21ItemsConfiguration>(new IdIgnoringReferenceHandler());
+        }
+        catch (JsonException)
+        {
+            // A configuration which can't be read is the operator's; it stays.
+            existing = new Season21ItemsConfiguration { MasteryMixes = [new MasteryMixRecipe()] };
+        }
+
+        if (existing is not { MasteryMixes.Count: > 0 })
+        {
+            plugIn.SetConfiguration(new Season21ItemsConfiguration { MasteryMixes = Season21MixData.MasteryMixes.ToList() }, null);
+            plugIn.IsActive = true;
+        }
+
+        foreach (var goblin in this._gameConfiguration.Monsters.Where(m => m.NpcWindow == NpcWindow.ChaosMachine).ToList())
+        {
+            this.AddCrafting(goblin, MasteryMixCraftingNumber, "Mastery Item Combination", typeof(MasteryItemMixCrafting), null);
+            this.AddFourthWingCraftings(goblin);
+            this.AddWingCoreCraftings(goblin);
+        }
+    }
+
     private static void AddOnce(ItemDefinition definition, ItemOptionDefinition options)
     {
         if (!definition.PossibleItemOptions.Contains(options))
@@ -265,6 +347,160 @@ internal class Season21ItemOptionsInitializer
     }
 
     private static float ValueOf(float value, bool isPercentage) => isPercentage ? value * Percent : value;
+
+    private void AddFourthWingCraftings(MonsterDefinition goblin)
+    {
+        var wings = this.CatalogItems(row => row.KindA == FourthWingKind).ToList();
+        var stone = this.Item(12, 406);
+        this.AddCrafting(goblin, FourthWingCraftingNumber, "Fourth Wings Combination (Garuda)", typeof(FourthWingCrafting), settings =>
+        {
+            settings.SuccessPercent = 40;
+            settings.Money = 20_000_000;
+            this.Require(settings, this.Item(13, 467), 1);
+            this.Require(settings, this.Item(13, 466), 1);
+            this.Require(settings, this.Item(13, 468), 50);
+            foreach (var number in new short[] { 30, 31, 141, 137 })
+            {
+                this.Require(settings, this.Item(12, number), 1, PackedThirtyLevel);
+            }
+
+            this.Require(settings, stone, 1);
+            wings.ForEach(w => this.AddResult(settings, w));
+        });
+        this.AddCrafting(goblin, FourthWingCraftingNumber + 1, "Fourth Wings Combination (Relic)", typeof(FourthWingCrafting), settings =>
+        {
+            settings.SuccessPercent = 24;
+            settings.Money = 20_000_000;
+            this.Require(settings, this.Item(20, 117), 1);
+            this.Require(settings, stone, 1);
+            wings.ForEach(w => this.AddResult(settings, w));
+        });
+    }
+
+    private void AddWingCoreCraftings(MonsterDefinition goblin)
+    {
+        var cores = this.CatalogItems(row => row.KindA == WingCoreKind).ToList();
+        var stone = this.Item(20, 161);
+        if (cores.Count == 0 || stone is null)
+        {
+            return;
+        }
+
+        for (byte level = 0; level < WingCoreLevels.Length; level++)
+        {
+            var (money, stones) = WingCoreLevels[level];
+            var coreLevel = level;
+            this.AddCrafting(goblin, WingCoreCraftingNumber + level, $"Wing Core Enhancement (+{level + 1})", typeof(SimpleItemCraftingHandler), settings =>
+            {
+                settings.SuccessPercent = 100;
+                settings.Money = money;
+                var core = this.Require(settings, null, 1, coreLevel);
+                core.MaximumItemLevel = coreLevel;
+                cores.ForEach(core.PossibleItems.Add);
+                core.Reference = 1;
+                core.SuccessResult = MixResult.StaysAsIs;
+                core.FailResult = MixResult.StaysAsIs;
+                this.Require(settings, stone, stones);
+                var result = this._context.CreateNew<ItemCraftingResultItem>();
+                result.Reference = 1;
+                result.AddLevel = 1;
+                settings.ResultItems.Add(result);
+            });
+        }
+    }
+
+    private void AddCrafting(MonsterDefinition npc, int number, string name, Type handler, Action<SimpleCraftingSettings>? fill)
+    {
+        if (npc.ItemCraftings.Any(c => c.Number == number))
+        {
+            return;
+        }
+
+        var crafting = this._context.CreateNew<ItemCrafting>();
+        crafting.Number = (byte)number;
+        crafting.Name = name;
+        crafting.ItemCraftingHandlerClassName = handler.FullName!;
+        var settings = this._context.CreateNew<SimpleCraftingSettings>();
+        crafting.SimpleCraftingSettings = settings;
+        fill?.Invoke(settings);
+        npc.ItemCraftings.Add(crafting);
+    }
+
+    private ItemCraftingRequiredItem Require(SimpleCraftingSettings settings, ItemDefinition? item, byte amount, byte level = 0)
+    {
+        var required = this._context.CreateNew<ItemCraftingRequiredItem>();
+        required.MinimumAmount = amount;
+        required.MaximumAmount = amount;
+        required.MinimumItemLevel = level;
+        required.MaximumItemLevel = level == 0 ? (byte)15 : level;
+        if (item is not null)
+        {
+            required.PossibleItems.Add(item);
+        }
+
+        settings.RequiredItems.Add(required);
+        return required;
+    }
+
+    private void AddResult(SimpleCraftingSettings settings, ItemDefinition item)
+    {
+        var result = this._context.CreateNew<ItemCraftingResultItem>();
+        result.ItemDefinition = item;
+        settings.ResultItems.Add(result);
+    }
+
+    private ItemDefinition? Item(byte group, short number)
+        => this._gameConfiguration.Items.FirstOrDefault(i => i.Group == group && i.Number == number);
+
+    private ItemOptionDefinition GetOrCreateWeaponTier(int tier)
+    {
+        var (perTwentyLevels, damage) = MasteryWeaponTiers[tier];
+        var number = (short)(ItemOptionDefinitionNumbers.MasteryWeaponTier + tier);
+        return this.GetOrCreateDefinition(number, $"Mastery Weapon Options ({MasteryTierNames[tier]})", 1, 1.0f, definition =>
+        {
+            definition.PossibleOptions.Add(this.CreateRelatedOption(Season21ItemOptionTypes.Mastery, 6, number, Stats.BaseDamageBonus, Stats.TotalLevel, perTwentyLevels / 20f));
+            definition.PossibleOptions.Add(this.CreateOption(Season21ItemOptionTypes.Mastery, 7, number, Stats.BaseDamageBonus, damage, AggregateType.AddRaw));
+        });
+    }
+
+    private void Retarget(ItemOptionDefinition definition, short number, AttributeDefinition attribute)
+    {
+        var target = attribute.GetPersistent(this._gameConfiguration);
+        foreach (var option in definition.PossibleOptions.Where(o => o.Number == number))
+        {
+            foreach (var powerUp in option.LevelDependentOptions.Select(l => l.PowerUpDefinition).Append(option.PowerUpDefinition).OfType<PowerUpDefinition>())
+            {
+                powerUp.TargetAttribute = target;
+            }
+        }
+    }
+
+    private void QualifyByRank(ItemDefinition definition, Season21CatalogItem row)
+    {
+        foreach (var characterClass in this._gameConfiguration.CharacterClasses)
+        {
+            if (ClassCodes.GetBaseClass(characterClass.Number) is not { } baseClass
+                || ClassCodes.GetEvolution(characterClass.Number) is not { } evolution
+                || (int)baseClass >= row.Classes.Length)
+            {
+                continue;
+            }
+
+            var rank = row.Classes[(int)baseClass];
+            if (rank > 0 && (int)evolution >= rank - 1 && !definition.QualifiedCharacters.Contains(characterClass))
+            {
+                definition.QualifiedCharacters.Add(characterClass);
+            }
+        }
+    }
+
+    private void EnsureAttribute(AttributeDefinition attribute)
+    {
+        if (this._gameConfiguration.Attributes.All(a => a.Id != attribute.Id))
+        {
+            this._gameConfiguration.Attributes.Add(this._context.CreateNew<AttributeDefinition>(attribute.Id, attribute.Designation, attribute.Description));
+        }
+    }
 
     private IEnumerable<ItemDefinition> CatalogItems(Func<Season21CatalogItem, bool> predicate)
         => Season21ItemCatalog.Items.Where(predicate).Select(this.Find).OfType<ItemDefinition>();

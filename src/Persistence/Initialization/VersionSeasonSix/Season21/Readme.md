@@ -255,6 +255,10 @@ damage reduction table, the Ability Enhancement Core (track T, later).
   all stats bonus reaches the stats through a relationship per class (`Stats.AllStatsBonus`).
 * "Add the grade options of the fourth and fifth wings" (`AddSeason21WingGradesUpdatePlugIn`): `ItemGradeOption.xml`
   by item kind (76 fourth, 106 fifth); wings without a slot get the wing slot.
+* "Add the item mixes of Season 21" (`AddSeason21ItemMixesUpdatePlugIn`): the configuration of the plugin "Item rules
+  of Season 21" (grade rates, the mastery mixes of `Season21MixData`, `Resources/Season21/MasteryMixes.json` from
+  `Generator/season21-mixes.mjs --data <S21Emu Data/Item>`), and at the chaos goblin the mastery combination, the fourth
+  wings combinations and the wing core enhancement.
 * "Add the sphere levels 6 to 10" (`AddSeason21SphereLevelsUpdatePlugIn`): socket option levels 6-10, the seed spheres
   12/311-340 with their element's options and mounting, and the seed sphere enhancement (crafting numbers 100-104 at
   the seed researcher).
