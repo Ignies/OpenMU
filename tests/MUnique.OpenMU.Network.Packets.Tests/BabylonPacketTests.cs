@@ -261,6 +261,36 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the structure size calculation for SocketedErrtel.
+    /// </summary>
+    [Test]
+    public void SocketedErrtel_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 14;
+        var actualLength = SocketedErrtel.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'SocketIndex' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SocketIndex' exceeds structure boundary");
+        
+        // Validate field 'ErrtelNumber' boundary
+        Assert.That(1 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ErrtelNumber' exceeds structure boundary");
+        
+        // Validate field 'RankCount' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RankCount' exceeds structure boundary");
+        
+        // Validate field 'RankOptions' boundary
+        Assert.That(4 + 10, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RankOptions' exceeds structure boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for ForkHello.
     /// </summary>
     [Test]
@@ -954,5 +984,127 @@ public class PacketStructureTests
         // Validate field 'Tab' boundary
         Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Tab' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ErrtelSocketRequest.
+    /// </summary>
+    [Test]
+    public void ErrtelSocketRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = ErrtelSocketRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Mode' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Mode' exceeds packet boundary");
+        
+        // Validate field 'PentagramSlot' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PentagramSlot' exceeds packet boundary");
+        
+        // Validate field 'ErrtelSlot' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ErrtelSlot' exceeds packet boundary");
+        
+        // Validate field 'SocketIndex' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SocketIndex' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for PentagramResult.
+    /// </summary>
+    [Test]
+    public void PentagramResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = PentagramResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Mode' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Mode' exceeds packet boundary");
+        
+        // Validate field 'Result' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+        
+        // Validate field 'PentagramSlot' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PentagramSlot' exceeds packet boundary");
+        
+        // Validate field 'SocketIndex' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SocketIndex' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ElementalDamage.
+    /// </summary>
+    [Test]
+    public void ElementalDamage_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 11;
+        var actualLength = ElementalDamageRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'TargetId' boundary
+        Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'TargetId' exceeds packet boundary");
+        
+        // Validate field 'Element' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Element' exceeds packet boundary");
+        
+        // Validate field 'Damage' boundary
+        Assert.That(7 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Damage' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for PentagramErrtelsRequest.
+    /// </summary>
+    [Test]
+    public void PentagramErrtelsRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = PentagramErrtelsRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'PentagramSlot' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PentagramSlot' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for PentagramErrtels.
+    /// </summary>
+    [Test]
+    public void PentagramErrtels_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'PentagramSlot' starts at index 4 with size 1
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'PentagramSlot' has invalid negative index");
+        
+        // Field 'ErrtelCount' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'ErrtelCount' has invalid negative index");
     }
 }
