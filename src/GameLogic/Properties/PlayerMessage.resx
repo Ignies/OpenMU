@@ -1189,4 +1189,40 @@ Inventory Extensions: {18}</value>
   <data name="EvolutionTrialLevelTooLowFormat" xml:space="preserve">
     <value>Come back when you reach level {0}.</value>
   </data>
+  <data name="EliteZoneEntryDenied" xml:space="preserve">
+    <value>Your level is too low for this elite zone.</value>
+  </data>
+  <data name="FieldBossAppeared" xml:space="preserve">
+    <value>{0} has appeared in {1}!</value>
+  </data>
+  <data name="FieldBossDefeated" xml:space="preserve">
+    <value>{0} has defeated {1} in {2}!</value>
+  </data>
+  <data name="FieldBossBattleLost" xml:space="preserve">
+    <value>The battle against {0} in {1} is lost.</value>
+  </data>
+  <data name="FieldBossArenaExit" xml:space="preserve">
+    <value>The battle is over. You will be moved out in {0} minute(s).</value>
+  </data>
+  <data name="FieldBossNotPresent" xml:space="preserve">
+    <value>{0} is not here now.</value>
+  </data>
+  <data name="FieldBossArenaFull" xml:space="preserve">
+    <value>The arena of {0} is full.</value>
+  </data>
+  <data name="FieldBossArenaClosed" xml:space="preserve">
+    <value>The battle against {0} has started; the arena is closed.</value>
+  </data>
+  <data name="FieldBossFeatureOff" xml:space="preserve">
+    <value>The field bosses are off on this server.</value>
+  </data>
+  <data name="FieldBossList" xml:space="preserve">
+    <value>Field bosses: {0}</value>
+  </data>
+  <data name="FieldBossSpawnedByGameMaster" xml:space="preserve">
+    <value>{0} spawned.</value>
+  </data>
+  <data name="FieldBossSpawnFailed" xml:space="preserve">
+    <value>{0} could not spawn (its map or monster is missing).</value>
+  </data>
 </root>

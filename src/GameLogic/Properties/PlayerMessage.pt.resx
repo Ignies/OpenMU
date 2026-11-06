@@ -1189,4 +1189,40 @@ Extensões de inventário: {18}</value>
   <data name="EvolutionTrialLevelTooLowFormat" xml:space="preserve">
     <value>Volte quando alcançar o nível {0}.</value>
   </data>
+  <data name="EliteZoneEntryDenied" xml:space="preserve">
+    <value>Seu nível é baixo demais para esta zona de elite.</value>
+  </data>
+  <data name="FieldBossAppeared" xml:space="preserve">
+    <value>{0} apareceu em {1}!</value>
+  </data>
+  <data name="FieldBossDefeated" xml:space="preserve">
+    <value>{0} derrotou {1} em {2}!</value>
+  </data>
+  <data name="FieldBossBattleLost" xml:space="preserve">
+    <value>A batalha contra {0} em {1} foi perdida.</value>
+  </data>
+  <data name="FieldBossArenaExit" xml:space="preserve">
+    <value>A batalha acabou. Você será retirado em {0} minuto(s).</value>
+  </data>
+  <data name="FieldBossNotPresent" xml:space="preserve">
+    <value>{0} não está aqui agora.</value>
+  </data>
+  <data name="FieldBossArenaFull" xml:space="preserve">
+    <value>A arena de {0} está cheia.</value>
+  </data>
+  <data name="FieldBossArenaClosed" xml:space="preserve">
+    <value>A batalha contra {0} começou; a arena está fechada.</value>
+  </data>
+  <data name="FieldBossFeatureOff" xml:space="preserve">
+    <value>Os chefes de campo estão desativados neste servidor.</value>
+  </data>
+  <data name="FieldBossList" xml:space="preserve">
+    <value>Chefes de campo: {0}</value>
+  </data>
+  <data name="FieldBossSpawnedByGameMaster" xml:space="preserve">
+    <value>{0} surgiu.</value>
+  </data>
+  <data name="FieldBossSpawnFailed" xml:space="preserve">
+    <value>{0} não pôde surgir (falta o mapa ou o monstro).</value>
+  </data>
 </root>

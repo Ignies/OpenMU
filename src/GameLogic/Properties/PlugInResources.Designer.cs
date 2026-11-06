@@ -5610,5 +5610,140 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("EvolutionQuestFeaturePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elite zones (Season 21).
+        /// </summary>
+        public static string EliteZonesFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("EliteZonesFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The five elemental elite zones of the maps from Scorched Canyon on. Their elites spawn inside them; a walk into a zone is refused when the character misses its entry rule..
+        /// </summary>
+        public static string EliteZonesFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("EliteZonesFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level above the map.
+        /// </summary>
+        public static string EliteZoneConfiguration_LevelAboveMap_Name {
+            get {
+                return ResourceManager.GetString("EliteZoneConfiguration_LevelAboveMap_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zones.
+        /// </summary>
+        public static string EliteZoneConfiguration_Zones_Name {
+            get {
+                return ResourceManager.GetString("EliteZoneConfiguration_Zones_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field bosses (Season 21).
+        /// </summary>
+        public static string FieldBossesFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("FieldBossesFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Medusa, Lord Silvester, Core Magriffy, Lord of Ferea, Nix and the God of Darkness with the shared random respawn, their stages and their arenas..
+        /// </summary>
+        public static string FieldBossesFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("FieldBossesFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shortest respawn time.
+        /// </summary>
+        public static string FieldBossConfiguration_RespawnMinimum_Name {
+            get {
+                return ResourceManager.GetString("FieldBossConfiguration_RespawnMinimum_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Random respawn time.
+        /// </summary>
+        public static string FieldBossConfiguration_RespawnRandom_Name {
+            get {
+                return ResourceManager.GetString("FieldBossConfiguration_RespawnRandom_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time until the arena is left.
+        /// </summary>
+        public static string FieldBossConfiguration_ExitDelay_Name {
+            get {
+                return ResourceManager.GetString("FieldBossConfiguration_ExitDelay_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Respawn after a lost battle.
+        /// </summary>
+        public static string FieldBossConfiguration_FailedRespawn_Name {
+            get {
+                return ResourceManager.GetString("FieldBossConfiguration_FailedRespawn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spawn at server start.
+        /// </summary>
+        public static string FieldBossConfiguration_SpawnOnStart_Name {
+            get {
+                return ResourceManager.GetString("FieldBossConfiguration_SpawnOnStart_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Announce spawns and kills.
+        /// </summary>
+        public static string FieldBossConfiguration_Announce_Name {
+            get {
+                return ResourceManager.GetString("FieldBossConfiguration_Announce_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bosses.
+        /// </summary>
+        public static string FieldBossConfiguration_Bosses_Name {
+            get {
+                return ResourceManager.GetString("FieldBossConfiguration_Bosses_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command: /fieldboss.
+        /// </summary>
+        public static string FieldBossChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("FieldBossChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Spawns a field boss now (/fieldboss nix); without a name it lists the bosses and their state..
+        /// </summary>
+        public static string FieldBossChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("FieldBossChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

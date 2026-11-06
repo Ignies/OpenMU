@@ -61,25 +61,6 @@ public static class GameMapDefinitionExtensions
     }
 
     /// <summary>
-    /// Gets the first attribute in which the player misses a progression requirement of a Season 21 map.
-    /// </summary>
-    private static AttributeSystem.AttributeDefinition? GetMissingAttribute(Player player, MapRequirement requirement)
-    {
-        var attributes = player.Attributes;
-        if ((attributes?[Stats.Level] ?? 0) < requirement.Level)
-        {
-            return Stats.Level;
-        }
-
-        if ((attributes?[Stats.MasterLevel] ?? 0) < requirement.MasterLevel)
-        {
-            return Stats.MasterLevel;
-        }
-
-        return (attributes?[Stats.Resets] ?? 0) < requirement.Stars ? Stats.Resets : null;
-    }
-
-    /// <summary>
     /// Gets the active map to which a character can be spawned: the first of the candidates which is
     /// active and has a spawn gate. If none of them is suitable, e.g. because the home map of the
     /// character class is inactive, it's the active map with the lowest number which has a spawn gate,
@@ -108,4 +89,26 @@ public static class GameMapDefinitionExtensions
         return gameMapDefinition.ExitGates?.FirstOrDefault(g => g.IsSpawnGate && terrain.SafezoneMap[g.X1, g.Y1])
                ?? gameMapDefinition.ExitGates?.FirstOrDefault(g => g.IsSpawnGate);
     }
-}
+
+    /// <summary>
+    /// Gets the first attribute in which the player misses a progression requirement of a Season 21 map.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="requirement">The requirement.</param>
+    /// <returns>The missing attribute, or <c>null</c> when the player meets the requirement.</returns>
+    internal static AttributeSystem.AttributeDefinition? GetMissingAttribute(Player player, MapRequirement requirement)
+    {
+        var attributes = player.Attributes;
+        if ((attributes?[Stats.Level] ?? 0) < requirement.Level)
+        {
+            return Stats.Level;
+        }
+
+        if ((attributes?[Stats.MasterLevel] ?? 0) < requirement.MasterLevel)
+        {
+            return Stats.MasterLevel;
+        }
+
+        return (attributes?[Stats.Resets] ?? 0) < requirement.Stars ? Stats.Resets : null;
+    }
+}

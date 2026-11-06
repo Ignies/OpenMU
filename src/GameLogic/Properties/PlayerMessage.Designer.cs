@@ -3243,5 +3243,113 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("EvolutionTrialLevelTooLowFormat", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your level is too low for this elite zone..
+        /// </summary>
+        public static string EliteZoneEntryDenied {
+            get {
+                return ResourceManager.GetString("EliteZoneEntryDenied", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has appeared in {1}!.
+        /// </summary>
+        public static string FieldBossAppeared {
+            get {
+                return ResourceManager.GetString("FieldBossAppeared", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} has defeated {1} in {2}!.
+        /// </summary>
+        public static string FieldBossDefeated {
+            get {
+                return ResourceManager.GetString("FieldBossDefeated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The battle against {0} in {1} is lost..
+        /// </summary>
+        public static string FieldBossBattleLost {
+            get {
+                return ResourceManager.GetString("FieldBossBattleLost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The battle is over. You will be moved out in {0} minute(s)..
+        /// </summary>
+        public static string FieldBossArenaExit {
+            get {
+                return ResourceManager.GetString("FieldBossArenaExit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} is not here now..
+        /// </summary>
+        public static string FieldBossNotPresent {
+            get {
+                return ResourceManager.GetString("FieldBossNotPresent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The arena of {0} is full..
+        /// </summary>
+        public static string FieldBossArenaFull {
+            get {
+                return ResourceManager.GetString("FieldBossArenaFull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The battle against {0} has started; the arena is closed..
+        /// </summary>
+        public static string FieldBossArenaClosed {
+            get {
+                return ResourceManager.GetString("FieldBossArenaClosed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The field bosses are off on this server..
+        /// </summary>
+        public static string FieldBossFeatureOff {
+            get {
+                return ResourceManager.GetString("FieldBossFeatureOff", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Field bosses: {0}.
+        /// </summary>
+        public static string FieldBossList {
+            get {
+                return ResourceManager.GetString("FieldBossList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} spawned..
+        /// </summary>
+        public static string FieldBossSpawnedByGameMaster {
+            get {
+                return ResourceManager.GetString("FieldBossSpawnedByGameMaster", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} could not spawn (its map or monster is missing)..
+        /// </summary>
+        public static string FieldBossSpawnFailed {
+            get {
+                return ResourceManager.GetString("FieldBossSpawnFailed", resourceCulture);
+            }
+        }
     }
 }

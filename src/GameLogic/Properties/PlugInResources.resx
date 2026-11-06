@@ -2025,4 +2025,49 @@
   <data name="EvolutionQuestFeaturePlugIn_Description" xml:space="preserve">
     <value>The trial of the 4th and 5th class quests: the town NPCs which take a character to the trial map, the monsters of each step and the kills of party members. Holds the experience of a 3rd class character at the level of the 4th evolution until it did the quest (setting).</value>
   </data>
+  <data name="EliteZonesFeaturePlugIn_Name" xml:space="preserve">
+    <value>Elite zones (Season 21)</value>
+  </data>
+  <data name="EliteZonesFeaturePlugIn_Description" xml:space="preserve">
+    <value>The five elemental elite zones of the maps from Scorched Canyon on. Their elites spawn inside them; a walk into a zone is refused when the character misses its entry rule.</value>
+  </data>
+  <data name="EliteZoneConfiguration_LevelAboveMap_Name" xml:space="preserve">
+    <value>Level above the map</value>
+  </data>
+  <data name="EliteZoneConfiguration_Zones_Name" xml:space="preserve">
+    <value>Zones</value>
+  </data>
+  <data name="FieldBossesFeaturePlugIn_Name" xml:space="preserve">
+    <value>Field bosses (Season 21)</value>
+  </data>
+  <data name="FieldBossesFeaturePlugIn_Description" xml:space="preserve">
+    <value>Medusa, Lord Silvester, Core Magriffy, Lord of Ferea, Nix and the God of Darkness with the shared random respawn, their stages and their arenas.</value>
+  </data>
+  <data name="FieldBossConfiguration_RespawnMinimum_Name" xml:space="preserve">
+    <value>Shortest respawn time</value>
+  </data>
+  <data name="FieldBossConfiguration_RespawnRandom_Name" xml:space="preserve">
+    <value>Random respawn time</value>
+  </data>
+  <data name="FieldBossConfiguration_ExitDelay_Name" xml:space="preserve">
+    <value>Time until the arena is left</value>
+  </data>
+  <data name="FieldBossConfiguration_FailedRespawn_Name" xml:space="preserve">
+    <value>Respawn after a lost battle</value>
+  </data>
+  <data name="FieldBossConfiguration_SpawnOnStart_Name" xml:space="preserve">
+    <value>Spawn at server start</value>
+  </data>
+  <data name="FieldBossConfiguration_Announce_Name" xml:space="preserve">
+    <value>Announce spawns and kills</value>
+  </data>
+  <data name="FieldBossConfiguration_Bosses_Name" xml:space="preserve">
+    <value>Bosses</value>
+  </data>
+  <data name="FieldBossChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chat command: /fieldboss</value>
+  </data>
+  <data name="FieldBossChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Spawns a field boss now (/fieldboss nix); without a name it lists the bosses and their state.</value>
+  </data>
 </root>
