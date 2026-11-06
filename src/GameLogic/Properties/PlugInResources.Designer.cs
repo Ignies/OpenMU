@@ -5520,5 +5520,77 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("EvolveChatCommandPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skill enhancement tree (Season 21).
+        /// </summary>
+        public static string EnhanceTreeFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The skill enhancement tree of the fourth and fifth evolution: points from the levels above a Season 21 total of 800, read through the progression mode..
+        /// </summary>
+        public static string EnhanceTreeFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("EnhanceTreeFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Season 21 total level of the first point.
+        /// </summary>
+        public static string EnhanceTreeConfiguration_PointsStartAt_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeConfiguration_PointsStartAt_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum points.
+        /// </summary>
+        public static string EnhanceTreeConfiguration_MaximumPoints_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeConfiguration_MaximumPoints_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nodes.
+        /// </summary>
+        public static string EnhanceTreeConfiguration_Nodes_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeConfiguration_Nodes_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Passives.
+        /// </summary>
+        public static string EnhanceTreeConfiguration_Passives_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeConfiguration_Passives_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Debuff fields.
+        /// </summary>
+        public static string EnhanceTreeConfiguration_MagicFields_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeConfiguration_MagicFields_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value formulas.
+        /// </summary>
+        public static string EnhanceTreeConfiguration_Formulas_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeConfiguration_Formulas_Name", resourceCulture);
+            }
+        }
     }
 }

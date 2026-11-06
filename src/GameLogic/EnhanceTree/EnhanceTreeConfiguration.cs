@@ -1,0 +1,84 @@
+// <copyright file="EnhanceTreeConfiguration.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.EnhanceTree;
+
+using MUnique.OpenMU.GameLogic.Classes;
+
+/// <summary>
+/// Configuration of the <see cref="EnhanceTreeFeaturePlugIn"/>: the skill enhancement tree of the fourth evolution.
+/// </summary>
+/// <remarks>
+/// The update "Add the skills of Season 21" fills the nodes from the S21Emu data. The tree's points are computed from the
+/// level, see <see cref="EnhanceTreePoints"/>; nothing about them is stored.
+/// </remarks>
+public class EnhanceTreeConfiguration
+{
+    /// <summary>
+    /// Gets or sets the Season 21 total level (level plus master level) above which each level gives one point.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EnhanceTreeConfiguration_PointsStartAt_Name))]
+    [Range(0, 2000)]
+    public int PointsStartAt { get; set; } = 800;
+
+    /// <summary>
+    /// Gets or sets the most points a character gets (S21Emu <c>EnhanceSkillTreeMaxLevel</c>).
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EnhanceTreeConfiguration_MaximumPoints_Name))]
+    [Range(0, 5000)]
+    public int MaximumPoints { get; set; } = 950;
+
+    /// <summary>
+    /// Gets or sets the nodes of every class.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EnhanceTreeConfiguration_Nodes_Name))]
+    public List<EnhanceTreeNode> Nodes { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the passives of every class.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EnhanceTreeConfiguration_Passives_Name))]
+    public List<EnhanceTreePassive> Passives { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the debuff fields.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EnhanceTreeConfiguration_MagicFields_Name))]
+    public List<EnhanceTreeMagicField> MagicFields { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the value formulas by their id (S21Emu <c>Formula.txt</c>, section SkillTree), in the syntax of
+    /// <see cref="MasterSkillDefinition.ValueFormula"/>.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EnhanceTreeConfiguration_Formulas_Name))]
+    public Dictionary<short, string> Formulas { get; set; } = [];
+
+    /// <summary>
+    /// Gets the node of a class's tree which teaches a skill.
+    /// </summary>
+    /// <param name="baseClass">The base class.</param>
+    /// <param name="skill">The skill number.</param>
+    /// <returns>The node, or <c>null</c>.</returns>
+    public EnhanceTreeNode? FindNode(BaseClassCode baseClass, short skill)
+        => this.Nodes.FirstOrDefault(n => n.BaseClass == (byte)baseClass && n.Skill == skill);
+
+    /// <summary>
+    /// Gets the passive of a class's tree for a skill.
+    /// </summary>
+    /// <param name="baseClass">The base class.</param>
+    /// <param name="skill">The skill number.</param>
+    /// <returns>The passive, or <c>null</c>.</returns>
+    public EnhanceTreePassive? FindPassive(BaseClassCode baseClass, short skill)
+        => this.Passives.FirstOrDefault(p => p.BaseClass == (byte)baseClass && p.Skill == skill);
+
+    /// <summary>
+    /// Gets the skills of a class's tree, nodes and passives.
+    /// </summary>
+    /// <param name="baseClass">The base class.</param>
+    /// <returns>The skill numbers.</returns>
+    public HashSet<short> GetTreeSkills(BaseClassCode baseClass)
+        => this.Nodes.Where(n => n.BaseClass == (byte)baseClass).Select(n => n.Skill)
+            .Concat(this.Passives.Where(p => p.BaseClass == (byte)baseClass).Select(p => p.Skill))
+            .ToHashSet();
+}

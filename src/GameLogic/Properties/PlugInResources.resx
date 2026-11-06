@@ -1995,4 +1995,28 @@
   <data name="EvolveChatCommandPlugIn_Description" xml:space="preserve">
     <value>Evolves a character into its next class: /evolve [character]. For game masters; the level rules of the fourth and fifth evolution don't apply.</value>
   </data>
+  <data name="EnhanceTreeFeaturePlugIn_Name" xml:space="preserve">
+    <value>Skill enhancement tree (Season 21)</value>
+  </data>
+  <data name="EnhanceTreeFeaturePlugIn_Description" xml:space="preserve">
+    <value>The skill enhancement tree of the fourth and fifth evolution: points from the levels above a Season 21 total of 800, read through the progression mode.</value>
+  </data>
+  <data name="EnhanceTreeConfiguration_PointsStartAt_Name" xml:space="preserve">
+    <value>Season 21 total level of the first point</value>
+  </data>
+  <data name="EnhanceTreeConfiguration_MaximumPoints_Name" xml:space="preserve">
+    <value>Maximum points</value>
+  </data>
+  <data name="EnhanceTreeConfiguration_Nodes_Name" xml:space="preserve">
+    <value>Nodes</value>
+  </data>
+  <data name="EnhanceTreeConfiguration_Passives_Name" xml:space="preserve">
+    <value>Passives</value>
+  </data>
+  <data name="EnhanceTreeConfiguration_MagicFields_Name" xml:space="preserve">
+    <value>Debuff fields</value>
+  </data>
+  <data name="EnhanceTreeConfiguration_Formulas_Name" xml:space="preserve">
+    <value>Value formulas</value>
+  </data>
 </root>
