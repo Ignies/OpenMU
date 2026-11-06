@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests;
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -15,6 +16,7 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.Pathfinding;
 
@@ -234,6 +236,30 @@ public class IllusionTempleContextTest
         Assert.That(carrier.Inventory!.Items.Any(IsRelicItem), Is.False);
         Assert.That(GetRelicCarrier(illusionTemple), Is.Null);
 
+    }
+
+    /// <summary>
+    /// Taking and delivering the relic are objectives which plugins learn about (e.g. the event contribution of Season 21).
+    /// </summary>
+    [Test]
+    public async ValueTask RelicObjectivesReachThePlugInsAsync()
+    {
+        var gameContext = CreateGameContext();
+        var plugIn = new Mock<IMiniGameObjectiveReachedPlugIn>();
+        plugIn.Setup(p => p.ObjectiveReachedAsync(It.IsAny<MiniGameContext>(), It.IsAny<Player>(), It.IsAny<MiniGameObjective>(), It.IsAny<int>())).Returns(ValueTask.CompletedTask);
+        gameContext.PlugInManager.RegisterPlugInAtPlugInPoint(plugIn.Object);
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 2).ConfigureAwait(false);
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+        var carrier = players.First(p => GetTeamOf(illusionTemple, p) == IllusionTempleTeam.AlliedForces);
+        carrier.OpenedNpc = CreateStatueNpc(illusionTemple);
+
+        await illusionTemple.TalkToNpcStoneStatueAsync(carrier).ConfigureAwait(false);
+        await illusionTemple.TalkToNpcTeamStorageAsync(AlliedStorageNumber, carrier).ConfigureAwait(false);
+
+        plugIn.Verify(p => p.ObjectiveReachedAsync(illusionTemple, carrier, MiniGameObjective.RelicClaimed, 0), Times.Once);
+        plugIn.Verify(p => p.ObjectiveReachedAsync(illusionTemple, carrier, MiniGameObjective.RelicScored, 1), Times.Once);
     }
 
     /// <summary>

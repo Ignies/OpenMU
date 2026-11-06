@@ -20,7 +20,7 @@ using MUnique.OpenMU.PlugIns;
 [Display(Name = nameof(PlugInResources.EventContributionPlugIn_Name), Description = nameof(PlugInResources.EventContributionPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("6B92D4E1-0A3C-4F57-9E18-C5D7A2B4F830")]
 public class EventContributionPlugIn : IFeaturePlugIn, IDisabledByDefault, ISupportCustomConfiguration<EventContributionConfiguration>, ISupportDefaultCustomConfiguration,
-    IAttackableGotKilledPlugIn, IMiniGameEndedPlugIn
+    IAttackableGotKilledPlugIn, IMiniGameEndedPlugIn, IMiniGameObjectiveReachedPlugIn
 {
     private readonly ConditionalWeakTable<object, ConcurrentDictionary<Player, int>> _points = new();
 
@@ -97,6 +97,38 @@ public class EventContributionPlugIn : IFeaturePlugIn, IDisabledByDefault, ISupp
         {
             this.Add(eventKey, killer, rule.PlayerKillPoints);
         }
+    }
+
+    /// <inheritdoc />
+    public ValueTask ObjectiveReachedAsync(MiniGameContext miniGame, Player player, MiniGameObjective objective, int value)
+    {
+        this.AddObjective(miniGame, miniGame.Definition.Type, player, objective, value);
+        return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// Adds the points of a reached objective: a rank at the end of the event, a taken or delivered relic.
+    /// </summary>
+    /// <param name="eventKey">The event, e.g. its <see cref="MiniGameContext"/>.</param>
+    /// <param name="type">The kind of event.</param>
+    /// <param name="player">The player.</param>
+    /// <param name="objective">The objective.</param>
+    /// <param name="value">The value of the objective, e.g. the rank.</param>
+    public void AddObjective(object eventKey, MiniGameType type, Player player, MiniGameObjective objective, int value)
+    {
+        if (this.GetRule(type) is not { } rule)
+        {
+            return;
+        }
+
+        var points = objective switch
+        {
+            MiniGameObjective.Rank when value >= 1 && value <= rule.RankPoints.Count => rule.RankPoints[value - 1],
+            MiniGameObjective.RelicClaimed => rule.RelicClaimPoints,
+            MiniGameObjective.RelicScored => rule.RelicScorePoints,
+            _ => 0,
+        };
+        this.Add(eventKey, player, points);
     }
 
     /// <inheritdoc />

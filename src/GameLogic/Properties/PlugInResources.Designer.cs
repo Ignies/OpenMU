@@ -6591,5 +6591,41 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ErrtelRankUp_Rates_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Id (1-64, never reused).
+        /// </summary>
+        public static string LevelReward_Id_Name {
+            get {
+                return ResourceManager.GetString("LevelReward_Id_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points per rank (first entry is rank 1).
+        /// </summary>
+        public static string EventContributionRule_RankPoints_Name {
+            get {
+                return ResourceManager.GetString("EventContributionRule_RankPoints_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points of taking a relic.
+        /// </summary>
+        public static string EventContributionRule_RelicClaimPoints_Name {
+            get {
+                return ResourceManager.GetString("EventContributionRule_RelicClaimPoints_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points of delivering a relic.
+        /// </summary>
+        public static string EventContributionRule_RelicScorePoints_Name {
+            get {
+                return ResourceManager.GetString("EventContributionRule_RelicScorePoints_Name", resourceCulture);
+            }
+        }
     }
 }

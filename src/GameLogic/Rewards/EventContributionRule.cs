@@ -40,6 +40,24 @@ public class EventContributionRule
     public int WinnerPoints { get; set; }
 
     /// <summary>
+    /// Gets or sets the points of the ranks at the end of an event with a ranking (devil square): the first entry is rank 1.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EventContributionRule_RankPoints_Name))]
+    public List<int> RankPoints { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the points of taking the relic of a statue (illusion temple).
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EventContributionRule_RelicClaimPoints_Name))]
+    public int RelicClaimPoints { get; set; }
+
+    /// <summary>
+    /// Gets or sets the points of bringing a relic home (illusion temple).
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EventContributionRule_RelicScorePoints_Name))]
+    public int RelicScorePoints { get; set; }
+
+    /// <summary>
     /// Gets or sets the points of special monsters, instead of <see cref="MonsterKillPoints"/>.
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EventContributionRule_SpecialMonsters_Name))]

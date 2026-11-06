@@ -143,6 +143,7 @@ internal sealed class Season21Economy
     /// <summary>
     /// A level reward.
     /// </summary>
+    /// <param name="Id">The id (the data's rewardID plus 1).</param>
     /// <param name="TotalLevel">The total level.</param>
     /// <param name="Group">The item group.</param>
     /// <param name="Number">The item number.</param>
@@ -150,6 +151,7 @@ internal sealed class Season21Economy
     /// <param name="Count">The count; 0 for the durability of the definition.</param>
     /// <param name="Classes">The base classes; empty for every class.</param>
     internal sealed record LevelRewardRow(
+        [property: JsonPropertyName("id")] byte Id,
         [property: JsonPropertyName("lv")] int TotalLevel,
         [property: JsonPropertyName("g")] byte Group,
         [property: JsonPropertyName("i")] short Number,
@@ -180,6 +182,9 @@ internal sealed class Season21Economy
     /// <param name="SundayMonsterKill">The points of a killed monster on Sundays; 0 for the same.</param>
     /// <param name="Winner">The points of the winner.</param>
     /// <param name="PlayerKill">The points of a killed player.</param>
+    /// <param name="RankPoints">The points per rank, rank 1 first.</param>
+    /// <param name="RelicClaim">The points of taking a relic.</param>
+    /// <param name="RelicScore">The points of delivering a relic.</param>
     /// <param name="SpecialMonsters">Pairs of a monster number and its points.</param>
     internal sealed record ContributionRuleRow(
         [property: JsonPropertyName("t")] string Type,
@@ -187,5 +192,8 @@ internal sealed class Season21Economy
         [property: JsonPropertyName("sun")] int SundayMonsterKill,
         [property: JsonPropertyName("w")] int Winner,
         [property: JsonPropertyName("p")] int PlayerKill,
+        [property: JsonPropertyName("r")] List<int> RankPoints,
+        [property: JsonPropertyName("rc")] int RelicClaim,
+        [property: JsonPropertyName("rs")] int RelicScore,
         [property: JsonPropertyName("s")] List<int[]> SpecialMonsters);
 }

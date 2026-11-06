@@ -70,6 +70,7 @@ public sealed class DevilSquareContext : MiniGameContext
             state.Rank = rank;
             var (bonusScore, givenMoney) = await this.GiveRewardsAndGetBonusScoreAsync(state.Player, rank).ConfigureAwait(false);
             state.AddScore(bonusScore);
+            await this.NotifyObjectiveReachedAsync(state.Player, MiniGameObjective.Rank, rank).ConfigureAwait(false);
             scoreList.Add((
                 state.Player.Name,
                 state.Score,

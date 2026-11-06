@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.Character",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character),
                 baseEntityType,
-                propertyCount: 28,
+                propertyCount: 29,
                 navigationCount: 5,
                 foreignKeyCount: 1,
                 unnamedIndexCount: 2,
@@ -68,6 +68,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Character).GetField("<CharacterStatus>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly));
             characterStatus.SetSentinelFromProviderValue(0);
             characterStatus.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var claimedLevelRewards = runtimeEntityType.AddProperty(
+                "ClaimedLevelRewards",
+                typeof(long),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.Character).GetProperty("ClaimedLevelRewards", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Character).GetField("<ClaimedLevelRewards>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: 0L);
+            claimedLevelRewards.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var createDate = runtimeEntityType.AddProperty(
                 "CreateDate",

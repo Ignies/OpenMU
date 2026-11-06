@@ -19,10 +19,20 @@ public static class PlayerEvolutionExtensions
     /// <param name="evolution">The evolution.</param>
     /// <returns><c>true</c>, if the player meets the rule.</returns>
     public static bool MeetsEvolutionRule(this Player player, ClassEvolution evolution)
+        => player.MeetsSeason21Level(EvolutionRules.GetSeason21Requirement(evolution));
+
+    /// <summary>
+    /// Determines whether the player's character meets a Season 21 total level in the world's progression mode
+    /// (see <see cref="EvolutionRules.IsMet(int, int, int, int, ProgressionConfiguration?)"/>).
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="requirement">The Season 21 total level.</param>
+    /// <returns><c>true</c>, if the character meets it.</returns>
+    public static bool MeetsSeason21Level(this Player player, int requirement)
     {
         return player.Attributes is { } attributes
                && EvolutionRules.IsMet(
-                   evolution,
+                   requirement,
                    (int)attributes[Stats.Level],
                    (int)attributes[Stats.MasterLevel],
                    (int)attributes[Stats.Resets],

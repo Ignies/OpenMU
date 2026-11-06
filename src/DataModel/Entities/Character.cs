@@ -230,6 +230,12 @@ public class Character
     public int Ruud { get; set; }
 
     /// <summary>
+    /// Gets or sets the level rewards the character got, one bit per reward id (bit 0 is the id 1), so that a reset
+    /// doesn't give them again.
+    /// </summary>
+    public long ClaimedLevelRewards { get; set; }
+
+    /// <summary>
     /// Gets or sets the stat attributes.
     /// </summary>
     /// <remarks>

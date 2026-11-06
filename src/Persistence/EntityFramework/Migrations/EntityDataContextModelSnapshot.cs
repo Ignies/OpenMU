@@ -1075,6 +1075,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("CharacterStatus")
                         .HasColumnType("integer");
 
+                    b.Property<long>("ClaimedLevelRewards")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("timestamp with time zone");
 

@@ -49,9 +49,18 @@ public static class EvolutionRules
     /// <param name="configuration">The progression configuration, or <c>null</c> if the progression is off.</param>
     /// <returns>The required level, <c>0</c> for an evolution without a level rule.</returns>
     public static int GetRequiredLevel(ClassEvolution evolution, ProgressionConfiguration? configuration)
+        => GetRequiredLevel(GetSeason21Requirement(evolution), configuration);
+
+    /// <summary>
+    /// Gets the level a Season 21 total level asks for in the world's mode, in the unit of <see cref="GetLevelKey"/>:
+    /// the evolutions, the level rewards and the other Season 21 thresholds share this mapping.
+    /// </summary>
+    /// <param name="requirement">The Season 21 total level (level plus master level).</param>
+    /// <param name="configuration">The progression configuration, or <c>null</c> if the progression is off.</param>
+    /// <returns>The required level, <c>0</c> for no requirement.</returns>
+    public static int GetRequiredLevel(int requirement, ProgressionConfiguration? configuration)
     {
-        var requirement = GetSeason21Requirement(evolution);
-        if (requirement == 0 || GetLevelKey(configuration) == ProgressionLevelKey.Season21Total)
+        if (requirement <= 0 || GetLevelKey(configuration) == ProgressionLevelKey.Season21Total)
         {
             return requirement;
         }
@@ -69,10 +78,23 @@ public static class EvolutionRules
     /// <param name="configuration">The progression configuration, or <c>null</c> if the progression is off.</param>
     /// <returns><c>true</c>, if the character meets the rule.</returns>
     public static bool IsMet(ClassEvolution evolution, int level, int masterLevel, int stars, ProgressionConfiguration? configuration)
+        => IsMet(GetSeason21Requirement(evolution), level, masterLevel, stars, configuration);
+
+    /// <summary>
+    /// Determines whether a character meets a Season 21 total level in the world's mode: the total level (original),
+    /// level plus master level against the mapped level (normalized), or the power level of level and stars (stars).
+    /// </summary>
+    /// <param name="requirement">The Season 21 total level.</param>
+    /// <param name="level">The normal level.</param>
+    /// <param name="masterLevel">The master level.</param>
+    /// <param name="stars">The stars (resets).</param>
+    /// <param name="configuration">The progression configuration, or <c>null</c> if the progression is off.</param>
+    /// <returns><c>true</c>, if the character meets it.</returns>
+    public static bool IsMet(int requirement, int level, int masterLevel, int stars, ProgressionConfiguration? configuration)
     {
         var actual = GetLevelKey(configuration) == ProgressionLevelKey.PowerLevel
             ? StarRules.GetPowerLevel(level, stars, configuration!)
             : level + masterLevel;
-        return actual >= GetRequiredLevel(evolution, configuration);
+        return actual >= GetRequiredLevel(requirement, configuration);
     }
 }

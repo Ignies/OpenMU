@@ -2352,4 +2352,16 @@
   <data name="ErrtelRankUp_Rates_Name" xml:space="preserve">
     <value>Success rates by level (%)</value>
   </data>
+  <data name="LevelReward_Id_Name" xml:space="preserve">
+    <value>Id (1-64, never reused)</value>
+  </data>
+  <data name="EventContributionRule_RankPoints_Name" xml:space="preserve">
+    <value>Points per rank (first entry is rank 1)</value>
+  </data>
+  <data name="EventContributionRule_RelicClaimPoints_Name" xml:space="preserve">
+    <value>Points of taking a relic</value>
+  </data>
+  <data name="EventContributionRule_RelicScorePoints_Name" xml:space="preserve">
+    <value>Points of delivering a relic</value>
+  </data>
 </root>

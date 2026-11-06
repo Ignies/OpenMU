@@ -836,6 +836,7 @@ internal sealed class BasicModelConverter
         target.StoreName = source.StoreName;
         target.IsStoreOpened = source.IsStoreOpened;
         target.Ruud = source.Ruud;
+        target.ClaimedLevelRewards = source.ClaimedLevelRewards;
         if (source.Attributes is { } attributesItems)
         {
             foreach (var item in attributesItems)

@@ -12,6 +12,8 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.GremoryCase;
+using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.Progression;
 using MUnique.OpenMU.GameLogic.Rewards;
 using MUnique.OpenMU.GameLogic.Views.Economy;
 
@@ -160,9 +162,131 @@ public class RewardsTest
         Assert.That(await plugIn.EndAsync(kanturu, MiniGameType.Kanturu, player).ConfigureAwait(false), Is.EqualTo(0));
     }
 
+    /// <summary>
+    /// A level reward is given once: a reset (a star) and the climb back don't give it again.
+    /// </summary>
+    [Test]
+    public async ValueTask LevelRewardIsGivenOnceAcrossResetsAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var plugIn = CreateLevelRewards(950);
+        player.Attributes![Stats.Level] = 400;
+        player.Attributes[Stats.MasterLevel] = 550;
+
+        Assert.That(await plugIn.RewardAsync(player).ConfigureAwait(false), Is.EqualTo(1));
+        Assert.That(player.SelectedCharacter!.ClaimedLevelRewards, Is.EqualTo(1L), "Bit 0 is the id 1.");
+        player.Attributes[Stats.MasterLevel] = 551;
+        Assert.That(await plugIn.RewardAsync(player).ConfigureAwait(false), Is.EqualTo(0), "Past the level: no second reward.");
+
+        player.Attributes[Stats.Level] = 1;
+        player.Attributes[Stats.MasterLevel] = 0;
+        Assert.That(await plugIn.RewardAsync(player).ConfigureAwait(false), Is.EqualTo(0));
+        player.Attributes[Stats.Level] = 400;
+        player.Attributes[Stats.MasterLevel] = 550;
+        Assert.That(await plugIn.RewardAsync(player).ConfigureAwait(false), Is.EqualTo(0), "The climb back after a reset.");
+        Assert.That(player.SelectedCharacter.GremoryCase!.Items, Has.Count.EqualTo(1));
+    }
+
+    /// <summary>
+    /// A level which the character passed while the reward didn't exist yet is given on the next check.
+    /// </summary>
+    [Test]
+    public async ValueTask PassedLevelRewardIsGivenLaterAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var plugIn = CreateLevelRewards(950);
+        player.Attributes![Stats.Level] = 400;
+        player.Attributes[Stats.MasterLevel] = 700;
+
+        Assert.That(await plugIn.RewardAsync(player).ConfigureAwait(false), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Original: the Season 21 total level counts as it is.
+    /// </summary>
+    [Test]
+    public async ValueTask LevelRewardInTheOriginalModeAsksForTheTotalLevelAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        AddProgression(player, ProgressionMode.Original);
+        var plugIn = CreateLevelRewards(1750);
+        player.Attributes![Stats.Level] = 400;
+        player.Attributes[Stats.MasterLevel] = 1349;
+        Assert.That(await plugIn.RewardAsync(player).ConfigureAwait(false), Is.EqualTo(0));
+
+        player.Attributes[Stats.MasterLevel] = 1350;
+        Assert.That(await plugIn.RewardAsync(player).ConfigureAwait(false), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Normalized: the threshold maps to level plus master level like the evolutions; 950 is reachable under the 400 cap.
+    /// </summary>
+    [Test]
+    public async ValueTask LevelRewardInTheNormalizedModeAsksForTheMappedLevelAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var configuration = AddProgression(player, ProgressionMode.Normalized);
+        var required = EvolutionRules.GetRequiredLevel(950, configuration);
+        Assert.That(required, Is.LessThan(950).And.GreaterThan(EvolutionRules.GetRequiredLevel(800, configuration)));
+        var plugIn = CreateLevelRewards(950);
+        player.Attributes![Stats.Level] = Math.Min(required - 1, 400);
+        player.Attributes[Stats.MasterLevel] = required - 1 - player.Attributes[Stats.Level];
+        Assert.That(await plugIn.RewardAsync(player).ConfigureAwait(false), Is.EqualTo(0));
+
+        player.Attributes[Stats.MasterLevel] += 1;
+        Assert.That(await plugIn.RewardAsync(player).ConfigureAwait(false), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// Stars: the threshold maps to the power level of level and stars, like the evolutions.
+    /// </summary>
+    [Test]
+    public async ValueTask LevelRewardInTheStarsModeAsksForThePowerLevelAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var configuration = AddProgression(player, ProgressionMode.Stars);
+        var plugIn = CreateLevelRewards(1200);
+        var mapped = ProgressionMapping.GetRequirement(1200, configuration);
+        player.Attributes![Stats.Level] = mapped.Level - 5;
+        player.Attributes[Stats.Resets] = mapped.Stars;
+        Assert.That(await plugIn.RewardAsync(player).ConfigureAwait(false), Is.EqualTo(0));
+
+        player.Attributes[Stats.Level] = mapped.Level;
+        Assert.That(await plugIn.RewardAsync(player).ConfigureAwait(false), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// The ranks of a devil square and the relics of an illusion temple give their points.
+    /// </summary>
+    [Test]
+    public async ValueTask RanksAndRelicsGiveTheirPointsAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var plugIn = CreateContribution();
+        plugIn.Configuration!.Rules.Add(new EventContributionRule { Type = MiniGameType.DevilSquare, MonsterKillPoints = 1, RankPoints = { 200, 150, 100 } });
+        plugIn.Configuration.Rules.Add(new EventContributionRule { Type = MiniGameType.IllusionTemple, RelicClaimPoints = 50, RelicScorePoints = 30 });
+        var square = new object();
+        var temple = new object();
+
+        plugIn.AddObjective(square, MiniGameType.DevilSquare, player, MiniGameObjective.Rank, 2);
+        plugIn.AddObjective(square, MiniGameType.DevilSquare, player, MiniGameObjective.Rank, 4);
+        plugIn.AddObjective(temple, MiniGameType.IllusionTemple, player, MiniGameObjective.RelicClaimed, 0);
+        plugIn.AddObjective(temple, MiniGameType.IllusionTemple, player, MiniGameObjective.RelicScored, 1);
+
+        Assert.That(plugIn.GetPoints(square, player), Is.EqualTo(150), "Rank 2; rank 4 has no points.");
+        Assert.That(plugIn.GetPoints(temple, player), Is.EqualTo(80));
+    }
+
+    private static ProgressionConfiguration AddProgression(Player player, ProgressionMode mode)
+    {
+        var configuration = new ProgressionConfiguration { Mode = mode };
+        player.GameContext.FeaturePlugIns.AddPlugIn(new ProgressionFeaturePlugIn { Configuration = configuration }, true);
+        return configuration;
+    }
+
     private static LevelRewardsPlugIn CreateLevelRewards(int totalLevel, params BaseClassCode[] classes)
     {
-        var reward = new LevelReward { TotalLevel = totalLevel, Group = 16, Number = Muun };
+        var reward = new LevelReward { Id = 1, TotalLevel = totalLevel, Group = 16, Number = Muun };
         reward.Classes.AddRange(classes);
         return new LevelRewardsPlugIn { Configuration = new LevelRewardsConfiguration { Rewards = { reward } } };
     }

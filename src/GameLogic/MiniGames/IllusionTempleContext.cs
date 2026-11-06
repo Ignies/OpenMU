@@ -319,6 +319,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             await player.Inventory!.AddItemAsync(item).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
             await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleRelicPickedUpFormat), player.Name).ConfigureAwait(false);
+            await this.NotifyObjectiveReachedAsync(player, MiniGameObjective.RelicClaimed, 0).ConfigureAwait(false);
 
             if (player.OpenedNpc is { } statue)
             {
@@ -379,6 +380,8 @@ public sealed class IllusionTempleContext : MiniGameContext
         await player.Inventory!.RemoveItemAsync(relicItem).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemDropResultPlugIn>(p => p.ItemDropResultAsync(relicItem.ItemSlot, true)).ConfigureAwait(false);
         this._relicCarrier = null;
+        var teamScore = playerTeam == IllusionTempleTeam.AlliedForces ? this.Score.AlliedForcesScore : this.Score.IllusionForcesScore;
+        await this.NotifyObjectiveReachedAsync(player, MiniGameObjective.RelicScored, teamScore).ConfigureAwait(false);
 
         // Push the new score to the clients right away, instead of waiting for the next tick of
         // the cyclic state update (ShowRemainingTimeLoopAsync).

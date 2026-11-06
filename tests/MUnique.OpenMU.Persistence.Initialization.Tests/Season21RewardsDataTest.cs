@@ -65,6 +65,47 @@ internal class Season21RewardsDataTest
         Assert.That(update.DependsOn.Select(d => d.Key), Does.Contain(new AddSeason21EconomyUpdatePlugIn().Key));
     }
 
+    /// <summary>
+    /// Version 2: the rewards have their ids (1 to 17), devil square its rank points and illusion temple its relic points;
+    /// a version 1 configuration (ids 0, rank 1 as winner) is repaired without losing the operator's other numbers.
+    /// </summary>
+    [Test]
+    public async Task Version2AddsIdsRanksAndRelicsAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+        var update = new AddSeason21RewardsUpdatePlugIn();
+        Assert.That(update.Version, Is.EqualTo(2));
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var levels = GetConfiguration<LevelRewardsConfiguration>(gameConfiguration, typeof(LevelRewardsPlugIn).GUID, out var levelPlugIn);
+        Assert.That(levels.Rewards.Select(r => (int)r.Id), Is.EqualTo(Enumerable.Range(1, 17)));
+        var contribution = GetConfiguration<EventContributionConfiguration>(gameConfiguration, typeof(EventContributionPlugIn).GUID, out var contributionPlugIn);
+        var square = contribution.Rules.Single(r => r.Type == MiniGameType.DevilSquare);
+        Assert.That((square.WinnerPoints, square.RankPoints), Is.EqualTo((0, new List<int> { 200, 150, 100 })));
+        var temple = contribution.Rules.Single(r => r.Type == MiniGameType.IllusionTemple);
+        Assert.That((temple.RelicClaimPoints, temple.RelicScorePoints), Is.EqualTo((50, 30)));
+
+        // The state version 1 left: no ids, no ranks, no relics; the operator raised the chaos castle winner points.
+        levels.Rewards.ForEach(r => r.Id = 0);
+        levelPlugIn.SetConfiguration(levels, null);
+        square.RankPoints.Clear();
+        square.WinnerPoints = 200;
+        temple.RelicClaimPoints = 0;
+        temple.RelicScorePoints = 0;
+        contribution.Rules.Single(r => r.Type == MiniGameType.ChaosCastle).WinnerPoints = 500;
+        contributionPlugIn.SetConfiguration(contribution, null);
+
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        levels = GetConfiguration<LevelRewardsConfiguration>(gameConfiguration, typeof(LevelRewardsPlugIn).GUID, out _);
+        Assert.That(levels.Rewards.Select(r => (int)r.Id), Is.EqualTo(Enumerable.Range(1, 17)));
+        contribution = GetConfiguration<EventContributionConfiguration>(gameConfiguration, typeof(EventContributionPlugIn).GUID, out _);
+        square = contribution.Rules.Single(r => r.Type == MiniGameType.DevilSquare);
+        Assert.That((square.WinnerPoints, square.RankPoints), Is.EqualTo((0, new List<int> { 200, 150, 100 })));
+        Assert.That(contribution.Rules.Single(r => r.Type == MiniGameType.IllusionTemple).RelicClaimPoints, Is.EqualTo(50));
+        Assert.That(contribution.Rules.Single(r => r.Type == MiniGameType.ChaosCastle).WinnerPoints, Is.EqualTo(500), "The operator's number stays.");
+    }
+
     private static T GetConfiguration<T>(GameConfiguration gameConfiguration, Guid typeId, out PlugInConfiguration plugIn)
         where T : class
     {
