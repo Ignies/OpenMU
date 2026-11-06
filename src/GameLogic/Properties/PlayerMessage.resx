@@ -1264,4 +1264,13 @@ Inventory Extensions: {18}</value>
   <data name="MiningNeedsBabylonClient" xml:space="preserve">
     <value>Mining needs the Babylon client.</value>
   </data>
+  <data name="SoulConverterLevelTooLow" xml:space="preserve">
+    <value>The monster soul converter needs the total level {0}.</value>
+  </data>
+  <data name="SoulConverterAlreadyActive" xml:space="preserve">
+    <value>Another monster soul converter is active.</value>
+  </data>
+  <data name="SoulConverterWeeklyLimitReached" xml:space="preserve">
+    <value>No more monster soul converters can be activated this week.</value>
+  </data>
 </root>

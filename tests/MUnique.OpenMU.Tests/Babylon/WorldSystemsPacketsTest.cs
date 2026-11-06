@@ -8,6 +8,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.HuntingRecord;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.SoulConverter;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.GameServer;
@@ -90,6 +91,7 @@ public class WorldSystemsPacketsTest
         Assert.That((entry.Rank, entry.Name, entry.Value), Is.EqualTo(((ushort)11, "Hunter", 7000u)));
         Assert.That(entry.ClassCode, Is.EqualTo(ClassCodes.ToCode(4)), "The class code of the Dark Knight.");
     }
+
     /// <summary>
     /// The mining result carries the spot, the result, the stage and the jewels.
     /// </summary>
@@ -107,5 +109,53 @@ public class WorldSystemsPacketsTest
         Assert.That((packet.Header.Code, packet.Header.SubCode), Is.EqualTo(((byte)0xEE, (byte)0xA3)));
         Assert.That((packet.NpcId, packet.Result, packet.Stage), Is.EqualTo(((ushort)0x1234, (byte)3, (byte)5)));
         Assert.That((packet.ItemCount, packet.BonusCount), Is.EqualTo(((ushort)125, (ushort)1000)));
+    }
+
+    /// <summary>
+    /// Only the Babylon client gets the monster soul converter view.
+    /// </summary>
+    [Test]
+    public void OnlyTheBabylonClientGetsTheSoulConverterView()
+    {
+        var (player, _) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        player.GameContext.PlugInManager.RegisterPlugIn<IViewPlugIn, SoulConverterBabylonPlugIn>();
+
+        player.ClientVersion = BabylonClient.Version;
+        Assert.That(player.ViewPlugIns.GetPlugIn<ISoulConverterViewPlugIn>(), Is.InstanceOf<SoulConverterBabylonPlugIn>());
+
+        player.ClientVersion = new(6, 3, Network.PlugIns.ClientLanguage.English);
+        Assert.That(player.ViewPlugIns.GetPlugIn<ISoulConverterViewPlugIn>(), Is.Null);
+    }
+
+    /// <summary>
+    /// The converter state carries the tier, the activations left, the expiry and the missions.
+    /// </summary>
+    [Test]
+    public async ValueTask SoulConverterStateHasItsFieldsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(BabylonClient.Version);
+        var mission = new SoulMissionProgress { MapNumber = 33, MonsterNumber = 308, Souls = 120, RequiredSouls = 500 };
+
+        await new SoulConverterBabylonPlugIn(player).ShowSoulConverterStateAsync(1, 2, new DateTime(2026, 11, 12, 0, 0, 0, DateTimeKind.Utc), [mission]).ConfigureAwait(false);
+
+        var packet = new SoulConverterState(output.ToArray());
+        Assert.That((packet.Header.Code, packet.Header.SubCode), Is.EqualTo(((byte)0xEE, (byte)0xA5)));
+        Assert.That((packet.Tier, packet.PurchasesLeft, packet.ExpiresAt, packet.MissionCount), Is.EqualTo(((byte)1, (byte)2, 1794441600u, (byte)1)));
+        var shown = packet[0];
+        Assert.That((shown.MapNumber, shown.MonsterNumber, shown.Souls, shown.RequiredSouls), Is.EqualTo(((ushort)33, (ushort)308, (ushort)120, (ushort)500)));
+    }
+
+    /// <summary>
+    /// The converter result carries the result and the reward kind.
+    /// </summary>
+    [Test]
+    public async ValueTask SoulConverterResultHasItsFieldsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(BabylonClient.Version);
+
+        await new SoulConverterBabylonPlugIn(player).ShowSoulConverterResultAsync(SoulConverterClaimResult.KindNotOffered, SoulRewardKind.Accessory).ConfigureAwait(false);
+
+        var packet = new Network.Packets.Babylon.SoulConverterResult(output.ToArray());
+        Assert.That((packet.Header.SubCode, packet.Result, packet.RewardKind), Is.EqualTo(((byte)0xA7, (byte)3, (byte)3)));
     }
 }

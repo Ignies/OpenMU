@@ -81,6 +81,7 @@ Rules:
 | `mining` | The Pandora mining: 51 spots in the safe zones of six maps, five stages, Jewels of Bless (update "Add the mining of Season 21", plugin "Mining (Season 21)", `src/GameLogic/Mining`) |
 | `golden_invasions_s21` | The golden invasion of Season 21: the ten later golden monsters 493-502 with their Box of Kundun, the Golden Derkon in Elbeland, 19 kinds every four hours from 00:25 for 10 minutes (update "Add the golden invasion of Season 21"; the Season 6 plugin "Golden Invasion" runs it) |
 | `ranking` | The hunting record (time, kills, experience and damage per character, map and day on the 59 hunting maps, kept 7 days) and the in-game ranking by total level and by the kills and hunting experience of the week (update "Add the hunting record of Season 21", plugin "Hunting record and ranking (Season 21)", `src/GameLogic/HuntingRecord`) |
+| `soul_converter` | The monster soul converter: five tiers (items 14/460-464, total level 400 to 1450), two soul missions drawn from the tier, souls absorbed by kills and shared in a party, the reward kinds Ruud, jewels, elemental options and accessories, three a week, expiring on Thursday (update "Add the monster soul converter of Season 21", plugin "Monster soul converter (Season 21)", `src/GameLogic/SoulConverter`) |
 
 ## Balance
 
@@ -192,6 +193,12 @@ Season 6 packets (golden notices for a spawn, a kill and a lost battle, blue not
   jewels lost, 3 collected, 4 no pickaxe, 5 pickaxe worn, 6 no spot in reach, 7 another player mines it, 8 off), stage at 7,
   jewels (u16 LE) at 8, jackpot (u16 LE) at 10. Sent when the character talks to a spot (result 0) and after each request.
 - A4 stays kept for the invasion notice.
+- `C2 EE A5 SoulConverterState` (server): tier at 5 (0 none), activations left this week at 6, expiry (u32 LE, UTC seconds, 0 none)
+  at 7, count at 11, then per mission 8 bytes: map, monster, souls, required souls (u16 LE each). Sent on activation, on
+  every absorbed soul, after a claim, on entering a map with an active converter and on `C1 EE A8 SoulConverterStateRequest`.
+- `C1 EE A6 SoulConverterRewardRequest` (client, 5): reward kind at 4 (0 Ruud, 1 jewels, 2 elemental options, 3 accessory).
+  Answered by `C1 EE A7 SoulConverterResult` (6): result at 4 (0 rewarded, 1 missions not done, 2 no converter, 3 kind not
+  offered, 4 off, 5 not delivered), reward kind at 5.
 
 Social and ranking packets (range D0-DF):
 

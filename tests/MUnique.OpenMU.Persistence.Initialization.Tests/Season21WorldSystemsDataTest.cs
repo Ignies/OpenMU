@@ -10,6 +10,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.HuntingRecord;
 using MUnique.OpenMU.GameLogic.Mining;
 using MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
+using MUnique.OpenMU.GameLogic.SoulConverter;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
@@ -161,6 +162,55 @@ internal class Season21WorldSystemsDataTest
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         Assert.That(GetConfiguration<HuntingRecordConfiguration>(gameConfiguration, typeof(HuntingRecordPlugIn).GUID, out _).Maps, Is.EqualTo(new short[] { 7 }));
+        Assert.That(plugIn.IsActive, Is.False);
+        Assert.That(update.IsMandatory, Is.False);
+    }
+
+    /// <summary>
+    /// The soul converter update sets the five tiers of <c>MonsterSoulConverter/</c> with their missions and the reward bags
+    /// 288-355, three activations a week, and switches the converter on.
+    /// </summary>
+    [Test]
+    public async Task SoulConverterUpdateSetsTheTiersOfTheDataAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+
+        await new AddSeason21SoulConverterUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var configuration = GetConfiguration<SoulConverterConfiguration>(gameConfiguration, typeof(SoulConverterPlugIn).GUID, out var plugIn);
+        Assert.That(plugIn.IsActive, Is.True);
+        Assert.That(configuration.ActivationsPerWeek, Is.EqualTo(3));
+        Assert.That(configuration.Tiers.Select(t => (t.Tier, t.ItemNumber, t.MinimumTotalLevel)), Is.EqualTo(new[] { (1, 460, 400), (2, 461, 800), (3, 462, 1150), (4, 463, 1250), (5, 464, 1450) }.Select(t => ((byte)t.Item1, (short)t.Item2, t.Item3))));
+        var first = configuration.Tiers[0];
+        Assert.That((first.ItemGroup, first.MissionCount, first.Missions.Count), Is.EqualTo(((byte)14, 2, 6)));
+        Assert.That((first.Missions[0].MapNumber, first.Missions[0].MonsterNumber, first.Missions[0].RequiredSouls, first.Missions[0].AbsorbRate), Is.EqualTo(((short)33, (short)308, 500, 450_000)));
+        Assert.That(first.Rewards.Select(r => r.Kind), Is.EqualTo(new[] { SoulRewardKind.Ruud, SoulRewardKind.Jewels, SoulRewardKind.Options }));
+        Assert.That(configuration.Tiers[4].Rewards.Select(r => r.Kind), Does.Contain(SoulRewardKind.Accessory));
+        var ruud = first.Rewards[0].Draws.Single(d => d.Items.Count == 0);
+        Assert.That((ruud.Chance, ruud.MinimumRuud, ruud.MaximumRuud), Is.EqualTo((10_000, 400, 1000)));
+        var jewels = first.Rewards[1].Draws[0].Items.Single();
+        Assert.That((jewels.Group, jewels.Number, jewels.Count), Is.EqualTo(((byte)14, (short)18, (byte)10)), "Ten Jewels of Soul.");
+        Assert.That(GameLogic.ForkInfo.Has("soul_converter"), Is.True);
+    }
+
+    /// <summary>
+    /// Applied twice, the soul converter update keeps the tiers and the switch of the operator; it is optional.
+    /// </summary>
+    [Test]
+    public async Task SoulConverterUpdateKeepsTheOperatorsTiersAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+        var update = new AddSeason21SoulConverterUpdatePlugIn();
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var plugIn = gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(SoulConverterPlugIn).GUID);
+        var custom = plugIn.GetConfiguration<SoulConverterConfiguration>(new IdIgnoringReferenceHandler())!;
+        custom.Tiers.RemoveAt(4);
+        plugIn.SetConfiguration(custom, null);
+        plugIn.IsActive = false;
+
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(GetConfiguration<SoulConverterConfiguration>(gameConfiguration, typeof(SoulConverterPlugIn).GUID, out _).Tiers, Has.Count.EqualTo(4));
         Assert.That(plugIn.IsActive, Is.False);
         Assert.That(update.IsMandatory, Is.False);
     }

@@ -3468,5 +3468,32 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("MiningNeedsBabylonClient", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The monster soul converter needs the total level {0}..
+        /// </summary>
+        public static string SoulConverterLevelTooLow {
+            get {
+                return ResourceManager.GetString("SoulConverterLevelTooLow", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Another monster soul converter is active..
+        /// </summary>
+        public static string SoulConverterAlreadyActive {
+            get {
+                return ResourceManager.GetString("SoulConverterAlreadyActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No more monster soul converters can be activated this week..
+        /// </summary>
+        public static string SoulConverterWeeklyLimitReached {
+            get {
+                return ResourceManager.GetString("SoulConverterWeeklyLimitReached", resourceCulture);
+            }
+        }
     }
 }

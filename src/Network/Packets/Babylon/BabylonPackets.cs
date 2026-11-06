@@ -6211,7 +6211,7 @@ public readonly struct SoulConverterState
     }
 
     /// <summary>
-    /// Gets or sets the converters the account may still activate this week.
+    /// Gets or sets the converters the character may still activate this week.
     /// </summary>
     public byte PurchasesLeft
     {

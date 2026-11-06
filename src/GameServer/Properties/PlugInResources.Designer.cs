@@ -8659,5 +8659,59 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("HuntingRecordRequestHandlerPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: monster soul converter.
+        /// </summary>
+        public static string SoulConverterBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the monster soul converter and its missions (C2 EE A5) and the result of a claimed reward (C1 EE A7) to the Babylon client..
+        /// </summary>
+        public static string SoulConverterBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SoulConverterBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: monster soul converter reward.
+        /// </summary>
+        public static string SoulConverterRewardRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterRewardRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the reward choice of a completed monster soul converter (C1 EE A6)..
+        /// </summary>
+        public static string SoulConverterRewardRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SoulConverterRewardRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: monster soul converter state.
+        /// </summary>
+        public static string SoulConverterStateRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterStateRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the monster soul converter window (C1 EE A8)..
+        /// </summary>
+        public static string SoulConverterStateRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SoulConverterStateRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

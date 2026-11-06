@@ -70,6 +70,7 @@ public static class ForkInfo
         "mining",
         "golden_invasions_s21",
         "ranking",
+        "soul_converter",
     ];
 
     /// <summary>

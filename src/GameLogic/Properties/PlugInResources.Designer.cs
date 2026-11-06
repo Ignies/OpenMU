@@ -7572,5 +7572,284 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("HuntingRecordConfiguration_StateFile_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster soul converter (Season 21).
+        /// </summary>
+        public static string SoulConverterPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A converter item of a tier, used by a character of its total level, draws soul missions; kills of their monsters absorb souls (shared in a party), and when all missions are done the player claims a reward of a kind the tier offers. Converters expire when the week starts again. The Babylon client shows the window..
+        /// </summary>
+        public static string SoulConverterPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SoulConverterPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activations per week.
+        /// </summary>
+        public static string SoulConverterConfiguration_ActivationsPerWeek_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterConfiguration_ActivationsPerWeek_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Week starts on.
+        /// </summary>
+        public static string SoulConverterConfiguration_WeekStartsOn_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterConfiguration_WeekStartsOn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Share souls with the party.
+        /// </summary>
+        public static string SoulConverterConfiguration_ShareWithParty_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterConfiguration_ShareWithParty_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tiers.
+        /// </summary>
+        public static string SoulConverterConfiguration_Tiers_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterConfiguration_Tiers_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save interval.
+        /// </summary>
+        public static string SoulConverterConfiguration_SaveInterval_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterConfiguration_SaveInterval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to State file.
+        /// </summary>
+        public static string SoulConverterConfiguration_StateFile_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterConfiguration_StateFile_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tier.
+        /// </summary>
+        public static string SoulConverterTier_Tier_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterTier_Tier_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item group.
+        /// </summary>
+        public static string SoulConverterTier_ItemGroup_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterTier_ItemGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number.
+        /// </summary>
+        public static string SoulConverterTier_ItemNumber_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterTier_ItemNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum total level.
+        /// </summary>
+        public static string SoulConverterTier_MinimumTotalLevel_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterTier_MinimumTotalLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missions per converter.
+        /// </summary>
+        public static string SoulConverterTier_MissionCount_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterTier_MissionCount_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missions.
+        /// </summary>
+        public static string SoulConverterTier_Missions_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterTier_Missions_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rewards.
+        /// </summary>
+        public static string SoulConverterTier_Rewards_Name {
+            get {
+                return ResourceManager.GetString("SoulConverterTier_Rewards_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map.
+        /// </summary>
+        public static string SoulMission_MapNumber_Name {
+            get {
+                return ResourceManager.GetString("SoulMission_MapNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster.
+        /// </summary>
+        public static string SoulMission_MonsterNumber_Name {
+            get {
+                return ResourceManager.GetString("SoulMission_MonsterNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required souls.
+        /// </summary>
+        public static string SoulMission_RequiredSouls_Name {
+            get {
+                return ResourceManager.GetString("SoulMission_RequiredSouls_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Absorb rate (1/1000000).
+        /// </summary>
+        public static string SoulMission_AbsorbRate_Name {
+            get {
+                return ResourceManager.GetString("SoulMission_AbsorbRate_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kind.
+        /// </summary>
+        public static string SoulReward_Kind_Name {
+            get {
+                return ResourceManager.GetString("SoulReward_Kind_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Draws.
+        /// </summary>
+        public static string SoulReward_Draws_Name {
+            get {
+                return ResourceManager.GetString("SoulReward_Draws_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance (1/10000).
+        /// </summary>
+        public static string SoulRewardDraw_Chance_Name {
+            get {
+                return ResourceManager.GetString("SoulRewardDraw_Chance_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Items.
+        /// </summary>
+        public static string SoulRewardDraw_Items_Name {
+            get {
+                return ResourceManager.GetString("SoulRewardDraw_Items_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum Ruud.
+        /// </summary>
+        public static string SoulRewardDraw_MinimumRuud_Name {
+            get {
+                return ResourceManager.GetString("SoulRewardDraw_MinimumRuud_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maximum Ruud.
+        /// </summary>
+        public static string SoulRewardDraw_MaximumRuud_Name {
+            get {
+                return ResourceManager.GetString("SoulRewardDraw_MaximumRuud_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster soul converter tier 1 (14, 460).
+        /// </summary>
+        public static string SoulConverter1ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SoulConverter1ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster soul converter tier 2 (14, 461).
+        /// </summary>
+        public static string SoulConverter2ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SoulConverter2ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster soul converter tier 3 (14, 462).
+        /// </summary>
+        public static string SoulConverter3ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SoulConverter3ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster soul converter tier 4 (14, 463).
+        /// </summary>
+        public static string SoulConverter4ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SoulConverter4ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Monster soul converter tier 5 (14, 464).
+        /// </summary>
+        public static string SoulConverter5ConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SoulConverter5ConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activates the monster soul converter of the item, if the plugin Monster soul converter (Season 21) allows it, and uses the item up..
+        /// </summary>
+        public static string SoulConverterConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SoulConverterConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

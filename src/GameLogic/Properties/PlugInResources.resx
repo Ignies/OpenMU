@@ -2679,4 +2679,97 @@
   <data name="HuntingRecordConfiguration_StateFile_Name" xml:space="preserve">
     <value>State file</value>
   </data>
+  <data name="SoulConverterPlugIn_Name" xml:space="preserve">
+    <value>Monster soul converter (Season 21)</value>
+  </data>
+  <data name="SoulConverterPlugIn_Description" xml:space="preserve">
+    <value>A converter item of a tier, used by a character of its total level, draws soul missions; kills of their monsters absorb souls (shared in a party), and when all missions are done the player claims a reward of a kind the tier offers. Converters expire when the week starts again. The Babylon client shows the window.</value>
+  </data>
+  <data name="SoulConverterConfiguration_ActivationsPerWeek_Name" xml:space="preserve">
+    <value>Activations per week</value>
+  </data>
+  <data name="SoulConverterConfiguration_WeekStartsOn_Name" xml:space="preserve">
+    <value>Week starts on</value>
+  </data>
+  <data name="SoulConverterConfiguration_ShareWithParty_Name" xml:space="preserve">
+    <value>Share souls with the party</value>
+  </data>
+  <data name="SoulConverterConfiguration_Tiers_Name" xml:space="preserve">
+    <value>Tiers</value>
+  </data>
+  <data name="SoulConverterConfiguration_SaveInterval_Name" xml:space="preserve">
+    <value>Save interval</value>
+  </data>
+  <data name="SoulConverterConfiguration_StateFile_Name" xml:space="preserve">
+    <value>State file</value>
+  </data>
+  <data name="SoulConverterTier_Tier_Name" xml:space="preserve">
+    <value>Tier</value>
+  </data>
+  <data name="SoulConverterTier_ItemGroup_Name" xml:space="preserve">
+    <value>Item group</value>
+  </data>
+  <data name="SoulConverterTier_ItemNumber_Name" xml:space="preserve">
+    <value>Item number</value>
+  </data>
+  <data name="SoulConverterTier_MinimumTotalLevel_Name" xml:space="preserve">
+    <value>Minimum total level</value>
+  </data>
+  <data name="SoulConverterTier_MissionCount_Name" xml:space="preserve">
+    <value>Missions per converter</value>
+  </data>
+  <data name="SoulConverterTier_Missions_Name" xml:space="preserve">
+    <value>Missions</value>
+  </data>
+  <data name="SoulConverterTier_Rewards_Name" xml:space="preserve">
+    <value>Rewards</value>
+  </data>
+  <data name="SoulMission_MapNumber_Name" xml:space="preserve">
+    <value>Map</value>
+  </data>
+  <data name="SoulMission_MonsterNumber_Name" xml:space="preserve">
+    <value>Monster</value>
+  </data>
+  <data name="SoulMission_RequiredSouls_Name" xml:space="preserve">
+    <value>Required souls</value>
+  </data>
+  <data name="SoulMission_AbsorbRate_Name" xml:space="preserve">
+    <value>Absorb rate (1/1000000)</value>
+  </data>
+  <data name="SoulReward_Kind_Name" xml:space="preserve">
+    <value>Kind</value>
+  </data>
+  <data name="SoulReward_Draws_Name" xml:space="preserve">
+    <value>Draws</value>
+  </data>
+  <data name="SoulRewardDraw_Chance_Name" xml:space="preserve">
+    <value>Chance (1/10000)</value>
+  </data>
+  <data name="SoulRewardDraw_Items_Name" xml:space="preserve">
+    <value>Items</value>
+  </data>
+  <data name="SoulRewardDraw_MinimumRuud_Name" xml:space="preserve">
+    <value>Minimum Ruud</value>
+  </data>
+  <data name="SoulRewardDraw_MaximumRuud_Name" xml:space="preserve">
+    <value>Maximum Ruud</value>
+  </data>
+  <data name="SoulConverter1ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Monster soul converter tier 1 (14, 460)</value>
+  </data>
+  <data name="SoulConverter2ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Monster soul converter tier 2 (14, 461)</value>
+  </data>
+  <data name="SoulConverter3ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Monster soul converter tier 3 (14, 462)</value>
+  </data>
+  <data name="SoulConverter4ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Monster soul converter tier 4 (14, 463)</value>
+  </data>
+  <data name="SoulConverter5ConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Monster soul converter tier 5 (14, 464)</value>
+  </data>
+  <data name="SoulConverterConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Activates the monster soul converter of the item, if the plugin Monster soul converter (Season 21) allows it, and uses the item up.</value>
+  </data>
 </root>

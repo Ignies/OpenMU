@@ -1380,5 +1380,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21HuntingRecordUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the monster soul converter of Season 21.
+        /// </summary>
+        public static string AddSeason21SoulConverterUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21SoulConverterUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the five tiers of the Season 21 monster soul converter (items 14/460-464, total level 400 to 1450, two soul missions each, the reward bags of Ruud, jewels, elemental options and accessories) and turns the converter on. A configuration with tiers stays. Optional..
+        /// </summary>
+        public static string AddSeason21SoulConverterUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21SoulConverterUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

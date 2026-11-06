@@ -17,7 +17,7 @@ The client shows the active monster soul converter with its missions.
 | 3 | 1 |    Byte   | 0xEE  | Packet header - packet type identifier |
 | 4 | 1 |    Byte   | 0xA5  | Packet header - sub packet type identifier |
 | 5 | 1 | Byte |  | Tier; The tier of the active converter, 1 to 5; 0 when none is active. |
-| 6 | 1 | Byte |  | PurchasesLeft; The converters the account may still activate this week. |
+| 6 | 1 | Byte |  | PurchasesLeft; The converters the character may still activate this week. |
 | 7 | 4 | IntegerLittleEndian |  | ExpiresAt; The point in time at which the converter expires, in seconds since 1970-01-01 UTC; 0 when none. |
 | 11 | 1 | Byte |  | MissionCount |
 | 12 | SoulConverterMission.Length * MissionCount | Array of SoulConverterMission |  | Missions |

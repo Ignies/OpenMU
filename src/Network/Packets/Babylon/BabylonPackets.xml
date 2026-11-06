@@ -1976,7 +1976,7 @@
           <Index>6</Index>
           <Type>Byte</Type>
           <Name>PurchasesLeft</Name>
-          <Description>The converters the account may still activate this week.</Description>
+          <Description>The converters the character may still activate this week.</Description>
         </Field>
         <Field>
           <Index>7</Index>

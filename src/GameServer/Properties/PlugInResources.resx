@@ -3029,4 +3029,22 @@
   <data name="HuntingRecordRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of the Babylon client for the hunting record of a map.</value>
   </data>
+  <data name="SoulConverterBabylonPlugIn_Name" xml:space="preserve">
+    <value>Babylon: monster soul converter</value>
+  </data>
+  <data name="SoulConverterBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the monster soul converter and its missions (C2 EE A5) and the result of a claimed reward (C1 EE A7) to the Babylon client.</value>
+  </data>
+  <data name="SoulConverterRewardRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Babylon: monster soul converter reward</value>
+  </data>
+  <data name="SoulConverterRewardRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the reward choice of a completed monster soul converter (C1 EE A6).</value>
+  </data>
+  <data name="SoulConverterStateRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Babylon: monster soul converter state</value>
+  </data>
+  <data name="SoulConverterStateRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the monster soul converter window (C1 EE A8).</value>
+  </data>
 </root>

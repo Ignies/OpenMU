@@ -24,6 +24,8 @@ them, as optional updates of a Season 6 database:
 * `AddSeason21HuntingRecordUpdatePlugIn` sets the 59 maps and the 64 excluded event monsters of `HuntingRecord.txt` and turns
   the hunting record and the ranking on (`Season21HuntingRecordInitializer`, data `Resources/Season21/WorldSystems.json`
   written by `Generator/season21-world.mjs`). See `GameLogic/HuntingRecord/Readme.md`.
+* `AddSeason21SoulConverterUpdatePlugIn` sets the five tiers of the monster soul converter with their missions and reward
+  bags and turns it on (`Season21SoulConverterInitializer`); it needs the item catalog. See `GameLogic/SoulConverter/Readme.md`.
 
 They run on a new database too (`RunsOnNewDatabase`), but as they are optional,
 a new database leaves them pending. So a Season 6 server only changes when its
@@ -351,3 +353,6 @@ pentagram options, errtel set options, radiance effects and the earring enhancem
 `EventItemBag/` 288-355, `Character/MuHelperPlus.xml` and `Event/BattlePass/BattlePass.xml`. Each system has its update:
 
 - Hunting record: the maps and the excluded monsters (`Season21HuntingRecordInitializer`).
+- Soul converter: the activations a week, and per tier the item, the level of its comment, the mission count and missions,
+  and the reward bags (`EventItemBag/` 288-290 and 344-355 by kind, 291 the accessories of the fifth tier). A bag row
+  becomes a draw with the chance of its section (the lower of `DropRate` and `SectionRate`); its durability is the count.
