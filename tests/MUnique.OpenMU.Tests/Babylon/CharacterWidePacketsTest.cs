@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameServer;
@@ -21,6 +23,8 @@ using MUnique.OpenMU.PlugIns;
 using BasicAccount = MUnique.OpenMU.Persistence.BasicModel.Account;
 using BasicCharacter = MUnique.OpenMU.Persistence.BasicModel.Character;
 using BasicCharacterClass = MUnique.OpenMU.Persistence.BasicModel.CharacterClass;
+using BasicGameMap = MUnique.OpenMU.Persistence.BasicModel.GameMapDefinition;
+using BasicStatAttribute = MUnique.OpenMU.Persistence.BasicModel.StatAttribute;
 
 /// <summary>
 /// Tests the character packets of the Babylon protocol: the class codes after the character list and the created
@@ -49,6 +53,42 @@ public class CharacterWidePacketsTest
         Assert.That(codes.CharacterCount, Is.EqualTo(3));
         var pairs = Enumerable.Range(0, codes.CharacterCount).Select(i => (codes[i].SlotIndex, codes[i].ClassCode)).ToList();
         Assert.That(pairs, Is.EqualTo(new[] { ((byte)0, (byte)56), ((byte)1, (byte)3), ((byte)2, (byte)8) }));
+    }
+
+    /// <summary>
+    /// The class codes are followed by every class the creation offers, with the state of the server's creation rule
+    /// and the level it needs, so the client can grey out what the server refuses.
+    /// </summary>
+    [Test]
+    public async ValueTask BabylonListIsFollowedByTheCreatableClassesAsync()
+    {
+        var configuration = new MUnique.OpenMU.Persistence.BasicModel.GameConfiguration();
+        var home = new BasicGameMap { IsActive = true };
+        configuration.CharacterClasses.Add(new BasicCharacterClass { Number = 128 + 72, CanGetCreated = true, HomeMap = home, LevelRequirementByCreation = 200 });
+        configuration.CharacterClasses.Add(new BasicCharacterClass { Number = 12, CanGetCreated = true, HomeMap = home, LevelRequirementByCreation = 220, CreationAllowedFlag = 4 });
+        configuration.CharacterClasses.Add(new BasicCharacterClass { Number = 4, CanGetCreated = true, HomeMap = home });
+        configuration.CharacterClasses.Add(new BasicCharacterClass { Number = 128 + 57, HomeMap = home });
+        configuration.CharacterClasses.Add(new BasicCharacterClass { Number = 128 + 80, CanGetCreated = true, IsActive = false, HomeMap = home });
+        var (player, output) = CreatePlayerWithGuildServer(configuration);
+        player.Account = CreateAccount(("Knight", 0, 4));
+        player.Account.Characters.Single().Attributes.Add(new BasicStatAttribute(Stats.Level, 150));
+
+        await new ShowCharacterListBabylonPlugIn(player).ShowCharacterListAsync().ConfigureAwait(false);
+
+        var data = output.ToArray();
+        var offset = data[1];
+        offset += data[offset + 1];
+        Assert.That(data, Has.Length.GreaterThan(offset), "no packet after the class codes");
+        var classes = new CreatableClasses(data.AsMemory(offset, data[offset + 1]));
+        Assert.That(classes.Header.SubCode, Is.EqualTo(0x14));
+        var entries = Enumerable.Range(0, classes.ClassCount).Select(i => (classes[i].ClassCode, classes[i].State, classes[i].Level)).ToList();
+        Assert.That(entries, Is.EqualTo(new[]
+        {
+            ((byte)8, (byte)ClassCreationState.Creatable, (ushort)0),
+            ((byte)24, (byte)ClassCreationState.UnlockRequired, (ushort)220),
+            ((byte)72, (byte)ClassCreationState.LevelRequired, (ushort)200),
+            ((byte)80, (byte)ClassCreationState.Unavailable, (ushort)0),
+        }));
     }
 
     /// <summary>
@@ -90,7 +130,7 @@ public class CharacterWidePacketsTest
         Assert.That(packet.ClassCode, Is.EqualTo(120));
     }
 
-    private static (RemotePlayer Player, System.IO.MemoryStream Output) CreatePlayerWithGuildServer()
+    private static (RemotePlayer Player, System.IO.MemoryStream Output) CreatePlayerWithGuildServer(GameConfiguration? configuration = null)
     {
         var guildServer = new Mock<IGuildServer>();
         guildServer.Setup(g => g.GetGuildPositionAsync(It.IsAny<Guid>())).Returns(ValueTask.FromResult(GuildPosition.Undefined));
@@ -98,7 +138,7 @@ public class CharacterWidePacketsTest
         manager.DiscoverAndRegisterPlugInsOf<IViewPlugIn>();
         var gameContext = new Mock<IGameServerContext>();
         gameContext.Setup(c => c.PersistenceContextProvider).Returns(new Mock<IPersistenceContextProvider>().Object);
-        gameContext.Setup(c => c.Configuration).Returns(new GameConfiguration());
+        gameContext.Setup(c => c.Configuration).Returns(configuration ?? new MUnique.OpenMU.Persistence.BasicModel.GameConfiguration());
         gameContext.Setup(c => c.PlugInManager).Returns(manager);
         gameContext.Setup(c => c.FeaturePlugIns).Returns(new FeaturePlugInContainer(manager));
         gameContext.Setup(c => c.LoggerFactory).Returns(new NullLoggerFactory());

@@ -83,6 +83,7 @@ public static class ForkInfo
         "crywolf_s21",
         "battle_pass",
         "stats_specialize",
+        "creatable_classes",
     ];
 
     /// <summary>

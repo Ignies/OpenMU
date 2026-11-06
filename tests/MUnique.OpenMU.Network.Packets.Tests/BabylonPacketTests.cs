@@ -47,6 +47,32 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the structure size calculation for CreatableClass.
+    /// </summary>
+    [Test]
+    public void CreatableClass_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 4;
+        var actualLength = CreatableClass.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'ClassCode' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ClassCode' exceeds structure boundary");
+        
+        // Validate field 'State' boundary
+        Assert.That(1 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'State' exceeds structure boundary");
+        
+        // Validate field 'Level' boundary
+        Assert.That(2 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Level' exceeds structure boundary");
+    }
+
+    /// <summary>
     /// Tests the structure size calculation for EquippedItemWide.
     /// </summary>
     [Test]
@@ -646,6 +672,20 @@ public class PacketStructureTests
         // Field 'CharacterCount' starts at index 4 with size 1
         Assert.That(4, Is.GreaterThanOrEqualTo(0), 
             "Field 'CharacterCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for CreatableClasses.
+    /// </summary>
+    [Test]
+    public void CreatableClasses_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'ClassCount' starts at index 4 with size 1
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'ClassCount' has invalid negative index");
     }
 
     /// <summary>

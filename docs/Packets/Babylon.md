@@ -4,6 +4,7 @@
   * [C1 EE 11 - CharacterCreatedWide (by server)](C1-EE-11-CharacterCreatedWide_by-server.md)
   * [C1 EE 12 - CharacterClassCodes (by server)](C1-EE-12-CharacterClassCodes_by-server.md)
   * [C1 EE 13 - ClassEvolved (by server)](C1-EE-13-ClassEvolved_by-server.md)
+  * [C1 EE 14 - CreatableClasses (by server)](C1-EE-14-CreatableClasses_by-server.md)
   * [C2 EE 20 - PlayerAppearanceWide (by server)](C2-EE-20-PlayerAppearanceWide_by-server.md)
   * [C1 EE 21 - AppearanceChangedWide (by server)](C1-EE-21-AppearanceChangedWide_by-server.md)
   * [C1 EE 31 - ItemExpired (by server)](C1-EE-31-ItemExpired_by-server.md)

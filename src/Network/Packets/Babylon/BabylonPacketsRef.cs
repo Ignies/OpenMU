@@ -57,6 +57,56 @@ public readonly ref struct CharacterClassCodeRef
 
 
 /// <summary>
+/// A class which the character creation offers, with the state of the server's creation rule for the account..
+/// </summary>
+public readonly ref struct CreatableClassRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreatableClassRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CreatableClassRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 4;
+
+    /// <summary>
+    /// Gets or sets the class code: base class times 8 plus evolution.
+    /// </summary>
+    public byte ClassCode
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 0 creatable, 1 needs another character at the level, 2 needs the Season 6 unlock (the client checks it), 3 unavailable in this world.
+    /// </summary>
+    public byte State
+    {
+        get => this._data[1];
+        set => this._data[1] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the creation level of the class, 0 for none.
+    /// </summary>
+    public ushort Level
+    {
+        get => ReadUInt16LittleEndian(this._data[2..]);
+        set => WriteUInt16LittleEndian(this._data[2..], value);
+    }
+}
+
+
+/// <summary>
 /// A piece of gear a player wears, in the W32 item format..
 /// </summary>
 public readonly ref struct EquippedItemWideRef
@@ -1565,6 +1615,99 @@ public readonly ref struct CharacterClassCodesRef
     /// <param name="charactersCount">The count of <see cref="CharacterClassCodeRef"/> from which the size will be calculated.</param>
         
     public static int GetRequiredSize(int charactersCount) => charactersCount * CharacterClassCodeRef.Length + 5;
+}
+
+
+/// <summary>
+/// Is sent by the server when: Right after the class codes of the character list, to a Babylon client.
+/// Causes reaction on client side: The client offers the classes in the character creation and greys out those the server refuses.
+/// </summary>
+public readonly ref struct CreatableClassesRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreatableClassesRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public CreatableClassesRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CreatableClassesRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private CreatableClassesRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x14;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the class count.
+    /// </summary>
+    public byte ClassCount
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="CreatableClassRef"/> of the specified index.
+    /// </summary>
+        public CreatableClassRef this[int index] => new (this._data[(5 + index * CreatableClassRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="CreatableClasses"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator CreatableClassesRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="CreatableClasses"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(CreatableClassesRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="CreatableClassRef"/>.
+    /// </summary>
+    /// <param name="classesCount">The count of <see cref="CreatableClassRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int classesCount) => classesCount * CreatableClassRef.Length + 5;
 }
 
 

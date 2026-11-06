@@ -53,8 +53,11 @@ The classes are added by the optional update `AddSeason21ClassesUpdatePlugIn`
   (the health and mana relationships of the crusader classes in the admin panel). Its formulas come complete from the
   calculation above.
 - Every first evolution can get created without a level (S21Emu `CreateType = 0`). An operator who sets
-  `LevelRequirementByCreation` on a class without a Season 6 unlock flag gets it checked by the server
-  (`CreateCharacterAction`): another character of the account has the level, or the account has unlocked the class.
+  `LevelRequirementByCreation` on a class without a Season 6 unlock flag gets it checked by the server: another
+  character of the account has the level, or the account has unlocked the class.
+- One rule, `ClassCreationRule.GetState`: `CreateCharacterAction` refuses `LevelRequired` and `Unavailable`, and the
+  Babylon list sends the state of every creatable class (`C1 EE 14`, feature `creatable_classes`) so the client greys
+  out what the server refuses. `UnlockRequired` (a Season 6 unlock flag not yet earned) stays client-checked.
 
 ## Stat specialization (`StatsSpecializationPlugIn`)
 

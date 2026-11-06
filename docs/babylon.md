@@ -94,6 +94,7 @@ Rules:
 | `crywolf_s21` | The Crywolf renewal of Season 21: the army takes the element of the week, Balgass at 6:40, the rewards into the gremory case, the Season 21 timings (update "Apply the Crywolf renewal of Season 21") |
 | `battle_pass` | The season pass (MU Pass): the monthly seasons of the data repeated every year, 20 levels, 25 daily missions and one special mission (their kind set by the operator), the free, gold and premium pass with their rewards (buffs until the season ends, items into the gremory case), the Exp, Gold and Premium Pass Tickets (update "Add the season pass of Season 21", plugin "Season pass (Season 21)", `src/GameLogic/SeasonPass`) |
 | `stats_specialize` | The stat specialization of Season 21: a stat of a class raises an option by the percent of its section (S21Emu `Character/StatsSpecialize.txt`; plugin "Stat specialization (Season 21)", off by default, `src/GameLogic/Classes`). No packet: the raised values reach the client through the Season 6 stat packets |
+| `creatable_classes` | `C1 EE 14 CreatableClasses` after the class codes of the list: every class the creation offers with the state of the server's creation rule (`GameLogic/Classes/ClassCreationRule.cs`) and its creation level |
 
 ## Balance
 
@@ -152,6 +153,13 @@ Character packets (characters range 10-1F):
 - `C1 EE 12 CharacterClassCodes` (server): count at 4, then (slot, class code) pairs; sent right after the
   Season 6 character list, which a Babylon client gets with every character (a Season 6 client gets no
   character of a new class, and a 4th or 5th evolution as its 3rd).
+- `C1 EE 14 CreatableClasses` (server): count at 4, then per class 4 bytes: class code (u8), state (u8), creation
+  level (u16 LE, 0 for none). Sent right after `EE 12`, so with every character list; lists every class with
+  `CanGetCreated`, by code. State, by `ClassCreationRule` (the rule the server enforces on a creation): 0 creatable,
+  1 needs another character of the account at the level (refused), 2 needs the Season 6 unlock flag (the client
+  checks it, as in the original; the unlock comes with the level or a card), 3 unavailable in this world (inactive
+  class or home map; refused). A client without it (an older fork) keeps the Season 6 unlock flags. After a delete
+  the list is not sent again; a client asks for it (`C1 F3 00`) to refresh the states.
 
 Appearance packets (range 20-2F):
 
