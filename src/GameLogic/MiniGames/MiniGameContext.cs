@@ -723,6 +723,16 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         await this.ForEachPlayerAsync(player => player.ShowLocalizedGoldenMessageAsync(messageKey, args).AsTask()).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Tells the plugins that a player reached an objective of this mini game, e.g. a rank or a relic.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="objective">The objective.</param>
+    /// <param name="value">The value of the objective, e.g. the rank; 0 when it has none.</param>
+    /// <returns>The task.</returns>
+    protected ValueTask NotifyObjectiveReachedAsync(Player player, MiniGameObjective objective, int value)
+        => this.NotifyPlugInsAsync<IMiniGameObjectiveReachedPlugIn>(p => p.ObjectiveReachedAsync(this, player, objective, value));
+
     private async ValueTask RunGameAsync(CancellationToken cancellationToken)
     {
         this.Logger.LogDebug("{context}: Running the game ...", this);
@@ -859,16 +869,6 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
         // Notified after GameEndedAsync, because some games determine their winner there.
         await this.NotifyPlugInsAsync<IMiniGameEndedPlugIn>(p => p.MiniGameEndedAsync(this, this.Winner, players)).ConfigureAwait(false);
     }
-
-    /// <summary>
-    /// Tells the plugins that a player reached an objective of this mini game, e.g. a rank or a relic.
-    /// </summary>
-    /// <param name="player">The player.</param>
-    /// <param name="objective">The objective.</param>
-    /// <param name="value">The value of the objective, e.g. the rank; 0 when it has none.</param>
-    /// <returns>The task.</returns>
-    protected ValueTask NotifyObjectiveReachedAsync(Player player, MiniGameObjective objective, int value)
-        => this.NotifyPlugInsAsync<IMiniGameObjectiveReachedPlugIn>(p => p.ObjectiveReachedAsync(this, player, objective, value));
 
     private ValueTask NotifyPlugInsAsync<TPlugIn>(Func<TPlugIn, ValueTask> notify)
         where TPlugIn : class
