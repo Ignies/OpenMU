@@ -366,9 +366,15 @@ items: a Season 6 client never gets one, and its own fights only meet the elemen
   | darkness | 80 | 90 | 110 | 110 | 100 | 120 |
 
 - **Pentagrams** (25, Item.xml slot 236): `DamageMin/Max` the elemental damage, `Defense` the elemental defense,
-  `ElementalAttack` / `ElementalDefense` the rates. Up to five sockets (1-5 when they drop); socket 0 anger,
-  1 blessing, 2 integrity, 3 divinity, 4 radiance. The pentagram options of PentagramOption.xml are data in
-  `Elements.json`, not applied yet.
+  `ElementalAttack` / `ElementalDefense` the rates. 1-4 sockets when they drop; the Expansion Scroll of Radiance
+  slot (14/316, used on the pentagram) opens the fifth. Socket 0 anger, 1 blessing, 2 integrity, 3 divinity,
+  4 radiance. The pentagram options (PentagramOption.xml) are active while the sockets hold the errtels they need
+  (rank and level per socket); the mastery errtels have a set (fighting spirit, passionate, 50 %) whose bonuses
+  need 2 and 4 errtels of the set in a mastery pentagram.
+- **Elemental critical, dodge, radiance.** A critical elemental hit deals the maximum elemental damage (design: like
+  the normal critical hit; no source gives a multiplier); a perfect dodge takes none; punish adds 6-16 % of the
+  target's maximum health to 30 % of the critical hits (at most 250,000, muonlinefanz.com); absorb shield / life give
+  1-11 % of the elemental damage back at 30 %. Bastion, bleeding, paralyzing, binding and blinding stay data.
 - **Errtels** (13): an element and rank options (PentagramJewelOption.xml, values of the levels 0-10): rank 1 rolled
   when it drops, the next ranks by the rank up. `C1 EE 81 ErrtelSocketRequest` puts an errtel into the socket of its
   kind of a pentagram of its element (the errtel is used up, its options move into the pentagram) or takes it out
@@ -376,13 +382,17 @@ items: a Season 6 client never gets one, and its own fights only meet the elemen
   answers, `C1 EE 86` / `C1 EE 85 PentagramErrtels` list the errtels of a pentagram's sockets.
 - **Refinery** (chaos goblin, crafting numbers 140-164 of the mix request `C1 86`): 140-153 the upgrades to the
   mastery pentagrams and errtels (ElementalUpgrade.xml: emblem, bless and soul x30, creation x10 as packed jewels;
-  keeps element, sockets, errtels), 154-163 the errtel level up from level 0-9 (elemental runes 12/288 by rank,
+  keeps element, sockets, errtels; a pentagram from +11 at 80 / 85 / 90 / 95 / 100 %, an errtel from level 9 at
+  100 %), 154-163 the errtel level up from level 0-9 (elemental runes 12/288 by rank,
   money by level), 164 the rank up (chance by the level of the highest rank).
-- **Earrings** (16): base stats (design: the damage range as base damage by its middle, the defense as elemental
-  defense), one random option and two more by 20 % each (the source's 70 / 20 / 10 % for one / two / three options
-  has the same average), and a link set per tier: a left and a right earring of one tier add enemy defense ignore and
-  all stats (EarringItemOption.txt). The options 28-31 of the later tiers are named nowhere and have no effect yet;
-  the enhancement to +15 (section 4) is not built.
+- **Earrings** (16): basic options "ATK/Wizardry/Curse min - max" and "Elemental DEF" (Item.xml, the same numbers in
+  Webzen's guides and muonlinefanz.com), one random option and two more by 20 % each (EarringItemOption.txt 70 / 20 /
+  10 %; muonline.net says 20 / 40 / 40 %), and a link set per tier: enemy defense ignore, all stats and, from Blood
+  on, mastery damage. Options 28-30 are mastery attack/wizardry and mastery excellent / critical damage (Webzen 5th
+  and 7th earrings; the other tiers interpolated). Enhancement +0 to +15 at the chaos goblin (crafting numbers
+  165-179): 60 % to +7, 80 % above, 1-5 lapidary stones (13/510) and 1-8 million zen (EarringItemOption.txt section 4;
+  muonline.net: 55 stones, 67.5 million in total); from +7 a failure resets the earring to +0 (Webzen guide 150).
+  What a level adds is published nowhere; the level is kept for it.
 
 W32 fields:
 
@@ -400,6 +410,9 @@ C1 08 EE 81  ErrtelSocketRequest (client)   C1 08 EE 83  PentagramResult (server
   5  u8  pentagram slot                        5  u8  0 success, 1 failed (errtel gone), 2 refused
   6  u8  errtel slot (insert)                  6  u8  pentagram slot
   7  u8  socket 0-4                            7  u8  socket
+C1 1B EE 80  ElementInfo (server)           C1 04 EE 87  ElementInfoRequest (client)
+  4 u8 element, 5/9 u32 LE damage min/max, 13 defense, 17 attack rate, 21 defense rate (u32 LE),
+  25 u8 critical %, 26 u8 dodge %; answers EE 87 and follows every errtel socket change
 C1 0B EE 84  ElementalDamage (server)       C1 05 EE 86  PentagramErrtelsRequest (client)
   4  u16 BE  target id                         4  u8  pentagram slot
   6  u8      element                         C1 .. EE 85  PentagramErrtels (server)

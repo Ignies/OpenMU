@@ -26,7 +26,11 @@ result  = max(0, damage - defense), if attack rate against defense rate hits
 ```
 
 Webzen gives the wheel and the 30 % in PvP (EX700 guide, https://muonline.webzen.com/en/events/EX700Guide/pop_attribute);
-the order of the terms is a design, since no source gives the formula. A defender without element takes 120 % from
+the order of the terms is a design: Webzen's guides 43 and 170, muonlinefanz.com, muonline.ai, globalmuonline.com and
+mutop100.com give the factors, none the formula. (Guide 43 names 110 % for fire against darkness, the EX700 table 120 %;
+the table is kept.) A critical elemental hit deals the maximum damage (design, like the normal critical hit), punish
+adds a share of the target's maximum health, a perfect dodge takes all; "defense added to elemental defense" and
+"damage added to elemental damage" add a share of the defense and of the hit's normal damage. A defender without element takes 120 % from
 every element. The hit chance follows the normal hit: `1 - defenseRate / attackRate`, at least 3 %; a defender
 without elemental defense rate is always hit.
 
@@ -44,7 +48,11 @@ used: they belong to events which rotate their element.
   radiance 200-224; the beginner errtels 250-253).
 - Inserted, the errtel's rank options move into the pentagram as links with the socket as their index, so the
   pentagram's power-ups include them; taken out, a new errtel of the definition the options belong to gets them back.
-- Not done yet: the pentagram options (PentagramOption.xml, bonuses for errtel combinations), the errtel set
-  options of the mastery errtels (ErrtelMastery.xml), the radiance effects of rank 2 and 3 (absorb, bastion,
-  bleeding, paralyzing, binding, punish, blinding), the elemental critical damage, the expansion scroll of the fifth
-  socket, the pentagram enhancement levels.
+- Pentagram options and errtel set bonuses are conditional option links of the pentagram, brought up to date
+  (`Pentagrams.UpdateConditionalOptions`) whenever an errtel goes in or out; the rules are configuration
+  (`PentagramOptions`), the bonuses item options.
+- The errtel sets (ErrtelMastery.xml; worldofmu.net): fighting spirit 2 errtels elemental attack +40, 4 errtels
+  "supreme attack" +60 and elemental damage +100; passionate 2 errtels elemental defense +30, 4 errtels "supreme
+  defense" +45 and base elemental defense +20. Supreme attack / defense are explained nowhere and have no effect.
+- Not done: the radiance effects bastion, bleeding, paralyzing, binding and blinding (they need magic effects with
+  client visuals), the pentagram enhancement +levels (the mastery upgrade needs +11), what an earring level adds.
