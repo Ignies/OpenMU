@@ -302,6 +302,29 @@ public class Season21ElementsInGameTest
     }
 
     /// <summary>
+    /// The designed parts of the formula are settings: the factor of a critical elemental hit on the maximum damage
+    /// (default 1) and whether the elemental defense comes off after the multipliers (default) or before them.
+    /// </summary>
+    [Test]
+    public async ValueTask DesignedFormulaPartsAreSettingsAsync()
+    {
+        var attacker = await this.CreatePlayerAsync().ConfigureAwait(false);
+        var defender = await this.CreatePlayerAsync().ConfigureAwait(false);
+        await this.EquipAsync(attacker, this.CreatePentagram(attacker, Element.Fire)).ConfigureAwait(false);
+        Add(attacker, Stats.ElementCriticalChance, 1);
+        Add(defender, Stats.ElementDefense, 5);
+        var configuration = new ElementsConfiguration();
+        Assert.That((configuration.CriticalDamageFactor, configuration.DefenseAfterMultipliers), Is.EqualTo((1f, true)));
+        uint Hit() => ElementalDamageCalculator.Calculate(attacker.Attributes!, Element.Fire, defender.Attributes!, Element.None, false, 100, configuration);
+
+        configuration.CriticalDamageFactor = 1.5f;
+        Assert.That(Hit(), Is.EqualTo((40 * 1.5 * 1.2) - 5), "critical factor");
+        configuration.CriticalDamageFactor = 1;
+        configuration.DefenseAfterMultipliers = false;
+        Assert.That(Hit(), Is.EqualTo((40 - 5) * 1.2).Within(1), "defense before the multipliers");
+    }
+
+    /// <summary>
     /// The Iron Shield of the Magic (203) has the pentagram option 3 (pentagram defense +10 %), which needs an errtel of
     /// anger of rank 1: it is active while the errtel is in, and gone when it is taken out.
     /// </summary>

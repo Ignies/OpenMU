@@ -57,9 +57,10 @@ public static class ElementalDamageCalculator
     /// <param name="configuration">The configuration.</param>
     /// <returns>The elemental damage; 0 when the attacker has no element or the elemental hit fails.</returns>
     /// <remarks>
-    /// The order is a design (S21Emu and Webzen give the factors, not the formula): the base damage between minimum
-    /// and maximum (the maximum on a critical elemental hit, like the normal critical hit), plus the bonuses, times the increase, the wheel, the imprint and the PvP multiplier, minus the
-    /// elemental defense of the defender with its bonuses and increase. The elemental hit has its own success roll,
+    /// The order is a design (S21Emu and Webzen give the factors, not the formula), a setting
+    /// (<see cref="ElementsConfiguration.DefenseAfterMultipliers"/>): the base damage between minimum and maximum (on a
+    /// critical elemental hit the maximum times <see cref="ElementsConfiguration.CriticalDamageFactor"/>), plus the
+    /// bonuses, times the increase, the wheel, the imprint and the PvP multiplier, minus the elemental defense of the defender with its bonuses and increase. The elemental hit has its own success roll,
     /// elemental attack rate against elemental defense rate, shaped like the normal hit chance; the defender's perfect
     /// dodge takes all of it. Punish (radiance) adds a share of the defender's maximum health to a critical hit.
     /// </remarks>
@@ -75,14 +76,14 @@ public static class ElementalDamageCalculator
         var minimum = (int)attacker[Stats.ElementDamageMin];
         var maximum = Math.Max(minimum, (int)attacker[Stats.ElementDamageMax]);
         var isCritical = Rand.NextRandomBool(attacker[Stats.ElementCriticalChance]);
-        float damage = (isCritical ? maximum : Rand.NextInt(minimum, maximum + 1))
+        float damage = (isCritical ? maximum * configuration.CriticalDamageFactor : Rand.NextInt(minimum, maximum + 1))
             + attacker[Stats.ElementDamageBonus]
             + (isPvp ? attacker[Stats.ElementDamagePvp] : attacker[Stats.ElementDamagePvm])
             + (defenderElement == Element.None ? 0 : attacker[DamageAgainst[(int)defenderElement - 1]]);
-        damage *= (1 + attacker[Stats.ElementDamageIncrease])
-                  * configuration.GetMultiplier(element, defenderElement)
-                  * (imprintPercent / Percent)
-                  * (isPvp ? configuration.PvpMultiplier : 1);
+        var multiplier = (1 + attacker[Stats.ElementDamageIncrease])
+                         * configuration.GetMultiplier(element, defenderElement)
+                         * (imprintPercent / Percent)
+                         * (isPvp ? configuration.PvpMultiplier : 1);
 
         var defense = (defender[Stats.ElementDefense]
                        + (isPvp ? defender[Stats.ElementDefensePvp] : defender[Stats.ElementDefensePvm])
@@ -92,7 +93,10 @@ public static class ElementalDamageCalculator
         var punish = isCritical && Rand.NextRandomBool(configuration.RadianceChance)
             ? Math.Min(defender[Stats.MaximumHealth] * attacker[Stats.ElementPunish], configuration.PunishLimit)
             : 0;
-        return (uint)Math.Max(0, damage - defense + punish);
+        var result = configuration.DefenseAfterMultipliers
+            ? (damage * multiplier) - defense
+            : Math.Max(0, damage - defense) * multiplier;
+        return (uint)Math.Max(0, result + punish);
     }
 
     private static float GetHitChance(IAttributeSystem attacker, IAttributeSystem defender, ElementsConfiguration configuration)

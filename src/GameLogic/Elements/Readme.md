@@ -56,3 +56,11 @@ used: they belong to events which rotate their element.
   defense" +45 and base elemental defense +20. Supreme attack / defense are explained nowhere and have no effect.
 - Not done: the radiance effects bastion, bleeding, paralyzing, binding and blinding (they need magic effects with
   client visuals), the pentagram enhancement +levels (the mastery upgrade needs +11), what an earring level adds.
+
+## Designed numbers are settings (owner, 2026-11-07)
+
+Every number without a source is configuration with its default: the order of the defense
+(`ElementsConfiguration.DefenseAfterMultipliers`, default after the multipliers), the critical factor
+(`CriticalDamageFactor`, default 1 = the maximum damage), the earring mastery values of the interpolated tiers (the
+power-ups of the earring item options, editable in the admin panel) and the "supreme" errtel set bonuses (item
+options of "Errtel Set Bonuses" without power-up until an operator gives them one).

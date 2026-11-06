@@ -6735,5 +6735,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ElementsConfiguration_ErrtelUpgradeRates_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Critical elemental damage factor.
+        /// </summary>
+        public static string ElementsConfiguration_CriticalDamageFactor_Name {
+            get {
+                return ResourceManager.GetString("ElementsConfiguration_CriticalDamageFactor_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elemental defense after the multipliers.
+        /// </summary>
+        public static string ElementsConfiguration_DefenseAfterMultipliers_Name {
+            get {
+                return ResourceManager.GetString("ElementsConfiguration_DefenseAfterMultipliers_Name", resourceCulture);
+            }
+        }
     }
 }

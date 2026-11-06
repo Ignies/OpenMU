@@ -83,6 +83,21 @@ public class ElementsConfiguration
     public int PunishLimit { get; set; } = 250_000;
 
     /// <summary>
+    /// Gets or sets the factor of a critical elemental hit on the maximum elemental damage. Design: the sources say
+    /// only "applied as critical damage"; 1 deals the maximum, like the normal critical hit.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ElementsConfiguration_CriticalDamageFactor_Name))]
+    [Range(0, 10)]
+    public float CriticalDamageFactor { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the elemental defense comes off after the multipliers (increase, wheel,
+    /// imprint, PvP) or before them. Design: no source gives the order.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ElementsConfiguration_DefenseAfterMultipliers_Name))]
+    public bool DefenseAfterMultipliers { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the chances in percent of the upgrade to a mastery pentagram by the pentagram's item level, from +0
     /// (ElementalUpgrade.xml: +11 80 % to +15 100 %; the same in guidemuonline.com's mastery pentagram guide).
     /// </summary>

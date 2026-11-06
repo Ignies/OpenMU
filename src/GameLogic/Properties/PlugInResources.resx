@@ -2400,4 +2400,10 @@
   <data name="ElementsConfiguration_ErrtelUpgradeRates_Name" xml:space="preserve">
     <value>Mastery errtel upgrade rates by level (%)</value>
   </data>
+  <data name="ElementsConfiguration_CriticalDamageFactor_Name" xml:space="preserve">
+    <value>Critical elemental damage factor</value>
+  </data>
+  <data name="ElementsConfiguration_DefenseAfterMultipliers_Name" xml:space="preserve">
+    <value>Elemental defense after the multipliers</value>
+  </data>
 </root>
