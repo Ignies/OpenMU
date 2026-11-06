@@ -31,6 +31,16 @@ internal sealed class Season21ElementData
     public List<ErrtelRow> Errtels { get; init; } = [];
 
     /// <summary>
+    /// Gets the pentagram options with the errtels they need (PentagramOption.xml, OptionSetting).
+    /// </summary>
+    public List<PentagramOptionRow> PentagramOptions { get; init; } = [];
+
+    /// <summary>
+    /// Gets the sets of the mastery errtels (ErrtelMastery.xml).
+    /// </summary>
+    public List<ErrtelSetRow> ErrtelSets { get; init; } = [];
+
+    /// <summary>
     /// Gets the refinery data.
     /// </summary>
     public RefineryRows Refinery { get; init; } = new();
@@ -67,6 +77,25 @@ internal sealed class Season21ElementData
     /// <param name="DefenseRate">The elemental defense rate.</param>
     /// <param name="Options">The pentagram options (not applied yet, see Readme.md).</param>
     internal sealed record PentagramRow(short Number, int DamageMin, int DamageMax, int Defense, int AttackRate, int DefenseRate, int[] Options);
+
+    /// <summary>A pentagram option.</summary>
+    /// <param name="Number">The option number.</param>
+    /// <param name="Value">The value.</param>
+    /// <param name="Name">The name of the source.</param>
+    /// <param name="Needs">The errtels it needs: socket, rank and level.</param>
+    internal sealed record PentagramOptionRow(int Number, int Value, string Name, int[][] Needs);
+
+    /// <summary>A set of mastery errtels.</summary>
+    /// <param name="Number">The set number.</param>
+    /// <param name="Name">The name.</param>
+    /// <param name="Bonuses">The bonuses.</param>
+    internal sealed record ErrtelSetRow(int Number, string Name, List<ErrtelSetBonusRow> Bonuses);
+
+    /// <summary>A bonus of an errtel set.</summary>
+    /// <param name="Pieces">The errtels of the set it needs.</param>
+    /// <param name="Option">The bonus index.</param>
+    /// <param name="Value">The value.</param>
+    internal sealed record ErrtelSetBonusRow(int Pieces, int Option, int Value);
 
     /// <summary>An errtel.</summary>
     /// <param name="Number">The item number (group 12).</param>
@@ -116,6 +145,12 @@ internal sealed class Season21ElementData
 
         /// <summary>Gets the errtel level ups, by level: the money and per rank the chance in percent and the elemental runes.</summary>
         public List<LevelUpRow> LevelUp { get; init; } = [];
+
+        /// <summary>Gets the chances in percent of the mastery pentagram upgrade by the pentagram's item level 0-15.</summary>
+        public List<int> PentagramUpgradeRates { get; init; } = [];
+
+        /// <summary>Gets the chances in percent of the mastery errtel upgrade by the errtel's level 0-10.</summary>
+        public List<int> ErrtelUpgradeRates { get; init; } = [];
     }
 
     /// <summary>An upgrade to a mastery item.</summary>
@@ -157,6 +192,9 @@ internal sealed class Season21ElementData
         /// <summary>Gets the link options of a pair of the same tier.</summary>
         public List<EarringLinkRow> Links { get; init; } = [];
 
+        /// <summary>Gets the enhancement steps by the level before.</summary>
+        public List<EarringEnhancementRow> Enhancement { get; init; } = [];
+
         /// <summary>Gets the option values by tier and value index.</summary>
         public List<EarringValueRow> Values { get; init; } = [];
 
@@ -166,6 +204,13 @@ internal sealed class Season21ElementData
         /// <returns>The value; 0 if the source has none.</returns>
         public int GetValue(int tier, int index) => this.Values.FirstOrDefault(v => v.Tier == tier && v.Index == index)?.Value ?? 0;
     }
+
+    /// <summary>An enhancement step of an earring.</summary>
+    /// <param name="Level">The level before.</param>
+    /// <param name="Rate">The chance in percent.</param>
+    /// <param name="Stones">The lapidary stones.</param>
+    /// <param name="Money">The zen.</param>
+    internal sealed record EarringEnhancementRow(int Level, int Rate, int Stones, int Money);
 
     /// <summary>An earring.</summary>
     /// <param name="Number">The item number (group 12).</param>

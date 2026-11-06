@@ -51,7 +51,24 @@ public static class Season21ItemOptionTypes
     public static ItemOptionType EarringOption { get; } = new() { Name = "Earring Option", Id = new Guid("{4A6375C2-3641-4A7C-A5C6-B284EFA6A9FA}"), IsVisible = true };
 
     /// <summary>
+    /// Gets the pentagram option type: an option of a pentagram which is active while its sockets hold the errtels it
+    /// needs (the option number is the Season 21 option number).
+    /// </summary>
+    public static ItemOptionType PentagramOption { get; } = new() { Name = "Pentagram Option", Id = new Guid("{6742FCE3-016B-499E-80BD-85FBD314674F}"), IsVisible = true };
+
+    /// <summary>
+    /// Gets the errtel set option type: the set of a mastery errtel (the option number, 0 fighting spirit, 1 passionate).
+    /// </summary>
+    public static ItemOptionType ErrtelSet { get; } = new() { Name = "Errtel Set Option", Id = new Guid("{77D80CC4-D162-44D4-B5D8-1A326B5158AD}"), IsVisible = true };
+
+    /// <summary>
+    /// Gets the errtel set bonus type: a bonus of a mastery pentagram whose sockets hold enough errtels of one set
+    /// (the option number divided by 10 is the set, the sub option type the errtels it needs).
+    /// </summary>
+    public static ItemOptionType ErrtelSetBonus { get; } = new() { Name = "Errtel Set Bonus", Id = new Guid("{577BD27D-F1F1-42B3-B418-C6AAF051F5C9}"), IsVisible = true };
+
+    /// <summary>
     /// Gets all types of this class.
     /// </summary>
-    public static IReadOnlyList<ItemOptionType> All { get; } = [Mastery, MasteryBonus, WingGrade, WideFormat, Element, ErrtelRank, EarringOption];
+    public static IReadOnlyList<ItemOptionType> All { get; } = [Mastery, MasteryBonus, WingGrade, WideFormat, Element, ErrtelRank, EarringOption, PentagramOption, ErrtelSet, ErrtelSetBonus];
 }

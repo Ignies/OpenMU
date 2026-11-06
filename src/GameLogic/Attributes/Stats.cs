@@ -213,6 +213,41 @@ public class Stats
     public static AttributeDefinition ElementDefenseAgainstDarkness { get; } = new(new Guid("980D3FA8-DD94-4ADC-A3B6-CB82FD9C87CA"), "Elemental Defense Against Darkness", "A bonus to the elemental defense against an attacker of the darkness element.");
 
     /// <summary>
+    /// Gets the elemental critical damage chance: the chance that an elemental hit deals the maximum elemental damage.
+    /// </summary>
+    public static AttributeDefinition ElementCriticalChance { get; } = new(new Guid("71A265DB-3B8A-47D5-ACB8-C03D07D7302D"), "Elemental Critical Damage Chance", "The chance (0.1 = 10 %) that an elemental hit is critical: it deals the maximum elemental damage.");
+
+    /// <summary>
+    /// Gets the elemental perfect dodge chance: the chance to take no elemental damage from a hit.
+    /// </summary>
+    public static AttributeDefinition ElementDodgeChance { get; } = new(new Guid("87A2E94E-CC00-4A2D-AC10-F1D66A904078"), "Elemental Perfect Dodge Chance", "The chance (0.05 = 5 %) to take no elemental damage from a hit.");
+
+    /// <summary>
+    /// Gets the share of the defense which is added to the elemental defense.
+    /// </summary>
+    public static AttributeDefinition ElementDefenseFromDefense { get; } = new(new Guid("176B7459-F509-4009-A8AA-2F0EE1415CA3"), "Defense Added to Elemental Defense", "The share of the defense (0.05 = 5 %) which is added to the elemental defense.");
+
+    /// <summary>
+    /// Gets the share of the normal damage of a hit which is added to its elemental damage.
+    /// </summary>
+    public static AttributeDefinition ElementDamageFromDamage { get; } = new(new Guid("58B0C804-E182-4836-A295-6371A27870EC"), "Damage Added to Elemental Damage", "The share of the normal damage of a hit (0.01 = 1 %) which is added to its elemental damage.");
+
+    /// <summary>
+    /// Gets the absorb shield value of the radiance errtel: 30 % of the elemental hits give this share of their damage as shield.
+    /// </summary>
+    public static AttributeDefinition ElementAbsorbShield { get; } = new(new Guid("39948C54-A7AD-492A-9BC1-B4B34CCAB8D0"), "Elemental Absorb Shield", "A share (0.05 = 5 %) of the elemental damage the attacker gets as shield, at 30 % of its elemental hits.");
+
+    /// <summary>
+    /// Gets the absorb life value of the radiance errtel: 30 % of the elemental hits give this share of their damage as health.
+    /// </summary>
+    public static AttributeDefinition ElementAbsorbLife { get; } = new(new Guid("2DD0DE06-FB88-4238-959B-B068690042C2"), "Elemental Absorb Life", "A share (0.05 = 5 %) of the elemental damage the attacker gets as health, at 30 % of its elemental hits.");
+
+    /// <summary>
+    /// Gets the punish value of the radiance errtel: 30 % of the critical elemental hits deal this share of the target's maximum health.
+    /// </summary>
+    public static AttributeDefinition ElementPunish { get; } = new(new Guid("F2852837-BD5F-4A79-8E2D-643574F2D3A5"), "Elemental Punish", "A share (0.06 = 6 %) of the target's maximum health which 30 % of the critical elemental hits add to their damage.");
+
+    /// <summary>
     /// Gets the level attribute definition.
     /// </summary>
     public static AttributeDefinition Level { get; } = new(new Guid("560931AD-0901-4342-B7F4-FD2E2FCC0563"), "Level", "The level of the character.");

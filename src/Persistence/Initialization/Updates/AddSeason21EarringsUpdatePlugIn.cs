@@ -33,6 +33,13 @@ public class AddSeason21EarringsUpdatePlugIn : UpdatePlugInBase
     public override bool IsMandatory => false;
 
     /// <inheritdoc />
+    /// <remarks>Version 2: the pentagram options, errtel sets, radiance effects, earring values and enhancement.</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 07, 6, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     public override bool RunsOnNewDatabase => true;
 
     /// <inheritdoc />

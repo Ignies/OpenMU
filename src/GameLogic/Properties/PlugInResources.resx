@@ -2364,4 +2364,40 @@
   <data name="EventContributionRule_RelicScorePoints_Name" xml:space="preserve">
     <value>Points of delivering a relic</value>
   </data>
+  <data name="ErrtelRequirement_Socket_Name" xml:space="preserve">
+    <value>Socket</value>
+  </data>
+  <data name="ErrtelRequirement_Rank_Name" xml:space="preserve">
+    <value>Minimum rank</value>
+  </data>
+  <data name="ErrtelRequirement_Level_Name" xml:space="preserve">
+    <value>Minimum level</value>
+  </data>
+  <data name="PentagramOptionRule_Number_Name" xml:space="preserve">
+    <value>Option number</value>
+  </data>
+  <data name="PentagramOptionRule_Needs_Name" xml:space="preserve">
+    <value>Needed errtels</value>
+  </data>
+  <data name="ElementsConfiguration_PentagramOptions_Name" xml:space="preserve">
+    <value>Pentagram options</value>
+  </data>
+  <data name="ElementsConfiguration_RadianceChance_Name" xml:space="preserve">
+    <value>Chance of absorb and punish</value>
+  </data>
+  <data name="ElementsConfiguration_PunishLimit_Name" xml:space="preserve">
+    <value>Punish limit</value>
+  </data>
+  <data name="RadianceSlotScrollConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Expansion Scroll of Radiance slot</value>
+  </data>
+  <data name="RadianceSlotScrollConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Opens the fifth socket (radiance) of a pentagram with four sockets.</value>
+  </data>
+  <data name="ElementsConfiguration_PentagramUpgradeRates_Name" xml:space="preserve">
+    <value>Mastery pentagram upgrade rates by level (%)</value>
+  </data>
+  <data name="ElementsConfiguration_ErrtelUpgradeRates_Name" xml:space="preserve">
+    <value>Mastery errtel upgrade rates by level (%)</value>
+  </data>
 </root>

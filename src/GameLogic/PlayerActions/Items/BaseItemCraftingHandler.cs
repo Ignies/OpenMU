@@ -230,6 +230,9 @@ public abstract class BaseItemCraftingHandler : IItemCraftingHandler
                 });
 
                 break;
+            case MixResult.LevelResetToZero:
+                itemLink.Items.ForEach(item => item.Level = 0);
+                break;
             case MixResult.ThirdWingsDowngradedRandom:
                 itemLink.Items.ForEach(item =>
                 {

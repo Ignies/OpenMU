@@ -38,4 +38,13 @@ public enum MixResult
     /// Used by the Talisman of Chaos Assembly, which keeps the item of a +10 to +15 item upgrade.
     /// </remarks>
     DisappearAndProtectReferencedItems = 4,
+
+    /// <summary>
+    /// The item stays, but its level goes back to 0.
+    /// </summary>
+    /// <remarks>
+    /// Used by the earring enhancement above +7 (Webzen guide 150: "After +7 enchantment, a failed enchantment attempt
+    /// resets the enchantment level to 0").
+    /// </remarks>
+    LevelResetToZero = 5,
 }

@@ -86,7 +86,7 @@ public class Season21ElementsTest
     {
         var pentagrams = this._gameConfiguration.Items.Where(i => i.ItemSlot?.ItemSlots.Contains(InventoryConstants.PentagramSlot) is true).ToList();
         Assert.That(pentagrams, Has.Count.EqualTo(25));
-        Assert.That(pentagrams.Select(p => p.MaximumSockets), Has.All.EqualTo(Pentagrams.Sockets));
+        Assert.That(pentagrams.Select(p => p.MaximumSockets), Has.All.EqualTo(Pentagrams.Sockets - 1), "the fifth by the scroll");
         Assert.That(pentagrams.Where(p => !p.PossibleItemOptions.Any(o => o.AddsRandomly && o.PossibleOptions.Count == 5 && o.PossibleOptions.All(e => e.OptionType == Season21ItemOptionTypes.Element))), Is.Empty);
         Assert.That(pentagrams.Where(p => !WideItemRules.IsWideOnly(p)), Is.Empty);
 
@@ -154,6 +154,65 @@ public class Season21ElementsTest
     }
 
     /// <summary>
+    /// Version 2: the pentagram options with their errtel rules, the errtel sets of the mastery errtels and the set
+    /// bonuses of the mastery pentagrams, the radiance absorb as a percentage, the earring basic stats as min-max, the
+    /// mastery option values of the later earrings and the earring enhancement +1 to +15.
+    /// </summary>
+    [Test]
+    public void Version2AddsOptionsSetsAndTheEarringEnhancement()
+    {
+        Assert.That(new AddSeason21ElementsUpdatePlugIn().Version, Is.EqualTo(2));
+        var ironShield = this.Item(203);
+        var option = ironShield.PossibleItemOptions.SelectMany(o => o.PossibleOptions).Single(o => o.OptionType == Season21ItemOptionTypes.PentagramOption);
+        Assert.That((option.Number, option.PowerUpDefinition!.TargetAttribute), Is.EqualTo(((short)3, Stats.ElementDefenseIncrease)));
+        Assert.That(option.PowerUpDefinition.Boost!.ConstantValue.Value, Is.EqualTo(0.1f).Within(0.0001));
+        var configuration = this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(ElementsFeaturePlugIn).GUID).GetConfiguration<ElementsConfiguration>(null)!;
+        Assert.That(configuration.PentagramOptions.Single(r => r.Number == 3).Needs.Single(), Has.Property(nameof(ErrtelRequirement.Rank)).EqualTo(1));
+        Assert.That(configuration.PentagramUpgradeRates[11], Is.EqualTo(80));
+
+        Assert.That(this.Item(505).PossibleItemOptions.SelectMany(o => o.PossibleOptions).Count(o => o.OptionType == Season21ItemOptionTypes.ErrtelSet), Is.EqualTo(2));
+        Assert.That(this.Item(503).PossibleItemOptions.SelectMany(o => o.PossibleOptions).Count(o => o.OptionType == Season21ItemOptionTypes.ErrtelSetBonus), Is.EqualTo(6));
+        var radiance = this.Item(261).PossibleItemOptions.SelectMany(o => o.PossibleOptions).Single(o => o.Number == 211);
+        Assert.That(radiance.PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(0.01f).Within(0.0001), "absorb life 1 %");
+
+        var allurement = this.Item(453);
+        Assert.That(allurement.BasePowerUpAttributes.Single(p => p.TargetAttribute == Stats.MinimumPhysBaseDmg).BaseValue, Is.EqualTo(264));
+        Assert.That(allurement.BasePowerUpAttributes.Single(p => p.TargetAttribute == Stats.MaximumWizBaseDmg).BaseValue, Is.EqualTo(267));
+        Assert.That(allurement.BasePowerUpAttributes.Any(p => p.TargetAttribute == Stats.BaseDamageBonus), Is.False);
+        var mastery = allurement.PossibleItemOptions.SelectMany(o => o.PossibleOptions).First(o => o.Number == 28);
+        Assert.That(mastery.PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(92), "Webzen 5th mastery earrings");
+        var goblin = this._gameConfiguration.Monsters.Single(m => m.NpcWindow == DataModel.Configuration.NpcWindow.ChaosMachine);
+        Assert.That(goblin.ItemCraftings.Count(c => c.Name.ValueInNeutralLanguage.StartsWith("Earring Enhancement", StringComparison.Ordinal)), Is.EqualTo(15));
+    }
+
+    /// <summary>
+    /// A database with version 1 (earring base damage as one bonus, mastery options without value, pentagrams with
+    /// five sockets) is repaired by version 2.
+    /// </summary>
+    [Test]
+    public async Task Version2RepairsVersion1Async()
+    {
+        var earring = this.Item(462);
+        var minimum = earring.BasePowerUpAttributes.Single(p => p.TargetAttribute == Stats.MinimumPhysBaseDmg);
+        earring.BasePowerUpAttributes.Remove(minimum);
+        var oldBonus = this._context.CreateNew<ItemBasePowerUpDefinition>();
+        oldBonus.TargetAttribute = Stats.BaseDamageBonus.GetPersistent(this._gameConfiguration);
+        oldBonus.BaseValue = 371;
+        earring.BasePowerUpAttributes.Add(oldBonus);
+        var mastery = this.Item(455).PossibleItemOptions.SelectMany(o => o.PossibleOptions).First(o => o.Number == 29);
+        mastery.PowerUpDefinition = null;
+        this.Item(212).MaximumSockets = 5;
+
+        await new AddSeason21EarringsUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21ElementsUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(earring.BasePowerUpAttributes.Any(p => p.TargetAttribute == Stats.BaseDamageBonus), Is.False);
+        Assert.That(earring.BasePowerUpAttributes.Single(p => p.TargetAttribute == Stats.MinimumPhysBaseDmg).BaseValue, Is.EqualTo(370));
+        Assert.That(mastery.PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(215), "7th tier, Webzen guide 351");
+        Assert.That(this.Item(212).MaximumSockets, Is.EqualTo(4));
+    }
+
+    /// <summary>
     /// The chaos goblin gets the elemental refinery: 14 upgrades to the mastery pentagrams and errtels, 10 errtel level
     /// ups and the rank up, once.
     /// </summary>
@@ -191,4 +250,6 @@ public class Season21ElementsTest
         Assert.That(link.Options!.PossibleOptions.Select(o => o.PowerUpDefinition!.TargetAttribute), Is.EquivalentTo(new[] { Stats.DefenseIgnoreChance, Stats.AllStatsBonus }));
         Assert.That(this._gameConfiguration.ItemSetGroups.Count(g => g.Name.ValueInNeutralLanguage.StartsWith("Earring Link", StringComparison.Ordinal)), Is.EqualTo(8));
     }
+
+    private ItemDefinition Item(short number) => this._gameConfiguration.Items.Single(i => i.Group == 12 && i.Number == number);
 }

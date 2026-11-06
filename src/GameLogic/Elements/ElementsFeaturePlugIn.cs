@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.Elements;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Pet;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -49,10 +50,40 @@ public class ElementsFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfiguration
         }
 
         var attackerPlayer = attacker is AttackerSurrogate surrogate ? surrogate.Owner : attacker as Player;
+        if (attacker is Player player)
+        {
+            this.ApplyAbsorb(player, hitInfo.ElementalDamage);
+        }
+
         _ = ShowSafeAsync(attackerPlayer, attackable, hitInfo);
         if (attackable is Player defender && defender != attackerPlayer)
         {
             _ = ShowSafeAsync(defender, attackable, hitInfo);
+        }
+    }
+
+    /// <summary>
+    /// Applies the absorb effects of the radiance errtel: by the radiance chance, the attacker gets its absorb shares
+    /// of the elemental damage as shield and health.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <param name="elementalDamage">The elemental damage of the hit.</param>
+    internal void ApplyAbsorb(Player attacker, uint elementalDamage)
+    {
+        if (this.Configuration is not { } configuration || attacker.Attributes is not { } attributes)
+        {
+            return;
+        }
+
+        Absorb(Stats.ElementAbsorbShield, Stats.CurrentShield, Stats.MaximumShield);
+        Absorb(Stats.ElementAbsorbLife, Stats.CurrentHealth, Stats.MaximumHealth);
+
+        void Absorb(AttributeSystem.AttributeDefinition share, AttributeSystem.AttributeDefinition current, AttributeSystem.AttributeDefinition maximum)
+        {
+            if (attributes[share] > 0 && Rand.NextRandomBool(configuration.RadianceChance))
+            {
+                attributes[current] = Math.Min(attributes[maximum], attributes[current] + (elementalDamage * attributes[share]));
+            }
         }
     }
 

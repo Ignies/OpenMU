@@ -33,6 +33,11 @@ public static class Pentagrams
     private const int FirstBeginnerOptionNumber = 250;
 
     /// <summary>
+    /// The number of an errtel set bonus option divided by this is the number of its set.
+    /// </summary>
+    private const int ErrtelSetBonusSetFactor = 10;
+
+    /// <summary>
     /// Determines whether the item is a pentagram: an item which is worn in the <see cref="InventoryConstants.PentagramSlot"/>.
     /// </summary>
     /// <param name="item">The item.</param>
@@ -95,9 +100,62 @@ public static class Pentagrams
         => rankOption is null ? null : configuration.Items.FirstOrDefault(d => d.PossibleItemOptions.Any(o => o.PossibleOptions.Contains(rankOption)));
 
     /// <summary>
+    /// Brings the conditional options of a pentagram up to date with the errtels in its sockets: the pentagram options
+    /// whose errtels it holds, and the errtel set bonuses of the sets it holds enough errtels of.
+    /// </summary>
+    /// <param name="pentagram">The pentagram.</param>
+    /// <param name="configuration">The configuration.</param>
+    /// <param name="persistenceContext">The persistence context.</param>
+    public static void UpdateConditionalOptions(this Item pentagram, ElementsConfiguration configuration, Persistence.IContext persistenceContext)
+    {
+        var options = pentagram.Definition!.PossibleItemOptions
+            .SelectMany(o => o.PossibleOptions)
+            .Where(o => o.OptionType == Season21ItemOptionTypes.PentagramOption || o.OptionType == Season21ItemOptionTypes.ErrtelSetBonus)
+            .Distinct()
+            .ToList();
+        foreach (var option in options)
+        {
+            var link = pentagram.ItemOptions.FirstOrDefault(l => l.ItemOption == option);
+            var isActive = option.OptionType == Season21ItemOptionTypes.PentagramOption
+                ? configuration.PentagramOptions.FirstOrDefault(r => r.Number == option.Number) is { } rule && rule.Needs.All(pentagram.Holds)
+                : pentagram.ItemOptions.Count(l => l.ItemOption?.OptionType == Season21ItemOptionTypes.ErrtelSet && l.ItemOption.Number == option.Number / ErrtelSetBonusSetFactor) >= option.SubOptionType;
+            if (isActive && link is null)
+            {
+                link = persistenceContext.CreateNew<ItemOptionLink>();
+                link.ItemOption = option;
+                pentagram.ItemOptions.Add(link);
+            }
+            else if (!isActive && link is not null)
+            {
+                pentagram.ItemOptions.Remove(link);
+            }
+            else
+            {
+                // Nothing changes.
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the links of an errtel which move with it into a socket of a pentagram and back: its rank options and its set.
+    /// </summary>
+    /// <param name="item">The errtel, or the pentagram.</param>
+    /// <param name="socket">The socket of the pentagram; <c>null</c> for an errtel.</param>
+    /// <returns>The links.</returns>
+    public static IEnumerable<ItemOptionLink> GetErrtelLinks(this Item item, int? socket = null)
+        => item.GetRankOptions(socket).Concat(item.ItemOptions.Where(o => o.ItemOption?.OptionType == Season21ItemOptionTypes.ErrtelSet && (socket is null || o.Index == socket)));
+
+    /// <summary>
     /// Gets the level of an errtel: the level of its highest rank option.
     /// </summary>
     /// <param name="rankOptions">The rank options of the errtel.</param>
     /// <returns>The level.</returns>
     public static int GetErrtelLevel(this IEnumerable<ItemOptionLink> rankOptions) => rankOptions.LastOrDefault()?.Level ?? 0;
+
+    private static bool Holds(this Item pentagram, ErrtelRequirement requirement)
+    {
+        var ranks = pentagram.GetRankOptions(requirement.Socket).ToList();
+        var rank = Math.Max(requirement.Rank, 1);
+        return ranks.Count >= rank && ranks[rank - 1].Level >= requirement.Level;
+    }
 }

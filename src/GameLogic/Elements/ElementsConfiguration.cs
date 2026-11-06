@@ -63,6 +63,40 @@ public class ElementsConfiguration
     public List<ErrtelRankUp> RankUps { get; set; } = [];
 
     /// <summary>
+    /// Gets or sets the errtels the pentagram options need (PentagramOption.xml, OptionSetting).
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ElementsConfiguration_PentagramOptions_Name))]
+    public List<PentagramOptionRule> PentagramOptions { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the chance of the radiance effects absorb shield, absorb life and punish (their option text: "30% chance").
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ElementsConfiguration_RadianceChance_Name))]
+    [Range(0, 1)]
+    public float RadianceChance { get; set; } = 0.3f;
+
+    /// <summary>
+    /// Gets or sets the highest damage punish adds to a hit (muonlinefanz.com pentagram guide: 250,000).
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ElementsConfiguration_PunishLimit_Name))]
+    [Range(0, int.MaxValue)]
+    public int PunishLimit { get; set; } = 250_000;
+
+    /// <summary>
+    /// Gets or sets the chances in percent of the upgrade to a mastery pentagram by the pentagram's item level, from +0
+    /// (ElementalUpgrade.xml: +11 80 % to +15 100 %; the same in guidemuonline.com's mastery pentagram guide).
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ElementsConfiguration_PentagramUpgradeRates_Name))]
+    public List<int> PentagramUpgradeRates { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the chances in percent of the upgrade to a mastery errtel by the errtel's level, from 0
+    /// (ElementalUpgrade.xml, ErrtelUpgradeRateInfo MasteryGrade 1: level 9 and 10, 100 %).
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ElementsConfiguration_ErrtelUpgradeRates_Name))]
+    public List<int> ErrtelUpgradeRates { get; set; } = [];
+
+    /// <summary>
     /// Creates the element wheel of Webzen's guide (https://muonline.webzen.com/en/events/EX700Guide/pop_attribute).
     /// </summary>
     /// <returns>The wheel.</returns>

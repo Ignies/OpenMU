@@ -1265,5 +1265,73 @@
         </Field>
       </Fields>
     </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>80</SubCode>
+      <Name>ElementInfo</Name>
+      <Length>27</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After an ElementInfoRequest, and after an errtel was put into or taken out of the equipped pentagram.</SentWhen>
+      <CausedReaction>The client shows the elemental stats of the own character in its character window.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Element</Name>
+          <Description>0 none, 1 fire, 2 water, 3 earth, 4 wind, 5 darkness.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>DamageMin</Name>
+          <Description>The minimum elemental damage with its bonuses.</Description>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>DamageMax</Name>
+          <Description>The maximum elemental damage with its bonuses.</Description>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Defense</Name>
+        </Field>
+        <Field>
+          <Index>17</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>AttackRate</Name>
+        </Field>
+        <Field>
+          <Index>21</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>DefenseRate</Name>
+        </Field>
+        <Field>
+          <Index>25</Index>
+          <Type>Byte</Type>
+          <Name>CriticalChance</Name>
+          <Description>The elemental critical damage chance in percent.</Description>
+        </Field>
+        <Field>
+          <Index>26</Index>
+          <Type>Byte</Type>
+          <Name>DodgeChance</Name>
+          <Description>The elemental perfect dodge chance in percent.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>87</SubCode>
+      <Name>ElementInfoRequest</Name>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client needs the elemental stats of the own character, e.g. after an equipment change or to open the character window.</SentWhen>
+      <CausedReaction>The server answers with ElementInfo.</CausedReaction>
+      <Fields />
+    </Packet>
   </Packets>
 </PacketDefinitions>

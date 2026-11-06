@@ -51,6 +51,40 @@ internal class Season21ElementsInitializer
     internal const short EarringLinkNumber = 0x1300;
 
     /// <summary>
+    /// The number of the options of a pentagram is this plus its item number.
+    /// </summary>
+    internal const short PentagramOptionsNumber = 0x1500;
+
+    /// <summary>
+    /// The number of the set options of the mastery errtels.
+    /// </summary>
+    internal const short ErrtelSetNumber = 0x1700;
+
+    /// <summary>
+    /// The number of the errtel set bonuses of the mastery pentagrams.
+    /// </summary>
+    internal const short ErrtelSetBonusNumber = 0x1701;
+
+    /// <summary>
+    /// The crafting number of the earring enhancement from +0 to +1; the next levels follow.
+    /// </summary>
+    internal const byte FirstEarringEnhanceCraftingNumber = 165;
+
+    /// <summary>
+    /// The level from which a failed earring enhancement resets the earring to +0 (Webzen guide 150: "After +7
+    /// enchantment, a failed enchantment attempt resets the enchantment level to 0").
+    /// </summary>
+    private const int EarringResetLevel = 7;
+
+    private const byte EarringReference = 0x7A;
+
+    private const byte LapidaryStoneGroup = 13;
+
+    private const short LapidaryStoneNumber = 510;
+
+    private static readonly short[] MasteryErrtelNumbers = [505, 506, 507, 508];
+
+    /// <summary>
     /// The crafting number of the first crafting of the elemental refinery at the chaos goblin (after the mixes of
     /// the item options, 110-134).
     /// </summary>
@@ -59,6 +93,12 @@ internal class Season21ElementsInitializer
     private const byte ItemGroup = 12;
 
     private const short ElementalRuneNumber = 288;
+
+    private const short AbsorbShieldOption = 210;
+
+    private const short AbsorbLifeOption = 211;
+
+    private const short PunishOption = 223;
 
     private const byte Season6MaximumItemLevel = 15;
 
@@ -80,8 +120,9 @@ internal class Season21ElementsInitializer
     /// The stats of the earring options by their Season 21 option index. Webzen names the options of the first
     /// earrings (guide 150: skill attack, attack/wizardry, excellent and critical damage, maximum health; attack speed,
     /// excellent and critical rate, AG recovery, maximum mana; the pair: enemy defense ignore and all stats), and the
-    /// values of EarringItemOption.txt match them. Options 28-31 of the later earrings are named nowhere, so they are
-    /// imported without effect.
+    /// values of EarringItemOption.txt match them. 28-31 are the mastery options of the later earrings (Webzen guides
+    /// 275 and 351, muonline.net earrings guide: mastery attack/wizardry, mastery excellent and critical damage, the
+    /// pair's mastery damage); OpenMU has no separate mastery damage, so they raise the plain damage stats (design).
     /// </summary>
     private static readonly Dictionary<int, (AttributeDefinition Attribute, bool IsPercentage)> EarringOptionStats = new()
     {
@@ -97,12 +138,49 @@ internal class Season21ElementsInitializer
         [21] = (Stats.DefenseIgnoreChance, true),
         [23] = (Stats.BaseDamageBonus, false),
         [24] = (Stats.AllStatsBonus, false),
+        [28] = (Stats.BaseDamageBonus, false),
+        [29] = (Stats.ExcellentDamageBonus, false),
+        [30] = (Stats.CriticalDamageBonus, false),
+        [31] = (Stats.BaseDamageBonus, false),
     };
 
     /// <summary>
     /// The packed jewels (group 12) of the jewels (group 14): bless, soul, life, creation.
     /// </summary>
     private static readonly Dictionary<int, short> PackedJewels = new() { [13] = 30, [14] = 31, [16] = 136, [22] = 137 };
+
+    /// <summary>
+    /// The values of the mastery options of the earrings by tier 1-8, which EarringItemOption.txt gives as an index
+    /// only. 28 mastery attack/wizardry and 29/30 mastery excellent/critical damage: Webzen's guides of the 5th (92,
+    /// 155) and 7th mastery earrings (127, 215), the other tiers interpolated linearly (design). 31 mastery damage of
+    /// a pair: muonlinefanz.com earrings (Blood 60, Allurement 70) and Webzen's 7th guide (90), 10 a tier.
+    /// </summary>
+    private static readonly Dictionary<int, int[]> EarringMasteryValues = new()
+    {
+        [28] = [0, 40, 57, 75, 92, 110, 127, 145],
+        [29] = [0, 65, 95, 125, 155, 185, 215, 245],
+        [30] = [0, 65, 95, 125, 155, 185, 215, 245],
+        [31] = [0, 0, 0, 60, 70, 80, 90, 100],
+    };
+
+    /// <summary>
+    /// The stats of the pentagram options by their number (PentagramOption.xml names): the stat and whether the value
+    /// is a percentage. 31-33 are marked unused by the data.
+    /// </summary>
+    private static readonly Dictionary<int, (AttributeDefinition Attribute, bool IsPercentage)[]> PentagramOptionStats = CreatePentagramOptionStats();
+
+    /// <summary>
+    /// The stats of the errtel set bonuses by their index (ErrtelMastery.xml; worldofmu.net mastery errtel guide):
+    /// 0 elemental attack, 1 elemental defense, 4 base elemental defense, 5 elemental damage. 2 "supreme attack" and
+    /// 3 "supreme defense" are named nowhere with their meaning; they stay without effect.
+    /// </summary>
+    private static readonly Dictionary<int, AttributeDefinition> ErrtelSetBonusStats = new()
+    {
+        [0] = Stats.ElementDamageBonus,
+        [1] = Stats.ElementDefense,
+        [4] = Stats.ElementDefense,
+        [5] = Stats.ElementDamageBonus,
+    };
 
     private static readonly AttributeDefinition[] ElementStats =
     [
@@ -112,7 +190,9 @@ internal class Season21ElementsInitializer
         Stats.ElementDamageAgainstFire, Stats.ElementDamageAgainstWater, Stats.ElementDamageAgainstEarth,
         Stats.ElementDamageAgainstWind, Stats.ElementDamageAgainstDarkness, Stats.ElementDefenseAgainstFire,
         Stats.ElementDefenseAgainstWater, Stats.ElementDefenseAgainstEarth, Stats.ElementDefenseAgainstWind,
-        Stats.ElementDefenseAgainstDarkness,
+        Stats.ElementDefenseAgainstDarkness, Stats.ElementCriticalChance, Stats.ElementDodgeChance,
+        Stats.ElementDefenseFromDefense, Stats.ElementDamageFromDamage, Stats.ElementAbsorbShield, Stats.ElementAbsorbLife,
+        Stats.ElementPunish,
     ];
 
     private readonly IContext _context;
@@ -155,8 +235,11 @@ internal class Season21ElementsInitializer
             }
 
             pentagram.ItemSlot ??= slot;
-            pentagram.MaximumSockets = Pentagrams.Sockets;
+
+            // A pentagram drops with up to four sockets; the Expansion Scroll of Radiance slot opens the fifth.
+            pentagram.MaximumSockets = Pentagrams.Sockets - 1;
             AddOnce(pentagram, elements);
+            this.AddPentagramOptions(pentagram, row, data.PentagramOptions);
             this.AddBasePowerUp(pentagram, Stats.ElementDamageMin, row.DamageMin);
             this.AddBasePowerUp(pentagram, Stats.ElementDamageMax, row.DamageMax);
             this.AddBasePowerUp(pentagram, Stats.ElementDefense, row.Defense);
@@ -171,6 +254,8 @@ internal class Season21ElementsInitializer
                 this.AddErrtelOptions(errtel, row, elements);
             }
         }
+
+        this.AddErrtelSets(data);
 
         this.AddMonsterElements(data.Monsters);
         this.AddRefinery(data.Refinery);
@@ -201,12 +286,22 @@ internal class Season21ElementsInitializer
 
             earring.ItemSlot ??= slot;
 
-            // Design: Webzen names "attack/wizardry/curse and element defense" as the basic options; the damage range
-            // of Item.xml gives the base damage bonus by its middle, the defense the elemental defense.
-            this.AddBasePowerUp(earring, Stats.BaseDamageBonus, (catalogRow.DamageMin + catalogRow.DamageMax) / 2);
+            // Item.xml damage and defense are the basic options "ATK/Wizardry/Curse min - max" and "Elemental DEF"
+            // (Webzen guides 150, 275, 351; muonlinefanz.com earrings: the same numbers for every tier).
+            earring.BasePowerUpAttributes.Where(p => p.TargetAttribute == Stats.BaseDamageBonus).ToList().ForEach(p => earring.BasePowerUpAttributes.Remove(p));
+            foreach (var attribute in new[] { Stats.MinimumPhysBaseDmg, Stats.MinimumWizBaseDmg, Stats.MinimumCurseBaseDmg })
+            {
+                this.AddBasePowerUp(earring, attribute, catalogRow.DamageMin);
+            }
+
+            foreach (var attribute in new[] { Stats.MaximumPhysBaseDmg, Stats.MaximumWizBaseDmg, Stats.MaximumCurseBaseDmg })
+            {
+                this.AddBasePowerUp(earring, attribute, catalogRow.DamageMax);
+            }
+
             this.AddBasePowerUp(earring, Stats.ElementDefense, catalogRow.Defense);
 
-            var options = row.Options.Select(o => this.CreateEarringOption(o.Option, data.GetValue(row.Tier, o.ValueIndex), (short)(EarringOptionsNumber + row.Number))).ToList();
+            var options = row.Options.Select(o => this.CreateEarringOption(o.Option, EarringValue(o.Option, row.Tier, data.GetValue(row.Tier, o.ValueIndex)), (short)(EarringOptionsNumber + row.Number))).ToList();
             AddOnce(earring, this.GetOrCreateDefinition((short)(EarringOptionsNumber + row.Number), $"Earring Options ({earring.Name.ValueInNeutralLanguage})", 1, 1, d => options.ForEach(d.PossibleOptions.Add)));
             AddOnce(earring, this.GetOrCreateDefinition((short)(EarringExtraOptionsNumber + row.Number), $"Earring Further Options ({earring.Name.ValueInNeutralLanguage})", 2, EarringExtraOptionChance, d => options.ForEach(d.PossibleOptions.Add)));
         }
@@ -215,6 +310,36 @@ internal class Season21ElementsInitializer
         {
             this.AddEarringLink(link, data);
         }
+
+        this.SetMissingEarringValues(data);
+        this.AddEarringEnhancement(data);
+    }
+
+    private static float ValueOf(float value, bool isPercentage) => isPercentage ? value * Percent : value;
+
+    private static int EarringValue(int option, int tier, int sourceValue)
+        => EarringMasteryValues.TryGetValue(option, out var values) ? values[tier] : sourceValue;
+
+    private static Dictionary<int, (AttributeDefinition Attribute, bool IsPercentage)[]> CreatePentagramOptionStats()
+    {
+        var result = new Dictionary<int, (AttributeDefinition Attribute, bool IsPercentage)[]>();
+        void Add(AttributeDefinition attribute, bool isPercentage, params int[] numbers)
+        {
+            foreach (var number in numbers)
+            {
+                result[number] = [.. result.GetValueOrDefault(number) ?? [], (attribute, isPercentage)];
+            }
+        }
+
+        Add(Stats.ElementDamageIncrease, true, 1, 34, 61, 2, 21, 62);
+        Add(Stats.ElementDefenseIncrease, true, 1, 34, 61, 3, 22, 63);
+        Add(Stats.ElementCriticalChance, true, 4, 23, 24, 25, 64, 65, 66);
+        Add(Stats.ElementDefense, false, 5, 30);
+        Add(Stats.ElementDefenseFromDefense, true, 26, 42, 68);
+        Add(Stats.ElementDamageFromDamage, true, 27, 43, 69);
+        Add(Stats.ElementDodgeChance, true, 28, 41, 67);
+        Add(Stats.ElementDamageBonus, false, 29);
+        return result;
     }
 
     private static void AddOnce(ItemDefinition definition, ItemOptionDefinition options)
@@ -236,6 +361,9 @@ internal class Season21ElementsInitializer
         return number switch
         {
             0 or 250 or 200 or 204 => Stats.ElementDamageBonus,
+            AbsorbShieldOption => Stats.ElementAbsorbShield,
+            AbsorbLifeOption => Stats.ElementAbsorbLife,
+            PunishOption => Stats.ElementPunish,
             >= 10 and <= 14 => damageAgainst[number - 10],
             20 or 120 => Stats.ElementDamagePvp,
             21 or 121 => Stats.ElementDamagePvm,
@@ -272,6 +400,13 @@ internal class Season21ElementsInitializer
         AddOnce(errtel, elements);
         AddOnce(errtel, firstRank);
         AddOnce(errtel, all);
+        foreach (var option in all.PossibleOptions.Where(o => o.PowerUpDefinition is null))
+        {
+            if (row.Options.FirstOrDefault(o => o.Number == option.Number) is { } source)
+            {
+                this.SetErrtelStat(option, source);
+            }
+        }
     }
 
     private IncreasableItemOption CreateErrtelOption(Season21ElementData.ErrtelOptionRow row, short parentNumber)
@@ -281,22 +416,27 @@ internal class Season21ElementsInitializer
         option.OptionType = this.GetOptionType(Season21ItemOptionTypes.ErrtelRank);
         option.Number = row.Number;
         option.SubOptionType = row.Rank;
+        this.SetErrtelStat(option, row);
+        return option;
+    }
+
+    private void SetErrtelStat(IncreasableItemOption option, Season21ElementData.ErrtelOptionRow row)
+    {
         if (GetErrtelStat(row.Number) is not { } attribute)
         {
-            // The radiance effects of ranks 2 and 3 (absorb, bastion, bleeding, ...) aren't stats; they stay data.
-            return option;
+            // The radiance effects bastion, bleeding, paralyzing, binding and blinding are no stats; they stay data.
+            return;
         }
 
-        option.PowerUpDefinition = this.CreatePowerUp(attribute, row.Values[0]);
+        var isPercentage = row.Number is AbsorbShieldOption or AbsorbLifeOption or PunishOption;
+        option.PowerUpDefinition = this.CreatePowerUp(attribute, ValueOf(row.Values[0], isPercentage));
         for (var level = 1; level < row.Values.Length; level++)
         {
             var optionOfLevel = this._context.CreateNew<ItemOptionOfLevel>();
             optionOfLevel.Level = level;
-            optionOfLevel.PowerUpDefinition = this.CreatePowerUp(attribute, row.Values[level]);
+            optionOfLevel.PowerUpDefinition = this.CreatePowerUp(attribute, ValueOf(row.Values[level], isPercentage));
             option.LevelDependentOptions.Add(optionOfLevel);
         }
-
-        return option;
     }
 
     private IncreasableItemOption CreateEarringOption(short number, int value, short parentNumber)
@@ -328,7 +468,7 @@ internal class Season21ElementsInitializer
         {
             foreach (var option in link.Options)
             {
-                definition.PossibleOptions.Add(this.CreateEarringOption(option.Option, data.GetValue(link.Tier, option.ValueIndex), number));
+                definition.PossibleOptions.Add(this.CreateEarringOption(option.Option, EarringValue(option.Option, link.Tier, data.GetValue(link.Tier, option.ValueIndex)), number));
             }
         });
 
@@ -425,7 +565,7 @@ internal class Season21ElementsInitializer
         return (this._gameConfiguration.Items.FirstOrDefault(i => i.Group == group && i.Number == number), 0);
     }
 
-    private ItemCrafting? GetOrCreateCrafting(MonsterDefinition goblin, byte number, string name, Type handler, int money)
+    private ItemCrafting? GetOrCreateCrafting(MonsterDefinition goblin, byte number, string name, Type? handler, int money)
     {
         if (goblin.ItemCraftings.Any(c => c.Number == number))
         {
@@ -435,7 +575,7 @@ internal class Season21ElementsInitializer
         var crafting = this._context.CreateNew<ItemCrafting>();
         crafting.Name = name;
         crafting.Number = number;
-        crafting.ItemCraftingHandlerClassName = handler.FullName!;
+        crafting.ItemCraftingHandlerClassName = handler?.FullName ?? string.Empty;
         var settings = this._context.CreateNew<SimpleCraftingSettings>();
         settings.Money = money;
         settings.SuccessPercent = 100;
@@ -464,6 +604,146 @@ internal class Season21ElementsInitializer
         }
 
         return requiredItem;
+    }
+
+    private void AddPentagramOptions(ItemDefinition pentagram, Season21ElementData.PentagramRow row, List<Season21ElementData.PentagramOptionRow> settings)
+    {
+        if (row.Options.Length == 0)
+        {
+            return;
+        }
+
+        var number = (short)(PentagramOptionsNumber + row.Number);
+        AddOnce(pentagram, this.GetOrCreateDefinition(number, $"Pentagram Options ({pentagram.Name.ValueInNeutralLanguage})", 0, 0, definition =>
+        {
+            foreach (var optionNumber in row.Options)
+            {
+                var value = settings.FirstOrDefault(o => o.Number == optionNumber)?.Value ?? 0;
+                var stats = PentagramOptionStats.GetValueOrDefault(optionNumber) ?? [];
+                for (var k = 0; k < Math.Max(stats.Length, 1); k++)
+                {
+                    var option = this._context.CreateNew<IncreasableItemOption>();
+                    option.SetGuid(number, (short)((optionNumber * 4) + k));
+                    option.OptionType = this.GetOptionType(Season21ItemOptionTypes.PentagramOption);
+                    option.Number = (short)optionNumber;
+                    if (k < stats.Length)
+                    {
+                        option.PowerUpDefinition = this.CreatePowerUp(stats[k].Attribute, ValueOf(value, stats[k].IsPercentage));
+                    }
+
+                    definition.PossibleOptions.Add(option);
+                }
+            }
+        }));
+    }
+
+    private void AddErrtelSets(Season21ElementData data)
+    {
+        var sets = this.GetOrCreateDefinition(ErrtelSetNumber, "Errtel Set", 1, 1, definition =>
+        {
+            foreach (var set in data.ErrtelSets)
+            {
+                var option = this._context.CreateNew<IncreasableItemOption>();
+                option.SetGuid(ErrtelSetNumber, (short)set.Number);
+                option.OptionType = this.GetOptionType(Season21ItemOptionTypes.ErrtelSet);
+                option.Number = (short)set.Number;
+                definition.PossibleOptions.Add(option);
+            }
+        });
+        var bonuses = this.GetOrCreateDefinition(ErrtelSetBonusNumber, "Errtel Set Bonuses", 0, 0, definition =>
+        {
+            foreach (var set in data.ErrtelSets)
+            {
+                for (var k = 0; k < set.Bonuses.Count; k++)
+                {
+                    var bonus = set.Bonuses[k];
+                    var option = this._context.CreateNew<IncreasableItemOption>();
+                    option.SetGuid(ErrtelSetBonusNumber, (short)((set.Number * 10) + k));
+                    option.OptionType = this.GetOptionType(Season21ItemOptionTypes.ErrtelSetBonus);
+                    option.Number = (short)((set.Number * 10) + k);
+                    option.SubOptionType = bonus.Pieces;
+                    if (ErrtelSetBonusStats.TryGetValue(bonus.Option, out var attribute))
+                    {
+                        option.PowerUpDefinition = this.CreatePowerUp(attribute, bonus.Value);
+                    }
+
+                    definition.PossibleOptions.Add(option);
+                }
+            }
+        });
+
+        foreach (var errtel in MasteryErrtelNumbers.Select(this.Find).OfType<ItemDefinition>())
+        {
+            AddOnce(errtel, sets);
+        }
+
+        foreach (var pentagram in data.Refinery.PentagramUpgrades.Select(u => this.Find(u.Result)).OfType<ItemDefinition>().Distinct())
+        {
+            AddOnce(pentagram, bonuses);
+        }
+    }
+
+    private void SetMissingEarringValues(Season21ElementData.EarringRows data)
+    {
+        foreach (var row in data.Items)
+        {
+            var definition = this._gameConfiguration.ItemOptions.FirstOrDefault(o => o.GetId() == GuidHelper.CreateGuid<ItemOptionDefinition>((short)(EarringOptionsNumber + row.Number)));
+            foreach (var option in definition?.PossibleOptions.Where(o => o.PowerUpDefinition is null) ?? [])
+            {
+                if (EarringOptionStats.TryGetValue(option.Number, out var stat) && row.Options.FirstOrDefault(o => o.Option == option.Number) is { } source)
+                {
+                    this.EnsureAttributes([stat.Attribute]);
+                    var value = EarringValue(option.Number, row.Tier, data.GetValue(row.Tier, source.ValueIndex));
+                    option.PowerUpDefinition = this.CreatePowerUp(stat.Attribute, stat.IsPercentage ? value * Percent : value);
+                }
+            }
+        }
+
+        foreach (var link in data.Links)
+        {
+            var definition = this._gameConfiguration.ItemOptions.FirstOrDefault(o => o.GetId() == GuidHelper.CreateGuid<ItemOptionDefinition>((short)(EarringLinkNumber + link.Tier)));
+            foreach (var option in definition?.PossibleOptions.Where(o => o.PowerUpDefinition is null) ?? [])
+            {
+                if (EarringOptionStats.TryGetValue(option.Number, out var stat) && link.Options.FirstOrDefault(o => o.Option == option.Number) is { } source)
+                {
+                    var value = EarringValue(option.Number, link.Tier, data.GetValue(link.Tier, source.ValueIndex));
+                    option.PowerUpDefinition = this.CreatePowerUp(stat.Attribute, stat.IsPercentage ? value * Percent : value);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Adds the earring enhancement +0 to +15 at the chaos goblin (EarringItemOption.txt section 4: chance, lapidary
+    /// stones, zen; muonline.net earrings guide: 55 stones and 67.5 million zen in total). One crafting per level.
+    /// </summary>
+    private void AddEarringEnhancement(Season21ElementData.EarringRows data)
+    {
+        if (this._gameConfiguration.Monsters.FirstOrDefault(m => m.NpcWindow == NpcWindow.ChaosMachine) is not { } goblin
+            || this._gameConfiguration.Items.FirstOrDefault(i => i.Group == LapidaryStoneGroup && i.Number == LapidaryStoneNumber) is not { } stone)
+        {
+            return;
+        }
+
+        var earrings = data.Items.Select(i => this.Find(i.Number)).OfType<ItemDefinition>().ToList();
+        foreach (var step in data.Enhancement)
+        {
+            var level = (byte)step.Level;
+            if (this.GetOrCreateCrafting(goblin, (byte)(FirstEarringEnhanceCraftingNumber + level), $"Earring Enhancement (+{level + 1})", null, step.Money)?.SimpleCraftingSettings is not { } settings)
+            {
+                continue;
+            }
+
+            settings.SuccessPercent = (byte)step.Rate;
+            var earring = this.CreateRequiredItem(earrings, 1, 1, EarringReference, level, level);
+            earring.FailResult = level >= EarringResetLevel ? MixResult.LevelResetToZero : MixResult.StaysAsIs;
+            settings.RequiredItems.Add(earring);
+            settings.RequiredItems.Add(this.CreateRequiredItem([stone], (byte)step.Stones, (byte)step.Stones, 0, 0, 0));
+            var result = this._context.CreateNew<ItemCraftingResultItem>();
+            result.Reference = EarringReference;
+            result.AddLevel = 1;
+            settings.ResultItems.Add(result);
+        }
     }
 
     private void AddMonsterElements(IEnumerable<Season21ElementData.MonsterRow> rows)
@@ -524,6 +804,23 @@ internal class Season21ElementsInitializer
         if (configuration.LevelUps.Count == 0)
         {
             configuration.LevelUps.AddRange(data.Refinery.LevelUp.Select(l => new ErrtelLevelUp { Level = l.Level, Rates = [.. l.Ranks.Select(r => r[0])], Runes = [.. l.Ranks.Select(r => r[1])] }));
+            changed = true;
+        }
+
+        if (configuration.PentagramOptions.Count == 0)
+        {
+            configuration.PentagramOptions.AddRange(data.PentagramOptions.Select(o => new PentagramOptionRule
+            {
+                Number = o.Number,
+                Needs = [.. o.Needs.Select(n => new ErrtelRequirement { Socket = n[0], Rank = n[1], Level = n[2] })],
+            }));
+            changed = true;
+        }
+
+        if (configuration.PentagramUpgradeRates.Count == 0)
+        {
+            configuration.PentagramUpgradeRates.AddRange(data.Refinery.PentagramUpgradeRates);
+            configuration.ErrtelUpgradeRates.AddRange(data.Refinery.ErrtelUpgradeRates);
             changed = true;
         }
 

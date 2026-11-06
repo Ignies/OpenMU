@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Elements;
+using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 
 /// <summary>
@@ -47,6 +48,11 @@ public class ErrtelSocketAction
 
     private static async ValueTask PentagramChangedAsync(Player player, Item pentagram)
     {
+        if (ElementsFeaturePlugIn.GetConfiguration(player.GameContext) is { } configuration)
+        {
+            pentagram.UpdateConditionalOptions(configuration, player.PersistenceContext);
+        }
+
         if (InventoryConstants.IsEquippedSlot(pentagram.ItemSlot) && player.Inventory?.AsInventoryStorage is { } inventory)
         {
             await inventory.RaiseEquippedItemsChangedAsync(pentagram, true).ConfigureAwait(false);
@@ -54,6 +60,7 @@ public class ErrtelSocketAction
 
         await player.InvokeViewPlugInAsync<IItemUpgradedPlugIn>(p => p.ItemUpgradedAsync(pentagram)).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IPentagramViewPlugIn>(p => p.ShowPentagramErrtelsAsync(pentagram)).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IElementInfoViewPlugIn>(p => p.ShowElementInfoAsync()).ConfigureAwait(false);
     }
 
     private static async ValueTask<ErrtelSocketResult> InsertAsync(Player player, Item pentagram, byte errtelSlot, byte socket)
@@ -66,9 +73,9 @@ public class ErrtelSocketAction
             return ErrtelSocketResult.Refused;
         }
 
-        foreach (var rankOption in errtel.GetRankOptions().ToList())
+        foreach (var errtelLink in errtel.GetErrtelLinks().ToList())
         {
-            AddLink(player, pentagram, rankOption.ItemOption, rankOption.Level, socket);
+            AddLink(player, pentagram, errtelLink.ItemOption, errtelLink.Level, socket);
         }
 
         await player.DestroyInventoryItemAsync(errtel).ConfigureAwait(false);
@@ -94,7 +101,8 @@ public class ErrtelSocketAction
             return ErrtelSocketResult.Refused;
         }
 
-        rankOptions.ForEach(link => pentagram.ItemOptions.Remove(link));
+        var setLinks = pentagram.GetErrtelLinks(socket).Except(rankOptions).ToList();
+        rankOptions.Concat(setLinks).ToList().ForEach(link => pentagram.ItemOptions.Remove(link));
         var rate = configuration.RemovalRates.FirstOrDefault(r => r.Level == rankOptions.GetErrtelLevel())?.Rates.ElementAtOrDefault(rankOptions.Count - 1) ?? RateBasis;
         if (Rand.NextInt(0, RateBasis) >= rate)
         {
@@ -108,6 +116,8 @@ public class ErrtelSocketAction
         {
             AddLink(player, errtel, rankOption.ItemOption, rankOption.Level, rankOption.ItemOption!.SubOptionType - 1);
         }
+
+        setLinks.ForEach(link => AddLink(player, errtel, link.ItemOption, 0, 0));
 
         await player.Inventory.AddItemAsync(freeSlot, errtel).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(errtel)).ConfigureAwait(false);

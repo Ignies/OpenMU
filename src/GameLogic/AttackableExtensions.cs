@@ -318,6 +318,12 @@ public static class AttackableExtensions
             }
         }
 
+        if (elementalDamage > 0 && dmg > 0)
+        {
+            // Pentagram option "DMG added to elemental DMG": a share of the normal damage joins the elemental part.
+            elementalDamage += (uint)(dmg * attacker.Attributes[Stats.ElementDamageFromDamage]);
+        }
+
         var hitInfo = defender.GetHitInfo((uint)dmg + elementalDamage, attributes, attacker, (uint)manaToll, skill, (uint)petDamage);
         return elementalDamage == 0 ? hitInfo : hitInfo with { ElementalDamage = elementalDamage, Element = element };
     }

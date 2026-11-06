@@ -847,4 +847,71 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ElementInfo" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="element">0 none, 1 fire, 2 water, 3 earth, 4 wind, 5 darkness.</param>
+    /// <param name="damageMin">The minimum elemental damage with its bonuses.</param>
+    /// <param name="damageMax">The maximum elemental damage with its bonuses.</param>
+    /// <param name="defense">The defense.</param>
+    /// <param name="attackRate">The attack rate.</param>
+    /// <param name="defenseRate">The defense rate.</param>
+    /// <param name="criticalChance">The elemental critical damage chance in percent.</param>
+    /// <param name="dodgeChance">The elemental perfect dodge chance in percent.</param>
+    /// <remarks>
+    /// Is sent by the server when: After an ElementInfoRequest, and after an errtel was put into or taken out of the equipped pentagram.
+    /// Causes reaction on client side: The client shows the elemental stats of the own character in its character window.
+    /// </remarks>
+    public static async ValueTask SendElementInfoAsync(this IConnection? connection, byte @element, uint @damageMin, uint @damageMax, uint @defense, uint @attackRate, uint @defenseRate, byte @criticalChance, byte @dodgeChance)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ElementInfoRef.Length;
+            var packet = new ElementInfoRef(connection.Output.GetSpan(length)[..length]);
+            packet.Element = @element;
+            packet.DamageMin = @damageMin;
+            packet.DamageMax = @damageMax;
+            packet.Defense = @defense;
+            packet.AttackRate = @attackRate;
+            packet.DefenseRate = @defenseRate;
+            packet.CriticalChance = @criticalChance;
+            packet.DodgeChance = @dodgeChance;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ElementInfoRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client needs the elemental stats of the own character, e.g. after an equipment change or to open the character window.
+    /// Causes reaction on server side: The server answers with ElementInfo.
+    /// </remarks>
+    public static async ValueTask SendElementInfoRequestAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ElementInfoRequestRef.Length;
+            var packet = new ElementInfoRequestRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

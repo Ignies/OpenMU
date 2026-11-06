@@ -6627,5 +6627,113 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("EventContributionRule_RelicScorePoints_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Socket.
+        /// </summary>
+        public static string ErrtelRequirement_Socket_Name {
+            get {
+                return ResourceManager.GetString("ErrtelRequirement_Socket_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum rank.
+        /// </summary>
+        public static string ErrtelRequirement_Rank_Name {
+            get {
+                return ResourceManager.GetString("ErrtelRequirement_Rank_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minimum level.
+        /// </summary>
+        public static string ErrtelRequirement_Level_Name {
+            get {
+                return ResourceManager.GetString("ErrtelRequirement_Level_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option number.
+        /// </summary>
+        public static string PentagramOptionRule_Number_Name {
+            get {
+                return ResourceManager.GetString("PentagramOptionRule_Number_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Needed errtels.
+        /// </summary>
+        public static string PentagramOptionRule_Needs_Name {
+            get {
+                return ResourceManager.GetString("PentagramOptionRule_Needs_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pentagram options.
+        /// </summary>
+        public static string ElementsConfiguration_PentagramOptions_Name {
+            get {
+                return ResourceManager.GetString("ElementsConfiguration_PentagramOptions_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance of absorb and punish.
+        /// </summary>
+        public static string ElementsConfiguration_RadianceChance_Name {
+            get {
+                return ResourceManager.GetString("ElementsConfiguration_RadianceChance_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Punish limit.
+        /// </summary>
+        public static string ElementsConfiguration_PunishLimit_Name {
+            get {
+                return ResourceManager.GetString("ElementsConfiguration_PunishLimit_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Expansion Scroll of Radiance slot.
+        /// </summary>
+        public static string RadianceSlotScrollConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RadianceSlotScrollConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opens the fifth socket (radiance) of a pentagram with four sockets..
+        /// </summary>
+        public static string RadianceSlotScrollConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("RadianceSlotScrollConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mastery pentagram upgrade rates by level (%).
+        /// </summary>
+        public static string ElementsConfiguration_PentagramUpgradeRates_Name {
+            get {
+                return ResourceManager.GetString("ElementsConfiguration_PentagramUpgradeRates_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Mastery errtel upgrade rates by level (%).
+        /// </summary>
+        public static string ElementsConfiguration_ErrtelUpgradeRates_Name {
+            get {
+                return ResourceManager.GetString("ElementsConfiguration_ErrtelUpgradeRates_Name", resourceCulture);
+            }
+        }
     }
 }

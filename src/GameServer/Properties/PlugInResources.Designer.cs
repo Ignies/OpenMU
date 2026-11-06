@@ -8443,5 +8443,41 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("PentagramErrtelsRequestHandlerPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Element info (Babylon).
+        /// </summary>
+        public static string ElementInfoBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ElementInfoBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the elemental stats of the own character to the Babylon client..
+        /// </summary>
+        public static string ElementInfoBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ElementInfoBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Element info request (Babylon).
+        /// </summary>
+        public static string ElementInfoRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ElementInfoRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the Babylon client for the elemental stats of the own character..
+        /// </summary>
+        public static string ElementInfoRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ElementInfoRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

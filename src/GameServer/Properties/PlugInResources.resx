@@ -2957,4 +2957,16 @@
   <data name="PentagramErrtelsRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of the Babylon client for the errtels of a pentagram.</value>
   </data>
+  <data name="ElementInfoBabylonPlugIn_Name" xml:space="preserve">
+    <value>Element info (Babylon)</value>
+  </data>
+  <data name="ElementInfoBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the elemental stats of the own character to the Babylon client.</value>
+  </data>
+  <data name="ElementInfoRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Element info request (Babylon)</value>
+  </data>
+  <data name="ElementInfoRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the Babylon client for the elemental stats of the own character.</value>
+  </data>
 </root>

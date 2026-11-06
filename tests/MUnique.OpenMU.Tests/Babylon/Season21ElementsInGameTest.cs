@@ -15,6 +15,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Elements;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
+using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.GameLogic.WideItems;
@@ -79,10 +80,9 @@ public class Season21ElementsInGameTest
         mapInitializer.PathFinderPool = gameContext.PathFinderPool;
         gameContext.PlugInManager.RegisterPlugIn<IFeaturePlugIn, ElementsFeaturePlugIn>();
         gameContext.PlugInManager.ActivatePlugIn<ElementsFeaturePlugIn>();
-        gameContext.FeaturePlugIns.GetPlugIn<ElementsFeaturePlugIn>()!.Configuration = new ElementsConfiguration
-        {
-            RemovalRates = [new ErrtelRemovalRate { Level = 0, Rates = [10_000] }],
-        };
+        gameContext.FeaturePlugIns.GetPlugIn<ElementsFeaturePlugIn>()!.Configuration = this._gameConfiguration.PlugInConfigurations
+            .Single(c => c.TypeId == typeof(ElementsFeaturePlugIn).GUID)
+            .GetConfiguration<ElementsConfiguration>(null);
         this._gameContext = gameContext;
     }
 
@@ -229,8 +229,8 @@ public class Season21ElementsInGameTest
 
     /// <summary>
     /// The refinery: an errtel of level 0 and rank 1 with one elemental rune levels up to 1; at level 0 it can't rank
-    /// up (rank 1 needs level 6); Arca's Prophecy with an emblem and packed jewels becomes Antonia's Sword [I] and
-    /// keeps its element and sockets.
+    /// up (rank 1 needs level 6); Arca's Prophecy +11 with an emblem and packed jewels becomes Antonia's Sword [I] at
+    /// 80 % and keeps its element and sockets.
     /// </summary>
     [Test]
     public async ValueTask RefineryLevelsErrtelsAndUpgradesPentagramsAsync()
@@ -264,16 +264,170 @@ public class Season21ElementsInGameTest
         foreach (var required in this.CraftingSettings("Arca's Prophecy Upgrade").RequiredItems)
         {
             var material = required.Reference == ElementalUpgradeCrafting.MainItemReference ? pentagram : this.CreateItem(player, required.PossibleItems.Single());
-            material.Level = (byte)required.MinimumItemLevel;
+            material.Level = required.Reference == ElementalUpgradeCrafting.MainItemReference ? (byte)11 : (byte)required.MinimumItemLevel;
             await player.TemporaryStorage.AddItemAsync(material).ConfigureAwait(false);
         }
 
-        Assert.That(upgrade.TryGetRequiredItems(player, out items, out _), Is.Null);
+        Assert.That(upgrade.TryGetRequiredItems(player, out items, out rate), Is.Null);
+        Assert.That(rate, Is.EqualTo(80), "+11: 80 %");
         await upgrade.CreateAsync(items, player).ConfigureAwait(false);
         Assert.That(pentagram.Definition!.Number, Is.EqualTo(503));
         Assert.That(pentagram.GetElement(), Is.EqualTo(Element.Wind));
         Assert.That(pentagram.SocketCount, Is.EqualTo(3));
     }
+
+    /// <summary>
+    /// A critical elemental hit deals the maximum elemental damage (40 of the beginner's pentagram, x 120 % against no
+    /// element); punish adds 6 % of the target's maximum health; a perfect dodge takes none; 5 % of the defense adds to
+    /// the elemental defense.
+    /// </summary>
+    [Test]
+    public async ValueTask CriticalPunishDodgeAndDefenseShareAsync()
+    {
+        var attacker = await this.CreatePlayerAsync().ConfigureAwait(false);
+        var defender = await this.CreatePlayerAsync().ConfigureAwait(false);
+        await this.EquipAsync(attacker, this.CreatePentagram(attacker, Element.Fire)).ConfigureAwait(false);
+        var configuration = new ElementsConfiguration { RadianceChance = 1 };
+        Add(attacker, Stats.ElementCriticalChance, 1);
+        uint Hit() => ElementalDamageCalculator.Calculate(attacker.Attributes!, Element.Fire, defender.Attributes!, Element.None, false, 100, configuration);
+
+        Assert.That(Hit(), Is.EqualTo(48), "critical: 40 x 120 %");
+        Add(defender, Stats.DefensePvm, 100);
+        Add(defender, Stats.ElementDefenseFromDefense, 0.05f);
+        Assert.That(Hit(), Is.EqualTo(48 - 5), "5 % of the defense of 100");
+        Add(attacker, Stats.ElementPunish, 0.06f);
+        Assert.That(Hit(), Is.EqualTo(43 + (uint)(defender.Attributes![Stats.MaximumHealth] * 0.06f)), "punish");
+        Add(defender, Stats.ElementDodgeChance, 1);
+        Assert.That(Hit(), Is.Zero, "perfect dodge");
+    }
+
+    /// <summary>
+    /// The Iron Shield of the Magic (203) has the pentagram option 3 (pentagram defense +10 %), which needs an errtel of
+    /// anger of rank 1: it is active while the errtel is in, and gone when it is taken out.
+    /// </summary>
+    [Test]
+    public async ValueTask PentagramOptionNeedsItsErrtelsAsync()
+    {
+        var player = await this.CreatePlayerAsync().ConfigureAwait(false);
+        var pentagram = this.CreateItem(player, this.Item(203));
+        pentagram.SocketCount = 4;
+        AddOption(pentagram, Season21ItemOptionTypes.Element, (int)Element.Fire);
+        await this.EquipAsync(player, pentagram).ConfigureAwait(false);
+        Assert.That(player.Attributes![Stats.ElementDefenseIncrease], Is.Zero);
+
+        await this.InsertErrtelAsync(player, pentagram).ConfigureAwait(false);
+        Assert.That(player.Attributes[Stats.ElementDefenseIncrease], Is.EqualTo(0.1f).Within(0.0001));
+
+        await new ErrtelSocketAction().HandleAsync(player, ErrtelSocketMode.Remove, pentagram.ItemSlot, 0, 0).ConfigureAwait(false);
+        Assert.That(player.Attributes[Stats.ElementDefenseIncrease], Is.Zero);
+    }
+
+    /// <summary>
+    /// Two mastery errtels of the set "Fighting spirit" in a mastery pentagram give its two-piece bonus, elemental
+    /// damage +40 (ErrtelMastery.xml; worldofmu.net: "2-Piece Effect increases Elemental ATK +40").
+    /// </summary>
+    [Test]
+    public async ValueTask ErrtelSetBonusNeedsTwoErrtelsOfTheSetAsync()
+    {
+        var player = await this.CreatePlayerAsync().ConfigureAwait(false);
+        var pentagram = this.CreateItem(player, this.Item(503));
+        pentagram.SocketCount = 4;
+        AddOption(pentagram, Season21ItemOptionTypes.Element, (int)Element.Fire);
+        await this.EquipAsync(player, pentagram).ConfigureAwait(false);
+        var action = new ErrtelSocketAction();
+        foreach (var (number, socket) in new[] { ((short)505, (byte)0), ((short)506, (byte)1) })
+        {
+            var errtel = this.CreateItem(player, this.Item(number));
+            AddOption(errtel, Season21ItemOptionTypes.Element, (int)Element.Fire);
+            AddOption(errtel, Season21ItemOptionTypes.ErrtelRank, number == 505 ? 0 : 50);
+            AddOption(errtel, Season21ItemOptionTypes.ErrtelSet, 0);
+            await player.Inventory!.AddItemAsync(errtel).ConfigureAwait(false);
+            Assert.That(await action.HandleAsync(player, ErrtelSocketMode.Insert, pentagram.ItemSlot, errtel.ItemSlot, socket).ConfigureAwait(false), Is.EqualTo(ErrtelSocketResult.Success));
+        }
+
+        Assert.That(player.Attributes![Stats.ElementDamageBonus], Is.EqualTo(93 + 40), "anger [I] rank 1 + the set");
+    }
+
+    /// <summary>
+    /// Absorb life of the radiance errtel gives the attacker its share of the elemental damage as health.
+    /// </summary>
+    [Test]
+    public async ValueTask AbsorbLifeHealsTheAttackerAsync()
+    {
+        var player = await this.CreatePlayerAsync().ConfigureAwait(false);
+        Add(player, Stats.ElementAbsorbLife, 0.1f);
+        player.Attributes![Stats.CurrentHealth] = 10;
+        var plugIn = new ElementsFeaturePlugIn { Configuration = new ElementsConfiguration { RadianceChance = 1 } };
+
+        plugIn.ApplyAbsorb(player, 100);
+
+        Assert.That(player.Attributes[Stats.CurrentHealth], Is.EqualTo(20));
+    }
+
+    /// <summary>
+    /// The Expansion Scroll of Radiance slot opens the fifth socket of a pentagram with four sockets, not of others.
+    /// </summary>
+    [Test]
+    public async ValueTask RadianceScrollOpensTheFifthSocketAsync()
+    {
+        var player = await this.CreatePlayerAsync().ConfigureAwait(false);
+        var pentagram = this.CreateItem(player, this.Item(BeginnersPentagram));
+        pentagram.SocketCount = 4;
+        await player.Inventory!.AddItemAsync(pentagram).ConfigureAwait(false);
+        var handler = new RadianceSlotScrollConsumeHandlerPlugIn();
+        var scroll = this.CreateItem(player, this._gameConfiguration.Items.Single(i => i.Group == 14 && i.Number == 316));
+        await player.Inventory.AddItemAsync(scroll).ConfigureAwait(false);
+
+        Assert.That(await handler.ConsumeItemAsync(player, scroll, pentagram, default).ConfigureAwait(false), Is.True);
+        Assert.That(pentagram.SocketCount, Is.EqualTo(5));
+        Assert.That(await handler.ConsumeItemAsync(player, scroll, pentagram, default).ConfigureAwait(false), Is.False, "already five");
+    }
+
+    /// <summary>
+    /// The earring enhancement: +0 to +1 takes one lapidary stone at 60 % (EarringItemOption.txt section 4); a failure
+    /// above +7 resets the earring to +0 (Webzen guide 150).
+    /// </summary>
+    [Test]
+    public async ValueTask EarringEnhancementRaisesTheLevelAndResetsAbove7Async()
+    {
+        var player = await this.CreatePlayerAsync().ConfigureAwait(false);
+        var earring = this.CreateItem(player, this.Item(LeftWrathEarring));
+        await player.TemporaryStorage!.AddItemAsync(earring).ConfigureAwait(false);
+        var stone = this.CreateItem(player, this._gameConfiguration.Items.Single(i => i.Group == 13 && i.Number == 510));
+        stone.Durability = 1;
+        await player.TemporaryStorage.AddItemAsync(stone).ConfigureAwait(false);
+        var first = this.CraftingSettings("Earring Enhancement (+1)");
+        Assert.That((first.SuccessPercent, first.Money), Is.EqualTo((60, 1_000_000)));
+        var enhance = new TestEnhance(first);
+        Assert.That(enhance.TryGetRequiredItems(player, out var items, out _), Is.Null);
+        await enhance.CreateAsync(items, player).ConfigureAwait(false);
+        Assert.That(earring.Level, Is.EqualTo(1));
+
+        var ninth = this.CraftingSettings("Earring Enhancement (+9)");
+        Assert.That(ninth.RequiredItems.Single(r => r.Reference > 0).FailResult, Is.EqualTo(MixResult.LevelResetToZero));
+        Assert.That(this.CraftingSettings("Earring Enhancement (+7)").RequiredItems.Single(r => r.Reference > 0).FailResult, Is.EqualTo(MixResult.StaysAsIs));
+    }
+
+    /// <summary>
+    /// ElementInfo carries the elemental stats of the own character.
+    /// </summary>
+    [Test]
+    public async ValueTask ElementInfoCarriesTheStatsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(GameServer.BabylonClient.Version);
+        var attributes = new AttributeSystem.AttributeSystem([], [], []);
+        attributes.AddElement(new AttributeSystem.ConstValueAttribute(3, Stats.Element), Stats.Element);
+        attributes.AddElement(new AttributeSystem.ConstValueAttribute(25, Stats.ElementDamageMin), Stats.ElementDamageMin);
+        attributes.AddElement(new AttributeSystem.ConstValueAttribute(0.1f, Stats.ElementCriticalChance), Stats.ElementCriticalChance);
+
+        await new GameServer.RemoteView.Character.ElementInfoBabylonPlugIn(player).ShowElementInfoAsync(attributes).ConfigureAwait(false);
+
+        var packet = new Network.Packets.Babylon.ElementInfo(output.ToArray());
+        Assert.That((packet.Element, packet.DamageMin, packet.CriticalChance), Is.EqualTo(((byte)3, 25u, (byte)10)));
+    }
+
+    private static void Add(Player player, AttributeSystem.AttributeDefinition attribute, float value)
+        => player.Attributes!.AddElement(new AttributeSystem.ConstValueAttribute(value, attribute), attribute);
 
     private static void AddOption(Item item, ItemOptionType type, int number, int level = 0, int index = 0)
     {
@@ -357,6 +511,11 @@ public class Season21ElementsInGameTest
     private sealed class TestRankUp(SimpleCraftingSettings settings) : ErrtelRankUpCrafting(settings);
 
     private sealed class TestUpgrade(SimpleCraftingSettings settings) : ElementalUpgradeCrafting(settings)
+    {
+        public ValueTask<List<Item>> CreateAsync(IList<CraftingRequiredItemLink> items, Player player) => this.CreateOrModifyResultItemsAsync(items, player, 0, 100);
+    }
+
+    private sealed class TestEnhance(SimpleCraftingSettings settings) : SimpleItemCraftingHandler(settings)
     {
         public ValueTask<List<Item>> CreateAsync(IList<CraftingRequiredItemLink> items, Player player) => this.CreateOrModifyResultItemsAsync(items, player, 0, 100);
     }

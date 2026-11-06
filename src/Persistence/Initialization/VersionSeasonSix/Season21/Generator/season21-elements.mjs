@@ -49,8 +49,18 @@ for (const r of tags(read('Item/Pentagram - Settings/PentagramJewelOption.xml'),
   });
 }
 
+// --- ErrtelMastery.xml: the sets of the mastery errtels; option group g is the bonus of g + 2 errtels of the set ---
+const errtelSets = tags(read('Item/Pentagram - Settings/ErrtelMastery.xml'), 'OptionInfo').map(r => ({
+  number: int(r, 'Index'), name: r.Name,
+  bonuses: [0, 1, 2].flatMap(g => ['A', 'B'].map(k => ({ pieces: g + 2, option: int(r, `Index${k}${g}`), value: int(r, `Value${k}${g}`) })))
+    .filter(b => b.option >= 0),
+}));
+
 // --- ElementalUpgrade.xml + ElementalItemRefinemenMixRate.xml + PentagramJewelMixRate.txt: the refinery ---
 const upgrade = read('Item/ElementalItemRefinemen - Settings/ElementalUpgrade.xml');
+const upgradeHead = attrs(upgrade.slice(upgrade.indexOf('<ElementalUpgrade'), upgrade.indexOf('>', upgrade.indexOf('<ElementalUpgrade'))));
+const pentagramUpgradeRates = Array.from({ length: 16 }, (_, level) => int(upgradeHead, `Level${level}`));
+const errtelUpgradeRates = tags(upgrade, 'ErrtelInfo').filter(r => int(r, 'MasteryGrade') === 1).map(r => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => int(r, `Level${n}`)))[0] ?? [];
 const mixes = tag => tags(upgrade.slice(upgrade.indexOf(`<${tag}>`), upgrade.indexOf(`</${tag}>`)), 'Mix').map(r => ({
   main: int(r, 'MainIndex'), result: int(r, 'RIndex'),
   materials: [0, 1, 2, 3].map(n => [int(r, `MType${n}`), int(r, `MIndex${n}`), int(r, `MDur${n}`)]).filter(([type]) => type > 0),
@@ -106,8 +116,8 @@ const earrings = {
 };
 
 const json = {
-  pentagrams, pentagramOptions: pentagramOptionSettings, errtels: [...errtels.values()],
-  refinery: { pentagramUpgrades: mixes('PentagramUpgradeMix'), errtelUpgrades: mixes('ErrtelUpgradeMix'), rankUpRates, rankUpMoney, levelUp, removalRates },
+  pentagrams, pentagramOptions: pentagramOptionSettings, errtels: [...errtels.values()], errtelSets,
+  refinery: { pentagramUpgrades: mixes('PentagramUpgradeMix'), errtelUpgrades: mixes('ErrtelUpgradeMix'), pentagramUpgradeRates, errtelUpgradeRates, rankUpRates, rankUpMoney, levelUp, removalRates },
   monsters, skillImprints, earrings,
 };
 const out = join(project, 'Resources', 'Season21', 'Elements.json');
@@ -124,4 +134,4 @@ const format = (value, indent) => {
   return JSON.stringify(value);
 };
 writeFileSync(out, `${format(json, '')}\n`);
-console.log(`${pentagrams.length} pentagrams, ${errtels.size} errtels, ${monsters.length} monsters, ${skillImprints.length} skill imprints, ${earrings.items.length} earrings -> ${out}`);
+console.log(`${pentagrams.length} pentagrams, ${errtelSets.length} errtel sets, ${errtels.size} errtels, ${monsters.length} monsters, ${skillImprints.length} skill imprints, ${earrings.items.length} earrings -> ${out}`);

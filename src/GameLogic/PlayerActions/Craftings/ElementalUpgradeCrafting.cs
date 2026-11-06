@@ -6,7 +6,9 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.Elements;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+using MUnique.OpenMU.GameLogic.Views.NPC;
 
 /// <summary>
 /// The upgrade of a pentagram or an errtel to its mastery item (e.g. Antonia's Sword to Antonia's Sword [I], Errtel
@@ -31,6 +33,33 @@ public class ElementalUpgradeCrafting : SimpleItemCraftingHandler
     /// Gets the reference of the upgraded item.
     /// </summary>
     public static byte MainItemReference { get; } = 0x78;
+
+    /// <inheritdoc />
+    /// <remarks>
+    /// The chance comes from the pentagram's item level or the errtel's level (<see cref="ElementsConfiguration.PentagramUpgradeRates"/>,
+    /// <see cref="ElementsConfiguration.ErrtelUpgradeRates"/>); a level without chance can't be upgraded.
+    /// </remarks>
+    public override CraftingResult? TryGetRequiredItems(Player player, out IList<CraftingRequiredItemLink> items, out byte successRate)
+    {
+        var result = base.TryGetRequiredItems(player, out items, out successRate);
+        if (result != default)
+        {
+            return result;
+        }
+
+        var item = items.Single(i => i.ItemRequirement.Reference == MainItemReference).Items.Single();
+        var rates = ElementsFeaturePlugIn.GetConfiguration(player.GameContext) is { } configuration
+            ? (item.IsErrtel() ? configuration.ErrtelUpgradeRates : configuration.PentagramUpgradeRates)
+            : null;
+        var level = item.IsErrtel() ? item.GetRankOptions().GetErrtelLevel() : item.Level;
+        if (rates?.ElementAtOrDefault(level) is not (> 0 and var rate))
+        {
+            return CraftingResult.IncorrectMixItems;
+        }
+
+        successRate = (byte)Math.Clamp(rate, 0, 100);
+        return null;
+    }
 
     /// <inheritdoc />
     protected override ValueTask<List<Item>> CreateOrModifyResultItemsAsync(IList<CraftingRequiredItemLink> requiredItems, Player player, byte socketSlot, byte successRate)
