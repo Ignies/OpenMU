@@ -1344,5 +1344,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21MiningUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the golden invasion of Season 21.
+        /// </summary>
+        public static string AddSeason21GoldenInvasionUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21GoldenInvasionUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds the ten later golden monsters (Golden Dark Knight, Devil, Stone Golem, Crust, Satyros, Twin Tail, Iron Knight, Napin, Great Golden Dragon, Golden Rabbit) with their Box of Kundun and the Golden Derkon in Elbeland to the golden invasion. A golden invasion with the Season 6 roster gets the roster and timetable of Season 21 (every four hours from 00:25, 10 minutes); one you changed keeps your numbers and only gets the missing monsters and maps..
+        /// </summary>
+        public static string AddSeason21GoldenInvasionUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21GoldenInvasionUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

@@ -1030,4 +1030,14 @@
   <data name="MiningAreaSmall" xml:space="preserve"><value>Mining Area (Small)</value></data>
   <data name="MiningAreaMedium" xml:space="preserve"><value>Mining Area (Medium)</value></data>
   <data name="MiningAreaLarge" xml:space="preserve"><value>Mining Area (Large)</value></data>
+  <data name="GoldenDarkKnight" xml:space="preserve"><value>Golden Dark Knight</value></data>
+  <data name="GoldenDevil" xml:space="preserve"><value>Golden Devil</value></data>
+  <data name="GoldenStoneGolem" xml:space="preserve"><value>Golden Stone Golem</value></data>
+  <data name="GoldenCrust" xml:space="preserve"><value>Golden Crust</value></data>
+  <data name="GoldenSatyros" xml:space="preserve"><value>Golden Satyros</value></data>
+  <data name="GoldenTwinTail" xml:space="preserve"><value>Golden Twin Tail</value></data>
+  <data name="GoldenIronKnight" xml:space="preserve"><value>Golden Iron Knight</value></data>
+  <data name="GoldenNapin" xml:space="preserve"><value>Golden Napin</value></data>
+  <data name="GreatGoldenDragon" xml:space="preserve"><value>Great Golden Dragon</value></data>
+  <data name="GoldenRabbit" xml:space="preserve"><value>Golden Rabbit</value></data>
 </root>

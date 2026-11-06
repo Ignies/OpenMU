@@ -79,6 +79,7 @@ Rules:
 | `earrings` | The earrings with their slots, options and links (update "Add the earrings", same section) |
 | `muun` | The Muuns of Season 21: the Muun inventory with two equipped Muuns, their options on the owner, level up, evolution, the energy converter, Monica's exchange and the mounts (update "Add the Muuns of Season 21", plugin "Muuns of Season 21", `src/GameLogic/Muuns`) |
 | `mining` | The Pandora mining: 51 spots in the safe zones of six maps, five stages, Jewels of Bless (update "Add the mining of Season 21", plugin "Mining (Season 21)", `src/GameLogic/Mining`) |
+| `golden_invasions_s21` | The golden invasion of Season 21: the ten later golden monsters 493-502 with their Box of Kundun, the Golden Derkon in Elbeland, 19 kinds every four hours from 00:25 for 10 minutes (update "Add the golden invasion of Season 21"; the Season 6 plugin "Golden Invasion" runs it) |
 
 ## Balance
 

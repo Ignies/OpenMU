@@ -4474,5 +4474,75 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("MiningAreaLarge", resourceCulture);
             }
         }
+
+        /// <summary>Gets GoldenDarkKnight from the configuration name resources.</summary>
+        public static string GoldenDarkKnight {
+            get {
+                return ResourceManager.GetString("GoldenDarkKnight", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldenDevil from the configuration name resources.</summary>
+        public static string GoldenDevil {
+            get {
+                return ResourceManager.GetString("GoldenDevil", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldenStoneGolem from the configuration name resources.</summary>
+        public static string GoldenStoneGolem {
+            get {
+                return ResourceManager.GetString("GoldenStoneGolem", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldenCrust from the configuration name resources.</summary>
+        public static string GoldenCrust {
+            get {
+                return ResourceManager.GetString("GoldenCrust", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldenSatyros from the configuration name resources.</summary>
+        public static string GoldenSatyros {
+            get {
+                return ResourceManager.GetString("GoldenSatyros", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldenTwinTail from the configuration name resources.</summary>
+        public static string GoldenTwinTail {
+            get {
+                return ResourceManager.GetString("GoldenTwinTail", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldenIronKnight from the configuration name resources.</summary>
+        public static string GoldenIronKnight {
+            get {
+                return ResourceManager.GetString("GoldenIronKnight", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldenNapin from the configuration name resources.</summary>
+        public static string GoldenNapin {
+            get {
+                return ResourceManager.GetString("GoldenNapin", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GreatGoldenDragon from the configuration name resources.</summary>
+        public static string GreatGoldenDragon {
+            get {
+                return ResourceManager.GetString("GreatGoldenDragon", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldenRabbit from the configuration name resources.</summary>
+        public static string GoldenRabbit {
+            get {
+                return ResourceManager.GetString("GoldenRabbit", resourceCulture);
+            }
+        }
     }
 }

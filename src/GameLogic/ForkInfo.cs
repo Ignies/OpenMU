@@ -68,6 +68,7 @@ public static class ForkInfo
         "earrings",
         "muun",
         "mining",
+        "golden_invasions_s21",
     ];
 
     /// <summary>

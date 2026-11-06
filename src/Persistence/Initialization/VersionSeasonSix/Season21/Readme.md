@@ -15,6 +15,12 @@ them, as optional updates of a Season 6 database:
   (`Season21ShopsInitializer`). Both need the item catalog; see "Economy".
 * `AddSeason21MiningUpdatePlugIn` places the mining spots and turns the mining on (`Season21MiningInitializer`); it needs
   the shops (Bolo sells the Pandora Pick). See `GameLogic/Mining/Readme.md`.
+* `AddSeason21GoldenInvasionUpdatePlugIn` adds the golden monsters 493-502 (`Season21GoldenInvasionInitializer`, S21Emu
+  `Monster.xml` and the item bags 117-126: a Box of Kundun +1 to +5 each) to the Season 6 plugin "Golden Invasion". A
+  configuration with the Season 6 roster becomes the one of `Event/InvasionManager.xml` (19 kinds, the Golden Derkon also
+  in Elbeland, every four hours from 00:25, 10 minutes); one the operator changed keeps its numbers and timetable and gets
+  only the missing kinds and maps. The spawn areas of the data (e.g. the west of Dungeon) are not kept: invaders spawn
+  anywhere walkable, as the plugin does. The version of the monsters (Season 5) is our assumption.
 
 They run on a new database too (`RunsOnNewDatabase`), but as they are optional,
 a new database leaves them pending. So a Season 6 server only changes when its
