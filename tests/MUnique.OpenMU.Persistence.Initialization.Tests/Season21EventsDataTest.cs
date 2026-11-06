@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.EvolutionQuests;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Tests the updates of the party instances and events of Season 21: pending on a new database, the data after the
@@ -76,6 +77,21 @@ internal class Season21EventsDataTest
     }
 
     /// <summary>
+    /// The Tormented Square is on map 102 with its fifteen rounds, and its timetable is switched on.
+    /// </summary>
+    [Test]
+    public void TormentedSquareIsAdded()
+    {
+        var definition = this._gameConfiguration.MiniGameDefinitions.Single(d => d.Type == MiniGameType.TormentedSquare);
+        Assert.That(definition.Entrance?.Map?.Number, Is.EqualTo(102));
+        Assert.That(definition.Entrance!.Map!.TerrainData, Has.Length.EqualTo(65539));
+        Assert.That(definition.MaximumPlayerCount, Is.EqualTo(20));
+        var events = this.Events();
+        Assert.That(events.TormentedSquare?.Rounds, Has.Count.EqualTo(15));
+        Assert.That(this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(GameLogic.MiniGames.Season21.TormentedSquareStartPlugIn).GUID).IsActive, Is.True);
+    }
+
+    /// <summary>
     /// Applying the updates again changes nothing.
     /// </summary>
     [Test]
@@ -101,11 +117,16 @@ internal class Season21EventsDataTest
         Assert.That(this._gameConfiguration.DropItemGroups, Has.Count.EqualTo(groups));
     }
 
+    private GameLogic.MiniGames.Season21.Season21EventsConfiguration Events()
+        => this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(GameLogic.MiniGames.Season21.Season21EventsFeaturePlugIn).GUID)
+            .GetConfiguration<GameLogic.MiniGames.Season21.Season21EventsConfiguration>(new IdIgnoringReferenceHandler())!;
+
     private static IEnumerable<UpdatePlugInBase> Updates() =>
     [
         new AddSeason21EvolutionQuestsUpdatePlugIn(),
         new AddSeason21InstancesUpdatePlugIn(),
         new AddSeason21DoppelgangerUpdatePlugIn(),
+        new AddSeason21TormentedSquareUpdatePlugIn(),
     ];
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6Async()

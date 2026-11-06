@@ -85,6 +85,7 @@ Rules:
 | `helper_plus` | The MU Helper Plus: the rules of the helper for the Babylon client (the plus mode from total level 400, alone or as party leader, its ranges and cost in percent of the helper cost) and the moves of the plus mode into the 330 hunting zones of the 31 hunting grounds, with the level and zen of their warps (update "Add the MU Helper Plus of Season 21", plugin "MU Helper Plus (Season 21)", `src/GameLogic/HelperPlus`) |
 | `party_instances` | The party instances of Season 21: a copy of a map for each party with its own monsters and timer (`MiniGameType.PartyInstance`); the trial of the fourth and fifth class quest runs in one (update "Add the party instances of Season 21", `src/GameLogic/MiniGames/Readme.md`) |
 | `doppelganger_s21` | The Doppelganger of Season 21: seven rooms by total level with their multipliers, experience and chests, two players at least (update "Renew the Doppelganger for Season 21", `src/GameLogic/MiniGames/Readme.md`) |
+| `tormented_square` | The Tormented Square of Season 21: map 102, fifteen rounds of monsters, points and ranks, by its timetable (update "Add the Tormented Square of Season 21", plugins "Events of Season 21" and "Tormented Square start"; event type 9 of the event packets) |
 
 ## Balance
 
@@ -259,7 +260,7 @@ bytes in the connection's item format (W32); 0xFF for no item.
 ### Events (range B0-BF)
 
 The events and party instances of Season 21 share five packets; the event type is the server's `MiniGameType`
-(8 party instance; the later events append their own). A Season 6 client gets none of them: it is told in words.
+(8 party instance, 9 Tormented Square, 10 Labyrinth of Dimensions, 11 Boss Battle Together, 12 Protector of Acheron). A Season 6 client gets none of them: it is told in words.
 
 ```
 C1 0C EE B0  EventState (server)          C1 07 EE B1  EventEnterRequest (client)

@@ -8031,5 +8031,59 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("HelperPlusZone_Y_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Events of Season 21.
+        /// </summary>
+        public static string Season21EventsFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("Season21EventsFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The definitions of the Season 21 events which run as mini games: Tormented Square, Labyrinth of Dimensions, Protector of Acheron and Boss Battle Together..
+        /// </summary>
+        public static string Season21EventsFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("Season21EventsFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Boss Battle damage.
+        /// </summary>
+        public static string BossBattleDamagePlugIn_Name {
+            get {
+                return ResourceManager.GetString("BossBattleDamagePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Counts the damage of the players on the boss of the Boss Battle Together of Season 21..
+        /// </summary>
+        public static string BossBattleDamagePlugIn_Description {
+            get {
+                return ResourceManager.GetString("BossBattleDamagePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Tormented Square start (Season 21).
+        /// </summary>
+        public static string TormentedSquareStartPlugIn_Name {
+            get {
+                return ResourceManager.GetString("TormentedSquareStartPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Opens the Tormented Square of Season 21 by its timetable: fifteen rounds of monsters on map 102, ranked by points..
+        /// </summary>
+        public static string TormentedSquareStartPlugIn_Description {
+            get {
+                return ResourceManager.GetString("TormentedSquareStartPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

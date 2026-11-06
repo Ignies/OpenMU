@@ -570,4 +570,10 @@
   <data name="AddSeason21DoppelgangerUpdatePlugIn_Description" xml:space="preserve">
     <value>Seven rooms by total level (50, 400, 800, 900, 1100, 1300, 1500) with the monster multipliers, experience and silver and golden chests of Season 21; every level from 50 may enter, a game needs two players. Replaces the monster scaling of the Doppelganger.</value>
   </data>
+  <data name="AddSeason21TormentedSquareUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the Tormented Square of Season 21</value>
+  </data>
+  <data name="AddSeason21TormentedSquareUpdatePlugIn_Description" xml:space="preserve">
+    <value>Map 102 with the Tormented Square: fifteen rounds of monsters with golden bonus monsters, points per kill and per cleared round, ranks; switches its timetable on (11:44, 17:30, 19:00, 20:30, 22:00, 23:30).</value>
+  </data>
 </root>

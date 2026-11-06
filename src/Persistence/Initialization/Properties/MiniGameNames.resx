@@ -135,4 +135,7 @@
   <data name="Season21Trial" xml:space="preserve">
     <value>Trial Area (party instance)</value>
   </data>
+  <data name="TormentedSquare" xml:space="preserve">
+    <value>Tormented Square</value>
+  </data>
 </root>

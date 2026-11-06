@@ -1040,4 +1040,13 @@
   <data name="GoldenNapin" xml:space="preserve"><value>Golden Napin</value></data>
   <data name="GreatGoldenDragon" xml:space="preserve"><value>Great Golden Dragon</value></data>
   <data name="GoldenRabbit" xml:space="preserve"><value>Golden Rabbit</value></data>
+  <data name="GoldenTantalos" xml:space="preserve">
+    <value>Golden Tantalos</value>
+  </data>
+  <data name="GoldenErohim" xml:space="preserve">
+    <value>Golden Erohim</value>
+  </data>
+  <data name="GoldenHellMaine" xml:space="preserve">
+    <value>Golden Hell Maine</value>
+  </data>
 </root>

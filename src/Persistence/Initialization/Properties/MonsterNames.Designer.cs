@@ -4544,5 +4544,32 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("GoldenRabbit", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Golden Tantalos.
+        /// </summary>
+        public static string GoldenTantalos {
+            get {
+                return ResourceManager.GetString("GoldenTantalos", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Golden Erohim.
+        /// </summary>
+        public static string GoldenErohim {
+            get {
+                return ResourceManager.GetString("GoldenErohim", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Golden Hell Maine.
+        /// </summary>
+        public static string GoldenHellMaine {
+            get {
+                return ResourceManager.GetString("GoldenHellMaine", resourceCulture);
+            }
+        }
     }
 }

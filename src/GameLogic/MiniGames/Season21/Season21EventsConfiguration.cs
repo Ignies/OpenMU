@@ -1,0 +1,41 @@
+// <copyright file="Season21EventsConfiguration.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.GameLogic.MiniGames.Season21;
+
+/// <summary>
+/// The configuration of the events of Season 21 which run as mini games. The definitions are set by the update of each
+/// event; an event without a definition has nothing to play.
+/// </summary>
+public class Season21EventsConfiguration
+{
+    /// <summary>
+    /// Gets or sets the Tormented Square.
+    /// </summary>
+    public RoundsEventDefinition? TormentedSquare { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Labyrinth of Dimensions.
+    /// </summary>
+    public RoundsEventDefinition? Labyrinth { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Protector of Acheron, by its game level (one map each).
+    /// </summary>
+    public List<RoundsEventDefinition> AcheronGuardian { get; set; } = [];
+
+    /// <summary>
+    /// Gets the definition of a rounds event.
+    /// </summary>
+    /// <param name="type">The type.</param>
+    /// <param name="gameLevel">The game level.</param>
+    /// <returns>The definition, or <c>null</c>.</returns>
+    public RoundsEventDefinition? GetRounds(MiniGameType type, byte gameLevel) => type switch
+    {
+        MiniGameType.TormentedSquare => this.TormentedSquare,
+        MiniGameType.LabyrinthOfDimensions => this.Labyrinth,
+        MiniGameType.AcheronGuardian => this.AcheronGuardian.ElementAtOrDefault(gameLevel - 1),
+        _ => null,
+    };
+}

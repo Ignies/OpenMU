@@ -119,4 +119,7 @@
   <data name="TrialArea" xml:space="preserve">
     <value>Trial Area</value>
   </data>
+  <data name="TormentedSquare" xml:space="preserve">
+    <value>Tormented Square</value>
+  </data>
 </root>

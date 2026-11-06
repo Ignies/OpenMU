@@ -54,4 +54,24 @@ public enum MiniGameType
     /// of the fourth class quest.
     /// </summary>
     PartyInstance,
+
+    /// <summary>
+    /// The Tormented Square of Season 21: fifteen rounds of monsters, ranked by points.
+    /// </summary>
+    TormentedSquare,
+
+    /// <summary>
+    /// The Labyrinth of Dimensions of Season 21: a solo instance of floors.
+    /// </summary>
+    LabyrinthOfDimensions,
+
+    /// <summary>
+    /// The Boss Battle Together of Season 21: one boss which everybody fights together.
+    /// </summary>
+    BossBattle,
+
+    /// <summary>
+    /// The Protector of Acheron of Season 21: waves of monsters in Acheron and Deventer.
+    /// </summary>
+    AcheronGuardian,
 }

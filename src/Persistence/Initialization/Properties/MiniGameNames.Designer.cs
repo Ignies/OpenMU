@@ -335,5 +335,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("Season21Trial", resourceCulture);
             }
         }
+
+        /// <summary>Gets TormentedSquare from the configuration name resources.</summary>
+        public static string TormentedSquare {
+            get {
+                return ResourceManager.GetString("TormentedSquare", resourceCulture);
+            }
+        }
     }
 }

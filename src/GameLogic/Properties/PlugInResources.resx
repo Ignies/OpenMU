@@ -2832,4 +2832,22 @@
   <data name="HelperPlusZone_Y_Name" xml:space="preserve">
     <value>Y</value>
   </data>
+  <data name="Season21EventsFeaturePlugIn_Name" xml:space="preserve">
+    <value>Events of Season 21</value>
+  </data>
+  <data name="Season21EventsFeaturePlugIn_Description" xml:space="preserve">
+    <value>The definitions of the Season 21 events which run as mini games: Tormented Square, Labyrinth of Dimensions, Protector of Acheron and Boss Battle Together.</value>
+  </data>
+  <data name="BossBattleDamagePlugIn_Name" xml:space="preserve">
+    <value>Boss Battle damage</value>
+  </data>
+  <data name="BossBattleDamagePlugIn_Description" xml:space="preserve">
+    <value>Counts the damage of the players on the boss of the Boss Battle Together of Season 21.</value>
+  </data>
+  <data name="TormentedSquareStartPlugIn_Name" xml:space="preserve">
+    <value>Tormented Square start (Season 21)</value>
+  </data>
+  <data name="TormentedSquareStartPlugIn_Description" xml:space="preserve">
+    <value>Opens the Tormented Square of Season 21 by its timetable: fifteen rounds of monsters on map 102, ranked by points.</value>
+  </data>
 </root>

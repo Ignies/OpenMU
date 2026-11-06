@@ -135,4 +135,7 @@
   <data name="Season21Trial" xml:space="preserve">
     <value>The trial of the fourth and fifth class quest: a copy of the Trial Area for each party of up to five players.</value>
   </data>
+  <data name="TormentedSquare" xml:space="preserve">
+    <value>Fifteen rounds of monsters on map 102; points per kill and per cleared round decide the rank.</value>
+  </data>
 </root>

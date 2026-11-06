@@ -131,8 +131,7 @@ public class PartyInstanceTest
         var player = await this._world.CreatePlayerAsync(CharacterClassNumber.BladeMaster, 400, 400).ConfigureAwait(false);
         await this._world.TalkAsync(player, 764).ConfigureAwait(false);
         var instance = player.CurrentMiniGame!;
-        Assert.That(instance.SkipCurrentWait(), Is.True);
-        await Season21EventWorld.WaitUntilAsync(() => instance.State == MiniGameState.Playing).ConfigureAwait(false);
+        await Season21EventWorld.SkipUntilPlayingAsync(instance).ConfigureAwait(false);
 
         var view = Mock.Get(player.ViewPlugIns.GetPlugIn<ISeason21EventViewPlugIn>()!);
         await Season21EventWorld.WaitUntilAsync(() => view.Invocations.Any(i => i.Method.Name == nameof(ISeason21EventViewPlugIn.ShowStateAsync))).ConfigureAwait(false);

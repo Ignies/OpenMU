@@ -799,5 +799,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("TrialArea", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Tormented Square.
+        /// </summary>
+        public static string TormentedSquare {
+            get {
+                return ResourceManager.GetString("TormentedSquare", resourceCulture);
+            }
+        }
     }
 }

@@ -1452,5 +1452,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21DoppelgangerUpdatePlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add the Tormented Square of Season 21.
+        /// </summary>
+        public static string AddSeason21TormentedSquareUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21TormentedSquareUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Map 102 with the Tormented Square: fifteen rounds of monsters with golden bonus monsters, points per kill and per cleared round, ranks; switches its timetable on (11:44, 17:30, 19:00, 20:30, 22:00, 23:30)..
+        /// </summary>
+        public static string AddSeason21TormentedSquareUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21TormentedSquareUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

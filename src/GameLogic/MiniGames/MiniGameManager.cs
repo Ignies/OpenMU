@@ -9,6 +9,7 @@ using System.Diagnostics.Metrics;
 using MUnique.OpenMU.GameLogic.MiniGames.Doppelganger;
 using MUnique.OpenMU.GameLogic.MiniGames.ImperialGuardian;
 using MUnique.OpenMU.GameLogic.MiniGames.Kanturu;
+using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using Nito.AsyncEx;
 
 /// <summary>
@@ -96,6 +97,10 @@ public sealed class MiniGameManager : IMiniGameManager
                     break;
                 case MiniGameType.PartyInstance:
                     miniGameContext = new PartyInstanceContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);
+                    break;
+                case MiniGameType.TormentedSquare or MiniGameType.LabyrinthOfDimensions or MiniGameType.AcheronGuardian
+                    when Season21EventsFeaturePlugIn.GetConfiguration(this._gameContext).GetRounds(miniGameDefinition.Type, miniGameDefinition.GameLevel) is { } rounds:
+                    miniGameContext = new Season21RoundsContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer, rounds);
                     break;
                 default:
                     miniGameContext = new MiniGameContext(miniGameKey, miniGameDefinition, this._gameContext, this._mapInitializer);

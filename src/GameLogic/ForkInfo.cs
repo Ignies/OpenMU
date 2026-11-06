@@ -74,6 +74,7 @@ public static class ForkInfo
         "helper_plus",
         "party_instances",
         "doppelganger_s21",
+        "tormented_square",
     ];
 
     /// <summary>

@@ -41,3 +41,23 @@ maximum level) and the silver and golden chests of the room (`InterimChestItems`
 
 Not ported: the race of up to four parties on parallel lanes of one map (`DoppelGanger_PositionInfo.xml`), which needs
 the lanes in the client; each party keeps its own copy and path.
+
+## Rounds events of Season 21 (`Season21/`)
+
+`Season21RoundsContext` plays a `RoundsEventDefinition` of the plugin "Events of Season 21" (`Season21EventsFeaturePlugIn`,
+one configuration for all of these events): rounds one after the other, each spawning its monsters (and its bonus
+monsters, by chance) at the spawn points of their kind. A round ends when its monsters are dead or its time is over;
+a kill gives its points to the killer, a cleared round its clear points, Ruud and items to every player alive. At the
+end the players are ranked by their points (a party counts together when the event says so), get the rewards of the
+definition for their rank (`MiniGameObjective.Rank` for the contribution boxes) and the result (`EE B3`). A game which
+isn't shared starts right after its entry phase. Scheduled events open by a `MiniGameStartBasePlugIn`
+(`Season21EventStartConfiguration`), off by default; the first application of the event's update switches it on.
+
+### Tormented Square (fork feature `tormented_square`)
+
+Update "Add the Tormented Square of Season 21" (S21Emu `Event/TormentedSquare`): map 102 (`Terrain103.att`, gate 474),
+up to 20 players, 2 minutes to enter; fifteen rounds of the data (130 monsters, 50 in the boss rounds 5, 10 and 15),
+points per kill 300 to 200,000, round points 3,000 to 45,000, ten golden monsters (654-656) in every round; one minute
+a round, 10 s pause (20 s after a boss round); a party is a team. Timetable 11:44, 17:30, 19:00, 20:30, 22:00, 23:30
+(`TormentedSquareStartPlugIn`). Not ported: the monthly tournament stages (eliminations, semi-finals, final) and their
+rewards, which the data names but doesn't list; the definition has no item rewards until the operator adds them.

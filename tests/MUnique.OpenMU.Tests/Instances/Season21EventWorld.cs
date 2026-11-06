@@ -119,6 +119,14 @@ internal sealed class Season21EventWorld
     }
 
     /// <summary>
+    /// Kills a monster by a player.
+    /// </summary>
+    /// <param name="monster">The monster.</param>
+    /// <param name="killer">The killer.</param>
+    public static ValueTask KillAsync(GameLogic.NPC.Monster monster, Player killer)
+        => monster.ApplyPoisonDamageAsync(killer, (uint)monster.Health + 1);
+
+    /// <summary>
     /// Puts the players into a new party, the first one as its master.
     /// </summary>
     /// <param name="players">The players.</param>
@@ -212,7 +220,8 @@ internal sealed class Season21EventWorld
     /// <param name="player">The player.</param>
     public static async ValueTask CompleteMapChangeAsync(Player player)
     {
-        if (player.PlayerState.CurrentState == PlayerState.ChangingMap || player.CurrentMap is null)
+        // A spawn on a blocked tile warps the player once more.
+        for (var attempt = 0; attempt < 3 && (player.PlayerState.CurrentState == PlayerState.ChangingMap || player.CurrentMap is null); attempt++)
         {
             await player.ClientReadyAfterMapChangeAsync().ConfigureAwait(false);
         }
