@@ -76,8 +76,30 @@ each the mission monsters (Great Sword 754 x2, Soldier 755 x3, Lancer 756 x3 of 
 2,000 points), with the floor's health, damage and defense multipliers, five minutes a floor; a cleared floor gives
 50 points per floor number, the Ruud of the first seven floors (30 to 400) and at the floors 10, 20 and 30 one item of the
 lower, medium and higher Maze of Dimensions box (bags 240-242); a floor which runs out ends the run.
-Not ported: the 10 x 10 rooms of a floor which the server opens along `LabyrinthOfDimension_Path.xml` (the run is played
-in the first room; plan in the S21 hub notes, "[E2] labyrinth rooms") and Elena's Letter.
+Not ported: Elena's Letter. The rooms of a floor are the next section.
+
+#### Rooms of the labyrinth (fork feature `labyrinth_rooms`)
+
+Update "Add the rooms of the Labyrinth of Dimensions of Season 21" (S21Emu `LabyrinthOfDimension.xml` and
+`LabyrinthOfDimension_Path.xml`), plugin "Labyrinth of Dimensions rooms (Season 21)" (`LabyrinthRoomsPlugIn`, off by
+default, the update switches it on once). While it's on and the client draws rooms (a `ILabyrinthRoomsViewPlugIn`, the
+Babylon client), a run plays its floors through rooms (`LabyrinthRun`); other clients play the floors as before.
+
+- A floor plays one of the 30 paths by chance, a board of 10 x 10 rooms, and starts in its entrance room. Each room shows
+  an area (16 x 12 tiles) of one of 38 areas of other maps. Only the current room exists: entering it loads its area as
+  the terrain of the run's copy of map 115 (everything else blocked, no safe zone) and moves the character to the side it
+  came through (the first y is the top, the first x the left; the data doesn't say).
+- A room has a portal on each side: closed, open, or opening with its mission. The client asks to move (`EE B8`); the
+  answer is `EE B9`, then the board (`EE B6`) and the mission (`EE B7`) of the new room.
+- Mission rooms (kind 3) have one goal of the data: kill 15, kill the eight monsters within 15 minutes, 1,500,000 damage,
+  60 s of the MU Helper, or kill them within 15 minutes without a health (or mana) potion; the monsters (Great Sword,
+  Soldier, Lancer of Kundun) come back while the mission isn't done. A forbidden potion or the end of the time starts
+  it again; leaving the room does too. The main mission room needs all of its goals (kills, damage, helper time); its
+  end clears the floor, with the clear points, Ruud and boxes of the floor (and the league). A kill gives the points of the
+  floor, monsters have the floor's multipliers.
+- A room opened for the first time gets the goblin (757, 2,000 points) by 20 % while fewer than 10 rooms are open.
+- The minutes of the timed goals are the data's (15) and longer than the five minutes of a floor; operators can lower
+  them. The experience goal (kind 7, unused by the data) counts as met.
 
 #### Leagues of the labyrinth (fork feature `labyrinth_league`)
 

@@ -1614,5 +1614,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21ChaosCastleSurvivalUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the rooms of the Labyrinth of Dimensions of Season 21.
+        /// </summary>
+        public static string AddSeason21LabyrinthRoomsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21LabyrinthRoomsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds the 10 x 10 rooms of the labyrinth floors of S21Emu: 30 paths, 38 areas of other maps, the missions of the rooms and the goblin, and switches the plugin 'Labyrinth of Dimensions rooms (Season 21)' on once. Only the Babylon client plays the rooms. A second run keeps the operator's configuration and switch..
+        /// </summary>
+        public static string AddSeason21LabyrinthRoomsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21LabyrinthRoomsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

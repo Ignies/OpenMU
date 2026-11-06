@@ -87,6 +87,7 @@ public static class ForkInfo
         "level_penalties",
         "labyrinth_league",
         "chaos_castle_survival",
+        "labyrinth_rooms",
     ];
 
     /// <summary>

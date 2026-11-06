@@ -1810,4 +1810,118 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LabyrinthRoomBoard" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="pathNumber">The number of the path of the floor (1-30 in the data).</param>
+    /// <param name="roomIndex">The room the character is in: row * 10 + column.</param>
+    /// <param name="mapNumber">The map whose area the room shows.</param>
+    /// <param name="startX">The start x.</param>
+    /// <param name="startY">The start y.</param>
+    /// <param name="endX">The end x.</param>
+    /// <param name="endY">The end y.</param>
+    /// <param name="areaType">The kind of room: 1 entrance, 2 normal, 3 mission, 4 main mission.</param>
+    /// <param name="areaNumber">The number of the area (EventMaps ID of the data).</param>
+    /// <param name="portalTop">The portal to the row above: 0 closed, 1 open, 2 opens with the mission of the room.</param>
+    /// <param name="portalBottom">The portal bottom.</param>
+    /// <param name="portalLeft">The portal left.</param>
+    /// <param name="portalRight">The portal right.</param>
+    /// <param name="discovered">The rooms the character opened on this floor: bit (index % 8) of byte (index / 8).</param>
+    /// <param name="cleared">The rooms whose mission is done, in the same bit order.</param>
+    /// <remarks>
+    /// Is sent by the server when: When a floor of the Labyrinth of Dimensions starts in its entrance room, after each move to another room and when the mission of the room is done, while the plugin of the labyrinth rooms is on.
+    /// Causes reaction on client side: The client draws the area of the other map as the room, its portals and the board of the floor.
+    /// </remarks>
+    public static async ValueTask SendLabyrinthRoomBoardAsync(this IConnection? connection, byte @pathNumber, byte @roomIndex, ushort @mapNumber, byte @startX, byte @startY, byte @endX, byte @endY, byte @areaType, byte @areaNumber, byte @portalTop, byte @portalBottom, byte @portalLeft, byte @portalRight, Memory<byte> @discovered, Memory<byte> @cleared)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = LabyrinthRoomBoardRef.Length;
+            var packet = new LabyrinthRoomBoardRef(connection.Output.GetSpan(length)[..length]);
+            packet.PathNumber = @pathNumber;
+            packet.RoomIndex = @roomIndex;
+            packet.MapNumber = @mapNumber;
+            packet.StartX = @startX;
+            packet.StartY = @startY;
+            packet.EndX = @endX;
+            packet.EndY = @endY;
+            packet.AreaType = @areaType;
+            packet.AreaNumber = @areaNumber;
+            packet.PortalTop = @portalTop;
+            packet.PortalBottom = @portalBottom;
+            packet.PortalLeft = @portalLeft;
+            packet.PortalRight = @portalRight;
+            @discovered.Span.CopyTo(packet.Discovered);
+            @cleared.Span.CopyTo(packet.Cleared);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LabyrinthRoomMoveRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="direction">0 top, 1 bottom, 2 left, 3 right.</param>
+    /// <remarks>
+    /// Is sent by the client when: The character walked into a portal of its room in the Labyrinth of Dimensions.
+    /// Causes reaction on server side: The server moves the character into the next room (LabyrinthRoomBoard and LabyrinthRoomMission follow) and answers with LabyrinthRoomMoveResult.
+    /// </remarks>
+    public static async ValueTask SendLabyrinthRoomMoveRequestAsync(this IConnection? connection, byte @direction)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = LabyrinthRoomMoveRequestRef.Length;
+            var packet = new LabyrinthRoomMoveRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Direction = @direction;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="LabyrinthRoomMoveResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="direction">The direction.</param>
+    /// <param name="result">0 moved, 1 no portal or no room behind it, 2 the mission of the room isn't done, 3 not playing the rooms of a labyrinth.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a LabyrinthRoomMoveRequest.
+    /// Causes reaction on client side: The client tells why the portal doesn't open, if it doesn't.
+    /// </remarks>
+    public static async ValueTask SendLabyrinthRoomMoveResultAsync(this IConnection? connection, byte @direction, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = LabyrinthRoomMoveResultRef.Length;
+            var packet = new LabyrinthRoomMoveResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Direction = @direction;
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

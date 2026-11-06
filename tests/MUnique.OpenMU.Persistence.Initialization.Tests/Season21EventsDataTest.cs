@@ -211,6 +211,57 @@ internal class Season21EventsDataTest
     }
 
     /// <summary>
+    /// The rooms of the labyrinth have the 38 areas, 11 missions and 30 paths of S21Emu, each path with one entrance and
+    /// one main mission, and are on.
+    /// </summary>
+    [Test]
+    public void LabyrinthRoomsHaveTheDataOfThePathFile()
+    {
+        var plugIn = this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(GameLogic.MiniGames.Season21.LabyrinthRoomsPlugIn).GUID);
+        var rooms = plugIn.GetConfiguration<GameLogic.MiniGames.Season21.LabyrinthRoomsConfiguration>(new GameConfigurationReferenceHandler(this._gameConfiguration))!;
+        Assert.That(plugIn.IsActive, Is.True);
+        Assert.That((rooms.Areas.Count, rooms.Missions.Count, rooms.Paths.Count), Is.EqualTo((38, 11, 30)));
+        Assert.That(rooms.Areas.Single(a => a.Number == 25), Has.Property(nameof(GameLogic.MiniGames.Season21.LabyrinthArea.MapNumber)).EqualTo((short)113).And.Property(nameof(GameLogic.MiniGames.Season21.LabyrinthArea.EndX)).EqualTo((byte)198));
+        var main = rooms.Missions.Single(m => m.Type == GameLogic.MiniGames.Season21.LabyrinthAreaType.MainMission);
+        Assert.That(main.Goals.Select(g => ((int)g.Kind, g.Target)), Is.EqualTo(new[] { (1, 15L), (1, 15L), (3, 1_500_000L), (3, 1_500_000L), (4, 60L), (4, 60L) }));
+        Assert.That(main.Monsters.Sum(m => m.Count), Is.EqualTo(10));
+        Assert.That(rooms.Missions.Where(m => m.Type < GameLogic.MiniGames.Season21.LabyrinthAreaType.Mission).SelectMany(m => m.Monsters), Is.Empty);
+        Assert.That(rooms.Paths.Select(p => Enumerable.Range(0, 100).Count(i => p.GetRoom(i).Type == GameLogic.MiniGames.Season21.LabyrinthAreaType.Entrance)), Is.All.EqualTo(1));
+        Assert.That(rooms.Paths.Select(p => Enumerable.Range(0, 100).Count(i => p.GetRoom(i).Type == GameLogic.MiniGames.Season21.LabyrinthAreaType.MainMission)), Is.All.EqualTo(1));
+        var first = rooms.Paths[0].GetRoom(0);
+        Assert.That((first.Area, first.Type, first.Index), Is.EqualTo((20, GameLogic.MiniGames.Season21.LabyrinthAreaType.Mission, 4)));
+        Assert.That((rooms.Goblin?.MonsterNumber, rooms.Goblin?.ChancePercent, rooms.Goblin?.Points, rooms.GoblinMaximumOpenRooms), Is.EqualTo(((short?)757, (int?)20, (int?)2000, 10)));
+        Assert.That(rooms.Areas.Select(a => a.MapNumber).Distinct(), Is.All.Matches<short>(map => this._gameConfiguration.Maps.Any(m => m.Number == map)), "every area's map exists");
+    }
+
+    /// <summary>
+    /// A second run of the rooms update keeps what the operator changed.
+    /// </summary>
+    [Test]
+    public async Task LabyrinthRoomsKeepTheOperatorsConfigurationAsync()
+    {
+        var plugIn = this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(GameLogic.MiniGames.Season21.LabyrinthRoomsPlugIn).GUID);
+        var referenceHandler = new GameConfigurationReferenceHandler(this._gameConfiguration);
+        var rooms = plugIn.GetConfiguration<GameLogic.MiniGames.Season21.LabyrinthRoomsConfiguration>(referenceHandler)!;
+        rooms.GoblinMaximumOpenRooms = 5;
+        plugIn.SetConfiguration(rooms, referenceHandler);
+        plugIn.IsActive = false;
+        try
+        {
+            await new AddSeason21LabyrinthRoomsUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
+
+            Assert.That(plugIn.GetConfiguration<GameLogic.MiniGames.Season21.LabyrinthRoomsConfiguration>(referenceHandler)!.GoblinMaximumOpenRooms, Is.EqualTo(5));
+            Assert.That(plugIn.IsActive, Is.False);
+        }
+        finally
+        {
+            rooms.GoblinMaximumOpenRooms = 10;
+            plugIn.SetConfiguration(rooms, referenceHandler);
+            plugIn.IsActive = true;
+        }
+    }
+
+    /// <summary>
     /// Applying the updates again changes nothing.
     /// </summary>
     [Test]
@@ -253,6 +304,7 @@ internal class Season21EventsDataTest
         new AddSeason21CrywolfUpdatePlugIn(),
         new AddSeason21LabyrinthLeagueUpdatePlugIn(),
         new AddSeason21ChaosCastleSurvivalUpdatePlugIn(),
+        new AddSeason21LabyrinthRoomsUpdatePlugIn(),
     ];
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6Async()

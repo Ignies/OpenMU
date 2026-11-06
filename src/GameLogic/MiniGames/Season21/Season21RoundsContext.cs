@@ -34,6 +34,8 @@ public sealed class Season21RoundsContext : MiniGameContext
 
     private readonly LabyrinthLeaguePlugIn? _league;
 
+    private LabyrinthRun? _rooms;
+
     private TaskCompletionSource _roundCleared = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     private DateTime _roundEndsAt;
@@ -68,6 +70,11 @@ public sealed class Season21RoundsContext : MiniGameContext
     /// </summary>
     public int ClearedRounds => this._clearedRounds;
 
+    /// <summary>
+    /// Gets the rooms of a labyrinth run, when it plays them.
+    /// </summary>
+    public LabyrinthRun? Rooms => this._rooms;
+
     /// <inheritdoc />
     protected override bool AllowEnterWhilePlaying => this._isInstance;
 
@@ -97,6 +104,11 @@ public sealed class Season21RoundsContext : MiniGameContext
             }
         }
 
+        if (this.Definition.Type == MiniGameType.LabyrinthOfDimensions && players.FirstOrDefault() is { } runner)
+        {
+            this._rooms = LabyrinthRoomsPlugIn.Get(this.GameContext)?.CreateRun(this, runner);
+        }
+
         var token = this.GameEndedToken;
         _ = Task.Run(() => this.RunRoundsAsync(token), token);
     }
@@ -105,7 +117,23 @@ public sealed class Season21RoundsContext : MiniGameContext
     protected override void OnMonsterDied(object? sender, DeathInformation e)
     {
         base.OnMonsterDied(sender, e);
-        if (sender is not Monster monster || !this._roundMonsters.TryRemove(monster, out var points))
+        if (sender is not Monster monster)
+        {
+            return;
+        }
+
+        if (this._rooms?.MonsterDied(monster) is { } roomPoints)
+        {
+            if (this.Map.GetObject(e.KillerId) is Player roomKiller)
+            {
+                this.AddScore(roomKiller, roomPoints);
+                _ = this.ShowScoreAsync(roomKiller).AsTask();
+            }
+
+            return;
+        }
+
+        if (!this._roundMonsters.TryRemove(monster, out var points))
         {
             return;
         }
@@ -263,16 +291,24 @@ public sealed class Season21RoundsContext : MiniGameContext
         var roundCleared = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         this._roundCleared = roundCleared;
         this._roundEndsAt = DateTime.UtcNow.Add(this._rounds.RoundDuration);
-        await this.SpawnAsync(round.MonsterNumber, round.Count, round.SpawnKind, round.Points, round).ConfigureAwait(false);
-        foreach (var bonus in round.BonusMonsters.Where(b => Rand.NextRandomBool(b.ChancePercent)))
+        if (this._rooms is { } rooms)
         {
-            await this.SpawnAsync(bonus.MonsterNumber, bonus.Count, bonus.SpawnKind, bonus.Points, null).ConfigureAwait(false);
+            // The rooms spawn the monsters of the floor; the main mission clears it.
+            await rooms.StartFloorAsync(round, roundCleared, cancellationToken).ConfigureAwait(false);
         }
-
-        if (this._roundMonsters.IsEmpty)
+        else
         {
-            this.Logger.LogWarning("{context}: Round {round} spawned no monster.", this, this._round);
-            return false;
+            await this.SpawnAsync(round.MonsterNumber, round.Count, round.SpawnKind, round.Points, round).ConfigureAwait(false);
+            foreach (var bonus in round.BonusMonsters.Where(b => Rand.NextRandomBool(b.ChancePercent)))
+            {
+                await this.SpawnAsync(bonus.MonsterNumber, bonus.Count, bonus.SpawnKind, bonus.Points, null).ConfigureAwait(false);
+            }
+
+            if (this._roundMonsters.IsEmpty)
+            {
+                this.Logger.LogWarning("{context}: Round {round} spawned no monster.", this, this._round);
+                return false;
+            }
         }
 
         await this.ForEachPlayerAsync(player => this.ShowScoreAsync(player).AsTask()).ConfigureAwait(false);
@@ -283,6 +319,11 @@ public sealed class Season21RoundsContext : MiniGameContext
         {
             this._roundMonsters.TryRemove(monster, out _);
             await EventMonsterSpawner.RemoveAsync(this, monster).ConfigureAwait(false);
+        }
+
+        if (this._rooms is { } floorRooms)
+        {
+            await floorRooms.EndFloorAsync().ConfigureAwait(false);
         }
 
         return cleared;

@@ -60,6 +60,7 @@
     "creatable_classes",
     "level_penalties",
     "labyrinth_league",
-    "chaos_castle_survival"
+    "chaos_castle_survival",
+    "labyrinth_rooms"
   ]
 }

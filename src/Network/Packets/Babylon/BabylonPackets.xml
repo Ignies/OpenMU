@@ -516,6 +516,31 @@
         </Field>
       </Fields>
     </Structure>
+    <Structure>
+      <Name>LabyrinthGoalState</Name>
+      <Description>A goal of the mission of a room of the Labyrinth of Dimensions and its progress.</Description>
+      <Length>12</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>Kind</Name>
+          <Description>The kind: 1 kill, 2 kill the monsters of the room in time, 3 damage, 4 MU Helper seconds, 5 kill the monsters of the room in time without a health potion, 6 the same without a mana potion, 7 experience (counts as met).</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Target</Name>
+          <Description>The target: monsters (1), minutes (2, 5, 6), damage (3), seconds (4) or experience (7).</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Progress</Name>
+          <Description>The progress since the mission (re)started: the kills for 1, 2, 5 and 6, the damage for 3, the seconds for 4.</Description>
+        </Field>
+      </Fields>
+    </Structure>
   </Structures>
   <Packets>
     <Packet>
@@ -2668,6 +2693,182 @@
           <Type>ShortLittleEndian</Type>
           <Name>FloorsToday</Name>
           <Description>The number of floors cleared today.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>B6</SubCode>
+      <Name>LabyrinthRoomBoard</Name>
+      <Length>44</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When a floor of the Labyrinth of Dimensions starts in its entrance room, after each move to another room and when the mission of the room is done, while the plugin of the labyrinth rooms is on.</SentWhen>
+      <CausedReaction>The client draws the area of the other map as the room, its portals and the board of the floor.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>PathNumber</Name>
+          <Description>The number of the path of the floor (1-30 in the data).</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>RoomIndex</Name>
+          <Description>The room the character is in: row * 10 + column.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MapNumber</Name>
+          <Description>The map whose area the room shows.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>StartX</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>StartY</Name>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>EndX</Name>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Byte</Type>
+          <Name>EndY</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>AreaType</Name>
+          <Description>The kind of room: 1 entrance, 2 normal, 3 mission, 4 main mission.</Description>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>Byte</Type>
+          <Name>AreaNumber</Name>
+          <Description>The number of the area (EventMaps ID of the data).</Description>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>Byte</Type>
+          <Name>PortalTop</Name>
+          <Description>The portal to the row above: 0 closed, 1 open, 2 opens with the mission of the room.</Description>
+        </Field>
+        <Field>
+          <Index>15</Index>
+          <Type>Byte</Type>
+          <Name>PortalBottom</Name>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>Byte</Type>
+          <Name>PortalLeft</Name>
+        </Field>
+        <Field>
+          <Index>17</Index>
+          <Type>Byte</Type>
+          <Name>PortalRight</Name>
+        </Field>
+        <Field>
+          <Index>18</Index>
+          <Type>Binary</Type>
+          <Name>Discovered</Name>
+          <Description>The rooms the character opened on this floor: bit (index % 8) of byte (index / 8).</Description>
+          <Length>13</Length>
+        </Field>
+        <Field>
+          <Index>31</Index>
+          <Type>Binary</Type>
+          <Name>Cleared</Name>
+          <Description>The rooms whose mission is done, in the same bit order.</Description>
+          <Length>13</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>B7</SubCode>
+      <Name>LabyrinthRoomMission</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the character enters a room of the Labyrinth of Dimensions, when the progress of its mission changes (damage and helper time at most once a second) and when the mission is done.</SentWhen>
+      <CausedReaction>The client shows the mission of the room and its progress.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>AreaType</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>MissionIndex</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Boolean</Type>
+          <Name>Completed</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>GoalCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>LabyrinthGoalState</TypeName>
+          <Name>Goals</Name>
+          <ItemCountField>GoalCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>B8</SubCode>
+      <Name>LabyrinthRoomMoveRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The character walked into a portal of its room in the Labyrinth of Dimensions.</SentWhen>
+      <CausedReaction>The server moves the character into the next room (LabyrinthRoomBoard and LabyrinthRoomMission follow) and answers with LabyrinthRoomMoveResult.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Direction</Name>
+          <Description>0 top, 1 bottom, 2 left, 3 right.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>B9</SubCode>
+      <Name>LabyrinthRoomMoveResult</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a LabyrinthRoomMoveRequest.</SentWhen>
+      <CausedReaction>The client tells why the portal doesn't open, if it doesn't.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Direction</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 moved, 1 no portal or no room behind it, 2 the mission of the room isn't done, 3 not playing the rooms of a labyrinth.</Description>
         </Field>
       </Fields>
     </Packet>

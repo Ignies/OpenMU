@@ -1006,6 +1006,56 @@ public readonly struct SeasonPassMission
 
 
 /// <summary>
+/// A goal of the mission of a room of the Labyrinth of Dimensions and its progress..
+/// </summary>
+public readonly struct LabyrinthGoalState
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LabyrinthGoalState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LabyrinthGoalState(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 12;
+
+    /// <summary>
+    /// Gets or sets the kind: 1 kill, 2 kill the monsters of the room in time, 3 damage, 4 MU Helper seconds, 5 kill the monsters of the room in time without a health potion, 6 the same without a mana potion, 7 experience (counts as met).
+    /// </summary>
+    public byte Kind
+    {
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the target: monsters (1), minutes (2, 5, 6), damage (3), seconds (4) or experience (7).
+    /// </summary>
+    public uint Target
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[4..]);
+        set => WriteUInt32LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the progress since the mission (re)started: the kills for 1, 2, 5 and 6, the damage for 3, the seconds for 4.
+    /// </summary>
+    public uint Progress
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[8..]);
+        set => WriteUInt32LittleEndian(this._data.Span[8..], value);
+    }
+}
+
+
+/// <summary>
 /// Is sent by the client when: After the login succeeded, when the client logged in with the version of the Babylon client.
 /// Causes reaction on server side: The server answers with the ForkWelcome which tells the client the wire format and the features which are active.
 /// </summary>
@@ -8610,4 +8660,515 @@ public readonly struct LabyrinthLeague
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(LabyrinthLeague packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: When a floor of the Labyrinth of Dimensions starts in its entrance room, after each move to another room and when the mission of the room is done, while the plugin of the labyrinth rooms is on.
+/// Causes reaction on client side: The client draws the area of the other map as the room, its portals and the board of the floor.
+/// </summary>
+public readonly struct LabyrinthRoomBoard
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LabyrinthRoomBoard"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LabyrinthRoomBoard(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LabyrinthRoomBoard"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private LabyrinthRoomBoard(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xB6;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 44;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the number of the path of the floor (1-30 in the data).
+    /// </summary>
+    public byte PathNumber
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the room the character is in: row * 10 + column.
+    /// </summary>
+    public byte RoomIndex
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the map whose area the room shows.
+    /// </summary>
+    public ushort MapNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the start x.
+    /// </summary>
+    public byte StartX
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the start y.
+    /// </summary>
+    public byte StartY
+    {
+        get => this._data.Span[9];
+        set => this._data.Span[9] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the end x.
+    /// </summary>
+    public byte EndX
+    {
+        get => this._data.Span[10];
+        set => this._data.Span[10] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the end y.
+    /// </summary>
+    public byte EndY
+    {
+        get => this._data.Span[11];
+        set => this._data.Span[11] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the kind of room: 1 entrance, 2 normal, 3 mission, 4 main mission.
+    /// </summary>
+    public byte AreaType
+    {
+        get => this._data.Span[12];
+        set => this._data.Span[12] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the number of the area (EventMaps ID of the data).
+    /// </summary>
+    public byte AreaNumber
+    {
+        get => this._data.Span[13];
+        set => this._data.Span[13] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the portal to the row above: 0 closed, 1 open, 2 opens with the mission of the room.
+    /// </summary>
+    public byte PortalTop
+    {
+        get => this._data.Span[14];
+        set => this._data.Span[14] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the portal bottom.
+    /// </summary>
+    public byte PortalBottom
+    {
+        get => this._data.Span[15];
+        set => this._data.Span[15] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the portal left.
+    /// </summary>
+    public byte PortalLeft
+    {
+        get => this._data.Span[16];
+        set => this._data.Span[16] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the portal right.
+    /// </summary>
+    public byte PortalRight
+    {
+        get => this._data.Span[17];
+        set => this._data.Span[17] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the rooms the character opened on this floor: bit (index % 8) of byte (index / 8).
+    /// </summary>
+    public Span<byte> Discovered
+    {
+        get => this._data.Slice(18, 13).Span;
+    }
+
+    /// <summary>
+    /// Gets or sets the rooms whose mission is done, in the same bit order.
+    /// </summary>
+    public Span<byte> Cleared
+    {
+        get => this._data.Slice(31, 13).Span;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LabyrinthRoomBoard"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator LabyrinthRoomBoard(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="LabyrinthRoomBoard"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(LabyrinthRoomBoard packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: When the character enters a room of the Labyrinth of Dimensions, when the progress of its mission changes (damage and helper time at most once a second) and when the mission is done.
+/// Causes reaction on client side: The client shows the mission of the room and its progress.
+/// </summary>
+public readonly struct LabyrinthRoomMission
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LabyrinthRoomMission"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LabyrinthRoomMission(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LabyrinthRoomMission"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private LabyrinthRoomMission(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xB7;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the area type.
+    /// </summary>
+    public byte AreaType
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the mission index.
+    /// </summary>
+    public byte MissionIndex
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the completed.
+    /// </summary>
+    public bool Completed
+    {
+        get => this._data.Span[6..].GetBoolean();
+        set => this._data.Span[6..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the goal count.
+    /// </summary>
+    public byte GoalCount
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="LabyrinthGoalState"/> of the specified index.
+    /// </summary>
+        public LabyrinthGoalState this[int index] => new (this._data.Slice(8 + index * LabyrinthGoalState.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LabyrinthRoomMission"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator LabyrinthRoomMission(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="LabyrinthRoomMission"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(LabyrinthRoomMission packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="LabyrinthGoalState"/>.
+    /// </summary>
+    /// <param name="goalsCount">The count of <see cref="LabyrinthGoalState"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int goalsCount) => goalsCount * LabyrinthGoalState.Length + 8;
+}
+
+
+/// <summary>
+/// Is sent by the client when: The character walked into a portal of its room in the Labyrinth of Dimensions.
+/// Causes reaction on server side: The server moves the character into the next room (LabyrinthRoomBoard and LabyrinthRoomMission follow) and answers with LabyrinthRoomMoveResult.
+/// </summary>
+public readonly struct LabyrinthRoomMoveRequest
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LabyrinthRoomMoveRequest"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LabyrinthRoomMoveRequest(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LabyrinthRoomMoveRequest"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private LabyrinthRoomMoveRequest(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xB8;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets 0 top, 1 bottom, 2 left, 3 right.
+    /// </summary>
+    public byte Direction
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LabyrinthRoomMoveRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator LabyrinthRoomMoveRequest(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="LabyrinthRoomMoveRequest"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(LabyrinthRoomMoveRequest packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After a LabyrinthRoomMoveRequest.
+/// Causes reaction on client side: The client tells why the portal doesn't open, if it doesn't.
+/// </summary>
+public readonly struct LabyrinthRoomMoveResult
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LabyrinthRoomMoveResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public LabyrinthRoomMoveResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LabyrinthRoomMoveResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private LabyrinthRoomMoveResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xB9;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the direction.
+    /// </summary>
+    public byte Direction
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 0 moved, 1 no portal or no room behind it, 2 the mission of the room isn't done, 3 not playing the rooms of a labyrinth.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="LabyrinthRoomMoveResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator LabyrinthRoomMoveResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="LabyrinthRoomMoveResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(LabyrinthRoomMoveResult packet) => packet._data; 
 }

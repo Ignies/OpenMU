@@ -3095,4 +3095,16 @@
   <data name="SeasonPassStateRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of the season pass window (C1 EE D7).</value>
   </data>
+  <data name="LabyrinthRoomsBabylonPlugIn_Name" xml:space="preserve">
+    <value>Labyrinth rooms view (Babylon)</value>
+  </data>
+  <data name="LabyrinthRoomsBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the rooms of the Labyrinth of Dimensions to the Babylon client: the board, the mission and the move result (C1 EE B6, B7, B9).</value>
+  </data>
+  <data name="LabyrinthMoveRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Labyrinth room move (Babylon)</value>
+  </data>
+  <data name="LabyrinthMoveRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the Babylon client to move through a portal of its room in the Labyrinth of Dimensions (C1 EE B8).</value>
+  </data>
 </root>

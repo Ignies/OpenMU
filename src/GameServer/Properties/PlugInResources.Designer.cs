@@ -8857,5 +8857,41 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("SeasonPassStateRequestHandlerPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Labyrinth rooms view (Babylon).
+        /// </summary>
+        public static string LabyrinthRoomsBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LabyrinthRoomsBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the rooms of the Labyrinth of Dimensions to the Babylon client: the board, the mission and the move result (C1 EE B6, B7, B9)..
+        /// </summary>
+        public static string LabyrinthRoomsBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LabyrinthRoomsBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Labyrinth room move (Babylon).
+        /// </summary>
+        public static string LabyrinthMoveRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LabyrinthMoveRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the Babylon client to move through a portal of its room in the Labyrinth of Dimensions (C1 EE B8)..
+        /// </summary>
+        public static string LabyrinthMoveRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LabyrinthMoveRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

@@ -89,6 +89,7 @@ Rules:
 | `instance_zone` | The Instance Zone of Season 21 (map 114): the entrances of the fourth and fifth class trials and of the labyrinth (update "Add the Instance Zone and the Labyrinth of Dimensions of Season 21") |
 | `labyrinth` | The Labyrinth of Dimensions of Season 21 (map 115): a solo instance of 41 floors with Ruud and boxes (same update; event type 10) |
 | `labyrinth_league` | The scores and weekly leagues of the labyrinth: floor points by the daily record, first play and fast finish, a Maze of Dimensions box per floor, groups of five per tier (Bronze, Silver, Gold, Legend), two up and the fifth down every week, the tier reward on the 29th (update "Add the leagues of the Labyrinth of Dimensions of Season 21", plugin "Labyrinth of Dimensions league (Season 21)", off by default; `C1 EE B5 LabyrinthLeague`) |
+| `labyrinth_rooms` | The 10 x 10 rooms of the labyrinth floors: 30 paths of rooms which show areas of 38 other maps, portals between them, mission rooms (kills, kills in time, damage, MU Helper time, no health or mana potion) which open their mission portals, the main mission which clears the floor, the goblin in newly opened rooms (update "Add the rooms of the Labyrinth of Dimensions of Season 21", plugin "Labyrinth of Dimensions rooms (Season 21)", off by default; only a Babylon client plays them; `C1 EE B6`-`B9`) |
 | `chaos_castle_survival` | The Chaos Castle Survival of the Fittest of Season 21 (map 97, gate 443): a Chaos Castle for up to 70 players from level 280 whose games are the try-outs (8th-10th), semi-finals (11th-12th) and final (13th, 1:25) of a monthly tournament; 1 point a monster, 2 a player, 3 the win; the best 20 and 10 go on; the Conqueror's Badge for the champion (update "Add the Chaos Castle Survival of Season 21", plugins "Chaos Castle Survival of the Fittest (Season 21)" and "Chaos Castle Survival start", off by default; event type 13 of the event packets, the castle itself shows the Chaos Castle states) |
 | `boss_battle` | The Boss Battle Together of Season 21 (map 139): one of five bosses for everybody, rewards for damage, top damage and the last hit (update "Add the Boss Battle Together of Season 21"; event type 11) |
 | `acheron_guardian` | The Protector of Acheron of Season 21 (maps 92 and 96): 30 waves of monsters, a bag reward for 100 points (update "Add the Protector of Acheron of Season 21"; event type 12) |
@@ -314,6 +315,31 @@ C1 0E EE B5  LabyrinthLeague (server, on entering the labyrinth and after the ru
   8  u32 LE  points of the week
   12 u16 LE  floors cleared today
 ```
+
+```
+C1 2C EE B6  LabyrinthRoomBoard (server; fork id labyrinth_rooms)    C1 05 EE B8  LabyrinthRoomMoveRequest (client)
+  4  u8      path (1-30)                                             4  u8      0 top, 1 bottom, 2 left, 3 right
+  5  u8      room: row * 10 + column
+  6  u16 LE  map whose area the room shows                         C1 06 EE B9  LabyrinthRoomMoveResult (server)
+  8  u8 x4   start x, start y, end x, end y of the area              4  u8      direction
+  12 u8      room kind: 1 entrance, 2 normal, 3 mission, 4 main      5  u8      0 moved, 1 no portal or room,
+  13 u8      area number (EventMaps ID)                                         2 mission not done, 3 not in rooms
+  14 u8 x4   portals top, bottom, left, right:
+             0 closed, 1 open, 2 opens with the mission
+  18 13 B    opened rooms, bit (i % 8) of byte (i / 8)
+  31 13 B    rooms whose mission is done
+
+C1 08+12n EE B7  LabyrinthRoomMission (server)
+  4  u8      room kind, 5 u8 mission index, 6 bool done, 7 u8 goal count n
+  8  n x 12  goal: 0 u8 kind (1 kill, 2 kill the room's monsters in time, 3 damage, 4 helper seconds,
+             5 / 6 like 2 without health / mana potions, 7 experience), 4 u32 LE target (monsters, minutes,
+             damage, seconds), 8 u32 LE progress (kills, damage or seconds since the mission (re)started)
+```
+
+The board comes when a floor starts (in its entrance room), after each move and when a mission is done; the mission
+with every room and on progress (damage and helper time at most once a second). The client draws the area of the map as
+the room; the server keeps only that area walkable on the run's copy of map 115 and moves the character to the side of
+the room it came through. A client without these packets plays the labyrinth floors without rooms.
 
 Item rewards go into the gremory case where Season 21 does (and the plugin is on), else into the inventory.
 

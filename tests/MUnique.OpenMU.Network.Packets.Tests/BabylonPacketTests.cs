@@ -531,6 +531,32 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the structure size calculation for LabyrinthGoalState.
+    /// </summary>
+    [Test]
+    public void LabyrinthGoalState_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 12;
+        var actualLength = LabyrinthGoalState.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Kind' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Kind' exceeds structure boundary");
+        
+        // Validate field 'Target' boundary
+        Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Target' exceeds structure boundary");
+        
+        // Validate field 'Progress' boundary
+        Assert.That(8 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Progress' exceeds structure boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for ForkHello.
     /// </summary>
     [Test]
@@ -2314,5 +2340,145 @@ public class PacketStructureTests
         // Validate field 'FloorsToday' boundary
         Assert.That(12 + 2, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'FloorsToday' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for LabyrinthRoomBoard.
+    /// </summary>
+    [Test]
+    public void LabyrinthRoomBoard_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 44;
+        var actualLength = LabyrinthRoomBoardRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'PathNumber' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PathNumber' exceeds packet boundary");
+        
+        // Validate field 'RoomIndex' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RoomIndex' exceeds packet boundary");
+        
+        // Validate field 'MapNumber' boundary
+        Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MapNumber' exceeds packet boundary");
+        
+        // Validate field 'StartX' boundary
+        Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'StartX' exceeds packet boundary");
+        
+        // Validate field 'StartY' boundary
+        Assert.That(9 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'StartY' exceeds packet boundary");
+        
+        // Validate field 'EndX' boundary
+        Assert.That(10 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'EndX' exceeds packet boundary");
+        
+        // Validate field 'EndY' boundary
+        Assert.That(11 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'EndY' exceeds packet boundary");
+        
+        // Validate field 'AreaType' boundary
+        Assert.That(12 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'AreaType' exceeds packet boundary");
+        
+        // Validate field 'AreaNumber' boundary
+        Assert.That(13 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'AreaNumber' exceeds packet boundary");
+        
+        // Validate field 'PortalTop' boundary
+        Assert.That(14 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PortalTop' exceeds packet boundary");
+        
+        // Validate field 'PortalBottom' boundary
+        Assert.That(15 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PortalBottom' exceeds packet boundary");
+        
+        // Validate field 'PortalLeft' boundary
+        Assert.That(16 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PortalLeft' exceeds packet boundary");
+        
+        // Validate field 'PortalRight' boundary
+        Assert.That(17 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PortalRight' exceeds packet boundary");
+        
+        // Validate field 'Discovered' boundary
+        Assert.That(18 + 13, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Discovered' exceeds packet boundary");
+        
+        // Validate field 'Cleared' boundary
+        Assert.That(31 + 13, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Cleared' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for LabyrinthRoomMission.
+    /// </summary>
+    [Test]
+    public void LabyrinthRoomMission_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'AreaType' starts at index 4 with size 1
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'AreaType' has invalid negative index");
+        
+        // Field 'MissionIndex' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'MissionIndex' has invalid negative index");
+        
+        // Field 'Completed' starts at index 6 with size 1
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Completed' has invalid negative index");
+        
+        // Field 'GoalCount' starts at index 7 with size 1
+        Assert.That(7, Is.GreaterThanOrEqualTo(0), 
+            "Field 'GoalCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for LabyrinthRoomMoveRequest.
+    /// </summary>
+    [Test]
+    public void LabyrinthRoomMoveRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = LabyrinthRoomMoveRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Direction' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Direction' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for LabyrinthRoomMoveResult.
+    /// </summary>
+    [Test]
+    public void LabyrinthRoomMoveResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 6;
+        var actualLength = LabyrinthRoomMoveResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Direction' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Direction' exceeds packet boundary");
+        
+        // Validate field 'Result' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
     }
 }

@@ -8742,5 +8742,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ChaosCastleSurvivalStartPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Labyrinth of Dimensions rooms (Season 21).
+        /// </summary>
+        public static string LabyrinthRoomsPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LabyrinthRoomsPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The 10 x 10 rooms of a floor of the Labyrinth of Dimensions: each room shows an area of another map, portals lead from room to room, mission rooms open their portals with their mission and the main mission clears the floor (S21Emu LabyrinthOfDimension_Path.xml). Only clients which draw the rooms play them; others play the floors without rooms..
+        /// </summary>
+        public static string LabyrinthRoomsPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LabyrinthRoomsPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }
