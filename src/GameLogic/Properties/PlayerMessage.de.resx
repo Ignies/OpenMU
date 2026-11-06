@@ -1027,4 +1027,13 @@ Inventarerweiterungen: {18}</value>
   <data name="CharacterCannotEvolve" xml:space="preserve">
     <value>{0} hat keine weitere Entwicklung.</value>
   </data>
+  <data name="EvolutionQuestExperienceHeld" xml:space="preserve">
+    <value>Du erhältst keine Erfahrung mehr, bis du die Quest deiner nächsten Klasse abgeschlossen hast.</value>
+  </data>
+  <data name="EvolutionTrialNotForYourClass" xml:space="preserve">
+    <value>Diese Prüfung ist nicht für deine Klasse.</value>
+  </data>
+  <data name="EvolutionTrialLevelTooLowFormat" xml:space="preserve">
+    <value>Komm wieder, wenn du Level {0} erreicht hast.</value>
+  </data>
 </root>

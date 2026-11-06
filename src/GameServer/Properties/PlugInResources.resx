@@ -2861,4 +2861,16 @@
   <data name="UpdateMasterSkillsBabylonPlugIn_Description" xml:space="preserve">
     <value>Sends the master skills to the Babylon client by their numbers, so the classes after Season 6 get their tree.</value>
   </data>
+  <data name="ClassEvolvedBabylonPlugIn_Name" xml:space="preserve">
+    <value>Class evolved (Babylon client)</value>
+  </data>
+  <data name="ClassEvolvedBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the evolution of a character into its next class to the Babylon client (C1 EE 13).</value>
+  </data>
+  <data name="EvolutionQuestStateBabylonPlugIn_Name" xml:space="preserve">
+    <value>Evolution quest state (Babylon client)</value>
+  </data>
+  <data name="EvolutionQuestStateBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows what the next evolution asks for and whether the experience is held to the Babylon client (C1 EE C4).</value>
+  </data>
 </root>

@@ -790,5 +790,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AtlansAbyss3", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Trial Area.
+        /// </summary>
+        public static string TrialArea {
+            get {
+                return ResourceManager.GetString("TrialArea", resourceCulture);
+            }
+        }
     }
 }

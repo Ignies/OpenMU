@@ -3615,4 +3615,7 @@
   <data name="ItemRequirementFormula_Attribute_Description" xml:space="preserve">
     <value>Das Attribut der Gegenstandsanforderungen, für das diese Formel gilt.</value>
   </data>
+  <data name="QuestRewardType_CharacterEvolution_Caption" xml:space="preserve">
+    <value>Charakterentwicklung</value>
+  </data>
 </root>

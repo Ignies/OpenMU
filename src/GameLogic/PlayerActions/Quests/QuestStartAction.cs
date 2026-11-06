@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 
+using MUnique.OpenMU.GameLogic.EvolutionQuests;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.Quest;
 
@@ -34,6 +35,12 @@ public class QuestStartAction
             return;
         }
 
+        if (!quest.IsStartableInChain(player))
+        {
+            player.Logger.LogDebug("Failed, the quest {0} isn't the next one of its evolution chain, or the level rule isn't met.", quest);
+            return;
+        }
+
         var questState = player.SelectedCharacter!.QuestStates.FirstOrDefault(q => q.Group == group);
         if (questState is null)
         {
@@ -46,6 +53,11 @@ public class QuestStartAction
         {
             player.Logger.LogDebug("There is already an active quest of this group.");
             await player.InvokeViewPlugInAsync<IQuestProgressPlugIn>(p => p.ShowQuestProgressAsync(questState.ActiveQuest, false)).ConfigureAwait(false);
+            if (EvolutionQuestFeaturePlugIn.Get(player.GameContext) is { } evolutionQuests)
+            {
+                await evolutionQuests.QuestRequestedAsync(player, questState.ActiveQuest).ConfigureAwait(false);
+            }
+
             return;
         }
 
@@ -71,5 +83,9 @@ public class QuestStartAction
         await questState.ClearAsync(player.PersistenceContext).ConfigureAwait(false);
         questState.ActiveQuest = quest;
         await player.InvokeViewPlugInAsync<IQuestStartedPlugIn>(p => p.QuestStartedAsync(quest)).ConfigureAwait(false);
+        if (EvolutionQuestFeaturePlugIn.Get(player.GameContext) is { } trials)
+        {
+            await trials.QuestRequestedAsync(player, quest).ConfigureAwait(false);
+        }
     }
 }

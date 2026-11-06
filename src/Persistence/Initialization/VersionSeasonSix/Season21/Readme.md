@@ -84,6 +84,13 @@ and Deventer (Arca War), the mining spots of Kubera Mine, the boss Nix (it's
 defined, but the data spawns it by an event), the elite zone flag of Scorched
 Canyon and the Aquilas Temple (Season 21), whose spawns aren't taken from the data yet.
 
+## Evolution quests
+
+The Trial Area (121, `Terrain122.att`) with Sent and Eunice, their town NPCs in Lorencia and Devias and the fourth and
+fifth class quests come with the optional update "Add the evolution quests of Season 21"
+(`Season21EvolutionQuestData`, `Season21EvolutionQuestsInitializer`); the rules and the trial are in
+`GameLogic/EvolutionQuests` (see its readme).
+
 ## Gear
 
 `Season21GearData` holds the items of Season 21 which a Season 6 character

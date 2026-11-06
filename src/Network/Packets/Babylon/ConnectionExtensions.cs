@@ -282,4 +282,72 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ClassEvolved" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerId">The player id.</param>
+    /// <param name="classCode">The class code of the new class.</param>
+    /// <param name="reason">0 quest, 1 game master, 2 item.</param>
+    /// <remarks>
+    /// Is sent by the server when: A character in the view of a Babylon client (or its own) evolved into its next class.
+    /// Causes reaction on client side: The client shows the evolution and the body of the new class.
+    /// </remarks>
+    public static async ValueTask SendClassEvolvedAsync(this IConnection? connection, ushort @playerId, byte @classCode, byte @reason)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ClassEvolvedRef.Length;
+            var packet = new ClassEvolvedRef(connection.Output.GetSpan(length)[..length]);
+            packet.PlayerId = @playerId;
+            packet.ClassCode = @classCode;
+            packet.Reason = @reason;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="EvolutionQuestState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="nextEvolution">The evolution of the next class (3 fourth, 4 fifth), 0xFF when no evolution quest leads further.</param>
+    /// <param name="ruleMet">The character meets the level rule of the next evolution and may start its quest.</param>
+    /// <param name="experienceHeld">The character gains no experience until it evolves.</param>
+    /// <param name="levelKey">What the required level counts: 1 level plus master level, 2 power level (level plus the worth of the stars), 3 Season 21 total level.</param>
+    /// <param name="requiredLevel">The level which the next evolution asks for.</param>
+    /// <remarks>
+    /// Is sent by the server when: The character entered a map, completed a quest, or its experience got held at the level of its next evolution.
+    /// Causes reaction on client side: The client shows what the next evolution asks for, and that the experience is held.
+    /// </remarks>
+    public static async ValueTask SendEvolutionQuestStateAsync(this IConnection? connection, byte @nextEvolution, bool @ruleMet, bool @experienceHeld, byte @levelKey, ushort @requiredLevel)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = EvolutionQuestStateRef.Length;
+            var packet = new EvolutionQuestStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.NextEvolution = @nextEvolution;
+            packet.RuleMet = @ruleMet;
+            packet.ExperienceHeld = @experienceHeld;
+            packet.LevelKey = @levelKey;
+            packet.RequiredLevel = @requiredLevel;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

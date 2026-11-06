@@ -64,4 +64,10 @@ public enum QuestRewardType
     /// The completed quest rewards an additional skill, if not yet learned.
     /// </summary>
     Skill,
+
+    /// <summary>
+    /// The character evolves into the next class of its chain (<see cref="CharacterClass.NextGenerationClass"/>),
+    /// checking the level rule of the evolution. The evolution quests of the fourth and fifth class use it.
+    /// </summary>
+    CharacterEvolution,
 }

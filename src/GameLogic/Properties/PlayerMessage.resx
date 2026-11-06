@@ -1180,4 +1180,13 @@ Inventory Extensions: {18}</value>
   <data name="CharacterCannotEvolve" xml:space="preserve">
     <value>{0} has no next evolution.</value>
   </data>
+  <data name="EvolutionQuestExperienceHeld" xml:space="preserve">
+    <value>You gain no more experience until you complete the quest of your next class.</value>
+  </data>
+  <data name="EvolutionTrialNotForYourClass" xml:space="preserve">
+    <value>This trial is not for your class.</value>
+  </data>
+  <data name="EvolutionTrialLevelTooLowFormat" xml:space="preserve">
+    <value>Come back when you reach level {0}.</value>
+  </data>
 </root>

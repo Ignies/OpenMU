@@ -48,6 +48,7 @@ public static class ForkInfo
         "evolutions_45",
         "s21_skills",
         "enhance_tree",
+        "evolution_quests",
     ];
 
     /// <summary>

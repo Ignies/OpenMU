@@ -985,4 +985,25 @@
   <data name="LizardKingOfAbyss" xml:space="preserve"><value>Lizard King of Abyss</value></data>
   <data name="EliteGreatBahamutOfAbyss" xml:space="preserve"><value>(Elite) Great Bahamut of Abyss</value></data>
   <data name="EliteLizardKingOfAbyss" xml:space="preserve"><value>(Elite) Lizard King of Abyss</value></data>
+  <data name="Sent" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="SentTown" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="SentQuest" xml:space="preserve">
+    <value>Sent</value>
+  </data>
+  <data name="Eunice" xml:space="preserve">
+    <value>Eunice</value>
+  </data>
+  <data name="EuniceAndGiant" xml:space="preserve">
+    <value>Eunice and Giant</value>
+  </data>
+  <data name="EuniceVillage" xml:space="preserve">
+    <value>Eunice</value>
+  </data>
+  <data name="EuniceQuest" xml:space="preserve">
+    <value>Eunice</value>
+  </data>
 </root>

@@ -8155,5 +8155,41 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("UpdateMasterSkillsBabylonPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Class evolved (Babylon client).
+        /// </summary>
+        public static string ClassEvolvedBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ClassEvolvedBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the evolution of a character into its next class to the Babylon client (C1 EE 13)..
+        /// </summary>
+        public static string ClassEvolvedBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ClassEvolvedBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Evolution quest state (Babylon client).
+        /// </summary>
+        public static string EvolutionQuestStateBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("EvolutionQuestStateBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows what the next evolution asks for and whether the experience is held to the Babylon client (C1 EE C4)..
+        /// </summary>
+        public static string EvolutionQuestStateBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("EvolutionQuestStateBabylonPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

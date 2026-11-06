@@ -94,7 +94,7 @@ internal class ConfigurationNameResourcesTests
 
     /// <summary>
     /// The built-in names of all initializations are taken from the resources, including their source keys,
-    /// and every resource key is used by at least one initialization or the optional maps and classes of the later seasons.
+    /// and every resource key is used by at least one initialization or the optional maps, classes and evolution quests of the later seasons.
     /// </summary>
     /// <returns>The task.</returns>
     [Test]
@@ -115,9 +115,10 @@ internal class ConfigurationNameResourcesTests
             var configuration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
             if (version == "Season6")
             {
-                // The names of the maps and classes of the later seasons are used by optional updates, which a new database leaves pending.
+                // The names of the maps, classes and evolution quests of the later seasons are used by optional updates, which a new database leaves pending.
                 await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
                 await new AddSeason21ClassesUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
+                await new AddSeason21EvolutionQuestsUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
             }
 
             var names = LocalizedCaption.FindAll(configuration).Select(caption => caption.Value)

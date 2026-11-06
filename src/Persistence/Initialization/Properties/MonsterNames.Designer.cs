@@ -4255,5 +4255,68 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("EliteLizardKingOfAbyss", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sent.
+        /// </summary>
+        public static string Sent {
+            get {
+                return ResourceManager.GetString("Sent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sent.
+        /// </summary>
+        public static string SentTown {
+            get {
+                return ResourceManager.GetString("SentTown", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sent.
+        /// </summary>
+        public static string SentQuest {
+            get {
+                return ResourceManager.GetString("SentQuest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Eunice.
+        /// </summary>
+        public static string Eunice {
+            get {
+                return ResourceManager.GetString("Eunice", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Eunice and Giant.
+        /// </summary>
+        public static string EuniceAndGiant {
+            get {
+                return ResourceManager.GetString("EuniceAndGiant", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Eunice.
+        /// </summary>
+        public static string EuniceVillage {
+            get {
+                return ResourceManager.GetString("EuniceVillage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Eunice.
+        /// </summary>
+        public static string EuniceQuest {
+            get {
+                return ResourceManager.GetString("EuniceQuest", resourceCulture);
+            }
+        }
     }
 }

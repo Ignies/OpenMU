@@ -1180,4 +1180,13 @@ Extensões de inventário: {18}</value>
   <data name="CharacterCannotEvolve" xml:space="preserve">
     <value>{0} não tem próxima evolução.</value>
   </data>
+  <data name="EvolutionQuestExperienceHeld" xml:space="preserve">
+    <value>Você não ganha mais experiência até completar a missão da sua próxima classe.</value>
+  </data>
+  <data name="EvolutionTrialNotForYourClass" xml:space="preserve">
+    <value>Esta prova não é para a sua classe.</value>
+  </data>
+  <data name="EvolutionTrialLevelTooLowFormat" xml:space="preserve">
+    <value>Volte quando alcançar o nível {0}.</value>
+  </data>
 </root>

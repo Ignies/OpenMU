@@ -2631,5 +2631,59 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FindTheScrollOfEmperorDarkKnight", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 4th Class Upgrade - Eligibility Test.
+        /// </summary>
+        public static string FourthClassEligibilityTest {
+            get {
+                return ResourceManager.GetString("FourthClassEligibilityTest", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 4th Class Upgrade - New Battle (1).
+        /// </summary>
+        public static string FourthClassNewBattle1 {
+            get {
+                return ResourceManager.GetString("FourthClassNewBattle1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 4th Class Upgrade - New Battle (2).
+        /// </summary>
+        public static string FourthClassNewBattle2 {
+            get {
+                return ResourceManager.GetString("FourthClassNewBattle2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 5th Class Up - New Power Nuke.
+        /// </summary>
+        public static string FifthClassNewPowerNuke {
+            get {
+                return ResourceManager.GetString("FifthClassNewPowerNuke", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 5th Class Up - New Power Bolt.
+        /// </summary>
+        public static string FifthClassNewPowerBolt {
+            get {
+                return ResourceManager.GetString("FifthClassNewPowerBolt", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 5th Class Up - New Power AoE.
+        /// </summary>
+        public static string FifthClassNewPowerAoE {
+            get {
+                return ResourceManager.GetString("FifthClassNewPowerAoE", resourceCulture);
+            }
+        }
     }
 }

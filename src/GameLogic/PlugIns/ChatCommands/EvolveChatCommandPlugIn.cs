@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.PlayerActions.Character;
+using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -49,6 +50,7 @@ public class EvolveChatCommandPlugIn : ChatCommandPlugInBase<EvolveChatCommandPl
 
         if (new EvolveCharacterAction().TryEvolve(targetPlayer, false))
         {
+            await targetPlayer.ForEachWorldObserverAsync<IClassEvolvedPlugIn>(p => p.ClassEvolvedAsync(targetPlayer, ClassEvolutionReason.GameMaster), true).ConfigureAwait(false);
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterEvolved), character.Name, character.CharacterClass?.Name.ToString() ?? string.Empty).ConfigureAwait(false);
         }
         else

@@ -5592,5 +5592,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("EnhanceTreeConfiguration_Formulas_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Evolution quests (4th and 5th class).
+        /// </summary>
+        public static string EvolutionQuestFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("EvolutionQuestFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The trial of the 4th and 5th class quests: the town NPCs which take a character to the trial map, the monsters of each step and the kills of party members. Holds the experience of a 3rd class character at the level of the 4th evolution until it did the quest (setting)..
+        /// </summary>
+        public static string EvolutionQuestFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("EvolutionQuestFeaturePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

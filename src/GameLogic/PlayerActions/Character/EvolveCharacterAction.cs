@@ -4,9 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Character;
 
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Classes;
-using MUnique.OpenMU.GameLogic.Progression;
 
 /// <summary>
 /// Evolves the selected character into its <see cref="CharacterClass.NextGenerationClass"/>. The evolution quests and
@@ -18,6 +16,18 @@ using MUnique.OpenMU.GameLogic.Progression;
 public class EvolveCharacterAction
 {
     /// <summary>
+    /// Determines whether the selected character of the player can evolve.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="checkRequirement">If set to <c>true</c>, the level rule of the evolution is checked.</param>
+    /// <returns><c>true</c>, if the character can evolve.</returns>
+    public static bool CanEvolve(Player player, bool checkRequirement)
+    {
+        return player.SelectedCharacter is { CharacterClass.NextGenerationClass: { IsActive: true } next }
+               && (!checkRequirement || next.GetEvolution() is not { } evolution || player.MeetsEvolutionRule(evolution));
+    }
+
+    /// <summary>
     /// Tries to evolve the selected character of the player.
     /// </summary>
     /// <param name="player">The player.</param>
@@ -25,20 +35,8 @@ public class EvolveCharacterAction
     /// <returns><c>true</c>, if the character evolved.</returns>
     public bool TryEvolve(Player player, bool checkRequirement)
     {
-        if (player.SelectedCharacter is not { CharacterClass.NextGenerationClass: { IsActive: true } next } character)
-        {
-            return false;
-        }
-
-        if (checkRequirement
-            && next.GetEvolution() is { } evolution
-            && player.Attributes is { } attributes
-            && !EvolutionRules.IsMet(
-                evolution,
-                (int)attributes[Stats.Level],
-                (int)attributes[Stats.MasterLevel],
-                (int)attributes[Stats.Resets],
-                ProgressionFeaturePlugIn.GetWorld(player.GameContext)?.Configuration))
+        if (!CanEvolve(player, checkRequirement)
+            || player.SelectedCharacter is not { CharacterClass.NextGenerationClass: { } next } character)
         {
             return false;
         }

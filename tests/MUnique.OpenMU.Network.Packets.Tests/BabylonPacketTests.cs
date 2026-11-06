@@ -443,4 +443,64 @@ public class PacketStructureTests
         Assert.That(5, Is.GreaterThanOrEqualTo(0), 
             "Field 'SkillCount' has invalid negative index");
     }
+
+    /// <summary>
+    /// Tests the packet size calculation for ClassEvolved.
+    /// </summary>
+    [Test]
+    public void ClassEvolved_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = ClassEvolvedRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'PlayerId' boundary
+        Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PlayerId' exceeds packet boundary");
+        
+        // Validate field 'ClassCode' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ClassCode' exceeds packet boundary");
+        
+        // Validate field 'Reason' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Reason' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for EvolutionQuestState.
+    /// </summary>
+    [Test]
+    public void EvolutionQuestState_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 10;
+        var actualLength = EvolutionQuestStateRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'NextEvolution' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'NextEvolution' exceeds packet boundary");
+        
+        // Validate field 'RuleMet' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RuleMet' exceeds packet boundary");
+        
+        // Validate field 'ExperienceHeld' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ExperienceHeld' exceeds packet boundary");
+        
+        // Validate field 'LevelKey' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'LevelKey' exceeds packet boundary");
+        
+        // Validate field 'RequiredLevel' boundary
+        Assert.That(8 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RequiredLevel' exceeds packet boundary");
+    }
 }

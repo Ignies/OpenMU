@@ -59,6 +59,7 @@ Rules:
 | `evolutions_45` | The fourth and fifth evolution of the Season 6 classes and their level rules per progression mode |
 | `s21_skills` | The skills of Season 21: the nine new classes, the fourth and fifth evolution skills, the master tree nodes Season 21 adds, the books (update "Add the skills of Season 21") |
 | `enhance_tree` | The skill enhancement tree of the fourth evolution and its points per progression mode (`src/GameLogic/EnhanceTree`) |
+| `evolution_quests` | The fourth and fifth class quests, the Trial Area and the experience hold at the fourth evolution (update "Add the evolution quests of Season 21", `src/GameLogic/EvolutionQuests`) |
 
 ## Balance
 
@@ -93,8 +94,8 @@ C1 08 EE F2  ForkFeaturesChanged (server)  11 u8      ClassEncoding: 0 Season 6,
   3 `evolutions_45`, 4 `enhance_tree`, 5 `ability_core`, 6 `mastery`, 7 `wing_grades`, 8 `sockets_10`,
   9 `pentagram_elements`, 10 `earrings`, 11 `muun`, 12 `gremory`, 13 `ruud`, 14 `mining`, 15 `elite_zones`,
   16 `world_bosses`, 17 `events_s21`, 18 `muquest`, 19 `helper_plus`, 20 `ranking`, 21 `battle_pass`,
-  22 `artifacts`, 23 `legendary_craft`, 24-31 reserved. A bit is available when `fork.json` lists the id of the
-  same name. `fork_protocol` (no bit) says the fork speaks this protocol at all.
+  22 `artifacts`, 23 `legendary_craft`, 24 `evolution_quests`, 25-31 reserved. A bit is available when `fork.json`
+  lists the id of the same name. `fork_protocol` (no bit) says the fork speaks this protocol at all.
 - **Head code 0xEE**, always with a sub code (not 0xFB: the Babylon proxy relays its map pings on C1 FB, and FA-FD are its own), reserved by range so tracks never collide: F0-F7 core, 10-1F
   characters, 20-2F appearance, 30-3F items, 40-4F skill trees, 50-5F Muun, 60-6F Gremory Case, 70-7F currency
   and shops, 80-8F elements and pentagram, 90-9F crafting, A0-AF world, B0-BF events, C0-CF quests, D0-DF social
@@ -143,6 +144,17 @@ carry the skill number in 16 bits and stay as they are for both clients.
   added and removed with the Season 6 packets.
 - 43-45 are kept for the Ability Enhancement Core, 47 for an effect status with a 16-bit effect number (the Season 6
   status has a byte; no effect above 255 is applied yet).
+
+### Quests (range C0-CF)
+
+The evolution quests use the quest packets of Season 6 (F6: list of the NPC, start, progress, completion), group 21,
+numbers 7-12 (S21Emu `Quest/Quest.xml`). On top of them, for the Babylon client:
+
+- `C1 EE C4 EvolutionQuestState` (server, 10): next evolution at 4 (3 fourth, 4 fifth, 0xFF none), rule met at 5
+  (bool), experience held at 6 (bool), level key at 7 (1 level + master level, 2 power level, 3 Season 21 total),
+  required level (u16 LE) at 8. Sent on every map entry, after a completed quest and when the hold starts.
+- `C1 EE 13 ClassEvolved` (server, 8, characters range): player id (u16 BE) at 4, class code at 6, reason at 7
+  (0 quest, 1 game master, 2 item). Sent to the player and every player who sees it.
 
 ### W32
 

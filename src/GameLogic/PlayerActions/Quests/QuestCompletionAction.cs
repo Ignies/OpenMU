@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.EvolutionQuests;
+using MUnique.OpenMU.GameLogic.PlayerActions.Character;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.Quest;
@@ -74,6 +76,13 @@ public class QuestCompletionAction
             return;
         }
 
+        if (activeQuest.Rewards.Any(r => r.RewardType == QuestRewardType.CharacterEvolution)
+            && !EvolveCharacterAction.CanEvolve(player, true))
+        {
+            player.Logger.LogDebug("Failed, the character can't evolve into {0}.", player.SelectedCharacter?.CharacterClass?.NextGenerationClass);
+            return;
+        }
+
         questState!.LastFinishedQuest = activeQuest;
         foreach (var requiredItem in activeQuest.RequiredItems)
         {
@@ -97,6 +106,11 @@ public class QuestCompletionAction
 
         await questState.ClearAsync(player.PersistenceContext).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IQuestCompletionResponsePlugIn>(p => p.QuestCompletedAsync(activeQuest)).ConfigureAwait(false);
+        if (EvolutionQuestFeaturePlugIn.Get(player.GameContext) is { } evolutionQuests)
+        {
+            await evolutionQuests.EndTrialAsync(player).ConfigureAwait(false);
+            await evolutionQuests.ShowStateAsync(player).ConfigureAwait(false);
+        }
     }
 
     private static async ValueTask AddRewardAsync(Player player, QuestReward reward, QuestDefinition quest)
@@ -165,6 +179,14 @@ public class QuestCompletionAction
                         null),
                     true).ConfigureAwait(false);
                 await player.InvokeViewPlugInAsync<IUpdateMasterStatsPlugIn>(p => p.SendMasterStatsAsync()).ConfigureAwait(false);
+                break;
+            case QuestRewardType.CharacterEvolution:
+                if (new EvolveCharacterAction().TryEvolve(player, true))
+                {
+                    await player.ForEachWorldObserverAsync<IClassEvolvedPlugIn>(p => p.ClassEvolvedAsync(player, ClassEvolutionReason.Quest), true).ConfigureAwait(false);
+                    await player.InvokeViewPlugInAsync<IUpdateMasterStatsPlugIn>(p => p.SendMasterStatsAsync()).ConfigureAwait(false);
+                }
+
                 break;
             case QuestRewardType.Experience:
                 await player.AddExperienceAsync(reward.Value, null).ConfigureAwait(false);

@@ -1134,5 +1134,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21InitialSkillsPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the evolution quests of Season 21.
+        /// </summary>
+        public static string AddSeason21EvolutionQuestsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21EvolutionQuestsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds the 4th and 5th class quests: Sent in Lorencia and Eunice in Devias, the Trial Area (map 121) with Sent and Eunice and the trial monsters, and the three quests of each evolution for every class, ending in the evolution. Needs the maps, the classes and the items of Season 21..
+        /// </summary>
+        public static string AddSeason21EvolutionQuestsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21EvolutionQuestsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

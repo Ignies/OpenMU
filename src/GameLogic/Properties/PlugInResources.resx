@@ -2019,4 +2019,10 @@
   <data name="EnhanceTreeConfiguration_Formulas_Name" xml:space="preserve">
     <value>Value formulas</value>
   </data>
+  <data name="EvolutionQuestFeaturePlugIn_Name" xml:space="preserve">
+    <value>Evolution quests (4th and 5th class)</value>
+  </data>
+  <data name="EvolutionQuestFeaturePlugIn_Description" xml:space="preserve">
+    <value>The trial of the 4th and 5th class quests: the town NPCs which take a character to the trial map, the monsters of each step and the kills of party members. Holds the experience of a 3rd class character at the level of the 4th evolution until it did the quest (setting).</value>
+  </data>
 </root>

@@ -1119,4 +1119,22 @@
   <data name="FindTheScrollOfEmperorDarkKnight" xml:space="preserve">
     <value>Find the 'Scroll of Emperor' (Dark Knight)</value>
   </data>
+  <data name="FourthClassEligibilityTest" xml:space="preserve">
+    <value>4th Class Upgrade - Eligibility Test</value>
+  </data>
+  <data name="FourthClassNewBattle1" xml:space="preserve">
+    <value>4th Class Upgrade - New Battle (1)</value>
+  </data>
+  <data name="FourthClassNewBattle2" xml:space="preserve">
+    <value>4th Class Upgrade - New Battle (2)</value>
+  </data>
+  <data name="FifthClassNewPowerNuke" xml:space="preserve">
+    <value>5th Class Up - New Power Nuke</value>
+  </data>
+  <data name="FifthClassNewPowerBolt" xml:space="preserve">
+    <value>5th Class Up - New Power Bolt</value>
+  </data>
+  <data name="FifthClassNewPowerAoE" xml:space="preserve">
+    <value>5th Class Up - New Power AoE</value>
+  </data>
 </root>

@@ -50,6 +50,7 @@ public static class ForkFeatures
         "battle_pass",
         "artifacts",
         "legendary_craft",
+        "evolution_quests",
     ];
 
     /// <summary>

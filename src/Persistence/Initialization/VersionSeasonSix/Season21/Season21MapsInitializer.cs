@@ -54,12 +54,21 @@ internal class Season21MapsInitializer
     {
         foreach (var set in Season21MapData.All)
         {
-            this.CreateMonsters(set);
-            this.CreateMaps(set);
-            this.CreateGates(set);
+            this.Initialize(set);
         }
 
         new Season21DropGroups(this._context, this._gameConfiguration).Apply();
+    }
+
+    /// <summary>
+    /// Adds what the game configuration doesn't contain yet of one set: its monsters, NPCs, maps and gates.
+    /// </summary>
+    /// <param name="set">The set.</param>
+    public void Initialize(Season21MapSet set)
+    {
+        this.CreateMonsters(set);
+        this.CreateMaps(set);
+        this.CreateGates(set);
     }
 
     /// <summary>

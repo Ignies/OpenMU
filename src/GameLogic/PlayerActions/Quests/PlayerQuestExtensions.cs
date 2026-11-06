@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 
 using MUnique.OpenMU.DataModel.Configuration.Quests;
+using MUnique.OpenMU.GameLogic.EvolutionQuests;
 
 /// <summary>
 /// Quest related extension methods.
@@ -65,6 +66,7 @@ public static class PlayerQuestExtensions
                    .Where(q => q.MinimumCharacterLevel <= player.Level
                                && (q.MaximumCharacterLevel == default || q.MaximumCharacterLevel >= player.Level))
                    .Where(q => !q.EvolvesIntoInactiveClass(player))
+                   .Where(q => q.IsStartableInChain(player))
                ?? Enumerable.Empty<QuestDefinition>();
     }
 
@@ -78,6 +80,6 @@ public static class PlayerQuestExtensions
     public static bool EvolvesIntoInactiveClass(this QuestDefinition quest, Player player)
     {
         return player.SelectedCharacter?.CharacterClass?.NextGenerationClass is { IsActive: false }
-               && quest.Rewards.Any(reward => reward.RewardType is QuestRewardType.CharacterEvolutionFirstToSecond or QuestRewardType.CharacterEvolutionSecondToThird);
+               && quest.Rewards.Any(reward => reward.RewardType is QuestRewardType.CharacterEvolutionFirstToSecond or QuestRewardType.CharacterEvolutionSecondToThird or QuestRewardType.CharacterEvolution);
     }
 }

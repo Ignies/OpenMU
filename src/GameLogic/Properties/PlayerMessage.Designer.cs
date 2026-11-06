@@ -3216,5 +3216,32 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("CharacterCannotEvolve", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You gain no more experience until you complete the quest of your next class..
+        /// </summary>
+        public static string EvolutionQuestExperienceHeld {
+            get {
+                return ResourceManager.GetString("EvolutionQuestExperienceHeld", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This trial is not for your class..
+        /// </summary>
+        public static string EvolutionTrialNotForYourClass {
+            get {
+                return ResourceManager.GetString("EvolutionTrialNotForYourClass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Come back when you reach level {0}..
+        /// </summary>
+        public static string EvolutionTrialLevelTooLowFormat {
+            get {
+                return ResourceManager.GetString("EvolutionTrialLevelTooLowFormat", resourceCulture);
+            }
+        }
     }
 }
