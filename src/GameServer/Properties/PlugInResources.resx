@@ -2872,17 +2872,6 @@
   </data>
   <data name="EvolutionQuestStateBabylonPlugIn_Description" xml:space="preserve">
     <value>Shows what the next evolution asks for and whether the experience is held to the Babylon client (C1 EE C4).</value>
-  <data name="EliteZonesBabylonPlugIn_Name" xml:space="preserve">
-    <value>Babylon: elite zones</value>
-  </data>
-  <data name="EliteZonesBabylonPlugIn_Description" xml:space="preserve">
-    <value>Shows the elite zones of the map to the Babylon client (C2 EE A0).</value>
-  </data>
-  <data name="FieldBossStateBabylonPlugIn_Name" xml:space="preserve">
-    <value>Babylon: field boss state</value>
-  </data>
-  <data name="FieldBossStateBabylonPlugIn_Description" xml:space="preserve">
-    <value>Shows the state of a field boss of the map to the Babylon client (C1 EE A1).</value>
   </data>
   <data name="EliteZonesBabylonPlugIn_Name" xml:space="preserve">
     <value>Babylon: elite zones</value>
