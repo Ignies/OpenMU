@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.GremoryCase;
 using MUnique.OpenMU.GameLogic.ItemExpiry;
+using MUnique.OpenMU.GameLogic.Muuns;
 using MUnique.OpenMU.GameLogic.Rewards;
 using MUnique.OpenMU.GameLogic.Ruud;
 using MUnique.OpenMU.GameLogic.ZenSinks;
@@ -52,8 +53,8 @@ public static class GameContextTestHelper
             },
         };
 
-        // The economy of Season 21 changes Season 6 ways (rewards, prices, money drops); off, as on a new world.
-        plugInConfigurations.AddRange(new[] { typeof(GremoryCaseFeaturePlugIn), typeof(RuudFeaturePlugIn), typeof(ItemExpiryPlugIn), typeof(ZenSinksFeaturePlugIn), typeof(LevelRewardsPlugIn), typeof(EventContributionPlugIn) }
+        // The economy and the Muuns of Season 21 change Season 6 ways (rewards, prices, money drops, stats); off, as on a new world.
+        plugInConfigurations.AddRange(new[] { typeof(GremoryCaseFeaturePlugIn), typeof(RuudFeaturePlugIn), typeof(ItemExpiryPlugIn), typeof(ZenSinksFeaturePlugIn), typeof(LevelRewardsPlugIn), typeof(EventContributionPlugIn), typeof(MuunFeaturePlugIn) }
             .Select(type => new PlugInConfiguration { TypeId = type.GUID, IsActive = false }));
 
         if (additionalPlugInConfigurations is { })
