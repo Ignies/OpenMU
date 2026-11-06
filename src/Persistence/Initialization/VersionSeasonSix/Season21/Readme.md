@@ -52,7 +52,9 @@ were corrected:
 * misspelt monster names, e.g. "Scotched Warrior" is "Scorched Warrior",
 * spawn areas without a walkable tile on the map's terrain are left out,
 * a single monster spawns anywhere within its range of its tile, because many
-  tiles of the data are not walkable,
+  tiles of the data are not walkable; where only one or two tiles of that range
+  are (e.g. Swamp of Darkness), the server picks one of them when its random
+  tries miss,
 * the gate of Nixie Lake in Raklion is moved to walkable ground of the Season 6
   Raklion,
 * where the data contradicts itself, the gates (`Gate.xml`) win over the move
@@ -120,9 +122,10 @@ Two more optional updates, both after the maps:
   The update also places the Elite Zone Flags of the spawn files (not on Ignis, whose file copies Kanturu
   Underground's) and sets the debuffs (`EliteMonster.txt`) and weekly drop limits (`ItemDropLimit.xml`) when the
   configuration has none.
-* `AddSeason21FieldBossesUpdatePlugIn` (`Season21FieldBossesInitializer`, `Season21FieldBossData`): Medusa 561,
+* `AddSeason21FieldBossesUpdatePlugIn` (`Season21FieldBossesInitializer`, `Season21FieldBossData`): Medusa 561 and
+  the Sapi Queens 560 it calls (`InvasionManager.xml` ID 8),
   Lord of Ferea 734 and its crystal orb 735, the God of Darkness 790-794 from `Monster.xml` (experience level as
-  everywhere; Medusa keeps level 175 on its Season 6 map). Each boss gets a spawn area which only the plugin uses
+  everywhere; Medusa and its Sapi Queens keep levels 175 and 141 on their Season 6 map). Each boss gets a spawn area which only the plugin uses
   (`ManuallyForEvent`, so Lord Silvester and Core Magriffy stop spawning as plain monsters and the progression
   normalizes the bosses with their map), and its item bag (`EventItemBag` 106, 168, 191, 293, 309, 310): one drop
   group per section with a chance of 1, so every section drops one item. Items the catalog lacks are left out.

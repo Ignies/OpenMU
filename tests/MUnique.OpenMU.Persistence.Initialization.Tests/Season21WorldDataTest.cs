@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.EliteZones;
 using MUnique.OpenMU.GameLogic.FieldBosses;
 using MUnique.OpenMU.GameLogic.Progression;
@@ -104,6 +105,54 @@ internal class Season21WorldDataTest
     }
 
     /// <summary>
+    /// Every monster a field boss spawns (stages, their summons, the summons of abilities and health phases) and every
+    /// boss map is defined, e.g. the Sapi Queens (560) which Medusa calls on Swamp of Calmness.
+    /// </summary>
+    [Test]
+    public async Task FieldBossesSpawnOnlyDefinedMonstersAsync()
+    {
+        var (context, gameConfiguration) = await CreateWithMapsAsync().ConfigureAwait(false);
+
+        await new AddSeason21FieldBossesUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var configuration = GetConfiguration<FieldBossConfiguration>(gameConfiguration, typeof(FieldBossesFeaturePlugIn).GUID, out _);
+        foreach (var boss in configuration.Bosses)
+        {
+            Assert.That(gameConfiguration.Maps.Any(m => m.Number == boss.MapNumber), Is.True, $"Map {boss.MapNumber} of {boss.Name}");
+            var summons = boss.Stages.SelectMany(s => s.Summons.Concat(s.Abilities.SelectMany(a => a.Summons)).Concat(s.Phases.SelectMany(p => p.Summons)));
+            var numbers = boss.Stages.Select(s => s.MonsterNumber).Concat(summons.Select(s => s.MonsterNumber)).Distinct();
+            Assert.That(numbers.Where(n => gameConfiguration.Monsters.All(m => m.Number != n)), Is.Empty, $"Undefined monsters of {boss.Name}");
+        }
+
+        var sapiQueen = gameConfiguration.Monsters.Single(m => m.Number == 560);
+        Assert.That(sapiQueen.Designation.ValueInNeutralLanguage, Is.EqualTo("Sapi Queen"));
+        Assert.That(sapiQueen.Attributes.Single(a => a.AttributeDefinition == Stats.MaximumHealth).Value, Is.EqualTo(358000), "Monster.xml of Season 21.");
+    }
+
+    /// <summary>
+    /// Every monster spawn area of the maps after Season 6 has at least one tile a monster may stand on: walkable and
+    /// outside the safezone. (Event maps of Season 6 open blocked areas while they run, so they are left out.)
+    /// </summary>
+    [Test]
+    public async Task EverySpawnAreaHasASpawnPointAsync()
+    {
+        var (context, gameConfiguration) = await CreateWithMapsAsync().ConfigureAwait(false);
+
+        await new AddSeason21FieldBossesUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var invalid = new List<string>();
+        foreach (var map in gameConfiguration.Maps.Where(m => m.IntroducedIn > GameVersion.Season6Episode3))
+        {
+            var terrain = new GameMapTerrain(map);
+            invalid.AddRange(map.MonsterSpawns
+                .Where(s => s.MonsterDefinition!.ObjectKind == NpcObjectKind.Monster && !HasTile(s, (x, y) => terrain.WalkMap[x, y] && !terrain.SafezoneMap[x, y]))
+                .Select(s => $"{s.MonsterDefinition} on map {map.Number} at {s.X1}/{s.Y1}"));
+        }
+
+        Assert.That(invalid, Is.Empty);
+    }
+
+    /// <summary>
     /// Applying the updates a second time changes nothing and keeps what the operator changed.
     /// </summary>
     [Test]
@@ -139,12 +188,15 @@ internal class Season21WorldDataTest
     }
 
     private static bool HasWalkableTile(GameMapTerrain terrain, MonsterSpawnArea spawn)
+        => HasTile(spawn, (x, y) => terrain.WalkMap[x, y]);
+
+    private static bool HasTile(MonsterSpawnArea spawn, Func<int, int, bool> predicate)
     {
         for (var x = spawn.X1; x <= spawn.X2; x++)
         {
             for (var y = spawn.Y1; y <= spawn.Y2; y++)
             {
-                if (terrain.WalkMap[x, y])
+                if (predicate(x, y))
                 {
                     return true;
                 }

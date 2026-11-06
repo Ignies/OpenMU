@@ -16,10 +16,12 @@ internal static class Season21FieldBossData
 {
     /// <summary>
     /// Gets the monsters which no map update defines yet, with the map they belong to and the version which added them.
-    /// Medusa keeps the level of Season 6 (175) on its Season 6 map; the others the experience level of the data.
+    /// Medusa and the Sapi Queens it calls (560) keep the level of Season 6 (175, 141) on their Season 6 map; the others the
+    /// experience level of the data.
     /// </summary>
     public static IReadOnlyList<(byte Map, GameVersion IntroducedIn, Season21Monster Row)> Monsters { get; } =
     [
+        (56, GameVersion.Season6Episode1, new(560, LocalizedString.FromResource(() => MonsterNames.SapiQueen), Level: 141, Health: 358000, MinimumDamage: 1917, MaximumDamage: 2301, Defense: 740, AttackRate: 1140, DefenseRate: 1135, MoveRange: 4, AttackRange: 3, ViewRange: 9, MoveDelay: 700, AttackDelay: 2000, RespawnDelay: 8, Attribute: 2, Resistances: [150, 20, 20, 20, 0, 0, 0])),
         (56, GameVersion.Season6Episode1, new(561, LocalizedString.FromResource(() => MonsterNames.Medusa), Level: 175, Health: 7800000, MinimumDamage: 7040, MaximumDamage: 7800, Defense: 1450, AttackRate: 5900, DefenseRate: 3800, MoveRange: 3, AttackRange: 7, ViewRange: 10, MoveDelay: 800, AttackDelay: 4900, RespawnDelay: 10, Attribute: 2, Resistances: [254, 254, 150, 150, 0, 0, 0])),
         (112, GameVersion.Season11Episode1, new(734, LocalizedString.FromResource(() => MonsterNames.LordOfFerea), Level: 900, Health: 25000000, MinimumDamage: 4500, MaximumDamage: 5000, Defense: 3050, AttackRate: 7500, DefenseRate: 5300, MoveRange: 5, AttackRange: 8, ViewRange: 10, MoveDelay: 300, AttackDelay: 900, RespawnDelay: 86400, Attribute: 2, Resistances: [0, 0, 0, 0, 0, 0, 0])),
         (112, GameVersion.Season11Episode1, new(735, LocalizedString.FromResource(() => MonsterNames.FereaCrystalOrb), Level: 500, Health: 5000000, MinimumDamage: 0, MaximumDamage: 0, Defense: 0, AttackRate: 0, DefenseRate: 1, MoveRange: 0, AttackRange: 0, ViewRange: 0, MoveDelay: 0, AttackDelay: 0, RespawnDelay: 0, Attribute: 0, Resistances: [0, 0, 0, 0, 0, 0, 0])),
