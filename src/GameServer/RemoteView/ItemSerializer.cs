@@ -40,6 +40,9 @@ public class ItemSerializer : IItemSerializer
     private const byte AncientMask = AncientBonusLevelMask | AncientDiscriminatorMask;
 
     /// <inheritdoc/>
+    public bool CarriesWideItems => false;
+
+    /// <inheritdoc/>
     public int NeededSpace => 12;
 
     /// <inheritdoc/>

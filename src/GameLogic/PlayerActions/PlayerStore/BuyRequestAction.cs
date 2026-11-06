@@ -8,6 +8,7 @@ using MUnique.OpenMU.GameLogic.PlayerShopCurrencies;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -47,7 +48,7 @@ public class BuyRequestAction
         }
 
         var item = requestedPlayer.ShopStorage.GetItem(slot);
-        if (item?.GetStorePrice() is not { } price)
+        if (item?.GetStorePrice() is not { } price || !player.CanSee(item))
         {
             player.Logger.LogDebug("Item unavailable, Slot {0}", slot);
             await player.InvokeViewPlugInAsync<IPlayerShopBuyRequestResultPlugIn>(p => p.ShowResultAsync(requestedPlayer, ItemBuyResult.NameMismatchOrPriceMissing, null)).ConfigureAwait(false);

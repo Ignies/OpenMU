@@ -72,6 +72,9 @@ public class ItemSerializerW32 : IItemSerializer
     private const int WingOptionMask = 0x0F;
 
     /// <inheritdoc/>
+    public bool CarriesWideItems => true;
+
+    /// <inheritdoc/>
     public int NeededSpace => Length;
 
     /// <inheritdoc/>

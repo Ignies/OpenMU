@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
@@ -72,7 +73,7 @@ public class AppearanceSerializerExtended : IAppearanceSerializer
         var itemArray = new ItemAppearance?[InventoryConstants.EquippableSlotsCount];
         for (byte i = 0; i < itemArray.Length; i++)
         {
-            itemArray[i] = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == i);
+            itemArray[i] = appearanceData.EquippedItems.FirstOrDefault(item => item.ItemSlot == i && item.Definition is { } definition && !WideItemRules.IsWideOnly(definition));
         }
 
         if (appearanceData.CharacterClass is not null)

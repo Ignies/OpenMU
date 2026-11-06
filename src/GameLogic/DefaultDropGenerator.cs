@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Progression;
+using MUnique.OpenMU.GameLogic.WideItems;
 using Nito.AsyncEx;
 
 /// <summary>
@@ -47,6 +48,12 @@ public class DefaultDropGenerator : IDropGenerator
     private int? _dropLevel;
 
     /// <summary>
+    /// Whether the client of the current killer carries the wide items (see <see cref="WideItemRules"/>); outside of
+    /// a monster drop there is no killer, e.g. for an item box.
+    /// </summary>
+    private bool _killerCarriesWideItems = true;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="DefaultDropGenerator" /> class.
     /// </summary>
     /// <param name="config">The configuration.</param>
@@ -80,6 +87,7 @@ public class DefaultDropGenerator : IDropGenerator
         this._guaranteedDropGroups.Clear();
         this._chanceDropGroups.Clear();
         this._dropLevel = ProgressionFeaturePlugIn.GetWorld(player.GameContext)?.GetDropLevel(monster);
+        this._killerCarriesWideItems = player.CarriesWideItems();
 
         if (monster.ObjectKind == NpcObjectKind.Destructible)
         {
@@ -103,6 +111,7 @@ public class DefaultDropGenerator : IDropGenerator
         this._guaranteedDropGroups.Clear();
         this._chanceDropGroups.Clear();
         this._dropLevel = null;
+        this._killerCarriesWideItems = true;
         return (droppedItems ?? Enumerable.Empty<Item>(), money > 0 ? money : null);
     }
 
@@ -163,7 +172,8 @@ public class DefaultDropGenerator : IDropGenerator
     {
         foreach (var option in item.Definition!.PossibleItemOptions.Where(o =>
             o.AddsRandomly &&
-            !o.PossibleOptions.Any(po => object.Equals(po.OptionType, ItemOptionTypes.Excellent))))
+            !o.PossibleOptions.Any(po => object.Equals(po.OptionType, ItemOptionTypes.Excellent)) &&
+            (this._killerCarriesWideItems || !o.PossibleOptions.Any(po => po.OptionType is { } type && Season21ItemOptionTypes.All.Contains(type)))))
         {
             this.ApplyOption(item, option);
         }
@@ -438,9 +448,9 @@ public class DefaultDropGenerator : IDropGenerator
             return null;
         }
 
-        if (possibleItems.Any(definition => !definition.IsActive))
+        if (possibleItems.Any(definition => !definition.IsActive || (!this._killerCarriesWideItems && WideItemRules.IsWideOnly(definition))))
         {
-            possibleItems = possibleItems.Where(definition => definition.IsActive).ToList();
+            possibleItems = possibleItems.Where(definition => definition.IsActive && (this._killerCarriesWideItems || !WideItemRules.IsWideOnly(definition))).ToList();
             if (possibleItems.Count == 0)
             {
                 return null;

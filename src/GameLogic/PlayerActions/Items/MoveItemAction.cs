@@ -11,6 +11,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.Trade;
+using MUnique.OpenMU.GameLogic.WideItems;
 using static MUnique.OpenMU.DataModel.InventoryConstants;
 
 /// <summary>
@@ -58,7 +59,7 @@ public class MoveItemAction
             return;
         }
 
-        if (fromStorage != toStorage && GetRuleBlockingMove(item, toStorage) is { } blockedMessage)
+        if (fromStorage != toStorage && GetRuleBlockingMove(item, toStorage, player.TradingPartner as Player) is { } blockedMessage)
         {
             player.Logger.LogWarning(
                 "Player {0} tried to move {1} into the {2}, which its item definition doesn't allow. The client item data may differ from the server.",
@@ -131,7 +132,7 @@ public class MoveItemAction
     /// Gets the message to show when the item rules of the item definition don't allow
     /// moving it into the target storage, or <c>null</c> when they do.
     /// </summary>
-    private static string? GetRuleBlockingMove(Item item, Storages toStorage)
+    private static string? GetRuleBlockingMove(Item item, Storages toStorage, Player? tradingPartner)
     {
         var definition = item.Definition;
         if (definition is null)
@@ -142,6 +143,7 @@ public class MoveItemAction
         return toStorage switch
         {
             Storages.Trade when !definition.IsTradable => nameof(PlayerMessage.ItemCannotBeTraded),
+            Storages.Trade when tradingPartner is not null && !tradingPartner.CanSee(item) => nameof(PlayerMessage.ItemCannotBeTraded),
             Storages.Vault when !definition.IsStorable => nameof(PlayerMessage.ItemCannotBeStored),
             Storages.PersonalStore when !definition.IsPersonalStoreSellable => nameof(PlayerMessage.ItemCannotBeSoldInPersonalStore),
             _ => null,

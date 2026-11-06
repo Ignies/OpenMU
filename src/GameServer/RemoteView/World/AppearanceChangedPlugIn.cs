@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
@@ -49,7 +50,7 @@ public class AppearanceChangedPlugIn : IAppearanceChangedPlugIn
                 ChangedPlayerId = changedPlayer.GetId(this._player),
             };
 
-            if (inventory!.EquippedItems.Contains(item))
+            if (inventory!.EquippedItems.Contains(item) && this._player.CanSee(item))
             {
                 itemSerializer.SerializeItem(packet.ItemData, item);
             }

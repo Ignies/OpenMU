@@ -10,6 +10,7 @@ using MUnique.OpenMU.DataModel.Configuration.Quests;
 using MUnique.OpenMU.GameLogic.Offline;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Interfaces;
 
 /// <summary>
@@ -44,6 +45,10 @@ public class PickupItemAction
                     await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.General)).ConfigureAwait(false);
                 }
 
+                break;
+            case DroppedItem droppedItem when !player.CanSee(droppedItem.Item):
+                player.Logger.Log(GetLogLevel(player), "Pickup refused: {Player} requested drop {DropId}, which its client can't show.", player, dropId);
+                await player.InvokeViewPlugInAsync<IItemPickUpFailedPlugIn>(p => p.ItemPickUpFailedAsync(ItemPickFailReason.General)).ConfigureAwait(false);
                 break;
             case DroppedItem droppedItem:
                 {

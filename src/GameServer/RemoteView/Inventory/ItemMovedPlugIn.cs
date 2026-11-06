@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
@@ -33,7 +34,7 @@ public class ItemMovedPlugIn : IItemMovedPlugIn
     public async ValueTask ItemMovedAsync(Item item, byte toSlot, Storages storage)
     {
         var connection = this._player.Connection;
-        if (connection is null)
+        if (connection is null || !this._player.CanSee(item))
         {
             return;
         }

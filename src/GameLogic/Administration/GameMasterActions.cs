@@ -8,6 +8,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 
@@ -95,6 +96,11 @@ public static class GameMasterActions
         if (player.Inventory is not { } inventory)
         {
             return new(false, "The character has no live inventory.");
+        }
+
+        if (!player.CanSee(definition))
+        {
+            return new(false, "The client of the character can't show this item: only the wide item format of the Babylon client carries it.");
         }
 
         var temporary = GameMasterItemFactory.CreateItem(definition, specification);

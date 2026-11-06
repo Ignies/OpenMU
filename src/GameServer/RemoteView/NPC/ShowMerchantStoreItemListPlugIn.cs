@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Views.NPC;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
@@ -35,6 +36,11 @@ public class ShowMerchantStoreItemListPlugIn : IShowMerchantStoreItemListPlugIn
         if (connection is null)
         {
             return;
+        }
+
+        if (!this._player.CarriesWideItems())
+        {
+            storeItems = storeItems.Where(this._player.CanSee).ToList();
         }
 
         int Write()

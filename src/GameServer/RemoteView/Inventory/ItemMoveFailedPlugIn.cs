@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.Inventory;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
@@ -34,6 +35,11 @@ public class ItemMoveFailedPlugIn : IItemMoveFailedPlugIn
         if (connection is null)
         {
             return;
+        }
+
+        if (item is not null && !this._player.CanSee(item))
+        {
+            item = null;
         }
 
         int Write()

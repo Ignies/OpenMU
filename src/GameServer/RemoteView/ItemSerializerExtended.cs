@@ -42,6 +42,9 @@ public class ItemSerializerExtended : IItemSerializer
     }
 
     /// <inheritdoc/>
+    public bool CarriesWideItems => false;
+
+    /// <inheritdoc/>
     public int NeededSpace => 15;
 
     /// <inheritdoc/>

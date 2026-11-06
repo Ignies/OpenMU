@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
@@ -41,6 +42,7 @@ public class UpdateInventoryListPlugIn : IUpdateInventoryListPlugIn
         var items = (this._player.Inventory?.Items is { } inventoryItems
                 ? inventoryItems.Concat(this._player.ShopStorage?.Items ?? Enumerable.Empty<Item>())
                 : this._player.SelectedCharacter?.Inventory?.Items ?? Enumerable.Empty<Item>())
+            .Where(this._player.CanSee)
             .OrderBy(item => item.ItemSlot)
             .ToList();
         int Write()

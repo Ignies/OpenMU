@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.NPC;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Views.NPC;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
 
@@ -33,9 +34,14 @@ public class ShowItemCraftingResultPlugIn : IShowItemCraftingResultPlugIn
     public async ValueTask ShowResultAsync(CraftingResult result, Item? createdItem)
     {
         var itemData = new byte[this._player.ItemSerializer.NeededSpace];
-        if (createdItem is { })
+        if (createdItem is { } && this._player.CanSee(createdItem))
         {
             this._player.ItemSerializer.SerializeItem(itemData, createdItem);
+        }
+        else if (createdItem is { })
+        {
+            // The client can't show the item; 0xFF is "no item" in every item format.
+            itemData.AsSpan().Fill(0xFF);
         }
 
         await this._player.Connection.SendItemCraftingResultAsync(Convert(result), itemData).ConfigureAwait(false);

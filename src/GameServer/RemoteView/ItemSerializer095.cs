@@ -47,6 +47,9 @@ public class ItemSerializer095 : IItemSerializer
     private const byte LevelMask = 0x78;
 
     /// <inheritdoc/>
+    public bool CarriesWideItems => false;
+
+    /// <inheritdoc/>
     public int NeededSpace => 4;
 
     /// <inheritdoc/>

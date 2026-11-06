@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.GameLogic.WideItems;
 
 /// <summary>
 /// Action to buy items from a Monster merchant.
@@ -45,7 +46,7 @@ public class BuyNpcItemAction
         }
 
         var storeItem = npcDefinition.MerchantStore.Items.FirstOrDefault(i => i.ItemSlot == slot);
-        if (storeItem is null || storeItem.Definition is { IsActive: false })
+        if (storeItem is null || storeItem.Definition is { IsActive: false } || !player.CanSee(storeItem))
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemUnknown)).ConfigureAwait(false);
             await player.InvokeViewPlugInAsync<IBuyNpcItemFailedPlugIn>(p => p.BuyNpcItemFailedAsync()).ConfigureAwait(false);

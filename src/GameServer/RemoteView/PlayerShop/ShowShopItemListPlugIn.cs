@@ -9,6 +9,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerShopCurrencies;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.PlayerShop;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
@@ -45,7 +46,7 @@ public class ShowShopItemListPlugIn : IShowShopItemListPlugIn
         var playerId = requestedPlayer.GetId(this._player);
 
         // The client can only show zen prices, so items with other prices are hidden.
-        var items = requestedPlayer.ShopStorage.Items.Where(item => item.GetStorePrice() is not { Kind: not ShopPriceKind.Zen }).ToList();
+        var items = requestedPlayer.ShopStorage.Items.Where(item => item.GetStorePrice() is not { Kind: not ShopPriceKind.Zen } && this._player.CanSee(item)).ToList();
         int Write()
         {
             var size = PlayerShopItemListRef.GetRequiredSize(items.Count);

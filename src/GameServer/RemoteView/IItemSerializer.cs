@@ -7,12 +7,13 @@ namespace MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Persistence;
 
 /// <summary>
 /// Serializes the items into a byte array.
 /// </summary>
-public interface IItemSerializer : IViewPlugIn
+public interface IItemSerializer : IItemFormatViewPlugIn
 {
     /// <summary>
     /// Gets the needed space for a serialized item.

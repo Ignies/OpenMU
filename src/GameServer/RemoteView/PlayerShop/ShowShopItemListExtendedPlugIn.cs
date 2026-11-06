@@ -10,6 +10,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerShopCurrencies;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.PlayerShop;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.Network.PlugIns;
@@ -48,7 +49,7 @@ public class ShowShopItemListExtendedPlugIn : IShowShopItemListPlugIn
         var playerId = requestedPlayer.GetId(this._player);
 
         // Items with prices in currencies which aren't enabled (anymore) can't be bought, so they're hidden.
-        var items = requestedPlayer.ShopStorage.Items.Where(item => item.GetStorePrice() is not { } price || ShopPrices.IsAllowed(this._player.GameContext, price)).ToList();
+        var items = requestedPlayer.ShopStorage.Items.Where(item => (item.GetStorePrice() is not { } price || ShopPrices.IsAllowed(this._player.GameContext, price)) && this._player.CanSee(item)).ToList();
         int Write()
         {
             var size = PlayerShopItemListExtendedRef.GetRequiredSize(items.Count, PlayerShopItemExtendedRef.GetRequiredSize(itemSerializer.NeededSpace));

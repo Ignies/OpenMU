@@ -101,6 +101,43 @@ public class DropGeneratorTest
     }
 
     /// <summary>
+    /// Tests that a killer whose client can't show the items of the wide item format never gets one dropped.
+    /// </summary>
+    [Test]
+    public async ValueTask TestWideItemIsNotDroppedForASeason6KillerAsync()
+    {
+        var config = this.GetGameConfig();
+        var wideItem = this.CreateItemDefinition(16, 1, 0);
+        var normalItem = this.CreateItemDefinition(14, 14, 0);
+        var monster = this.GetMonster(1, 0);
+        monster.DropItemGroups.Add(this.CreateDropItemGroup(wideItem, normalItem));
+
+        var generator = new DefaultDropGenerator(config, this.GetRandomizer(0));
+        var (items, _) = await generator.GenerateItemDropsAsync(monster, 1, await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false)).ConfigureAwait(false);
+
+        Assert.That(items.Single().Definition, Is.EqualTo(normalItem));
+    }
+
+    /// <summary>
+    /// Tests that a killer whose client carries the wide item format gets the wide items.
+    /// </summary>
+    [Test]
+    public async ValueTask TestWideItemIsDroppedForABabylonKillerAsync()
+    {
+        var config = this.GetGameConfig();
+        var wideItem = this.CreateItemDefinition(16, 1, 0);
+        var monster = this.GetMonster(1, 0);
+        monster.DropItemGroups.Add(this.CreateDropItemGroup(wideItem));
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<GameLogic.Views.Inventory.IItemFormatViewPlugIn>()!).Setup(p => p.CarriesWideItems).Returns(true);
+
+        var generator = new DefaultDropGenerator(config, this.GetRandomizer(0));
+        var (items, _) = await generator.GenerateItemDropsAsync(monster, 1, player).ConfigureAwait(false);
+
+        Assert.That(items.Single().Definition, Is.EqualTo(wideItem));
+    }
+
+    /// <summary>
     /// Tests that nothing is dropped of a drop group, when all of its items are inactive.
     /// </summary>
     [Test]

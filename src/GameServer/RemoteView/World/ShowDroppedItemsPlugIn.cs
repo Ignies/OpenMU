@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameServer.RemoteView.World;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Views.World;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.ServerToClient;
 using MUnique.OpenMU.PlugIns;
@@ -34,6 +35,17 @@ public class ShowDroppedItemsPlugIn : IShowDroppedItemsPlugIn
         if (connection is null)
         {
             return;
+        }
+
+        if (!this._player.CarriesWideItems())
+        {
+            var visibleItems = droppedItems.Where(dropped => this._player.CanSee(dropped.Item)).ToList();
+            if (visibleItems.Count == 0)
+            {
+                return;
+            }
+
+            droppedItems = visibleItems;
         }
 
         int itemCount = droppedItems.Count();
