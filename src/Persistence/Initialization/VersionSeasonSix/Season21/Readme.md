@@ -234,3 +234,21 @@ the elemental and legendary columns and the buy prices.
 
 Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
 damage reduction table, the Ability Enhancement Core (track T, later).
+
+## Item options of the wide item format
+
+`Season21ItemOptionsInitializer`, four optional updates which run again without change:
+
+* "Activate the items of the wide item format" (`ActivateSeason21WideItemsUpdatePlugIn`): the catalog rows with a
+  `waitsFor` become active; those of the groups 0-15 get the option definition "Wide Item Format", so only the
+  Babylon client gets them (`GameLogic/WideItems`).
+* "Add the mastery options" (`AddSeason21MasteryOptionsUpdatePlugIn`): the mastery items of the catalog
+  (`MasteryItem.txt`) get the mastery options of their group and a mastery bonus option (`MasteryOption.xml`); the
+  all stats bonus reaches the stats through a relationship per class (`Stats.AllStatsBonus`).
+* "Add the grade options of the fourth and fifth wings" (`AddSeason21WingGradesUpdatePlugIn`): `ItemGradeOption.xml`
+  by item kind (76 fourth, 106 fifth); wings without a slot get the wing slot.
+* "Add the sphere levels 6 to 10" (`AddSeason21SphereLevelsUpdatePlugIn`): socket option levels 6-10, the seed spheres
+  12/311-340 with their element's options and mounting, and the seed sphere enhancement (crafting numbers 100-104 at
+  the seed researcher).
+
+The values and the defaults which the data doesn't give are listed in `docs/babylon.md`, "Wide items".

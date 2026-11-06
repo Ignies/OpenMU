@@ -23,8 +23,9 @@ using static ItemSerializerHelper;
 /// </summary>
 /// <remarks>
 /// Every field which Season 6 knows keeps its Season 6 meaning, so the client reads both layouts into the same item.
-/// The fields of later seasons (mastery options, elements, the kind block and the expiry) stay zero until the
-/// systems which fill them exist.
+/// Of the fields of later seasons, the mastery options, the mastery bonus, the sphere levels up to 10 and the grade
+/// options of the fourth and fifth wings (kind block) are filled; the elements, the other kind blocks and the expiry
+/// stay zero until the systems which fill them exist.
 /// </remarks>
 [Guid("5C1B8E2A-7F4D-4A93-B6E0-3D9A2C8F1E57")]
 [PlugIn]
@@ -49,11 +50,15 @@ public class ItemSerializerW32 : IItemSerializer
     private const int FlagsIndex = 5;
     private const int OptionIndex = 6;
     private const int ExcellentIndex = 7;
+    private const int MasteryBonusIndex = 9;
     private const int AncientIndex = 10;
     private const int HarmonyIndex = 11;
     private const int SocketBonusIndex = 12;
     private const int SlotsIndex = 13;
     private const int SlotLevelsIndex = 18;
+    private const int KindBlockIndex = 22;
+    private const int WingGradeEntries = 3;
+    private const byte NoWingGrade = 0xFF;
 
     private const byte SkillFlag = 0x01;
     private const byte LuckFlag = 0x02;
@@ -67,6 +72,7 @@ public class ItemSerializerW32 : IItemSerializer
     private const byte AncientBonusLevelMask = 0b1100;
     private const byte AncientDiscriminatorMask = 0b0011;
     private const int Season6ExcellentMask = 0x3F;
+    private const int MasteryMask = 0x1FC0;
     private const int WingOptionKindShift = 4;
     private const int WingOptionKindMask = 0b11;
     private const int WingOptionMask = 0x0F;
@@ -96,7 +102,9 @@ public class ItemSerializerW32 : IItemSerializer
 
         // Bits 0-5 are the low six bits of the Season 6 byte 3, so the wing option kind rides there as well.
         var excellent = GetExcellentByte(item) | GetFenrirByte(item) | ((optionKind & WingOptionKindMask) << WingOptionKindShift);
-        BinaryPrimitives.WriteUInt16LittleEndian(target[ExcellentIndex..], (ushort)(excellent & Season6ExcellentMask));
+        BinaryPrimitives.WriteUInt16LittleEndian(target[ExcellentIndex..], (ushort)((excellent & Season6ExcellentMask) | (GetMasteryBits(item) & MasteryMask)));
+        target[MasteryBonusIndex] = GetMasteryBonusByte(item);
+        SetWingGrades(target[KindBlockIndex..], item);
 
         if (item.ItemSetGroups.FirstOrDefault(set => set.AncientSetDiscriminator != 0) is { } ancientSet)
         {
@@ -174,6 +182,9 @@ public class ItemSerializerW32 : IItemSerializer
             ReadFenrirOptions((byte)excellent, persistenceContext, item);
         }
 
+        ReadMasteryOptions(BinaryPrimitives.ReadUInt16LittleEndian(source[ExcellentIndex..]), source[MasteryBonusIndex], persistenceContext, item);
+        ReadWingGrades(source[KindBlockIndex..], persistenceContext, item);
+
         if (definition.MaximumSockets == 0)
         {
             AddHarmonyOption(source[HarmonyIndex], persistenceContext, item);
@@ -185,6 +196,86 @@ public class ItemSerializerW32 : IItemSerializer
         }
 
         return item;
+    }
+
+    private static int GetMasteryBits(Item item)
+    {
+        var bits = 0;
+        foreach (var link in item.ItemOptions)
+        {
+            if (link.ItemOption is { } option && option.OptionType == Season21ItemOptionTypes.Mastery)
+            {
+                bits |= 1 << option.Number;
+            }
+        }
+
+        return bits;
+    }
+
+    private static byte GetMasteryBonusByte(Item item)
+        => item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == Season21ItemOptionTypes.MasteryBonus) is { ItemOption: { } bonus } link
+            ? (byte)((link.Level & NibbleMask) | ((bonus.Number & NibbleMask) << 4))
+            : (byte)0;
+
+    private static void SetWingGrades(Span<byte> block, Item item)
+    {
+        var grades = item.ItemOptions
+            .Where(o => o.ItemOption?.OptionType == Season21ItemOptionTypes.WingGrade)
+            .OrderBy(o => o.Index)
+            .ThenBy(o => o.ItemOption!.Number)
+            .Take(WingGradeEntries)
+            .ToList();
+        if (grades.Count == 0)
+        {
+            return;
+        }
+
+        for (var entry = 0; entry < WingGradeEntries; entry++)
+        {
+            block[entry * 2] = entry < grades.Count ? (byte)grades[entry].ItemOption!.Number : NoWingGrade;
+            block[(entry * 2) + 1] = entry < grades.Count ? (byte)Math.Max(grades[entry].Level - 1, 0) : (byte)0;
+        }
+    }
+
+    private static void ReadMasteryOptions(ushort excellentWord, byte bonusByte, IContext persistenceContext, Item item)
+    {
+        var options = item.Definition!.PossibleItemOptions.SelectMany(o => o.PossibleOptions).ToList();
+        foreach (var option in options.Where(o => o.OptionType == Season21ItemOptionTypes.Mastery && o.Number < 16 && (excellentWord & MasteryMask & (1 << o.Number)) != 0))
+        {
+            AddLink(option, 0, 0, persistenceContext, item);
+        }
+
+        if (bonusByte != 0 && options.FirstOrDefault(o => o.OptionType == Season21ItemOptionTypes.MasteryBonus && o.Number == bonusByte >> 4) is { } bonus)
+        {
+            AddLink(bonus, bonusByte & NibbleMask, 0, persistenceContext, item);
+        }
+    }
+
+    private static void ReadWingGrades(ReadOnlySpan<byte> block, IContext persistenceContext, Item item)
+    {
+        var grades = item.Definition!.PossibleItemOptions.SelectMany(o => o.PossibleOptions).Where(o => o.OptionType == Season21ItemOptionTypes.WingGrade).ToList();
+        if (grades.Count == 0)
+        {
+            return;
+        }
+
+        for (var entry = 0; entry < WingGradeEntries; entry++)
+        {
+            var number = block[entry * 2];
+            if (number != NoWingGrade && grades.FirstOrDefault(o => o.Number == number) is { } option)
+            {
+                AddLink(option, block[(entry * 2) + 1] + 1, entry, persistenceContext, item);
+            }
+        }
+    }
+
+    private static void AddLink(IncreasableItemOption option, int level, int index, IContext persistenceContext, Item item)
+    {
+        var link = persistenceContext.CreateNew<ItemOptionLink>();
+        link.ItemOption = option;
+        link.Level = level;
+        link.Index = index;
+        item.ItemOptions.Add(link);
     }
 
     private static bool HasPossibleOption(ItemDefinition definition, ItemOptionType optionType)

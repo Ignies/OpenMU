@@ -62,6 +62,10 @@ Rules:
 | `evolution_quests` | The fourth and fifth class quests, the Trial Area and the experience hold at the fourth evolution (update "Add the evolution quests of Season 21", `src/GameLogic/EvolutionQuests`) |
 | `elite_zones` | The five elemental elite zones of the maps from Atlans Abyss 3 and Scorched Canyon on, with their elites inside (update "Add the elite zones of Season 21", plugin "Elite zones", `src/GameLogic/EliteZones`) |
 | `world_bosses` | The field bosses Medusa, Lord Silvester, Core Magriffy, Lord of Ferea, Nix and the God of Darkness with the shared 18 to 24 hour respawn, stages, arenas, item bags and `/fieldboss` (update "Add the field bosses of Season 21", plugin "Field bosses", `src/GameLogic/FieldBosses`) |
+| `wide_items` | Per-client item visibility: what only the W32 format carries never reaches a Season 6 client; the waiting items of the catalog activated for fork clients (update "Activate the items of the wide item format", section "Wide items") |
+| `mastery` | The mastery options and mastery bonus options of the 890 mastery items (update "Add the mastery options") |
+| `wing_grades` | The grade options of the fourth and fifth wings (update "Add the grade options of the fourth and fifth wings") |
+| `sockets_10` | The sphere levels 6 to 10 and the seed sphere enhancement (update "Add the sphere levels 6 to 10") |
 
 ## Balance
 
@@ -185,13 +189,65 @@ keeps its Season 6 meaning; the fields of later seasons stay zero until their sy
 | 4 | durability (Dark Horse, Dark Raven: their level) |
 | 5 | flags: 0 skill, 1 luck, 2 excellent bits not zero, 3 ancient, 4 harmony, 5 380 option, 6 sockets, 7 timed |
 | 6 | option level (bits 0-3, 0-15), option kind (bits 4-7) |
-| 7-8 | u16 LE: bits 0-5 = the low six bits of Season 6 byte 3 (excellent options; wings: options and option kind; Fenrir: its kind), 6-12 mastery options, 13-15 reserved |
-| 9 | mastery bonus option: index (bits 0-3), group (bits 4-7) |
+| 7-8 | u16 LE: bits 0-5 = the low six bits of Season 6 byte 3 (excellent options; wings: options and option kind; Fenrir: its kind), bits 6-12 = the mastery options by their number (6-12), 13-15 reserved |
+| 9 | mastery bonus option: level 1-3 (bits 0-3), group (bits 4-7: 0 weapon, 1 armor); 0 = none |
 | 10 | ancient: set discriminator (bits 0-1), bonus level (bits 2-3) |
 | 11 | harmony: level (bits 0-3), option (bits 4-7) |
 | 12 | socket bonus option (0xFF: a socket item without bonus) |
 | 13-17 | five slots: socket option index over all elements (0-49), 0xFE empty, 0xFF no slot |
-| 18-20 | five slot levels, 4 bits each (slot 0 = byte 18 low nibble): sphere level 1-15 |
+| 18-20 | five slot levels, 4 bits each (slot 0 = byte 18 low nibble): sphere level 1-10 (1-15 representable) |
 | 21 | element (bits 0-3), element kind (bits 4-7) |
-| 22-27 | kind block (4th/5th wing grades, earring links, Muun, errtel) |
+| 22-27 | kind block. Fourth and fifth wings: three grade options, each option number (u8, 0-10, 0xFF none) and grade (u8, 0-3); the others (earring links, Muun, errtel) stay zero |
 | 28-31 | expiry, u32 LE Unix seconds UTC, 0 = never |
+
+## Wide items
+
+`GameLogic/WideItems/WideItemRules.cs` decides what only the W32 format carries (feature `wide_items`):
+
+- an item definition of the item groups above 15 or with a number above 511, or one marked with the option
+  definition "Wide Item Format" (option type `Season21ItemOptionTypes.WideFormat`: Muuns, earrings, pentagrams,
+  errtels, the fourth and fifth wings, timed items, quivers, seed spheres of levels 6-10);
+- an item with a mastery, mastery bonus or wing grade option, or a socket option above sphere level 5.
+
+The item serializer of a connection tells what it carries (`IItemFormatViewPlugIn.CarriesWideItems`: W32 yes, every
+Season 6 or older format no); `player.CanSee(item)` combines both. A player without a client view (a bot) sees every
+item. A Season 6 client never gets a wide item, and gets no stand-in for it:
+
+| Place | Season 6 client |
+|---|---|
+| Inventory, vault, NPC shop, chaos machine, player shop list | the item is left out of the list |
+| Item appeared, moved, upgraded, bought | nothing is sent |
+| Ground | the drop is left out (no packet when nothing is left); a pick-up by its id is refused |
+| Trade | the partner can't put it into the trade ("can't be traded") and never sees it |
+| NPC shop, player shop buy | refused as an unknown item |
+| Crafting result | the item data is 0xFF ("no item") |
+| Other players' gear | the slot is empty in the appearance; an equip change reads as "removed" |
+| Monster drops | a killer whose client can't carry them never gets a wide item or a wide option rolled |
+| Admin "give item" | refused with the reason |
+
+The marketplace bridge of Hidden-Babylon (`openmu/plugins`, outside this repository) uses the same rule:
+`WideItemRules.IsWideOnly(item)` before it offers an item to a Season 6 world's site.
+
+The update "Activate the items of the wide item format" sets the 1,187 waiting items of the catalog active and marks
+those of the groups 0-15. They drop by the drop lists of the later maps (for fork clients only), can be sold by a
+merchant an operator gives them to, and can be given by a game master to a Babylon client.
+
+### Options (W32 only)
+
+- **Mastery** (`mastery`): weapons: option 6 damage + total level / 10, option 7 damage + 30; armors: option 6
+  health + 165, 7 mana + 165, 8 defense + 45 (the data's "damage decrease 45"), 9 zen x 1.45, 10 defense + total
+  level / 20. One option per item (always), a bonus option by 25 %: weapons all stats + 10 / 25 / 40, armors
+  defense + 25 / 50 / 75. The weapon values and the defense mappings are defaults (S21Emu names those options without
+  values); every value is configuration data. Elemental defense (11) and obsidian (12) wait for the element system.
+- **Wing grades** (`wing_grades`): eleven options (ItemGradeOption.xml): full mana / health recovery, damage return,
+  ignore defense, attack speed, excellent damage, double damage chance, strength, vitality, energy, agility. Fourth
+  wings up to three of them in grades 0-3 (level = grade + 1), fifth wings at their single grade.
+- **Sphere levels 6-10** (`sockets_10`): every socket option gets the levels 6-10, its Season 6 level 5 value scaled by
+  the Season 21 values of SocketItemOption.xml (a multiplier scales its bonus part). The seed spheres 12/311-340
+  (level 6-10) can be mounted; the seed researcher enhances a seed sphere of level 5-9 with 7 / 8 / 9 / 10 / 11 sphere
+  upgrade runes (12/401) and 25 / 28 / 31 / 34 / 37 million zen (SocketSystemCombinationMix.xml) to the next level.
+  These are the crafting numbers 100-104 of the Season 6 mix request (`C1 86`); a client which can't carry the result
+  gets "incorrect mix items".
+
+No new packet is needed: every option rides in the W32 item, and every packet which carries an item sizes it by the
+serializer. Season 6 clients keep every packet byte for byte (the visibility tests and the Season 6 serializer tests).

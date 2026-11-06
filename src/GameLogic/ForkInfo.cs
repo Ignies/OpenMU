@@ -51,6 +51,10 @@ public static class ForkInfo
         "evolution_quests",
         "elite_zones",
         "world_bosses",
+        "wide_items",
+        "mastery",
+        "wing_grades",
+        "sockets_10",
     ];
 
     /// <summary>

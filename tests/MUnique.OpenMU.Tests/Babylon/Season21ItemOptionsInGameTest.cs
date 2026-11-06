@@ -165,10 +165,49 @@ public class Season21ItemOptionsInGameTest
         Assert.That(read.ItemOptions.Single(o => o.ItemOption!.OptionType == ItemOptionTypes.SocketOption).Level, Is.EqualTo(6));
     }
 
-    private static void AddOption(Item item, ItemOptionType type, int number, int level)
+    /// <summary>
+    /// The W32 format carries the mastery options as bits 6 to 12 of bytes 7-8, the mastery bonus in byte 9 and the
+    /// grade options of a wing in the kind block, and reads them back.
+    /// </summary>
+    [Test]
+    public void W32CarriesMasteryOptionsAndWingGrades()
+    {
+        using var context = this._contextProvider.CreateNewContext(this._gameConfiguration);
+        var w32 = new ItemSerializerW32();
+        var data = new byte[ItemSerializerW32.Length];
+
+        var armor = context.CreateNew<Item>();
+        armor.Definition = this.Item(8, 99);
+        armor.Durability = 50;
+        AddOption(armor, Season21ItemOptionTypes.Mastery, 6, 0);
+        AddOption(armor, Season21ItemOptionTypes.Mastery, 8, 0);
+        AddOption(armor, Season21ItemOptionTypes.MasteryBonus, 1, 2);
+        w32.SerializeItem(data, armor);
+        Assert.That(data[7] | (data[8] << 8), Is.EqualTo((1 << 6) | (1 << 8)), "mastery bits");
+        Assert.That(data[9], Is.EqualTo((1 << 4) | 2), "bonus: armor group, level 2");
+        Assert.That(data[5] & 0x04, Is.EqualTo(0x04), "excellent-or-mastery flag");
+        var readArmor = w32.DeserializeItem(data, this._gameConfiguration, context);
+        Assert.That(Options(readArmor), Is.EquivalentTo(Options(armor)));
+
+        var wings = context.CreateNew<Item>();
+        wings.Definition = this.Item(12, 414);
+        wings.Durability = 200;
+        AddOption(wings, Season21ItemOptionTypes.WingGrade, 7, 3, index: 0);
+        AddOption(wings, Season21ItemOptionTypes.WingGrade, 4, 1, index: 1);
+        data.AsSpan().Clear();
+        w32.SerializeItem(data, wings);
+        Assert.That(data[22..28], Is.EqualTo(new byte[] { 7, 2, 4, 0, 0xFF, 0 }), "kind block: option, grade");
+        var readWings = w32.DeserializeItem(data, this._gameConfiguration, context);
+        Assert.That(Options(readWings), Is.EquivalentTo(Options(wings)));
+    }
+
+    private static IEnumerable<(Guid Type, int Number, int Level)> Options(Item item)
+        => item.ItemOptions.Select(o => (o.ItemOption!.OptionType!.Id, (int)o.ItemOption.Number, o.Level));
+
+    private static void AddOption(Item item, ItemOptionType type, int number, int level, int index = 0)
     {
         var option = item.Definition!.PossibleItemOptions.SelectMany(o => o.PossibleOptions).Single(o => o.OptionType == type && o.Number == number);
-        item.ItemOptions.Add(new Persistence.BasicModel.ItemOptionLink { ItemOption = option, Level = level });
+        item.ItemOptions.Add(new Persistence.BasicModel.ItemOptionLink { ItemOption = option, Level = level, Index = index });
     }
 
     private static async ValueTask<Item> CraftAsync(SimpleItemCraftingHandler handler, Player player, Func<IList<CraftingRequiredItemLink>, ValueTask<List<Item>>> createResult)
