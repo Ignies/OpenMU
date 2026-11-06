@@ -171,8 +171,9 @@ public sealed class Season21RoundsContext : MiniGameContext
                 var cleared = await this.PlayRoundAsync(round, cancellationToken).ConfigureAwait(false);
                 if (cleared)
                 {
-                    Interlocked.Increment(ref this._clearedRounds);
+                    // Counted after the rewards, so a cleared round is a rewarded one.
                     await this.ForEachPlayerAsync(player => this.RewardClearedRoundAsync(player, round).AsTask()).ConfigureAwait(false);
+                    Interlocked.Increment(ref this._clearedRounds);
                 }
                 else if (this._rounds.EndsWhenARoundFails)
                 {
