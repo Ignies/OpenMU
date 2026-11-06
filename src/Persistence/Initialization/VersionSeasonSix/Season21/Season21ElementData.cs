@@ -101,7 +101,44 @@ internal sealed class Season21ElementData
     {
         /// <summary>Gets the chances in 1/10000 to take an errtel out of a pentagram, by level and rank.</summary>
         public List<RemovalRateRow> RemovalRates { get; init; } = [];
+
+        /// <summary>Gets the upgrades of the pentagrams to their mastery pentagram.</summary>
+        public List<UpgradeRow> PentagramUpgrades { get; init; } = [];
+
+        /// <summary>Gets the upgrades of the errtels to their mastery errtel.</summary>
+        public List<UpgradeRow> ErrtelUpgrades { get; init; } = [];
+
+        /// <summary>Gets the chances in percent of an errtel rank up, by rank and level.</summary>
+        public List<RankUpRateRow> RankUpRates { get; init; } = [];
+
+        /// <summary>Gets the money of an errtel rank up, by rank.</summary>
+        public List<RankUpMoneyRow> RankUpMoney { get; init; } = [];
+
+        /// <summary>Gets the errtel level ups, by level: the money and per rank the chance in percent and the elemental runes.</summary>
+        public List<LevelUpRow> LevelUp { get; init; } = [];
     }
+
+    /// <summary>An upgrade to a mastery item.</summary>
+    /// <param name="Main">The item number of the upgraded item (group 12).</param>
+    /// <param name="Result">The item number of the result (group 12).</param>
+    /// <param name="Materials">The materials: group, number and amount (0 for one).</param>
+    internal sealed record UpgradeRow(short Main, short Result, int[][] Materials);
+
+    /// <summary>The rank up chances of a rank.</summary>
+    /// <param name="Rank">The rank before.</param>
+    /// <param name="Rates">The chances by level.</param>
+    internal sealed record RankUpRateRow(int Rank, int[] Rates);
+
+    /// <summary>The rank up money of a rank.</summary>
+    /// <param name="Rank">The rank before.</param>
+    /// <param name="Money">The money.</param>
+    internal sealed record RankUpMoneyRow(int Rank, int Money);
+
+    /// <summary>The level up of a level.</summary>
+    /// <param name="Level">The level before.</param>
+    /// <param name="Money">The money.</param>
+    /// <param name="Ranks">Per rank: the chance in percent and the elemental runes.</param>
+    internal sealed record LevelUpRow(int Level, int Money, int[][] Ranks);
 
     /// <summary>The removal chances of one errtel level.</summary>
     /// <param name="Level">The level.</param>

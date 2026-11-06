@@ -6528,5 +6528,68 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ErrtelRemovalRate_Rates_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Errtel level ups.
+        /// </summary>
+        public static string ElementsConfiguration_LevelUps_Name {
+            get {
+                return ResourceManager.GetString("ElementsConfiguration_LevelUps_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Errtel rank ups.
+        /// </summary>
+        public static string ElementsConfiguration_RankUps_Name {
+            get {
+                return ResourceManager.GetString("ElementsConfiguration_RankUps_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Errtel level.
+        /// </summary>
+        public static string ErrtelLevelUp_Level_Name {
+            get {
+                return ResourceManager.GetString("ErrtelLevelUp_Level_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success rates by rank (%).
+        /// </summary>
+        public static string ErrtelLevelUp_Rates_Name {
+            get {
+                return ResourceManager.GetString("ErrtelLevelUp_Rates_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Elemental runes by rank.
+        /// </summary>
+        public static string ErrtelLevelUp_Runes_Name {
+            get {
+                return ResourceManager.GetString("ErrtelLevelUp_Runes_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Errtel rank.
+        /// </summary>
+        public static string ErrtelRankUp_Rank_Name {
+            get {
+                return ResourceManager.GetString("ErrtelRankUp_Rank_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Success rates by level (%).
+        /// </summary>
+        public static string ErrtelRankUp_Rates_Name {
+            get {
+                return ResourceManager.GetString("ErrtelRankUp_Rates_Name", resourceCulture);
+            }
+        }
     }
 }

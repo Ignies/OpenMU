@@ -7,13 +7,16 @@ namespace MUnique.OpenMU.Tests.Babylon;
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Elements;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
+using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.Persistence;
@@ -224,6 +227,54 @@ public class Season21ElementsInGameTest
         Assert.That(WideItemRules.IsWideOnly(earring), Is.True);
     }
 
+    /// <summary>
+    /// The refinery: an errtel of level 0 and rank 1 with one elemental rune levels up to 1; at level 0 it can't rank
+    /// up (rank 1 needs level 6); Arca's Prophecy with an emblem and packed jewels becomes Antonia's Sword [I] and
+    /// keeps its element and sockets.
+    /// </summary>
+    [Test]
+    public async ValueTask RefineryLevelsErrtelsAndUpgradesPentagramsAsync()
+    {
+        var player = await this.CreatePlayerAsync().ConfigureAwait(false);
+        var configuration = ElementsFeaturePlugIn.GetConfiguration(this._gameContext)!;
+        configuration.LevelUps = [new ErrtelLevelUp { Level = 0, Rates = [100], Runes = [1] }];
+        configuration.RankUps = [new ErrtelRankUp { Rank = 1, Rates = [0, 0, 0, 0, 0, 0, 70] }];
+
+        var errtel = this.CreateItem(player, this.Item(AngerErrtel));
+        AddOption(errtel, Season21ItemOptionTypes.Element, (int)Element.Fire);
+        AddOption(errtel, Season21ItemOptionTypes.ErrtelRank, 0);
+        await player.TemporaryStorage!.AddItemAsync(errtel).ConfigureAwait(false);
+        Assert.That(new TestRankUp(this.CraftingSettings("Errtel Rank Up")).TryGetRequiredItems(player, out _, out _), Is.EqualTo(CraftingResult.IncorrectMixItems), "level 0");
+
+        var rune = this.CreateItem(player, this.Item(288));
+        rune.Durability = 1;
+        await player.TemporaryStorage.AddItemAsync(rune).ConfigureAwait(false);
+        var levelUp = new TestLevelUp(this.CraftingSettings("Errtel Level Up (Level 1)"));
+        Assert.That(levelUp.TryGetRequiredItems(player, out var items, out var rate), Is.Null);
+        Assert.That(rate, Is.EqualTo(100));
+        await levelUp.CreateAsync(items, player).ConfigureAwait(false);
+        Assert.That(errtel.GetRankOptions().Single().Level, Is.EqualTo(1));
+        await player.TemporaryStorage.RemoveItemAsync(rune).ConfigureAwait(false);
+        await player.TemporaryStorage.RemoveItemAsync(errtel).ConfigureAwait(false);
+
+        var pentagram = this.CreateItem(player, this.Item(212));
+        pentagram.SocketCount = 3;
+        AddOption(pentagram, Season21ItemOptionTypes.Element, (int)Element.Wind);
+        var upgrade = new TestUpgrade(this.CraftingSettings("Arca's Prophecy Upgrade"));
+        foreach (var required in this.CraftingSettings("Arca's Prophecy Upgrade").RequiredItems)
+        {
+            var material = required.Reference == ElementalUpgradeCrafting.MainItemReference ? pentagram : this.CreateItem(player, required.PossibleItems.Single());
+            material.Level = (byte)required.MinimumItemLevel;
+            await player.TemporaryStorage.AddItemAsync(material).ConfigureAwait(false);
+        }
+
+        Assert.That(upgrade.TryGetRequiredItems(player, out items, out _), Is.Null);
+        await upgrade.CreateAsync(items, player).ConfigureAwait(false);
+        Assert.That(pentagram.Definition!.Number, Is.EqualTo(503));
+        Assert.That(pentagram.GetElement(), Is.EqualTo(Element.Wind));
+        Assert.That(pentagram.SocketCount, Is.EqualTo(3));
+    }
+
     private static void AddOption(Item item, ItemOptionType type, int number, int level = 0, int index = 0)
     {
         var option = item.Definition!.PossibleItemOptions.SelectMany(o => o.PossibleOptions).First(o => o.OptionType == type && o.Number == number);
@@ -293,5 +344,20 @@ public class Season21ElementsInGameTest
         monster.Initialize();
         await map.AddAsync(monster).ConfigureAwait(false);
         return monster;
+    }
+
+    private SimpleCraftingSettings CraftingSettings(string name)
+        => this._gameConfiguration.Monsters.SelectMany(m => m.ItemCraftings).Single(c => c.Name == name).SimpleCraftingSettings!;
+
+    private sealed class TestLevelUp(SimpleCraftingSettings settings) : ErrtelLevelUpCrafting(settings)
+    {
+        public ValueTask<List<Item>> CreateAsync(IList<CraftingRequiredItemLink> items, Player player) => this.CreateOrModifyResultItemsAsync(items, player, 0, 100);
+    }
+
+    private sealed class TestRankUp(SimpleCraftingSettings settings) : ErrtelRankUpCrafting(settings);
+
+    private sealed class TestUpgrade(SimpleCraftingSettings settings) : ElementalUpgradeCrafting(settings)
+    {
+        public ValueTask<List<Item>> CreateAsync(IList<CraftingRequiredItemLink> items, Player player) => this.CreateOrModifyResultItemsAsync(items, player, 0, 100);
     }
 }

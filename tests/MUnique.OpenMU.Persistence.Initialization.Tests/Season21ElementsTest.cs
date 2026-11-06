@@ -154,6 +154,22 @@ public class Season21ElementsTest
     }
 
     /// <summary>
+    /// The chaos goblin gets the elemental refinery: 14 upgrades to the mastery pentagrams and errtels, 10 errtel level
+    /// ups and the rank up, once.
+    /// </summary>
+    [Test]
+    public void TheRefineryIsAtTheChaosGoblin()
+    {
+        var craftings = this._gameConfiguration.Monsters.Single(m => m.NpcWindow == DataModel.Configuration.NpcWindow.ChaosMachine).ItemCraftings
+            .Where(c => c.Number >= VersionSeasonSix.Season21.Season21ElementsInitializer.FirstRefineryCraftingNumber && c.Number < 170)
+            .ToList();
+        Assert.That(craftings.Count(c => c.ItemCraftingHandlerClassName.EndsWith("ElementalUpgradeCrafting", StringComparison.Ordinal)), Is.EqualTo(14));
+        Assert.That(craftings.Count(c => c.ItemCraftingHandlerClassName.EndsWith("ErrtelLevelUpCrafting", StringComparison.Ordinal)), Is.EqualTo(10));
+        Assert.That(craftings.Count(c => c.ItemCraftingHandlerClassName.EndsWith("ErrtelRankUpCrafting", StringComparison.Ordinal)), Is.EqualTo(1));
+        Assert.That(craftings.Select(c => c.Number).Distinct().Count(), Is.EqualTo(craftings.Count));
+    }
+
+    /// <summary>
     /// The earrings go into their slots (left 238, right 237), have one always rolled and two further options and a
     /// link set per tier.
     /// </summary>

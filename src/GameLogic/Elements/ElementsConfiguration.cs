@@ -51,6 +51,18 @@ public class ElementsConfiguration
     public List<ErrtelRemovalRate> RemovalRates { get; set; } = [];
 
     /// <summary>
+    /// Gets or sets the level ups of the errtels by level.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ElementsConfiguration_LevelUps_Name))]
+    public List<ErrtelLevelUp> LevelUps { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the rank ups of the errtels by rank.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ElementsConfiguration_RankUps_Name))]
+    public List<ErrtelRankUp> RankUps { get; set; } = [];
+
+    /// <summary>
     /// Creates the element wheel of Webzen's guide (https://muonline.webzen.com/en/events/EX700Guide/pop_attribute).
     /// </summary>
     /// <returns>The wheel.</returns>

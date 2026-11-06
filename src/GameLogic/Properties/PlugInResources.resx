@@ -2331,4 +2331,25 @@
   <data name="ErrtelRemovalRate_Rates_Name" xml:space="preserve">
     <value>Rates by rank (1/10000)</value>
   </data>
+  <data name="ElementsConfiguration_LevelUps_Name" xml:space="preserve">
+    <value>Errtel level ups</value>
+  </data>
+  <data name="ElementsConfiguration_RankUps_Name" xml:space="preserve">
+    <value>Errtel rank ups</value>
+  </data>
+  <data name="ErrtelLevelUp_Level_Name" xml:space="preserve">
+    <value>Errtel level</value>
+  </data>
+  <data name="ErrtelLevelUp_Rates_Name" xml:space="preserve">
+    <value>Success rates by rank (%)</value>
+  </data>
+  <data name="ErrtelLevelUp_Runes_Name" xml:space="preserve">
+    <value>Elemental runes by rank</value>
+  </data>
+  <data name="ErrtelRankUp_Rank_Name" xml:space="preserve">
+    <value>Errtel rank</value>
+  </data>
+  <data name="ErrtelRankUp_Rates_Name" xml:space="preserve">
+    <value>Success rates by level (%)</value>
+  </data>
 </root>

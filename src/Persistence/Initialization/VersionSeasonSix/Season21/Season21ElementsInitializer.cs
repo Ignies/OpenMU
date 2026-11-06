@@ -6,9 +6,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
+using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Elements;
+using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -48,7 +50,17 @@ internal class Season21ElementsInitializer
     /// </summary>
     internal const short EarringLinkNumber = 0x1300;
 
+    /// <summary>
+    /// The crafting number of the first crafting of the elemental refinery at the chaos goblin (after the mixes of
+    /// the item options, 110-134).
+    /// </summary>
+    internal const byte FirstRefineryCraftingNumber = 140;
+
     private const byte ItemGroup = 12;
+
+    private const short ElementalRuneNumber = 288;
+
+    private const byte Season6MaximumItemLevel = 15;
 
     private const float Percent = 0.01f;
 
@@ -86,6 +98,11 @@ internal class Season21ElementsInitializer
         [23] = (Stats.BaseDamageBonus, false),
         [24] = (Stats.AllStatsBonus, false),
     };
+
+    /// <summary>
+    /// The packed jewels (group 12) of the jewels (group 14): bless, soul, life, creation.
+    /// </summary>
+    private static readonly Dictionary<int, short> PackedJewels = new() { [13] = 30, [14] = 31, [16] = 136, [22] = 137 };
 
     private static readonly AttributeDefinition[] ElementStats =
     [
@@ -156,6 +173,7 @@ internal class Season21ElementsInitializer
         }
 
         this.AddMonsterElements(data.Monsters);
+        this.AddRefinery(data.Refinery);
         this.ConfigurePlugIn(data);
     }
 
@@ -332,6 +350,122 @@ internal class Season21ElementsInitializer
         this._gameConfiguration.ItemSetGroups.Add(group);
     }
 
+    /// <summary>
+    /// Adds the craftings of the elemental refinery to the chaos goblin: the upgrades of the pentagrams and errtels to
+    /// their mastery items, the errtel level ups (one per level, since the money depends on it) and the rank up.
+    /// </summary>
+    private void AddRefinery(Season21ElementData.RefineryRows refinery)
+    {
+        if (this._gameConfiguration.Monsters.FirstOrDefault(m => m.NpcWindow == NpcWindow.ChaosMachine) is not { } goblin)
+        {
+            return;
+        }
+
+        var number = FirstRefineryCraftingNumber;
+        foreach (var upgrade in refinery.PentagramUpgrades.Concat(refinery.ErrtelUpgrades))
+        {
+            this.AddUpgradeCrafting(goblin, number++, upgrade);
+        }
+
+        var rune = this.Find(ElementalRuneNumber);
+        var errtels = this._gameConfiguration.Items.Where(i => i.Group == ItemGroup && Pentagrams.GetErrtelSocket(i) is not null).ToList();
+        foreach (var levelUp in refinery.LevelUp)
+        {
+            var crafting = this.GetOrCreateCrafting(goblin, number++, $"Errtel Level Up (Level {levelUp.Level + 1})", typeof(ErrtelLevelUpCrafting), levelUp.Money);
+            if (crafting?.SimpleCraftingSettings is { } settings && rune is not null)
+            {
+                settings.RequiredItems.Add(this.CreateRequiredItem(errtels, 1, 0, ErrtelLevelUpCrafting.ErrtelReference, (byte)levelUp.Level, (byte)levelUp.Level));
+                settings.RequiredItems.Add(this.CreateRequiredItem([rune], 1, 0, 0, 0, Season6MaximumItemLevel));
+            }
+        }
+
+        var rankUpMoney = refinery.RankUpMoney.FirstOrDefault(m => m.Rank == 1)?.Money ?? 0;
+        if (this.GetOrCreateCrafting(goblin, number, "Errtel Rank Up", typeof(ErrtelRankUpCrafting), rankUpMoney)?.SimpleCraftingSettings is { } rankUp)
+        {
+            rankUp.RequiredItems.Add(this.CreateRequiredItem(errtels, 1, 1, ErrtelLevelUpCrafting.ErrtelReference, 0, Season6MaximumItemLevel));
+        }
+    }
+
+    private void AddUpgradeCrafting(MonsterDefinition goblin, byte number, Season21ElementData.UpgradeRow upgrade)
+    {
+        if (this.Find(upgrade.Main) is not { } main
+            || this.Find(upgrade.Result) is not { } result
+            || this.GetOrCreateCrafting(goblin, number, $"{main.Name.ValueInNeutralLanguage} Upgrade", typeof(ElementalUpgradeCrafting), 0)?.SimpleCraftingSettings is not { } settings)
+        {
+            return;
+        }
+
+        settings.RequiredItems.Add(this.CreateRequiredItem([main], 1, 1, ElementalUpgradeCrafting.MainItemReference, 0, Season6MaximumItemLevel));
+        foreach (var material in upgrade.Materials)
+        {
+            if (this.GetMaterial(material[0], material[1], material[2]) is ({ } definition, var level))
+            {
+                settings.RequiredItems.Add(this.CreateRequiredItem([definition], 1, 1, 0, level, level));
+            }
+        }
+
+        var resultItem = this._context.CreateNew<ItemCraftingResultItem>();
+        resultItem.ItemDefinition = result;
+        settings.ResultItems.Add(resultItem);
+    }
+
+    /// <summary>
+    /// Gets a material of the source: a jewel of 30 (or 10) comes as the packed jewel of that amount, since the chaos
+    /// machine holds 32 items (packed jewels: level 0 holds 10, level 1 20, level 2 30).
+    /// </summary>
+    private (ItemDefinition? Definition, byte Level) GetMaterial(int group, int number, int amount)
+    {
+        const int jewelGroup = 14;
+        const int jewelsPerPackLevel = 10;
+        if (group == jewelGroup && amount >= jewelsPerPackLevel && PackedJewels.TryGetValue(number, out var packed))
+        {
+            return (this.Find(packed), (byte)((amount / jewelsPerPackLevel) - 1));
+        }
+
+        return (this._gameConfiguration.Items.FirstOrDefault(i => i.Group == group && i.Number == number), 0);
+    }
+
+    private ItemCrafting? GetOrCreateCrafting(MonsterDefinition goblin, byte number, string name, Type handler, int money)
+    {
+        if (goblin.ItemCraftings.Any(c => c.Number == number))
+        {
+            return null;
+        }
+
+        var crafting = this._context.CreateNew<ItemCrafting>();
+        crafting.Name = name;
+        crafting.Number = number;
+        crafting.ItemCraftingHandlerClassName = handler.FullName!;
+        var settings = this._context.CreateNew<SimpleCraftingSettings>();
+        settings.Money = money;
+        settings.SuccessPercent = 100;
+        crafting.SimpleCraftingSettings = settings;
+        goblin.ItemCraftings.Add(crafting);
+        return crafting;
+    }
+
+    private ItemCraftingRequiredItem CreateRequiredItem(IEnumerable<ItemDefinition> items, byte minimumAmount, byte maximumAmount, byte reference, byte minimumLevel, byte maximumLevel)
+    {
+        var requiredItem = this._context.CreateNew<ItemCraftingRequiredItem>();
+        requiredItem.MinimumAmount = minimumAmount;
+        requiredItem.MaximumAmount = maximumAmount;
+        requiredItem.MinimumItemLevel = minimumLevel;
+        requiredItem.MaximumItemLevel = maximumLevel;
+        requiredItem.Reference = reference;
+        if (reference > 0)
+        {
+            requiredItem.SuccessResult = MixResult.StaysAsIs;
+            requiredItem.FailResult = MixResult.StaysAsIs;
+        }
+
+        foreach (var item in items)
+        {
+            requiredItem.PossibleItems.Add(item);
+        }
+
+        return requiredItem;
+    }
+
     private void AddMonsterElements(IEnumerable<Season21ElementData.MonsterRow> rows)
     {
         foreach (var row in rows)
@@ -384,6 +518,18 @@ internal class Season21ElementsInitializer
         if (configuration.RemovalRates.Count == 0)
         {
             configuration.RemovalRates.AddRange(data.Refinery.RemovalRates.Select(r => new ErrtelRemovalRate { Level = r.Level, Rates = [.. r.Rates] }));
+            changed = true;
+        }
+
+        if (configuration.LevelUps.Count == 0)
+        {
+            configuration.LevelUps.AddRange(data.Refinery.LevelUp.Select(l => new ErrtelLevelUp { Level = l.Level, Rates = [.. l.Ranks.Select(r => r[0])], Runes = [.. l.Ranks.Select(r => r[1])] }));
+            changed = true;
+        }
+
+        if (configuration.RankUps.Count == 0)
+        {
+            configuration.RankUps.AddRange(data.Refinery.RankUpRates.Select(r => new ErrtelRankUp { Rank = r.Rank, Rates = [.. r.Rates] }));
             changed = true;
         }
 
