@@ -3047,4 +3047,22 @@
   <data name="SoulConverterStateRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of the monster soul converter window (C1 EE A8).</value>
   </data>
+  <data name="HelperPlusBabylonPlugIn_Name" xml:space="preserve">
+    <value>Babylon: MU Helper Plus</value>
+  </data>
+  <data name="HelperPlusBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the rules of the helper plus (C1 EE E0) and the result of a move into a hunting zone (C1 EE E2) to the Babylon client.</value>
+  </data>
+  <data name="HelperPlusMoveRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Babylon: MU Helper Plus move</value>
+  </data>
+  <data name="HelperPlusMoveRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the move of the helper plus into a hunting zone (C1 EE E1).</value>
+  </data>
+  <data name="HelperPlusModeRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Babylon: MU Helper Plus mode</value>
+  </data>
+  <data name="HelperPlusModeRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the switch of the plus mode of the helper (C1 EE E3).</value>
+  </data>
 </root>

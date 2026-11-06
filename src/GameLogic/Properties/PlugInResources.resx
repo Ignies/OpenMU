@@ -2772,4 +2772,64 @@
   <data name="SoulConverterConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Activates the monster soul converter of the item, if the plugin Monster soul converter (Season 21) allows it, and uses the item up.</value>
   </data>
+  <data name="HelperPlusPlugIn_Name" xml:space="preserve">
+    <value>MU Helper Plus (Season 21)</value>
+  </data>
+  <data name="HelperPlusPlugIn_Description" xml:space="preserve">
+    <value>Sends the rules of the helper to the Babylon client (the plus mode for characters of its total level, the ranges and the cost of the plus mode) and moves a character in the plus mode into the hunting zones of the hunting grounds, with the level and zen of the ground's warp.</value>
+  </data>
+  <data name="HelperPlusConfiguration_PlusMinimumTotalLevel_Name" xml:space="preserve">
+    <value>Plus mode minimum total level</value>
+  </data>
+  <data name="HelperPlusConfiguration_PartyLeaderOnly_Name" xml:space="preserve">
+    <value>Plus mode only alone or as party leader</value>
+  </data>
+  <data name="HelperPlusConfiguration_HuntRange_Name" xml:space="preserve">
+    <value>Hunting range</value>
+  </data>
+  <data name="HelperPlusConfiguration_PickupRange_Name" xml:space="preserve">
+    <value>Pick-up range</value>
+  </data>
+  <data name="HelperPlusConfiguration_PlusHuntRange_Name" xml:space="preserve">
+    <value>Plus mode hunting range</value>
+  </data>
+  <data name="HelperPlusConfiguration_PlusPickupRange_Name" xml:space="preserve">
+    <value>Plus mode pick-up range</value>
+  </data>
+  <data name="HelperPlusConfiguration_PlusCostPercent_Name" xml:space="preserve">
+    <value>Plus mode cost (percent)</value>
+  </data>
+  <data name="HelperPlusConfiguration_Grounds_Name" xml:space="preserve">
+    <value>Hunting grounds</value>
+  </data>
+  <data name="HelperPlusConfiguration_Zones_Name" xml:space="preserve">
+    <value>Hunting zones</value>
+  </data>
+  <data name="HelperPlusGround_Index_Name" xml:space="preserve">
+    <value>Index</value>
+  </data>
+  <data name="HelperPlusGround_WarpIndex_Name" xml:space="preserve">
+    <value>Warp index</value>
+  </data>
+  <data name="HelperPlusGround_Name_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="HelperPlusZone_Index_Name" xml:space="preserve">
+    <value>Index</value>
+  </data>
+  <data name="HelperPlusZone_Ground_Name" xml:space="preserve">
+    <value>Hunting ground</value>
+  </data>
+  <data name="HelperPlusZone_MapNumber_Name" xml:space="preserve">
+    <value>Map</value>
+  </data>
+  <data name="HelperPlusZone_Element_Name" xml:space="preserve">
+    <value>Element</value>
+  </data>
+  <data name="HelperPlusZone_X_Name" xml:space="preserve">
+    <value>X</value>
+  </data>
+  <data name="HelperPlusZone_Y_Name" xml:space="preserve">
+    <value>Y</value>
+  </data>
 </root>

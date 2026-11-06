@@ -1398,5 +1398,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21SoulConverterUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the MU Helper Plus of Season 21.
+        /// </summary>
+        public static string AddSeason21HelperPlusUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21HelperPlusUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the 31 hunting grounds (with their warps) and the 330 hunting zones of the Season 21 MU Helper Plus and turns it on. A configuration with zones stays. Optional; needs the maps of the later seasons..
+        /// </summary>
+        public static string AddSeason21HelperPlusUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21HelperPlusUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

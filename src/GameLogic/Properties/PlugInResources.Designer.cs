@@ -7851,5 +7851,185 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("SoulConverterConsumeHandlerPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MU Helper Plus (Season 21).
+        /// </summary>
+        public static string HelperPlusPlugIn_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the rules of the helper to the Babylon client (the plus mode for characters of its total level, the ranges and the cost of the plus mode) and moves a character in the plus mode into the hunting zones of the hunting grounds, with the level and zen of the ground's warp..
+        /// </summary>
+        public static string HelperPlusPlugIn_Description {
+            get {
+                return ResourceManager.GetString("HelperPlusPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plus mode minimum total level.
+        /// </summary>
+        public static string HelperPlusConfiguration_PlusMinimumTotalLevel_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusConfiguration_PlusMinimumTotalLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plus mode only alone or as party leader.
+        /// </summary>
+        public static string HelperPlusConfiguration_PartyLeaderOnly_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusConfiguration_PartyLeaderOnly_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hunting range.
+        /// </summary>
+        public static string HelperPlusConfiguration_HuntRange_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusConfiguration_HuntRange_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pick-up range.
+        /// </summary>
+        public static string HelperPlusConfiguration_PickupRange_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusConfiguration_PickupRange_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plus mode hunting range.
+        /// </summary>
+        public static string HelperPlusConfiguration_PlusHuntRange_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusConfiguration_PlusHuntRange_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plus mode pick-up range.
+        /// </summary>
+        public static string HelperPlusConfiguration_PlusPickupRange_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusConfiguration_PlusPickupRange_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Plus mode cost (percent).
+        /// </summary>
+        public static string HelperPlusConfiguration_PlusCostPercent_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusConfiguration_PlusCostPercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hunting grounds.
+        /// </summary>
+        public static string HelperPlusConfiguration_Grounds_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusConfiguration_Grounds_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hunting zones.
+        /// </summary>
+        public static string HelperPlusConfiguration_Zones_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusConfiguration_Zones_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Index.
+        /// </summary>
+        public static string HelperPlusGround_Index_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusGround_Index_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warp index.
+        /// </summary>
+        public static string HelperPlusGround_WarpIndex_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusGround_WarpIndex_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string HelperPlusGround_Name_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusGround_Name_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Index.
+        /// </summary>
+        public static string HelperPlusZone_Index_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusZone_Index_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hunting ground.
+        /// </summary>
+        public static string HelperPlusZone_Ground_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusZone_Ground_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Map.
+        /// </summary>
+        public static string HelperPlusZone_MapNumber_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusZone_MapNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Element.
+        /// </summary>
+        public static string HelperPlusZone_Element_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusZone_Element_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to X.
+        /// </summary>
+        public static string HelperPlusZone_X_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusZone_X_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Y.
+        /// </summary>
+        public static string HelperPlusZone_Y_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusZone_Y_Name", resourceCulture);
+            }
+        }
     }
 }

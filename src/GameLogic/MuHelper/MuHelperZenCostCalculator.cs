@@ -33,6 +33,6 @@ public static class MuHelperZenCostCalculator
         var costMultiplier = configuration.CostPerStage[currentStage];
         var totalLevel = player.Level + (int)(player.Attributes?[Stats.MasterLevel] ?? 0);
 
-        return costMultiplier * totalLevel;
+        return HelperPlus.HelperPlusPlugIn.ApplyCost(player, costMultiplier * totalLevel);
     }
 }

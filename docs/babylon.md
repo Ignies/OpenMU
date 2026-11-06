@@ -82,6 +82,7 @@ Rules:
 | `golden_invasions_s21` | The golden invasion of Season 21: the ten later golden monsters 493-502 with their Box of Kundun, the Golden Derkon in Elbeland, 19 kinds every four hours from 00:25 for 10 minutes (update "Add the golden invasion of Season 21"; the Season 6 plugin "Golden Invasion" runs it) |
 | `ranking` | The hunting record (time, kills, experience and damage per character, map and day on the 59 hunting maps, kept 7 days) and the in-game ranking by total level and by the kills and hunting experience of the week (update "Add the hunting record of Season 21", plugin "Hunting record and ranking (Season 21)", `src/GameLogic/HuntingRecord`) |
 | `soul_converter` | The monster soul converter: five tiers (items 14/460-464, total level 400 to 1450), two soul missions drawn from the tier, souls absorbed by kills and shared in a party, the reward kinds Ruud, jewels, elemental options and accessories, three a week, expiring on Thursday (update "Add the monster soul converter of Season 21", plugin "Monster soul converter (Season 21)", `src/GameLogic/SoulConverter`) |
+| `helper_plus` | The MU Helper Plus: the rules of the helper for the Babylon client (the plus mode from total level 400, alone or as party leader, its ranges and cost in percent of the helper cost) and the moves of the plus mode into the 330 hunting zones of the 31 hunting grounds, with the level and zen of their warps (update "Add the MU Helper Plus of Season 21", plugin "MU Helper Plus (Season 21)", `src/GameLogic/HelperPlus`) |
 
 ## Balance
 
@@ -208,6 +209,16 @@ Social and ranking packets (range D0-DF):
 - `C1 EE D4 HuntingRecordRequest` (client, 6): map number (u16 LE, 0xFFFF the current map) at 4. Answered by
   `C2 EE D1 HuntingRecordList`: map number (u16 LE) at 5, count at 7, then per day, newest first, 28 bytes: day start
   (u32 LE, UTC seconds), seconds on the map, kills (u32 LE each), experience and damage (u64 LE each).
+
+MU Helper Plus packets (range E0-EF):
+
+- `C1 EE E0 HelperPlusRules` (server, 13): flags at 4 (bit 0 the map has hunting zones, bit 1 the character may use the plus
+  mode, bit 2 the plus mode is on), plus mode total level (u16 LE) at 5, hunting and pick-up range of the helper at 7 and 8,
+  of the plus mode at 9 and 10, plus mode cost in percent (u16 LE) at 11. Sent on every map entry and after `C1 EE E3`.
+- `C1 EE E3 HelperPlusModeRequest` (client, 5): plus mode on (bool) at 4.
+- `C1 EE E1 HelperPlusMoveRequest` (client, 6): zone index (u16 LE, the `Index` of a `MuHelperPlus.xml` zone) at 4. Answered
+  by `C1 EE E2 HelperPlusMoveResult` (7): zone index at 4, result at 6 (0 moved, 1 unknown zone, 2 level too low, 3 not
+  enough money, 4 plus mode off, 5 off, 6 can not move now).
 
 ### Muuns (range 50-5F)
 

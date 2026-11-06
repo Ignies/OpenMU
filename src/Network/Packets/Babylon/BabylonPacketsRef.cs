@@ -7438,7 +7438,7 @@ public readonly ref struct HelperPlusRulesRef
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets bit 0 the helper may run on this map, bit 1 the character may use the plus mode, bit 2 the plus mode is on.
+    /// Gets or sets bit 0 this map has hunting zones of the plus mode, bit 1 the character may use the plus mode, bit 2 the plus mode is on.
     /// </summary>
     public byte Flags
     {
@@ -7578,7 +7578,7 @@ public readonly ref struct HelperPlusMoveRequestRef
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets the index of the hunting zone (S21 MuHelperPlus.xml HuntingZone).
+    /// Gets or sets the index of the hunting zone (S21 MuHelperPlus.xml, Info Index).
     /// </summary>
     public ushort ZoneIndex
     {

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Tests.Babylon;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Classes;
+using MUnique.OpenMU.GameLogic.HelperPlus;
 using MUnique.OpenMU.GameLogic.HuntingRecord;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.SoulConverter;
@@ -157,5 +158,51 @@ public class WorldSystemsPacketsTest
 
         var packet = new Network.Packets.Babylon.SoulConverterResult(output.ToArray());
         Assert.That((packet.Header.SubCode, packet.Result, packet.RewardKind), Is.EqualTo(((byte)0xA7, (byte)3, (byte)3)));
+    }
+
+    /// <summary>
+    /// Only the Babylon client gets the helper plus view.
+    /// </summary>
+    [Test]
+    public void OnlyTheBabylonClientGetsTheHelperPlusView()
+    {
+        var (player, _) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        player.GameContext.PlugInManager.RegisterPlugIn<IViewPlugIn, HelperPlusBabylonPlugIn>();
+
+        player.ClientVersion = BabylonClient.Version;
+        Assert.That(player.ViewPlugIns.GetPlugIn<IHelperPlusViewPlugIn>(), Is.InstanceOf<HelperPlusBabylonPlugIn>());
+
+        player.ClientVersion = new(6, 3, Network.PlugIns.ClientLanguage.English);
+        Assert.That(player.ViewPlugIns.GetPlugIn<IHelperPlusViewPlugIn>(), Is.Null);
+    }
+
+    /// <summary>
+    /// The helper plus rules carry the flags, the level, the ranges and the cost.
+    /// </summary>
+    [Test]
+    public async ValueTask HelperPlusRulesHaveTheirFieldsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(BabylonClient.Version);
+        var configuration = new HelperPlusConfiguration { PlusMinimumTotalLevel = 400, HuntRange = 6, PickupRange = 5, PlusHuntRange = 10, PlusPickupRange = 9, PlusCostPercent = 150 };
+
+        await new HelperPlusBabylonPlugIn(player).ShowHelperPlusRulesAsync(HelperPlusFlags.MapHasZones | HelperPlusFlags.PlusOn, configuration).ConfigureAwait(false);
+
+        var packet = new HelperPlusRules(output.ToArray());
+        Assert.That((packet.Header.SubCode, packet.Flags, packet.PlusMinimumLevel), Is.EqualTo(((byte)0xE0, (byte)5, (ushort)400)));
+        Assert.That((packet.HuntRange, packet.PickupRange, packet.PlusHuntRange, packet.PlusPickupRange, packet.PlusCostPercent), Is.EqualTo(((byte)6, (byte)5, (byte)10, (byte)9, (ushort)150)));
+    }
+
+    /// <summary>
+    /// The helper plus move result carries the zone and the result.
+    /// </summary>
+    [Test]
+    public async ValueTask HelperPlusMoveResultHasItsFieldsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(BabylonClient.Version);
+
+        await new HelperPlusBabylonPlugIn(player).ShowHelperPlusMoveResultAsync(42, GameLogic.HelperPlus.HelperPlusMoveResult.NotEnoughMoney).ConfigureAwait(false);
+
+        var packet = new Network.Packets.Babylon.HelperPlusMoveResult(output.ToArray());
+        Assert.That((packet.Header.SubCode, packet.ZoneIndex, packet.Result), Is.EqualTo(((byte)0xE2, (ushort)42, (byte)3)));
     }
 }

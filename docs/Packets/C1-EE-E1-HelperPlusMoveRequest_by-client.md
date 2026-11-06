@@ -16,4 +16,4 @@ The server checks the zone and the warp rules, moves the character and answers w
 | 1 | 1 |    Byte   |   6   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xEE  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0xE1  | Packet header - sub packet type identifier |
-| 4 | 2 | ShortLittleEndian |  | ZoneIndex; The index of the hunting zone (S21 MuHelperPlus.xml HuntingZone). |
+| 4 | 2 | ShortLittleEndian |  | ZoneIndex; The index of the hunting zone (S21 MuHelperPlus.xml, Info Index). |

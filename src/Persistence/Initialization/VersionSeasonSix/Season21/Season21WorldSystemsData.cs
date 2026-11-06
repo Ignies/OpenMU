@@ -30,6 +30,11 @@ internal sealed class Season21WorldSystemsData
     /// </summary>
     public SoulConverterRows SoulConverter { get; init; } = new();
 
+    /// <summary>
+    /// Gets the helper plus data (<c>Character/MuHelperPlus.xml</c>).
+    /// </summary>
+    public HelperPlusRows HelperPlus { get; init; } = new();
+
     private static Season21WorldSystemsData Load()
     {
         using var stream = typeof(Season21WorldSystemsData).Assembly.GetManifestResourceStream(ResourceName)
@@ -57,6 +62,31 @@ internal sealed class Season21WorldSystemsData
         /// <summary>Gets the tiers.</summary>
         public List<SoulTierRow> Tiers { get; init; } = [];
     }
+
+    /// <summary>The helper plus data.</summary>
+    internal sealed class HelperPlusRows
+    {
+        /// <summary>Gets the hunting grounds.</summary>
+        public List<HelperGroundRow> Grounds { get; init; } = [];
+
+        /// <summary>Gets the hunting zones.</summary>
+        public List<HelperZoneRow> Zones { get; init; } = [];
+    }
+
+    /// <summary>A hunting ground.</summary>
+    /// <param name="Index">The index.</param>
+    /// <param name="Move">The index of its warp (<c>MoveReqIndex</c>).</param>
+    /// <param name="Name">The name.</param>
+    internal sealed record HelperGroundRow(short Index, int Move, string Name);
+
+    /// <summary>A hunting zone.</summary>
+    /// <param name="Index">The index.</param>
+    /// <param name="Ground">The ground.</param>
+    /// <param name="Map">The map.</param>
+    /// <param name="Element">The element.</param>
+    /// <param name="X">The x coordinate of the hunting point.</param>
+    /// <param name="Y">The y coordinate of the hunting point.</param>
+    internal sealed record HelperZoneRow(short Index, short Ground, short Map, byte Element, byte X, byte Y);
 
     /// <summary>A converter tier.</summary>
     /// <param name="Tier">The tier.</param>

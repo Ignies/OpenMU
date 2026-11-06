@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.HelperPlus;
 using MUnique.OpenMU.GameLogic.HuntingRecord;
 using MUnique.OpenMU.GameLogic.Mining;
 using MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
@@ -211,6 +212,51 @@ internal class Season21WorldSystemsDataTest
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         Assert.That(GetConfiguration<SoulConverterConfiguration>(gameConfiguration, typeof(SoulConverterPlugIn).GUID, out _).Tiers, Has.Count.EqualTo(4));
+        Assert.That(plugIn.IsActive, Is.False);
+        Assert.That(update.IsMandatory, Is.False);
+    }
+
+    /// <summary>
+    /// The helper plus update sets the 31 hunting grounds with their warps and the 330 zones of <c>MuHelperPlus.xml</c> and
+    /// switches the helper plus on; every ground's warp but the one of Aquilas Temple is one of the maps update.
+    /// </summary>
+    [Test]
+    public async Task HelperPlusUpdateSetsTheZonesOfTheDataAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+        var update = new AddSeason21HelperPlusUpdatePlugIn();
+
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var configuration = GetConfiguration<HelperPlusConfiguration>(gameConfiguration, typeof(HelperPlusPlugIn).GUID, out var plugIn);
+        Assert.That(plugIn.IsActive, Is.True);
+        Assert.That((configuration.Grounds.Count, configuration.Zones.Count), Is.EqualTo((31, 330)));
+        Assert.That((configuration.Grounds[0].WarpIndex, configuration.Grounds[0].Name), Is.EqualTo((49, "Debenter")));
+        var zone = configuration.Zones[0];
+        Assert.That((zone.Index, zone.Ground, zone.MapNumber, zone.Element, zone.X, zone.Y), Is.EqualTo(((short)0, (short)0, (short)95, (byte)1, (byte)190, (byte)98)));
+        Assert.That(configuration.Grounds.Select(g => g.WarpIndex).Distinct().Where(w => gameConfiguration.WarpList.All(i => i.Index != w)), Is.EqualTo(new[] { 75 }), "Only Aquilas Temple, which the maps update leaves out.");
+        Assert.That(update.DependsOn.Select(d => d.Key), Does.Contain(new AddSeason21MapsUpdatePlugIn().Key));
+        Assert.That(GameLogic.ForkInfo.Has("helper_plus"), Is.True);
+    }
+
+    /// <summary>
+    /// Applied twice, the helper plus update keeps the zones and the switch of the operator; it is optional.
+    /// </summary>
+    [Test]
+    public async Task HelperPlusUpdateKeepsTheOperatorsZonesAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+        var update = new AddSeason21HelperPlusUpdatePlugIn();
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var plugIn = gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(HelperPlusPlugIn).GUID);
+        var custom = plugIn.GetConfiguration<HelperPlusConfiguration>(new IdIgnoringReferenceHandler())!;
+        custom.Zones.RemoveRange(1, custom.Zones.Count - 1);
+        plugIn.SetConfiguration(custom, null);
+        plugIn.IsActive = false;
+
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(GetConfiguration<HelperPlusConfiguration>(gameConfiguration, typeof(HelperPlusPlugIn).GUID, out _).Zones, Has.Count.EqualTo(1));
         Assert.That(plugIn.IsActive, Is.False);
         Assert.That(update.IsMandatory, Is.False);
     }

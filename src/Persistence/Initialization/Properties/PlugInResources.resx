@@ -552,4 +552,10 @@
   <data name="AddSeason21SoulConverterUpdatePlugIn_Description" xml:space="preserve">
     <value>Sets the five tiers of the Season 21 monster soul converter (items 14/460-464, total level 400 to 1450, two soul missions each, the reward bags of Ruud, jewels, elemental options and accessories) and turns the converter on. A configuration with tiers stays. Optional.</value>
   </data>
+  <data name="AddSeason21HelperPlusUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the MU Helper Plus of Season 21</value>
+  </data>
+  <data name="AddSeason21HelperPlusUpdatePlugIn_Description" xml:space="preserve">
+    <value>Sets the 31 hunting grounds (with their warps) and the 330 hunting zones of the Season 21 MU Helper Plus and turns it on. A configuration with zones stays. Optional; needs the maps of the later seasons.</value>
+  </data>
 </root>

@@ -71,6 +71,7 @@ public static class ForkInfo
         "golden_invasions_s21",
         "ranking",
         "soul_converter",
+        "helper_plus",
     ];
 
     /// <summary>

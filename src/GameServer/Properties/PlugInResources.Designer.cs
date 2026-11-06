@@ -8713,5 +8713,59 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("SoulConverterStateRequestHandlerPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: MU Helper Plus.
+        /// </summary>
+        public static string HelperPlusBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the rules of the helper plus (C1 EE E0) and the result of a move into a hunting zone (C1 EE E2) to the Babylon client..
+        /// </summary>
+        public static string HelperPlusBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("HelperPlusBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: MU Helper Plus move.
+        /// </summary>
+        public static string HelperPlusMoveRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusMoveRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the move of the helper plus into a hunting zone (C1 EE E1)..
+        /// </summary>
+        public static string HelperPlusMoveRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("HelperPlusMoveRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: MU Helper Plus mode.
+        /// </summary>
+        public static string HelperPlusModeRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("HelperPlusModeRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the switch of the plus mode of the helper (C1 EE E3)..
+        /// </summary>
+        public static string HelperPlusModeRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("HelperPlusModeRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

@@ -1484,7 +1484,7 @@ public static class ConnectionExtensions
     /// Sends a <see cref="HelperPlusRules" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="flags">Bit 0 the helper may run on this map, bit 1 the character may use the plus mode, bit 2 the plus mode is on.</param>
+    /// <param name="flags">Bit 0 this map has hunting zones of the plus mode, bit 1 the character may use the plus mode, bit 2 the plus mode is on.</param>
     /// <param name="plusMinimumLevel">The total level (level + master level) the plus mode needs.</param>
     /// <param name="huntRange">The largest hunting range of the normal helper, in tiles.</param>
     /// <param name="pickupRange">The largest pick-up range of the normal helper, in tiles.</param>
@@ -1524,7 +1524,7 @@ public static class ConnectionExtensions
     /// Sends a <see cref="HelperPlusMoveRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="zoneIndex">The index of the hunting zone (S21 MuHelperPlus.xml HuntingZone).</param>
+    /// <param name="zoneIndex">The index of the hunting zone (S21 MuHelperPlus.xml, Info Index).</param>
     /// <remarks>
     /// Is sent by the client when: The helper plus moves the character to a hunting zone.
     /// Causes reaction on server side: The server checks the zone and the warp rules, moves the character and answers with HelperPlusMoveResult.

@@ -16,7 +16,7 @@ The client limits its helper settings to the ranges and shows whether the helper
 | 1 | 1 |    Byte   |   13   | Packet header - length of the packet |
 | 2 | 1 |    Byte   | 0xEE  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0xE0  | Packet header - sub packet type identifier |
-| 4 | 1 | Byte |  | Flags; Bit 0 the helper may run on this map, bit 1 the character may use the plus mode, bit 2 the plus mode is on. |
+| 4 | 1 | Byte |  | Flags; Bit 0 this map has hunting zones of the plus mode, bit 1 the character may use the plus mode, bit 2 the plus mode is on. |
 | 5 | 2 | ShortLittleEndian |  | PlusMinimumLevel; The total level (level + master level) the plus mode needs. |
 | 7 | 1 | Byte |  | HuntRange; The largest hunting range of the normal helper, in tiles. |
 | 8 | 1 | Byte |  | PickupRange; The largest pick-up range of the normal helper, in tiles. |

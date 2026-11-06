@@ -2314,7 +2314,7 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>Flags</Name>
-          <Description>Bit 0 the helper may run on this map, bit 1 the character may use the plus mode, bit 2 the plus mode is on.</Description>
+          <Description>Bit 0 this map has hunting zones of the plus mode, bit 1 the character may use the plus mode, bit 2 the plus mode is on.</Description>
         </Field>
         <Field>
           <Index>5</Index>
@@ -2368,7 +2368,7 @@
           <Index>4</Index>
           <Type>ShortLittleEndian</Type>
           <Name>ZoneIndex</Name>
-          <Description>The index of the hunting zone (S21 MuHelperPlus.xml HuntingZone).</Description>
+          <Description>The index of the hunting zone (S21 MuHelperPlus.xml, Info Index).</Description>
         </Field>
       </Fields>
     </Packet>
