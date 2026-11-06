@@ -97,6 +97,156 @@ public readonly struct EquippedItemWide
 
 
 /// <summary>
+/// A skill of the own character with its number and level..
+/// </summary>
+public readonly struct SkillLevelWide
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SkillLevelWide"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public SkillLevelWide(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets or sets the index of the skill in the list (the Season 6 skill index, wider).
+    /// </summary>
+    public ushort SkillIndex
+    {
+        get => ReadUInt16LittleEndian(this._data.Span);
+        set => WriteUInt16LittleEndian(this._data.Span, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the skill number.
+    /// </summary>
+    public ushort SkillNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[2..]);
+        set => WriteUInt16LittleEndian(this._data.Span[2..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the level of a master or tree skill, else 0.
+    /// </summary>
+    public byte Level
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+}
+
+
+/// <summary>
+/// A learned master skill, by its number instead of the index of the Season 6 client tree..
+/// </summary>
+public readonly struct MasterSkillWide
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MasterSkillWide"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MasterSkillWide(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 11;
+
+    /// <summary>
+    /// Gets or sets the skill number.
+    /// </summary>
+    public ushort SkillNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span);
+        set => WriteUInt16LittleEndian(this._data.Span, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the level.
+    /// </summary>
+    public byte Level
+    {
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the value at the level.
+    /// </summary>
+    public float DisplayValue
+    {
+        get => ReadSingleLittleEndian(this._data.Span[3..]);
+        set => WriteSingleLittleEndian(this._data.Span[3..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the value at the next level.
+    /// </summary>
+    public float DisplayValueOfNextLevel
+    {
+        get => ReadSingleLittleEndian(this._data.Span[7..]);
+        set => WriteSingleLittleEndian(this._data.Span[7..], value);
+    }
+}
+
+
+/// <summary>
+/// A learned skill of the skill enhancement tree..
+/// </summary>
+public readonly struct EnhanceTreeSkill
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EnhanceTreeSkill"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public EnhanceTreeSkill(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 3;
+
+    /// <summary>
+    /// Gets or sets the skill number of the node or passive.
+    /// </summary>
+    public ushort SkillNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span);
+        set => WriteUInt16LittleEndian(this._data.Span, value);
+    }
+
+    /// <summary>
+    /// Gets or sets the points in it.
+    /// </summary>
+    public byte Level
+    {
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
+    }
+}
+
+
+/// <summary>
 /// Is sent by the client when: After the login succeeded, when the client logged in with the version of the Babylon client.
 /// Causes reaction on server side: The server answers with the ForkWelcome which tells the client the wire format and the features which are active.
 /// </summary>
@@ -929,4 +1079,509 @@ public readonly struct AppearanceChangedWide
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(AppearanceChangedWide packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: With the skill list, to a fourth or fifth evolution of a world with the skill enhancement tree.
+/// Causes reaction on client side: The client fills its skill enhancement tree window.
+/// </summary>
+public readonly struct EnhanceTreeState
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EnhanceTreeState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public EnhanceTreeState(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EnhanceTreeState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private EnhanceTreeState(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x40;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the free points.
+    /// </summary>
+    public ushort FreePoints
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[5..]);
+        set => WriteUInt16LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the points spent in the tree.
+    /// </summary>
+    public ushort SpentPoints
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[7..]);
+        set => WriteUInt16LittleEndian(this._data.Span[7..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the skill count.
+    /// </summary>
+    public ushort SkillCount
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[9..]);
+        set => WriteUInt16LittleEndian(this._data.Span[9..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="EnhanceTreeSkill"/> of the specified index.
+    /// </summary>
+        public EnhanceTreeSkill this[int index] => new (this._data.Slice(11 + index * EnhanceTreeSkill.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="EnhanceTreeState"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator EnhanceTreeState(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="EnhanceTreeState"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(EnhanceTreeState packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="EnhanceTreeSkill"/>.
+    /// </summary>
+    /// <param name="skillsCount">The count of <see cref="EnhanceTreeSkill"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int skillsCount) => skillsCount * EnhanceTreeSkill.Length + 11;
+}
+
+
+/// <summary>
+/// Is sent by the client when: The player adds a point to a node or passive of the skill enhancement tree.
+/// Causes reaction on server side: The server checks the node and the points and answers with EnhanceTreeAddPointResult.
+/// </summary>
+public readonly struct EnhanceTreeAddPoint
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EnhanceTreeAddPoint"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public EnhanceTreeAddPoint(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EnhanceTreeAddPoint"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private EnhanceTreeAddPoint(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x41;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the skill number of the node or passive.
+    /// </summary>
+    public ushort SkillNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="EnhanceTreeAddPoint"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator EnhanceTreeAddPoint(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="EnhanceTreeAddPoint"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(EnhanceTreeAddPoint packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After the player asked to add a point to the skill enhancement tree.
+/// Causes reaction on client side: The client shows the new level and the free points, or why the point was refused.
+/// </summary>
+public readonly struct EnhanceTreeAddPointResult
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EnhanceTreeAddPointResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public EnhanceTreeAddPointResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EnhanceTreeAddPointResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private EnhanceTreeAddPointResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x42;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 10;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets 0 added, 1 no tree, 2 unknown node, 3 requirement missing, 4 not enough points, 5 maximum reached.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the skill number of the node.
+    /// </summary>
+    public ushort SkillNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[5..]);
+        set => WriteUInt16LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the level of the node after the request.
+    /// </summary>
+    public byte Level
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the free points after the request.
+    /// </summary>
+    public ushort FreePoints
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[8..]);
+        set => WriteUInt16LittleEndian(this._data.Span[8..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="EnhanceTreeAddPointResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator EnhanceTreeAddPointResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="EnhanceTreeAddPointResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(EnhanceTreeAddPointResult packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: With the master skill list, to a Babylon client.
+/// Causes reaction on client side: The client places the master skills in its tree by their numbers; the Season 6 list identifies them by a slot of its own client tree, which the classes after Season 6 do not have.
+/// </summary>
+public readonly struct MasterSkillListWide
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MasterSkillListWide"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MasterSkillListWide(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MasterSkillListWide"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private MasterSkillListWide(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x46;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the free master points.
+    /// </summary>
+    public ushort MasterLevelUpPoints
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[5..]);
+        set => WriteUInt16LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the skill count.
+    /// </summary>
+    public ushort SkillCount
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[7..]);
+        set => WriteUInt16LittleEndian(this._data.Span[7..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="MasterSkillWide"/> of the specified index.
+    /// </summary>
+        public MasterSkillWide this[int index] => new (this._data.Slice(9 + index * MasterSkillWide.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="MasterSkillListWide"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator MasterSkillListWide(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="MasterSkillListWide"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(MasterSkillListWide packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="MasterSkillWide"/>.
+    /// </summary>
+    /// <param name="skillsCount">The count of <see cref="MasterSkillWide"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int skillsCount) => skillsCount * MasterSkillWide.Length + 9;
+}
+
+
+/// <summary>
+/// Is sent by the server when: When the own character enters the world, to a Babylon client.
+/// Causes reaction on client side: The client shows the skills. The Season 6 list counts them in a byte of a C1 packet, so it holds at most 62; a fourth or fifth evolution with its tree skills has more.
+/// </summary>
+public readonly struct SkillListWide
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SkillListWide"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public SkillListWide(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SkillListWide"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private SkillListWide(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x48;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the skill count.
+    /// </summary>
+    public ushort SkillCount
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[5..]);
+        set => WriteUInt16LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="SkillLevelWide"/> of the specified index.
+    /// </summary>
+        public SkillLevelWide this[int index] => new (this._data.Slice(7 + index * SkillLevelWide.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="SkillListWide"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator SkillListWide(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="SkillListWide"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(SkillListWide packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="SkillLevelWide"/>.
+    /// </summary>
+    /// <param name="skillsCount">The count of <see cref="SkillLevelWide"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int skillsCount) => skillsCount * SkillLevelWide.Length + 7;
 }

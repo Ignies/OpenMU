@@ -2837,4 +2837,28 @@
   <data name="AppearanceChangedBabylonPlugIn_Description" xml:space="preserve">
     <value>Shows a changed piece of gear of a player in view to the Babylon client, in the wide item format, with the class code of the player.</value>
   </data>
+  <data name="EnhanceTreeAddPointHandlerPlugIn_Name" xml:space="preserve">
+    <value>Babylon: enhance tree point (C1 EE 41)</value>
+  </data>
+  <data name="EnhanceTreeAddPointHandlerPlugIn_Description" xml:space="preserve">
+    <value>Adds a point to a node of the skill enhancement tree, for the Babylon client.</value>
+  </data>
+  <data name="EnhanceTreeBabylonPlugIn_Name" xml:space="preserve">
+    <value>Babylon: skill enhancement tree (EE 40, 42)</value>
+  </data>
+  <data name="EnhanceTreeBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the learned skills and free points of the skill enhancement tree, and the result of an added point, to the Babylon client.</value>
+  </data>
+  <data name="SkillListViewBabylonPlugIn_Name" xml:space="preserve">
+    <value>Babylon: skill list (C2 EE 48)</value>
+  </data>
+  <data name="SkillListViewBabylonPlugIn_Description" xml:space="preserve">
+    <value>Sends the skill list to the Babylon client without the 62 skill limit of the Season 6 packet, followed by the skill enhancement tree.</value>
+  </data>
+  <data name="UpdateMasterSkillsBabylonPlugIn_Name" xml:space="preserve">
+    <value>Babylon: master skill list (C2 EE 46)</value>
+  </data>
+  <data name="UpdateMasterSkillsBabylonPlugIn_Description" xml:space="preserve">
+    <value>Sends the master skills to the Babylon client by their numbers, so the classes after Season 6 get their tree.</value>
+  </data>
 </root>

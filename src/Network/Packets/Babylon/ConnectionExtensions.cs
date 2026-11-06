@@ -220,4 +220,66 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="EnhanceTreeAddPoint" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="skillNumber">The skill number of the node or passive.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player adds a point to a node or passive of the skill enhancement tree.
+    /// Causes reaction on server side: The server checks the node and the points and answers with EnhanceTreeAddPointResult.
+    /// </remarks>
+    public static async ValueTask SendEnhanceTreeAddPointAsync(this IConnection? connection, ushort @skillNumber)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = EnhanceTreeAddPointRef.Length;
+            var packet = new EnhanceTreeAddPointRef(connection.Output.GetSpan(length)[..length]);
+            packet.SkillNumber = @skillNumber;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="EnhanceTreeAddPointResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">0 added, 1 no tree, 2 unknown node, 3 requirement missing, 4 not enough points, 5 maximum reached.</param>
+    /// <param name="skillNumber">The skill number of the node.</param>
+    /// <param name="level">The level of the node after the request.</param>
+    /// <param name="freePoints">The free points after the request.</param>
+    /// <remarks>
+    /// Is sent by the server when: After the player asked to add a point to the skill enhancement tree.
+    /// Causes reaction on client side: The client shows the new level and the free points, or why the point was refused.
+    /// </remarks>
+    public static async ValueTask SendEnhanceTreeAddPointResultAsync(this IConnection? connection, byte @result, ushort @skillNumber, byte @level, ushort @freePoints)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = EnhanceTreeAddPointResultRef.Length;
+            var packet = new EnhanceTreeAddPointResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.SkillNumber = @skillNumber;
+            packet.Level = @level;
+            packet.FreePoints = @freePoints;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

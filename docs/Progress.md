@@ -125,6 +125,7 @@ complexity and effort). Complexity 0 means we wont implement it.
 |   - *Gens ranking request* | 0xF80B            |      |          | Answered with the gens info of the player (0xF807) |
 | Babylon protocol (fork)     | 0xEE              |          |            | Only the Babylon client in fork mode (docs/babylon.md) |
 |   - *Fork hello*            | 0xEEF0            | 100%     | 2          | Answered with the fork welcome (0xEEF1)       |
+|   - *Enhance tree point*    | 0xEE41            | 100%     | 2          | Answered with the point result (0xEE42)       |
 | *Hit*                         | 0x11      | 100%     | 10         |                                               |
 | *Teleport*                    | 0x15 | 100%     | 2          |                                               |
 | *Walk*                        | 0xD4     | 100%     | 10         |                                               |

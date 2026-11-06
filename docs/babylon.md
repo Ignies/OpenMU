@@ -57,6 +57,8 @@ Rules:
 | `s21_items_all` | Every item of the Season 21 data (update "Add every item of Season 21"); what the Season 6 item format can't carry is defined but inactive |
 | `classes_s21` | The nine classes of Season 21 with all their evolutions (update "Add the classes of Season 21") |
 | `evolutions_45` | The fourth and fifth evolution of the Season 6 classes and their level rules per progression mode |
+| `s21_skills` | The skills of Season 21: the nine new classes, the fourth and fifth evolution skills, the master tree nodes Season 21 adds, the books (update "Add the skills of Season 21") |
+| `enhance_tree` | The skill enhancement tree of the fourth evolution and its points per progression mode (`src/GameLogic/EnhanceTree`) |
 
 ## Balance
 
@@ -124,6 +126,23 @@ Appearance packets (range 20-2F):
 - `C1 EE 21 AppearanceChangedWide` (server, 40): player id at 4, slot at 6, class code at 7, 32 bytes item data at 8
   (0xFF when the slot got empty). Replaces the Season 6 appearance change for the Babylon client, whose glow byte
   would overwrite a part of the W32 item number.
+
+Skill packets (range 40-4F). A Season 6 client keeps every Season 6 skill packet; the use packets (targeted, area)
+carry the skill number in 16 bits and stay as they are for both clients.
+
+- `C2 EE 40 EnhanceTreeState` (server): free points (u16 LE) at 5, spent points at 7, count at 9, then per learned tree
+  skill its number (u16 LE) and level (u8). Sent after the skill list to a fourth or fifth evolution while the tree is on.
+- `C1 EE 41 EnhanceTreeAddPoint` (client, 6): skill number (u16 LE) at 4.
+- `C1 EE 42 EnhanceTreeAddPointResult` (server, 10): result at 4 (0 added, 1 no tree, 2 unknown node, 3 requirement
+  missing, 4 not enough points, 5 maximum reached), skill number at 5, level at 7, free points at 8.
+- `C2 EE 46 MasterSkillListWide` (server): free master points (u16 LE) at 5, count at 7, then per skill its number
+  (u16 LE), level (u8) and the display values of the level and the next one (floats). Replaces the Season 6 master
+  list, which names a slot of the Season 6 client tree that the classes after Season 6 don't have.
+- `C2 EE 48 SkillListWide` (server): count (u16 LE) at 5, then per skill its list index (u16 LE), number (u16 LE) and
+  level (u8). Replaces the Season 6 list, whose byte count in a C1 packet holds at most 62 skills. Single skills are
+  added and removed with the Season 6 packets.
+- 43-45 are kept for the Ability Enhancement Core, 47 for an effect status with a 16-bit effect number (the Season 6
+  status has a byte; no effect above 255 is applied yet).
 
 ### W32
 

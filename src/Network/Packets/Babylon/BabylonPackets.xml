@@ -41,6 +41,81 @@
         </Field>
       </Fields>
     </Structure>
+    <Structure>
+      <Name>SkillLevelWide</Name>
+      <Description>A skill of the own character with its number and level.</Description>
+      <Length>5</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SkillIndex</Name>
+          <Description>The index of the skill in the list (the Season 6 skill index, wider).</Description>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SkillNumber</Name>
+          <Description>The skill number.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Level</Name>
+          <Description>The level of a master or tree skill, else 0.</Description>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
+      <Name>MasterSkillWide</Name>
+      <Description>A learned master skill, by its number instead of the index of the Season 6 client tree.</Description>
+      <Length>11</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SkillNumber</Name>
+          <Description>The skill number.</Description>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>Byte</Type>
+          <Name>Level</Name>
+          <Description>The level.</Description>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <Type>Float</Type>
+          <Name>DisplayValue</Name>
+          <Description>The value at the level.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Float</Type>
+          <Name>DisplayValueOfNextLevel</Name>
+          <Description>The value at the next level.</Description>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
+      <Name>EnhanceTreeSkill</Name>
+      <Description>A learned skill of the skill enhancement tree.</Description>
+      <Length>3</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SkillNumber</Name>
+          <Description>The skill number of the node or passive.</Description>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>Byte</Type>
+          <Name>Level</Name>
+          <Description>The points in it.</Description>
+        </Field>
+      </Fields>
+    </Structure>
   </Structures>
   <Packets>
     <Packet>
@@ -282,6 +357,147 @@
           <Name>ItemData</Name>
           <Description>The item data in the item format of the connection, zero filled to 32 bytes; all 0xFF when the slot got empty.</Description>
           <Length>32</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>40</SubCode>
+      <Name>EnhanceTreeState</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>With the skill list, to a fourth or fifth evolution of a world with the skill enhancement tree.</SentWhen>
+      <CausedReaction>The client fills its skill enhancement tree window.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>FreePoints</Name>
+          <Description>The free points.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SpentPoints</Name>
+          <Description>The points spent in the tree.</Description>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SkillCount</Name>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Structure[]</Type>
+          <TypeName>EnhanceTreeSkill</TypeName>
+          <Name>Skills</Name>
+          <ItemCountField>SkillCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>41</SubCode>
+      <Name>EnhanceTreeAddPoint</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player adds a point to a node or passive of the skill enhancement tree.</SentWhen>
+      <CausedReaction>The server checks the node and the points and answers with EnhanceTreeAddPointResult.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SkillNumber</Name>
+          <Description>The skill number of the node or passive.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>42</SubCode>
+      <Name>EnhanceTreeAddPointResult</Name>
+      <Length>10</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After the player asked to add a point to the skill enhancement tree.</SentWhen>
+      <CausedReaction>The client shows the new level and the free points, or why the point was refused.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 added, 1 no tree, 2 unknown node, 3 requirement missing, 4 not enough points, 5 maximum reached.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SkillNumber</Name>
+          <Description>The skill number of the node.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Level</Name>
+          <Description>The level of the node after the request.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>FreePoints</Name>
+          <Description>The free points after the request.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>46</SubCode>
+      <Name>MasterSkillListWide</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>With the master skill list, to a Babylon client.</SentWhen>
+      <CausedReaction>The client places the master skills in its tree by their numbers; the Season 6 list identifies them by a slot of its own client tree, which the classes after Season 6 do not have.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MasterLevelUpPoints</Name>
+          <Description>The free master points.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SkillCount</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Structure[]</Type>
+          <TypeName>MasterSkillWide</TypeName>
+          <Name>Skills</Name>
+          <ItemCountField>SkillCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>48</SubCode>
+      <Name>SkillListWide</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When the own character enters the world, to a Babylon client.</SentWhen>
+      <CausedReaction>The client shows the skills. The Season 6 list counts them in a byte of a C1 packet, so it holds at most 62; a fourth or fifth evolution with its tree skills has more.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SkillCount</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Structure[]</Type>
+          <TypeName>SkillLevelWide</TypeName>
+          <Name>Skills</Name>
+          <ItemCountField>SkillCount</ItemCountField>
         </Field>
       </Fields>
     </Packet>

@@ -8083,5 +8083,77 @@ namespace MUnique.OpenMU.GameServer.Properties {
 
         /// <summary>Gets the localized PlayerShopBuyRequestResultW32PlugIn_Description text.</summary>
         public static string PlayerShopBuyRequestResultW32PlugIn_Description => ResourceManager.GetString("PlayerShopBuyRequestResultW32PlugIn_Description", resourceCulture)!;
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: enhance tree point (C1 EE 41).
+        /// </summary>
+        public static string EnhanceTreeAddPointHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeAddPointHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds a point to a node of the skill enhancement tree, for the Babylon client..
+        /// </summary>
+        public static string EnhanceTreeAddPointHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("EnhanceTreeAddPointHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: skill enhancement tree (EE 40, 42).
+        /// </summary>
+        public static string EnhanceTreeBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the learned skills and free points of the skill enhancement tree, and the result of an added point, to the Babylon client..
+        /// </summary>
+        public static string EnhanceTreeBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("EnhanceTreeBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: skill list (C2 EE 48).
+        /// </summary>
+        public static string SkillListViewBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SkillListViewBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the skill list to the Babylon client without the 62 skill limit of the Season 6 packet, followed by the skill enhancement tree..
+        /// </summary>
+        public static string SkillListViewBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SkillListViewBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: master skill list (C2 EE 46).
+        /// </summary>
+        public static string UpdateMasterSkillsBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("UpdateMasterSkillsBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the master skills to the Babylon client by their numbers, so the classes after Season 6 get their tree..
+        /// </summary>
+        public static string UpdateMasterSkillsBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("UpdateMasterSkillsBabylonPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

@@ -69,6 +69,84 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the structure size calculation for SkillLevelWide.
+    /// </summary>
+    [Test]
+    public void SkillLevelWide_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 5;
+        var actualLength = SkillLevelWide.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'SkillIndex' boundary
+        Assert.That(0 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SkillIndex' exceeds structure boundary");
+        
+        // Validate field 'SkillNumber' boundary
+        Assert.That(2 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SkillNumber' exceeds structure boundary");
+        
+        // Validate field 'Level' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Level' exceeds structure boundary");
+    }
+
+    /// <summary>
+    /// Tests the structure size calculation for MasterSkillWide.
+    /// </summary>
+    [Test]
+    public void MasterSkillWide_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 11;
+        var actualLength = MasterSkillWide.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'SkillNumber' boundary
+        Assert.That(0 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SkillNumber' exceeds structure boundary");
+        
+        // Validate field 'Level' boundary
+        Assert.That(2 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Level' exceeds structure boundary");
+        
+        // Validate field 'DisplayValue' boundary
+        Assert.That(3 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'DisplayValue' exceeds structure boundary");
+        
+        // Validate field 'DisplayValueOfNextLevel' boundary
+        Assert.That(7 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'DisplayValueOfNextLevel' exceeds structure boundary");
+    }
+
+    /// <summary>
+    /// Tests the structure size calculation for EnhanceTreeSkill.
+    /// </summary>
+    [Test]
+    public void EnhanceTreeSkill_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 3;
+        var actualLength = EnhanceTreeSkill.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'SkillNumber' boundary
+        Assert.That(0 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SkillNumber' exceeds structure boundary");
+        
+        // Validate field 'Level' boundary
+        Assert.That(2 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Level' exceeds structure boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for ForkHello.
     /// </summary>
     [Test]
@@ -262,5 +340,107 @@ public class PacketStructureTests
         // Validate field 'ItemData' boundary
         Assert.That(8 + 32, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'ItemData' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for EnhanceTreeState.
+    /// </summary>
+    [Test]
+    public void EnhanceTreeState_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'FreePoints' starts at index 5 with size 2
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'FreePoints' has invalid negative index");
+        
+        // Field 'SpentPoints' starts at index 7 with size 2
+        Assert.That(7, Is.GreaterThanOrEqualTo(0), 
+            "Field 'SpentPoints' has invalid negative index");
+        
+        // Field 'SkillCount' starts at index 9 with size 2
+        Assert.That(9, Is.GreaterThanOrEqualTo(0), 
+            "Field 'SkillCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for EnhanceTreeAddPoint.
+    /// </summary>
+    [Test]
+    public void EnhanceTreeAddPoint_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 6;
+        var actualLength = EnhanceTreeAddPointRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'SkillNumber' boundary
+        Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SkillNumber' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for EnhanceTreeAddPointResult.
+    /// </summary>
+    [Test]
+    public void EnhanceTreeAddPointResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 10;
+        var actualLength = EnhanceTreeAddPointResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+        
+        // Validate field 'SkillNumber' boundary
+        Assert.That(5 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SkillNumber' exceeds packet boundary");
+        
+        // Validate field 'Level' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Level' exceeds packet boundary");
+        
+        // Validate field 'FreePoints' boundary
+        Assert.That(8 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'FreePoints' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for MasterSkillListWide.
+    /// </summary>
+    [Test]
+    public void MasterSkillListWide_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'MasterLevelUpPoints' starts at index 5 with size 2
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'MasterLevelUpPoints' has invalid negative index");
+        
+        // Field 'SkillCount' starts at index 7 with size 2
+        Assert.That(7, Is.GreaterThanOrEqualTo(0), 
+            "Field 'SkillCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for SkillListWide.
+    /// </summary>
+    [Test]
+    public void SkillListWide_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'SkillCount' starts at index 5 with size 2
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'SkillCount' has invalid negative index");
     }
 }
