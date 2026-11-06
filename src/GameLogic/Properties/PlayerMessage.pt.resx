@@ -1255,4 +1255,7 @@ Extensões de inventário: {18}</value>
   <data name="GremoryGiftFailed" xml:space="preserve">
     <value>O baú de Gremory de {0} está cheio, desativado ou não é exibido pelo seu cliente de jogo.</value>
   </data>
+  <data name="RewardLostByFullInventory" xml:space="preserve">
+    <value>Sua recompensa {0} foi perdida: o baú de Gremory e o inventário estão cheios.</value>
+  </data>
 </root>

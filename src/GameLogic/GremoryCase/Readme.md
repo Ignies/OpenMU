@@ -16,6 +16,6 @@ characters. Rewards wait there until the player claims them into the inventory, 
 - Storage: `Character.GremoryCase` and `Account.GremoryCase` (`ItemStorage`, migration `AddSeason21Economy`).
 - Packets: `C2 EE 60` to `C1 EE 65` (`docs/babylon.md`, "Economy").
 
-Not built: the reward source text per item (the client shows the case without it), the level rewards of
-`ItemCompensationLevel.xml` (Muuns at total level 950-1750: wait for the Muun track), the event contribution Mastery
-Boxes (`EventMapPointIntegration.xml`).
+- Further sources: the level rewards and the event contribution Mastery Boxes (`../Rewards`).
+
+Not built: the reward source text per item (the client shows the case without it).

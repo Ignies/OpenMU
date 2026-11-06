@@ -3441,5 +3441,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("GremoryGiftFailed", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Your reward {0} was lost: the gremory case and the inventory are full..
+        /// </summary>
+        public static string RewardLostByFullInventory {
+            get {
+                return ResourceManager.GetString("RewardLostByFullInventory", resourceCulture);
+            }
+        }
     }
 }

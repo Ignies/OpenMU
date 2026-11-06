@@ -280,3 +280,10 @@ in `Item/Item.xml`.
   of items which the configuration doesn't have (or has inactive) are kept, but neither shown nor sold.
 * Ruud of monsters: the lowest minimum and the highest maximum of the Ruud ranges of a bag (64 monsters).
 * Priest James (725) stands where the data places him: Elbeland 32/239 and Loren Market 215/56.
+* Level rewards (`Character/ItemCompensationLevel.xml`): the item index is group x 512 + number; the class columns map to the
+  base class codes (KM is the light wizard, LM the lemuria mage), all 16 set means every class. The data's
+  `SendToGremory`, `Duration` and dates aren't applied: every reward goes through the gremory case.
+* Event contribution (`Event/EventMapPointIntegration.xml`): boxes and points per event; the special monsters are the
+  Blood Castle gate (131) and statue (132), the Imperial Guardian bosses (504-511) and the Doppelganger ice walker (531).
+  The update "Add the level rewards and event contribution boxes of Season 21" (`Season21RewardsInitializer`) needs the
+  economy update.

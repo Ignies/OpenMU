@@ -62,6 +62,8 @@ public static class ForkInfo
         "s21_shops",
         "zen_sinks",
         "s21_mixes",
+        "level_rewards",
+        "event_contribution",
     ];
 
     /// <summary>

@@ -66,7 +66,31 @@ for (const s of read('Item/Item.xml').matchAll(/<Section Index="(\d+)"[^>]*>([\s
   }
 }
 
-const json = { shops, ruudShop, ruudMonsters, ruudBoxes };
+// --- Level rewards: Character/ItemCompensationLevel.xml; Index is group * 512 + number; class columns by base class ---
+const CLASS_CODES = { DW: 0, DK: 1, FE: 2, MG: 3, DL: 4, SU: 5, RF: 6, GL: 7, RW: 8, SL: 9, GC: 10, KM: 11, LM: 12, IK: 13, AL: 14, CS: 15 };
+const levelRewards = [...read('Character/ItemCompensationLevel.xml').matchAll(/<Reward ([^>]*)\/>/g)].map(m => attrs(m[1])).map(a => {
+  const classes = Object.entries(CLASS_CODES).filter(([name]) => a[name] !== '0').map(([, code]) => code);
+  return { lv: +a.RewardLevel, g: Math.floor(+a.Index / 512), i: +a.Index % 512, l: +a.Level, n: +a.Durability, c: classes.length === 16 ? [] : classes };
+});
+
+// --- Event contribution: Event/EventMapPointIntegration.xml; the attributes per event become the points of a rule ---
+const integration = read('Event/EventMapPointIntegration.xml');
+const contributionBoxes = [...integration.matchAll(/<BoxInfo ([^>]*)\/>/g)].map(m => attrs(m[1]))
+  .map(a => ({ g: Math.floor(+a.ItemIndex / 512), i: +a.ItemIndex % 512, n: +a.Count, min: +a.MinPoint, max: Math.max(+a.MaxPoint, 0) }));
+const event = name => attrs((new RegExp(`<${name} ([^>]*)/>`).exec(integration) ?? [null, ''])[1]);
+const bc = event('BloodCastle'), cc = event('ChaosCastle'), ds = event('DevilSquare'), it = event('IllusionTempleRenewal'), ig = event('ImperialGuardian'), dg = event('DoppelGanger');
+// Special monsters: Blood Castle gate 131 and statue 132, Imperial Guardian bosses 504-511, Doppelganger ice walker 531.
+// Devil Square rank 1 is its winner; ranks 2-3 and the Illusion Temple statue points have no event hook (see the readme).
+const contributionRules = [
+  { t: 'BloodCastle', m: +bc.MonsterKillPoints, sun: 0, w: 0, p: 0, s: [[131, +bc.DoorPoints], [132, +bc.SaintStatuePoints]] },
+  { t: 'ChaosCastle', m: +cc.MonsterKillPoints, sun: 0, w: +cc.WinnerPoint, p: +cc.PlayerKillPoint, s: [] },
+  { t: 'DevilSquare', m: +ds.MonsterKillPoints, sun: 0, w: +ds.Rank1, p: 0, s: [] },
+  { t: 'IllusionTemple', m: 0, sun: 0, w: +it.WinnerPoints, p: +it.KillPoints, s: [] },
+  { t: 'ImperialGuardian', m: +ig.MonsterKillPointsWeekdays, sun: +ig.MonsterKillPointsSunday, w: 0, p: 0, s: [504, 505, 506, 507, 508, 509, 510, 511].map(n => [n, +ig.BossKillPointWeekdays]) },
+  { t: 'Doppelganger', m: +dg.MonsterKillPoint, sun: 0, w: +dg.WinnerPoints, p: +dg.PlayerKillPoint, s: [[531, +dg.IceWalkerKill]] },
+];
+
+const json = { shops, ruudShop, ruudMonsters, ruudBoxes, levelRewards, contributionBoxes, contributionRules };
 const lines = Object.entries(json).map(([k, rows]) => `  "${k}": [\n${rows.map(r => `    ${JSON.stringify(r)}`).join(',\n')}\n  ]`);
 writeFileSync(join(project, 'Resources', 'Season21', 'Economy.json'), `{\n${lines.join(',\n')}\n}\n`);
 console.log(`shops ${shops.length}, Ruud shop ${ruudShop.length}, Ruud monsters ${ruudMonsters.length}, Ruud boxes ${ruudBoxes.length}`);

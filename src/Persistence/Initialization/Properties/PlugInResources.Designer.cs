@@ -1254,5 +1254,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21ShopsUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the level rewards and event contribution boxes of Season 21.
+        /// </summary>
+        public static string AddSeason21RewardsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21RewardsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configures the level rewards (a Muun at every 50 total levels from 950 to 1750) and the event contribution points with the Mastery Boxes of Season 21, which land in the gremory case, and switches both on. Optional..
+        /// </summary>
+        public static string AddSeason21RewardsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21RewardsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

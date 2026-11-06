@@ -73,6 +73,8 @@ Rules:
 | `s21_shops` | The 29 NPC shops of Season 21 with their tabs, 1772 rows (update "Set the shops of Season 21") |
 | `zen_sinks` | The zen sinks of Season 21: 1 % tax on the zen sales of personal stores, monsters drop 50 % of the money (plugin "Zen sinks of Season 21") |
 | `s21_mixes` | The mastery item mixes, the fourth wings combination and the wing core enhancement, the grade rates (update "Add the item mixes of Season 21", plugin "Item rules of Season 21") |
+| `level_rewards` | The level rewards of Season 21: a Muun at every 50 total levels from 950 to 1750, into the gremory case (update "Add the level rewards and event contribution boxes of Season 21", plugin "Level rewards of Season 21", `src/GameLogic/Rewards`) |
+| `event_contribution` | The event contribution points of Season 21 (blood castle, chaos castle, devil square, illusion temple, imperial guardian, doppelganger) and the Mastery Boxes they give at the end of an event, into the gremory case (same update, plugin "Event contribution boxes of Season 21") |
 
 ## Balance
 

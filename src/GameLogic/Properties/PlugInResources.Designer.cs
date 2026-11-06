@@ -6240,5 +6240,167 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ZenSinksConfiguration_MoneyDropPercent_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level rewards of Season 21.
+        /// </summary>
+        public static string LevelRewardsPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LevelRewardsPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A character which reaches a total level (level plus master level) of the list gets its item into the gremory case, or into the inventory when the case isn't available..
+        /// </summary>
+        public static string LevelRewardsPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LevelRewardsPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rewards.
+        /// </summary>
+        public static string LevelRewardsConfiguration_Rewards_Name {
+            get {
+                return ResourceManager.GetString("LevelRewardsConfiguration_Rewards_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total level.
+        /// </summary>
+        public static string LevelReward_TotalLevel_Name {
+            get {
+                return ResourceManager.GetString("LevelReward_TotalLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Classes (empty for every class).
+        /// </summary>
+        public static string LevelReward_Classes_Name {
+            get {
+                return ResourceManager.GetString("LevelReward_Classes_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event contribution boxes of Season 21.
+        /// </summary>
+        public static string EventContributionPlugIn_Name {
+            get {
+                return ResourceManager.GetString("EventContributionPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kills and wins in the events (blood castle, chaos castle, devil square, illusion temple, imperial guardian, doppelganger) give points; at the end of the event the points give a Mastery Box into the gremory case, or into the inventory when the case isn't available..
+        /// </summary>
+        public static string EventContributionPlugIn_Description {
+            get {
+                return ResourceManager.GetString("EventContributionPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points per event.
+        /// </summary>
+        public static string EventContributionConfiguration_Rules_Name {
+            get {
+                return ResourceManager.GetString("EventContributionConfiguration_Rules_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Boxes per points.
+        /// </summary>
+        public static string EventContributionConfiguration_Boxes_Name {
+            get {
+                return ResourceManager.GetString("EventContributionConfiguration_Boxes_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Event.
+        /// </summary>
+        public static string EventContributionRule_Type_Name {
+            get {
+                return ResourceManager.GetString("EventContributionRule_Type_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points of a killed monster.
+        /// </summary>
+        public static string EventContributionRule_MonsterKillPoints_Name {
+            get {
+                return ResourceManager.GetString("EventContributionRule_MonsterKillPoints_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points of a killed monster on Sundays (0 for the same).
+        /// </summary>
+        public static string EventContributionRule_SundayMonsterKillPoints_Name {
+            get {
+                return ResourceManager.GetString("EventContributionRule_SundayMonsterKillPoints_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points of a killed player.
+        /// </summary>
+        public static string EventContributionRule_PlayerKillPoints_Name {
+            get {
+                return ResourceManager.GetString("EventContributionRule_PlayerKillPoints_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points of the winner.
+        /// </summary>
+        public static string EventContributionRule_WinnerPoints_Name {
+            get {
+                return ResourceManager.GetString("EventContributionRule_WinnerPoints_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points of special monsters.
+        /// </summary>
+        public static string EventContributionRule_SpecialMonsters_Name {
+            get {
+                return ResourceManager.GetString("EventContributionRule_SpecialMonsters_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points.
+        /// </summary>
+        public static string EventContributionRule_Points_Name {
+            get {
+                return ResourceManager.GetString("EventContributionRule_Points_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Least points.
+        /// </summary>
+        public static string ContributionBox_MinimumPoints_Name {
+            get {
+                return ResourceManager.GetString("ContributionBox_MinimumPoints_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Most points (0 for no bound).
+        /// </summary>
+        public static string ContributionBox_MaximumPoints_Name {
+            get {
+                return ResourceManager.GetString("ContributionBox_MaximumPoints_Name", resourceCulture);
+            }
+        }
     }
 }

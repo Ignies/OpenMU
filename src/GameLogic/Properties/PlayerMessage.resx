@@ -1255,4 +1255,7 @@ Inventory Extensions: {18}</value>
   <data name="GremoryGiftFailed" xml:space="preserve">
     <value>The gremory case of {0} is full, off, or not shown by its game client.</value>
   </data>
+  <data name="RewardLostByFullInventory" xml:space="preserve">
+    <value>Your reward {0} was lost: the gremory case and the inventory are full.</value>
+  </data>
 </root>

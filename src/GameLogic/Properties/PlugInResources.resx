@@ -2235,4 +2235,58 @@
   <data name="ZenSinksConfiguration_MoneyDropPercent_Name" xml:space="preserve">
     <value>Money drop of monsters (%)</value>
   </data>
+  <data name="LevelRewardsPlugIn_Name" xml:space="preserve">
+    <value>Level rewards of Season 21</value>
+  </data>
+  <data name="LevelRewardsPlugIn_Description" xml:space="preserve">
+    <value>A character which reaches a total level (level plus master level) of the list gets its item into the gremory case, or into the inventory when the case isn't available.</value>
+  </data>
+  <data name="LevelRewardsConfiguration_Rewards_Name" xml:space="preserve">
+    <value>Rewards</value>
+  </data>
+  <data name="LevelReward_TotalLevel_Name" xml:space="preserve">
+    <value>Total level</value>
+  </data>
+  <data name="LevelReward_Classes_Name" xml:space="preserve">
+    <value>Classes (empty for every class)</value>
+  </data>
+  <data name="EventContributionPlugIn_Name" xml:space="preserve">
+    <value>Event contribution boxes of Season 21</value>
+  </data>
+  <data name="EventContributionPlugIn_Description" xml:space="preserve">
+    <value>Kills and wins in the events (blood castle, chaos castle, devil square, illusion temple, imperial guardian, doppelganger) give points; at the end of the event the points give a Mastery Box into the gremory case, or into the inventory when the case isn't available.</value>
+  </data>
+  <data name="EventContributionConfiguration_Rules_Name" xml:space="preserve">
+    <value>Points per event</value>
+  </data>
+  <data name="EventContributionConfiguration_Boxes_Name" xml:space="preserve">
+    <value>Boxes per points</value>
+  </data>
+  <data name="EventContributionRule_Type_Name" xml:space="preserve">
+    <value>Event</value>
+  </data>
+  <data name="EventContributionRule_MonsterKillPoints_Name" xml:space="preserve">
+    <value>Points of a killed monster</value>
+  </data>
+  <data name="EventContributionRule_SundayMonsterKillPoints_Name" xml:space="preserve">
+    <value>Points of a killed monster on Sundays (0 for the same)</value>
+  </data>
+  <data name="EventContributionRule_PlayerKillPoints_Name" xml:space="preserve">
+    <value>Points of a killed player</value>
+  </data>
+  <data name="EventContributionRule_WinnerPoints_Name" xml:space="preserve">
+    <value>Points of the winner</value>
+  </data>
+  <data name="EventContributionRule_SpecialMonsters_Name" xml:space="preserve">
+    <value>Points of special monsters</value>
+  </data>
+  <data name="EventContributionRule_Points_Name" xml:space="preserve">
+    <value>Points</value>
+  </data>
+  <data name="ContributionBox_MinimumPoints_Name" xml:space="preserve">
+    <value>Least points</value>
+  </data>
+  <data name="ContributionBox_MaximumPoints_Name" xml:space="preserve">
+    <value>Most points (0 for no bound)</value>
+  </data>
 </root>

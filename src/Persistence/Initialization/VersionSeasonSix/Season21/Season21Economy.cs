@@ -1,4 +1,4 @@
-// <copyright file="Season21Economy.cs" company="MUnique">
+﻿// <copyright file="Season21Economy.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -45,6 +45,24 @@ internal sealed class Season21Economy
     /// </summary>
     [JsonPropertyName("ruudBoxes")]
     public List<RuudBoxRow> RuudBoxes { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the level rewards.
+    /// </summary>
+    [JsonPropertyName("levelRewards")]
+    public List<LevelRewardRow> LevelRewards { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the boxes of the event contribution.
+    /// </summary>
+    [JsonPropertyName("contributionBoxes")]
+    public List<ContributionBoxRow> ContributionBoxes { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the points of the event contribution per event.
+    /// </summary>
+    [JsonPropertyName("contributionRules")]
+    public List<ContributionRuleRow> ContributionRules { get; set; } = [];
 
     private static Season21Economy Load()
     {
@@ -121,4 +139,53 @@ internal sealed class Season21Economy
         [property: JsonPropertyName("g")] byte Group,
         [property: JsonPropertyName("i")] short Number,
         [property: JsonPropertyName("a")] int Amount);
+
+    /// <summary>
+    /// A level reward.
+    /// </summary>
+    /// <param name="TotalLevel">The total level.</param>
+    /// <param name="Group">The item group.</param>
+    /// <param name="Number">The item number.</param>
+    /// <param name="Level">The item level.</param>
+    /// <param name="Count">The count; 0 for the durability of the definition.</param>
+    /// <param name="Classes">The base classes; empty for every class.</param>
+    internal sealed record LevelRewardRow(
+        [property: JsonPropertyName("lv")] int TotalLevel,
+        [property: JsonPropertyName("g")] byte Group,
+        [property: JsonPropertyName("i")] short Number,
+        [property: JsonPropertyName("l")] byte Level,
+        [property: JsonPropertyName("n")] byte Count,
+        [property: JsonPropertyName("c")] List<byte> Classes);
+
+    /// <summary>
+    /// A box of the event contribution.
+    /// </summary>
+    /// <param name="Group">The item group.</param>
+    /// <param name="Number">The item number.</param>
+    /// <param name="Count">The count.</param>
+    /// <param name="Minimum">The least points.</param>
+    /// <param name="Maximum">The most points; 0 for no bound.</param>
+    internal sealed record ContributionBoxRow(
+        [property: JsonPropertyName("g")] byte Group,
+        [property: JsonPropertyName("i")] short Number,
+        [property: JsonPropertyName("n")] byte Count,
+        [property: JsonPropertyName("min")] int Minimum,
+        [property: JsonPropertyName("max")] int Maximum);
+
+    /// <summary>
+    /// The points of an event.
+    /// </summary>
+    /// <param name="Type">The name of the <see cref="MiniGameType"/>.</param>
+    /// <param name="MonsterKill">The points of a killed monster.</param>
+    /// <param name="SundayMonsterKill">The points of a killed monster on Sundays; 0 for the same.</param>
+    /// <param name="Winner">The points of the winner.</param>
+    /// <param name="PlayerKill">The points of a killed player.</param>
+    /// <param name="SpecialMonsters">Pairs of a monster number and its points.</param>
+    internal sealed record ContributionRuleRow(
+        [property: JsonPropertyName("t")] string Type,
+        [property: JsonPropertyName("m")] int MonsterKill,
+        [property: JsonPropertyName("sun")] int SundayMonsterKill,
+        [property: JsonPropertyName("w")] int Winner,
+        [property: JsonPropertyName("p")] int PlayerKill,
+        [property: JsonPropertyName("s")] List<int[]> SpecialMonsters);
 }
