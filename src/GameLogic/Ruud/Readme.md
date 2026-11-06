@@ -14,6 +14,8 @@ The second currency of Season 21 (S10 Part 2 on), kept per character (`Character
   is configured in `BoxRewards`), the game master command `/setruud <character> <amount>`.
 - `RuudExtensions` adds (up to `MaximumRuud`), takes and sets Ruud. A client without the Ruud view (Season 6) gets a
   message for gained Ruud and can't open the shop.
+- With Ruud on, the field bosses leave Priest James to the Ruud shop (`IsShopNpc`), which sells their entry item, the
+  Spirit Nixie's Shard (14/390, five for 2,500 Ruud); with Ruud off he hands it out for zen as before.
 - The data comes with the update "Add the gremory case, Ruud and the Ruud shop of Season 21"
   (`Persistence/Initialization/VersionSeasonSix/Season21`).
 - Packets: `C1 EE 70` to `C1 EE 73` (`docs/babylon.md`, "Economy").

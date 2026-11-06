@@ -490,4 +490,16 @@
   <data name="AddSeason21FieldBossesUpdatePlugIn_Description" xml:space="preserve">
     <value>Adds Medusa, Lord of Ferea with its crystal orb and the God of Darkness with its stages, the item bags of the bosses, and turns on the field bosses plugin with the shared 18 to 24 hour respawn. Lord Silvester and Core Magriffy no longer spawn as plain monsters.</value>
   </data>
+  <data name="AddSeason21EconomyUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the gremory case, Ruud and the Ruud shop of Season 21</value>
+  </data>
+  <data name="AddSeason21EconomyUpdatePlugIn_Description" xml:space="preserve">
+    <value>Places Priest James (Ruud shop) in Elbeland and Loren Market, fills the Ruud shop with the items of Season 21 and the Ruud of monsters and Ruud boxes, and switches on the gremory case, Ruud and the item expiry. Optional; a world without it stays Season 6.</value>
+  </data>
+  <data name="AddSeason21ShopsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Set the shops of Season 21</value>
+  </data>
+  <data name="AddSeason21ShopsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Replaces the items of the merchants with the shops of Season 21, with up to five tabs. Clients before Season 21 only show the first tab. Overwrites changed merchant stores of these NPCs.</value>
+  </data>
 </root>

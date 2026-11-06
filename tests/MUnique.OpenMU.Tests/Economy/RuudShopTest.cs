@@ -110,6 +110,20 @@ public class RuudShopTest
     }
 
     /// <summary>
+    /// With Ruud on, Priest James is the Ruud shop; the field bosses then leave his talk to it.
+    /// </summary>
+    [Test]
+    public async ValueTask PriestJamesIsTheShopNpcOnlyWithRuudAsync()
+    {
+        var off = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var on = await CreatePlayerAsync().ConfigureAwait(false);
+
+        Assert.That(RuudFeaturePlugIn.IsShopNpc(off.GameContext, PriestJames), Is.False);
+        Assert.That(RuudFeaturePlugIn.IsShopNpc(on.GameContext, PriestJames), Is.True);
+        Assert.That(RuudFeaturePlugIn.IsShopNpc(on.GameContext, 251), Is.False);
+    }
+
+    /// <summary>
     /// Ruud stops at the configured maximum.
     /// </summary>
     [Test]

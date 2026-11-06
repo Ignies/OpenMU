@@ -1212,5 +1212,41 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21FieldBossesUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the gremory case, Ruud and the Ruud shop of Season 21.
+        /// </summary>
+        public static string AddSeason21EconomyUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21EconomyUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Places Priest James (Ruud shop) in Elbeland and Loren Market, fills the Ruud shop with the items of Season 21 and the Ruud of monsters and Ruud boxes, and switches on the gremory case, Ruud and the item expiry. Optional; a world without it stays Season 6..
+        /// </summary>
+        public static string AddSeason21EconomyUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21EconomyUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Set the shops of Season 21.
+        /// </summary>
+        public static string AddSeason21ShopsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21ShopsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Replaces the items of the merchants with the shops of Season 21, with up to five tabs. Clients before Season 21 only show the first tab. Overwrites changed merchant stores of these NPCs..
+        /// </summary>
+        public static string AddSeason21ShopsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21ShopsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

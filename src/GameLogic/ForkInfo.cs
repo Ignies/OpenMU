@@ -55,6 +55,12 @@ public static class ForkInfo
         "mastery",
         "wing_grades",
         "sockets_10",
+        "item_expiry",
+        "gremory",
+        "ruud",
+        "npc_shop_tabs",
+        "s21_shops",
+        "zen_sinks",
     ];
 
     /// <summary>

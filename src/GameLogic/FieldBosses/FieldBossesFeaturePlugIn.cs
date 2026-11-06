@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Ruud;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.PlugIns;
@@ -284,7 +285,10 @@ public class FieldBossesFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigurat
         }
 
         var states = this.GetWorld(player.GameContext).States;
-        if (states.FirstOrDefault(s => s.Definition.EntryItemNpcNumber == npc.Definition.Number) is { } seller)
+
+        // With Ruud on, Priest James keeps the Ruud shop, which sells the entry item (Season 21).
+        if (states.FirstOrDefault(s => s.Definition.EntryItemNpcNumber == npc.Definition.Number) is { } seller
+            && !RuudFeaturePlugIn.IsShopNpc(player.GameContext, npc.Definition.Number))
         {
             eventArgs.HasBeenHandled = true;
             await SellEntryItemAsync(player, seller.Definition).ConfigureAwait(false);

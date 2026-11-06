@@ -37,6 +37,15 @@ public class RuudFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISupportCus
     public static RuudFeaturePlugIn? Get(IGameContext gameContext) => gameContext.FeaturePlugIns.GetPlugIn<RuudFeaturePlugIn>();
 
     /// <summary>
+    /// Determines whether the NPC opens the Ruud shop, i.e. Ruud is on and the NPC is its shop NPC.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <param name="npcNumber">The number of the NPC.</param>
+    /// <returns><c>true</c>, if the NPC opens the Ruud shop.</returns>
+    public static bool IsShopNpc(IGameContext gameContext, short npcNumber)
+        => Get(gameContext) is { } plugIn && (plugIn.Configuration ?? new RuudConfiguration()).ShopNpcNumber == npcNumber;
+
+    /// <summary>
     /// Gets the shop items which the character of the player may buy, with their index in the configuration.
     /// </summary>
     /// <param name="player">The player.</param>
