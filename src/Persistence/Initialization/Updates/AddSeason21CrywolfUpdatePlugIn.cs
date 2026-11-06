@@ -11,7 +11,8 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Applies the Crywolf renewal of Season 21 Part 1 Update 3: the element of the week of the army, Balgass at 6:40 into the
-/// battle, the rewards into the gremory case and the state durations of the Season 21 data.
+/// battle, the rewards into the gremory case and the state durations of the Season 21 data. Version 2 makes Balgass immune
+/// to debuffs and opens the altars on Monday 9:30, unless the operator changed the schedule.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(Properties.PlugInResources.AddSeason21CrywolfUpdatePlugIn_Name), Description = nameof(Properties.PlugInResources.AddSeason21CrywolfUpdatePlugIn_Description), ResourceType = typeof(Properties.PlugInResources))]
@@ -32,6 +33,9 @@ public class AddSeason21CrywolfUpdatePlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     public override bool RunsOnNewDatabase => true;
+
+    /// <inheritdoc />
+    public override int Version => 2;
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 11, 07, 6, 0, 0, DateTimeKind.Utc);

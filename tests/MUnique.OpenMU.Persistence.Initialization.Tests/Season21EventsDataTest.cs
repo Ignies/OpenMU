@@ -139,6 +139,36 @@ internal class Season21EventsDataTest
     }
 
     /// <summary>
+    /// A Crywolf schedule which the operator changed stays when the renewal runs again.
+    /// </summary>
+    [Test]
+    public async Task CrywolfRenewalKeepsTheOperatorsScheduleAsync()
+    {
+        var plugIn = this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(GameLogic.Crywolf.CrywolfPlugIn).GUID);
+        var referenceHandler = new GameConfigurationReferenceHandler(this._gameConfiguration);
+        var crywolf = plugIn.GetConfiguration<GameLogic.Crywolf.CrywolfEventDefinition>(referenceHandler)!;
+        var operatorDays = crywolf.StartDays;
+        crywolf.StartDays = [DayOfWeek.Friday];
+        crywolf.StartTimes = [new TimeOnly(18, 0)];
+        plugIn.SetConfiguration(crywolf, referenceHandler);
+        try
+        {
+            await new AddSeason21CrywolfUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
+
+            var after = plugIn.GetConfiguration<GameLogic.Crywolf.CrywolfEventDefinition>(referenceHandler)!;
+            Assert.That(after.StartDays, Is.EqualTo(new[] { DayOfWeek.Friday }));
+            Assert.That(after.StartTimes, Is.EqualTo(new[] { new TimeOnly(18, 0) }));
+            Assert.That(operatorDays, Is.EqualTo(new[] { DayOfWeek.Monday }), "the update moved the Season 6 schedule");
+        }
+        finally
+        {
+            crywolf.StartDays = operatorDays;
+            crywolf.StartTimes = [new TimeOnly(9, 24)];
+            plugIn.SetConfiguration(crywolf, referenceHandler);
+        }
+    }
+
+    /// <summary>
     /// Applying the updates again changes nothing.
     /// </summary>
     [Test]

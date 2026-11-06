@@ -8,6 +8,7 @@ using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views.World;
 
 /// <summary>
@@ -29,6 +30,12 @@ public class MagicEffectsList : AsyncDisposable
     {
         this._owner = owner;
     }
+
+    /// <summary>
+    /// Gets a value indicating whether the owner takes no effects: a monster with <see cref="Stats.IsImmuneToDebuffs"/>,
+    /// whose effects only come from its attackers.
+    /// </summary>
+    public bool IsImmune => this._owner is not Player && this._owner.Attributes[Stats.IsImmuneToDebuffs] > 0;
 
     /// <summary>
     /// Gets the active visible effect ids.
@@ -156,6 +163,12 @@ public class MagicEffectsList : AsyncDisposable
     /// <param name="effect">The effect.</param>
     public async ValueTask AddEffectAsync(MagicEffect effect)
     {
+        if (this.IsImmune)
+        {
+            await effect.DisposeAsync().ConfigureAwait(false);
+            return;
+        }
+
         bool added = false;
         lock (this._sync)
         {

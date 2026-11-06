@@ -116,8 +116,11 @@ timings): the army of the event takes the element of the week (`CrywolfEventDefi
 earth, wind, darkness, changing every seven days from `ElementRotationStart`, a Thursday 00:00), Balgass appears 6:40
 into the battle, the rewards of the contractors and heroes go into the gremory case or the inventory
 (`RewardsIntoGremoryCase`, `CrywolfRewards`), and the states last 300, 60, 120, 900, 15 and 10 seconds. Without the
-update the event stays Season 6. Not ported: Balgass's immunity to debuffs (the effect definitions have no debuff
-flag), the altar registration on Monday 09:30 and the auto move of the Event Map window.
+update the event stays Season 6. Version 2 of the update makes Balgass (349) immune to debuffs (`Stats.IsImmuneToDebuffs`:
+a monster with it takes no magic effect, since all of a monster's effects come from its attackers; one check in
+`MagicEffectsList.AddEffectAsync`) and opens the altars on Monday 9:30: the altars can be contracted in the ready state,
+so the event starts on Monday at 9:30 minus the two notifications (9:24), unless the operator changed the Season 6
+schedule. Not ported: the auto move of the Event Map window (client).
 
 ### Not ported (no data)
 

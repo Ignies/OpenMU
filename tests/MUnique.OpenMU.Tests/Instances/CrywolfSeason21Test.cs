@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Tests.Instances;
 
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Crywolf;
 using MUnique.OpenMU.GameLogic.Elements;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
@@ -57,6 +58,27 @@ public class CrywolfSeason21Test
         Assert.That(
             new[] { definition.Notify1Duration, definition.Notify2Duration, definition.ReadyDuration, definition.BattleDuration, definition.EndDuration, definition.EndCycleDuration },
             Is.EqualTo(new[] { 300, 60, 120, 900, 15, 10 }.Select(seconds => TimeSpan.FromSeconds(seconds))));
+    }
+
+    /// <summary>
+    /// Balgass is immune to debuffs (webzen guide 425).
+    /// </summary>
+    [Test]
+    public void BalgassIsImmuneToDebuffs()
+    {
+        var balgass = this._world.Configuration.Monsters.Single(m => m.Number == 349);
+        Assert.That(balgass.Attributes.Where(a => a.AttributeDefinition == Stats.IsImmuneToDebuffs).Select(a => a.Value), Is.EqualTo(new[] { 1f }));
+    }
+
+    /// <summary>
+    /// The altars can be contracted from Monday 9:30 (webzen guide 425): the contract phase of the event starts then.
+    /// </summary>
+    [Test]
+    public void AltarsOpenOnMondayAt0930()
+    {
+        var definition = this._world.GetStoredConfiguration<CrywolfEventDefinition>(typeof(CrywolfPlugIn).GUID)!;
+        Assert.That(definition.StartDays, Is.EqualTo(new[] { DayOfWeek.Monday }));
+        Assert.That(definition.StartTimes.Select(t => t.Add(definition.Notify1Duration + definition.Notify2Duration)), Is.EqualTo(new[] { new TimeOnly(9, 30) }));
     }
 
     /// <summary>

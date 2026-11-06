@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
 using System.Text.Json;
+using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.Crywolf;
 using MUnique.OpenMU.GameLogic.Elements;
@@ -20,6 +22,10 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 internal class Season21EventsInitializer
 {
+    private const short CrywolfBalgassNumber = 349;
+
+    private static readonly TimeOnly CrywolfAltarRegistration = new(9, 30);
+
     private readonly IContext _context;
 
     private readonly GameConfiguration _gameConfiguration;
@@ -236,12 +242,13 @@ internal class Season21EventsInitializer
 
     /// <summary>
     /// Applies the Crywolf renewal of Season 21 Part 1 Update 3 (webzen guide 425): the army takes the element of the week
-    /// (fire, water, earth, wind, darkness, from Thursday 00:00), Balgass appears 6:40 into the battle and the rewards go
-    /// into the gremory case; the state durations are the ones of S21Emu <c>Event/Crywolf.dat</c>. Keeps a renewal the
-    /// operator already set.
+    /// (fire, water, earth, wind, darkness, from Thursday 00:00), Balgass appears 6:40 into the battle, is immune to debuffs
+    /// and the rewards go into the gremory case; the altars open on Monday 9:30. The state durations are the ones of S21Emu
+    /// <c>Event/Crywolf.dat</c>. Keeps a renewal and a schedule the operator already set.
     /// </summary>
     public void ApplyCrywolfRenewal()
     {
+        this.MakeImmuneToDebuffs(CrywolfBalgassNumber);
         var plugIn = this.GetOrCreatePlugIn(typeof(CrywolfPlugIn).GUID);
         var referenceHandler = new Updates.GameConfigurationReferenceHandler(this._gameConfiguration);
         CrywolfEventDefinition configuration;
@@ -255,20 +262,27 @@ internal class Season21EventsInitializer
             return;
         }
 
-        if (configuration.WeeklyElements.Count > 0)
+        if (configuration.WeeklyElements.Count == 0)
         {
-            return;
+            configuration.WeeklyElements = [Element.Fire, Element.Water, Element.Earth, Element.Wind, Element.Darkness];
+            configuration.BalgassAppearanceDelay = TimeSpan.FromMinutes(6) + TimeSpan.FromSeconds(40);
+            configuration.RewardsIntoGremoryCase = true;
+            configuration.Notify1Duration = TimeSpan.FromSeconds(300);
+            configuration.Notify2Duration = TimeSpan.FromSeconds(60);
+            configuration.ReadyDuration = TimeSpan.FromSeconds(120);
+            configuration.BattleDuration = TimeSpan.FromSeconds(900);
+            configuration.EndDuration = TimeSpan.FromSeconds(15);
+            configuration.EndCycleDuration = TimeSpan.FromSeconds(10);
         }
 
-        configuration.WeeklyElements = [Element.Fire, Element.Water, Element.Earth, Element.Wind, Element.Darkness];
-        configuration.BalgassAppearanceDelay = TimeSpan.FromMinutes(6) + TimeSpan.FromSeconds(40);
-        configuration.RewardsIntoGremoryCase = true;
-        configuration.Notify1Duration = TimeSpan.FromSeconds(300);
-        configuration.Notify2Duration = TimeSpan.FromSeconds(60);
-        configuration.ReadyDuration = TimeSpan.FromSeconds(120);
-        configuration.BattleDuration = TimeSpan.FromSeconds(900);
-        configuration.EndDuration = TimeSpan.FromSeconds(15);
-        configuration.EndCycleDuration = TimeSpan.FromSeconds(10);
+        var season6 = new CrywolfEventDefinition();
+        if (configuration.StartDays.SequenceEqual(season6.StartDays) && configuration.StartTimes.SequenceEqual(season6.StartTimes))
+        {
+            // The altars can be contracted in the ready state, which follows the two notifications.
+            configuration.StartDays = [DayOfWeek.Monday];
+            configuration.StartTimes = [CrywolfAltarRegistration.Add(-(configuration.Notify1Duration + configuration.Notify2Duration))];
+        }
+
         plugIn.SetConfiguration(configuration, referenceHandler);
     }
 
@@ -276,6 +290,22 @@ internal class Season21EventsInitializer
     {
         events.AcheronGuardian.AddRange(Season21AcheronGuardianData.Levels.Select(level => Season21AcheronGuardianData.CreateDefinition(level.Areas)));
         return true;
+    }
+
+    private void MakeImmuneToDebuffs(short monsterNumber)
+    {
+        if (this._gameConfiguration.Monsters.FirstOrDefault(m => m.Number == monsterNumber) is not { } monster)
+        {
+            return;
+        }
+
+        var immunity = Stats.IsImmuneToDebuffs.GetPersistent(this._gameConfiguration);
+        if (monster.Attributes.Any(a => a.AttributeDefinition == immunity))
+        {
+            return;
+        }
+
+        monster.AddAttributes(new Dictionary<AttributeDefinition, float> { [Stats.IsImmuneToDebuffs] = 1 }, this._context, this._gameConfiguration);
     }
 
     private void RouteTrialsThroughTheInstanceZone()

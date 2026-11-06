@@ -31,7 +31,7 @@ public class RequiemSkillPlugIn : IAreaSkillPlugIn
     {
         this._stunEffectDefinition ??= ((Player)attacker).GameContext.Configuration.MagicEffects.First(m => m.Number == StunnedMagicEffectNumber);
 
-        if (!target.IsAlive || !Rand.NextRandomBool(attacker.Attributes[Stats.MasteryStunChance]))
+        if (!target.IsAlive || target.MagicEffectList.IsImmune || !Rand.NextRandomBool(attacker.Attributes[Stats.MasteryStunChance]))
         {
             return;
         }

@@ -1544,7 +1544,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
 
         /// <summary>
-        ///   Looks up a localized string similar to Crywolf of Season 21 Part 1 Update 3: the army takes the element of the week (fire, water, earth, wind, darkness, changing on Thursday 00:00), Balgass appears 6:40 into the battle, the rewards go into the gremory case, and the state durations of the Season 21 data. Keeps a renewal the operator set..
+        ///   Looks up a localized string similar to Crywolf of Season 21 Part 1 Update 3: the army takes the element of the week (fire, water, earth, wind, darkness, changing on Thursday 00:00), Balgass appears 6:40 into the battle and is immune to debuffs, the rewards go into the gremory case, the altars open on Monday 9:30, and the state durations of the Season 21 data. Keeps a renewal and a schedule the operator set..
         /// </summary>
         public static string AddSeason21CrywolfUpdatePlugIn_Description {
             get {

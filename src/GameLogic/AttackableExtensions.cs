@@ -970,6 +970,11 @@ public static class AttackableExtensions
     /// <param name="powerUps">The power ups of the effect.</param>
     private static async ValueTask ApplyMagicEffectAsync(this IAttackable target, IAttacker attacker, MagicEffectDefinition magicEffectDefinition, IElement duration, HitInfo? hitInfo, params (AttributeDefinition Target, IElement Boost)[] powerUps)
     {
+        if (target.MagicEffectList.IsImmune)
+        {
+            return;
+        }
+
         float finalDuration = duration.Value;
 
         if (magicEffectDefinition.DurationDependsOnTargetLevel)
