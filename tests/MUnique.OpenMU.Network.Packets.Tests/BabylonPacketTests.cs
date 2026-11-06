@@ -1107,4 +1107,64 @@ public class PacketStructureTests
         Assert.That(5, Is.GreaterThanOrEqualTo(0), 
             "Field 'ErrtelCount' has invalid negative index");
     }
+
+    /// <summary>
+    /// Tests the packet size calculation for ElementInfo.
+    /// </summary>
+    [Test]
+    public void ElementInfo_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 27;
+        var actualLength = ElementInfoRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Element' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Element' exceeds packet boundary");
+        
+        // Validate field 'DamageMin' boundary
+        Assert.That(5 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'DamageMin' exceeds packet boundary");
+        
+        // Validate field 'DamageMax' boundary
+        Assert.That(9 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'DamageMax' exceeds packet boundary");
+        
+        // Validate field 'Defense' boundary
+        Assert.That(13 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Defense' exceeds packet boundary");
+        
+        // Validate field 'AttackRate' boundary
+        Assert.That(17 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'AttackRate' exceeds packet boundary");
+        
+        // Validate field 'DefenseRate' boundary
+        Assert.That(21 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'DefenseRate' exceeds packet boundary");
+        
+        // Validate field 'CriticalChance' boundary
+        Assert.That(25 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'CriticalChance' exceeds packet boundary");
+        
+        // Validate field 'DodgeChance' boundary
+        Assert.That(26 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'DodgeChance' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ElementInfoRequest.
+    /// </summary>
+    [Test]
+    public void ElementInfoRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 4;
+        var actualLength = ElementInfoRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+    }
 }

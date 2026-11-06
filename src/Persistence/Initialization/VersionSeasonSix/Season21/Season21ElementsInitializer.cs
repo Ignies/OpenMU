@@ -71,6 +71,14 @@ internal class Season21ElementsInitializer
     internal const byte FirstEarringEnhanceCraftingNumber = 165;
 
     /// <summary>
+    /// The crafting number of the first crafting of the elemental refinery at the chaos goblin (after the mixes of
+    /// the item options, 110-134).
+    /// </summary>
+    internal const byte FirstRefineryCraftingNumber = 140;
+
+    private const byte ItemGroup = 12;
+
+    /// <summary>
     /// The level from which a failed earring enhancement resets the earring to +0 (Webzen guide 150: "After +7
     /// enchantment, a failed enchantment attempt resets the enchantment level to 0").
     /// </summary>
@@ -81,16 +89,6 @@ internal class Season21ElementsInitializer
     private const byte LapidaryStoneGroup = 13;
 
     private const short LapidaryStoneNumber = 510;
-
-    private static readonly short[] MasteryErrtelNumbers = [505, 506, 507, 508];
-
-    /// <summary>
-    /// The crafting number of the first crafting of the elemental refinery at the chaos goblin (after the mixes of
-    /// the item options, 110-134).
-    /// </summary>
-    internal const byte FirstRefineryCraftingNumber = 140;
-
-    private const byte ItemGroup = 12;
 
     private const short ElementalRuneNumber = 288;
 
@@ -148,6 +146,8 @@ internal class Season21ElementsInitializer
     /// The packed jewels (group 12) of the jewels (group 14): bless, soul, life, creation.
     /// </summary>
     private static readonly Dictionary<int, short> PackedJewels = new() { [13] = 30, [14] = 31, [16] = 136, [22] = 137 };
+
+    private static readonly short[] MasteryErrtelNumbers = [505, 506, 507, 508];
 
     /// <summary>
     /// The values of the mastery options of the earrings by tier 1-8, which EarringItemOption.txt gives as an index
