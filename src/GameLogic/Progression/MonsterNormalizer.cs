@@ -36,9 +36,10 @@ public static class MonsterNormalizer
     private const double HealthRoundingThreshold = 5000;
 
     /// <summary>
-    /// The map bosses of the Season 21 data: Lord Silvester, Core Magriffy and Nix, single spawns with 8 to 30 million health.
+    /// The map bosses of the Season 21 data, single spawns with 5 to 30 million health: Lord Silvester, Core Magriffy, Nix,
+    /// Lord of Ferea and its crystal orb, and the three stages of the God of Darkness (the swamp and the water monster).
     /// </summary>
-    private static readonly HashSet<short> BossNumbers = [673, 716, 746];
+    private static readonly HashSet<short> BossNumbers = [673, 716, 734, 735, 746, 790, 793, 794];
 
     private static readonly Limits NormalLimits = new(new(0.5, 2.0), new(0.6, 1.6), new(0.6, 1.6), new(0.6, 1.6), new(0.9, 1.1));
 

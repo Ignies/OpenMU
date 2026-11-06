@@ -49,6 +49,8 @@ public static class ForkInfo
         "s21_skills",
         "enhance_tree",
         "evolution_quests",
+        "elite_zones",
+        "world_bosses",
     ];
 
     /// <summary>

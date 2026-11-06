@@ -124,6 +124,7 @@ public class MonsterNormalizerTest
     public void Kinds()
     {
         Assert.That(MonsterNormalizer.GetKind(746, "Nix"), Is.EqualTo(MonsterKind.Boss));
+        Assert.That(new short[] { 734, 735, 790, 793, 794 }.Select(n => MonsterNormalizer.GetKind(n, "Field boss")), Has.All.EqualTo(MonsterKind.Boss), "The stages of the field bosses.");
         Assert.That(MonsterNormalizer.GetKind(848, "(Elite) Scorched Warrior"), Is.EqualTo(MonsterKind.Elite));
         Assert.That(MonsterNormalizer.GetKind(898, "Crimson Lycan (Elite)"), Is.EqualTo(MonsterKind.Elite));
         Assert.That(MonsterNormalizer.GetKind(769, "Deep Dungeon Elite Skeleton Warrior"), Is.EqualTo(MonsterKind.Elite));

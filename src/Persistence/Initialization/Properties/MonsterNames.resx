@@ -1006,4 +1006,20 @@
   <data name="EuniceQuest" xml:space="preserve">
     <value>Eunice</value>
   </data>
+  <data name="Medusa" xml:space="preserve"><value>Medusa</value></data>
+  <data name="LordOfFerea" xml:space="preserve"><value>Lord of Ferea</value></data>
+  <data name="FereaCrystalOrb" xml:space="preserve"><value>Ferea Crystal Orb</value></data>
+  <data name="MonsterOfTheSwamp" xml:space="preserve"><value>Monster of the Swamp</value></data>
+  <data name="PetOfTheSwamp" xml:space="preserve"><value>Pet of the Swamp</value></data>
+  <data name="MonsterOfTheWater" xml:space="preserve"><value>Monster of the Water</value></data>
+  <data name="GodOfDarkness" xml:space="preserve"><value>God of Darkness</value></data>
+  <data name="EliteMagmaGladiator" xml:space="preserve"><value>(Elite) Magma Gladiator</value></data>
+  <data name="EliteMagmaHook" xml:space="preserve"><value>(Elite) Magma Hook</value></data>
+  <data name="EliteMagmaShaman" xml:space="preserve"><value>(Elite) Magma Shaman</value></data>
+  <data name="EliteDevilSword" xml:space="preserve"><value>(Elite) Devil Sword</value></data>
+  <data name="EliteDevilScythe" xml:space="preserve"><value>(Elite) Devil Scythe</value></data>
+  <data name="EliteDevilSorcerer" xml:space="preserve"><value>(Elite) Devil Sorcerer</value></data>
+  <data name="EliteShadowMasterOfDoom" xml:space="preserve"><value>(Elite) Shadow Master of Doom</value></data>
+  <data name="EliteNapinOfDoom" xml:space="preserve"><value>(Elite) Napin of Doom</value></data>
+  <data name="EliteSapiQueenOfDoom" xml:space="preserve"><value>(Elite) Sapi Queen of Doom</value></data>
 </root>

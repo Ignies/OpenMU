@@ -1141,6 +1141,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         public static string AddSeason21EvolutionQuestsUpdatePlugIn_Name {
             get {
                 return ResourceManager.GetString("AddSeason21EvolutionQuestsUpdatePlugIn_Name", resourceCulture);
+        ///   Looks up a localized string similar to Add the elite zones of Season 21.
+        /// </summary>
+        public static string AddSeason21EliteZonesUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21EliteZonesUpdatePlugIn_Name", resourceCulture);
             }
         }
         
@@ -1150,6 +1155,65 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         public static string AddSeason21EvolutionQuestsUpdatePlugIn_Description {
             get {
                 return ResourceManager.GetString("AddSeason21EvolutionQuestsUpdatePlugIn_Description", resourceCulture);
+        ///   Looks up a localized string similar to Places the elites of the later maps in the five elemental elite zones at Webzen's entrances (Twisted Karutan's walled zones opened as the Season 21 client has them), adds the elites of Ignis, Kardamahal and Swamp of Doom, and turns on the elite zones plugin..
+        /// </summary>
+        public static string AddSeason21EliteZonesUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21EliteZonesUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the field bosses of Season 21.
+        /// </summary>
+        public static string AddSeason21FieldBossesUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21FieldBossesUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds Medusa, Lord of Ferea with its crystal orb and the God of Darkness with its stages, the item bags of the bosses, and turns on the field bosses plugin with the shared 18 to 24 hour respawn. Lord Silvester and Core Magriffy no longer spawn as plain monsters..
+        /// </summary>
+        public static string AddSeason21FieldBossesUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21FieldBossesUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the elite zones of Season 21.
+        /// </summary>
+        public static string AddSeason21EliteZonesUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21EliteZonesUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Places the elites of the later maps in the five elemental elite zones at Webzen's entrances (Twisted Karutan's walled zones opened as the Season 21 client has them), adds the elites of Ignis, Kardamahal and Swamp of Doom, and turns on the elite zones plugin..
+        /// </summary>
+        public static string AddSeason21EliteZonesUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21EliteZonesUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the field bosses of Season 21.
+        /// </summary>
+        public static string AddSeason21FieldBossesUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21FieldBossesUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds Medusa, Lord of Ferea with its crystal orb and the God of Darkness with its stages, the item bags of the bosses, and turns on the field bosses plugin with the shared 18 to 24 hour respawn. Lord Silvester and Core Magriffy no longer spawn as plain monsters..
+        /// </summary>
+        public static string AddSeason21FieldBossesUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21FieldBossesUpdatePlugIn_Description", resourceCulture);
             }
         }
     }

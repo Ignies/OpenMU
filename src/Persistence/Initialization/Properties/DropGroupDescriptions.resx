@@ -234,4 +234,7 @@
   <data name="Season21MonsterDrops" xml:space="preserve">
     <value>The items which a monster of a later map drops (Season 21 data)</value>
   </data>
+  <data name="Season21BossDrops" xml:space="preserve">
+    <value>The items which a field boss of Season 21 drops, one of each section of its item bag (Season 21 data)</value>
+  </data>
 </root>

@@ -72,6 +72,52 @@ internal class Season21MapsInitializer
     }
 
     /// <summary>
+    /// Creates the monster definition of a row of the data.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="row">The row.</param>
+    /// <param name="introducedIn">The version which introduced the monster.</param>
+    /// <returns>The monster definition, not yet added to the configuration.</returns>
+    internal static MonsterDefinition CreateMonster(IContext context, GameConfiguration gameConfiguration, Season21Monster row, GameVersion introducedIn)
+    {
+        var monster = context.CreateNew<MonsterDefinition>();
+        monster.SetGuid(row.Number);
+        monster.Number = row.Number;
+        monster.Designation = row.Name;
+        monster.IntroducedIn = introducedIn;
+        monster.MoveRange = row.MoveRange;
+        monster.AttackRange = row.AttackRange;
+        monster.ViewRange = row.ViewRange;
+        monster.MoveDelay = TimeSpan.FromMilliseconds(row.MoveDelay);
+        monster.AttackDelay = TimeSpan.FromMilliseconds(row.AttackDelay);
+        monster.RespawnDelay = TimeSpan.FromSeconds(row.RespawnDelay);
+        monster.Attribute = row.Attribute;
+        monster.NumberOfMaximumItemDrops = 1;
+        var attributes = new Dictionary<AttributeDefinition, float>
+        {
+            { Stats.Level, row.Level },
+            { Stats.MaximumHealth, row.Health },
+            { Stats.MinimumPhysBaseDmg, row.MinimumDamage },
+            { Stats.MaximumPhysBaseDmg, row.MaximumDamage },
+            { Stats.DefenseBase, row.Defense },
+            { Stats.AttackRatePvm, row.AttackRate },
+            { Stats.DefenseRatePvm, row.DefenseRate },
+        };
+        AttributeDefinition[] resistances = [Stats.IceResistance, Stats.PoisonResistance, Stats.LightningResistance, Stats.FireResistance, Stats.EarthResistance, Stats.WindResistance, Stats.WaterResistance];
+        for (var i = 0; i < resistances.Length; i++)
+        {
+            if (row.Resistances[i] > 0)
+            {
+                attributes.Add(resistances[i], row.Resistances[i] / 255f);
+            }
+        }
+
+        monster.AddAttributes(attributes, context, gameConfiguration);
+        return monster;
+    }
+
+    /// <summary>
     /// Gets the version of a monster: the one of the first map which spawns it.
     /// </summary>
     private static GameVersion IntroducedIn(Season21MapSet set, short monster)
@@ -90,40 +136,7 @@ internal class Season21MapsInitializer
     {
         foreach (var row in set.Monsters.Where(row => this._gameConfiguration.Monsters.All(m => m.Number != row.Number)))
         {
-            var monster = this._context.CreateNew<MonsterDefinition>();
-            monster.SetGuid(row.Number);
-            monster.Number = row.Number;
-            monster.Designation = row.Name;
-            monster.IntroducedIn = IntroducedIn(set, row.Number);
-            monster.MoveRange = row.MoveRange;
-            monster.AttackRange = row.AttackRange;
-            monster.ViewRange = row.ViewRange;
-            monster.MoveDelay = TimeSpan.FromMilliseconds(row.MoveDelay);
-            monster.AttackDelay = TimeSpan.FromMilliseconds(row.AttackDelay);
-            monster.RespawnDelay = TimeSpan.FromSeconds(row.RespawnDelay);
-            monster.Attribute = row.Attribute;
-            monster.NumberOfMaximumItemDrops = 1;
-            var attributes = new Dictionary<AttributeDefinition, float>
-            {
-                { Stats.Level, row.Level },
-                { Stats.MaximumHealth, row.Health },
-                { Stats.MinimumPhysBaseDmg, row.MinimumDamage },
-                { Stats.MaximumPhysBaseDmg, row.MaximumDamage },
-                { Stats.DefenseBase, row.Defense },
-                { Stats.AttackRatePvm, row.AttackRate },
-                { Stats.DefenseRatePvm, row.DefenseRate },
-            };
-            AttributeDefinition[] resistances = [Stats.IceResistance, Stats.PoisonResistance, Stats.LightningResistance, Stats.FireResistance, Stats.EarthResistance, Stats.WindResistance, Stats.WaterResistance];
-            for (var i = 0; i < resistances.Length; i++)
-            {
-                if (row.Resistances[i] > 0)
-                {
-                    attributes.Add(resistances[i], row.Resistances[i] / 255f);
-                }
-            }
-
-            monster.AddAttributes(attributes, this._context, this._gameConfiguration);
-            this._gameConfiguration.Monsters.Add(monster);
+            this._gameConfiguration.Monsters.Add(CreateMonster(this._context, this._gameConfiguration, row, IntroducedIn(set, row.Number)));
         }
 
         foreach (var row in set.Npcs.Where(row => this._gameConfiguration.Monsters.All(m => m.Number != row.Number)))

@@ -4316,6 +4316,228 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         public static string EuniceQuest {
             get {
                 return ResourceManager.GetString("EuniceQuest", resourceCulture);
+
+        /// <summary>Gets Medusa from the configuration name resources.</summary>
+        public static string Medusa {
+            get {
+                return ResourceManager.GetString("Medusa", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets LordOfFerea from the configuration name resources.</summary>
+        public static string LordOfFerea {
+            get {
+                return ResourceManager.GetString("LordOfFerea", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets FereaCrystalOrb from the configuration name resources.</summary>
+        public static string FereaCrystalOrb {
+            get {
+                return ResourceManager.GetString("FereaCrystalOrb", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets MonsterOfTheSwamp from the configuration name resources.</summary>
+        public static string MonsterOfTheSwamp {
+            get {
+                return ResourceManager.GetString("MonsterOfTheSwamp", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets PetOfTheSwamp from the configuration name resources.</summary>
+        public static string PetOfTheSwamp {
+            get {
+                return ResourceManager.GetString("PetOfTheSwamp", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets MonsterOfTheWater from the configuration name resources.</summary>
+        public static string MonsterOfTheWater {
+            get {
+                return ResourceManager.GetString("MonsterOfTheWater", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GodOfDarkness from the configuration name resources.</summary>
+        public static string GodOfDarkness {
+            get {
+                return ResourceManager.GetString("GodOfDarkness", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteMagmaGladiator from the configuration name resources.</summary>
+        public static string EliteMagmaGladiator {
+            get {
+                return ResourceManager.GetString("EliteMagmaGladiator", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteMagmaHook from the configuration name resources.</summary>
+        public static string EliteMagmaHook {
+            get {
+                return ResourceManager.GetString("EliteMagmaHook", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteMagmaShaman from the configuration name resources.</summary>
+        public static string EliteMagmaShaman {
+            get {
+                return ResourceManager.GetString("EliteMagmaShaman", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteDevilSword from the configuration name resources.</summary>
+        public static string EliteDevilSword {
+            get {
+                return ResourceManager.GetString("EliteDevilSword", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteDevilScythe from the configuration name resources.</summary>
+        public static string EliteDevilScythe {
+            get {
+                return ResourceManager.GetString("EliteDevilScythe", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteDevilSorcerer from the configuration name resources.</summary>
+        public static string EliteDevilSorcerer {
+            get {
+                return ResourceManager.GetString("EliteDevilSorcerer", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteShadowMasterOfDoom from the configuration name resources.</summary>
+        public static string EliteShadowMasterOfDoom {
+            get {
+                return ResourceManager.GetString("EliteShadowMasterOfDoom", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteNapinOfDoom from the configuration name resources.</summary>
+        public static string EliteNapinOfDoom {
+            get {
+                return ResourceManager.GetString("EliteNapinOfDoom", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteSapiQueenOfDoom from the configuration name resources.</summary>
+        public static string EliteSapiQueenOfDoom {
+            get {
+                return ResourceManager.GetString("EliteSapiQueenOfDoom", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets Medusa from the configuration name resources.</summary>
+        public static string Medusa {
+            get {
+                return ResourceManager.GetString("Medusa", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets LordOfFerea from the configuration name resources.</summary>
+        public static string LordOfFerea {
+            get {
+                return ResourceManager.GetString("LordOfFerea", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets FereaCrystalOrb from the configuration name resources.</summary>
+        public static string FereaCrystalOrb {
+            get {
+                return ResourceManager.GetString("FereaCrystalOrb", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets MonsterOfTheSwamp from the configuration name resources.</summary>
+        public static string MonsterOfTheSwamp {
+            get {
+                return ResourceManager.GetString("MonsterOfTheSwamp", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets PetOfTheSwamp from the configuration name resources.</summary>
+        public static string PetOfTheSwamp {
+            get {
+                return ResourceManager.GetString("PetOfTheSwamp", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets MonsterOfTheWater from the configuration name resources.</summary>
+        public static string MonsterOfTheWater {
+            get {
+                return ResourceManager.GetString("MonsterOfTheWater", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GodOfDarkness from the configuration name resources.</summary>
+        public static string GodOfDarkness {
+            get {
+                return ResourceManager.GetString("GodOfDarkness", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteMagmaGladiator from the configuration name resources.</summary>
+        public static string EliteMagmaGladiator {
+            get {
+                return ResourceManager.GetString("EliteMagmaGladiator", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteMagmaHook from the configuration name resources.</summary>
+        public static string EliteMagmaHook {
+            get {
+                return ResourceManager.GetString("EliteMagmaHook", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteMagmaShaman from the configuration name resources.</summary>
+        public static string EliteMagmaShaman {
+            get {
+                return ResourceManager.GetString("EliteMagmaShaman", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteDevilSword from the configuration name resources.</summary>
+        public static string EliteDevilSword {
+            get {
+                return ResourceManager.GetString("EliteDevilSword", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteDevilScythe from the configuration name resources.</summary>
+        public static string EliteDevilScythe {
+            get {
+                return ResourceManager.GetString("EliteDevilScythe", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteDevilSorcerer from the configuration name resources.</summary>
+        public static string EliteDevilSorcerer {
+            get {
+                return ResourceManager.GetString("EliteDevilSorcerer", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteShadowMasterOfDoom from the configuration name resources.</summary>
+        public static string EliteShadowMasterOfDoom {
+            get {
+                return ResourceManager.GetString("EliteShadowMasterOfDoom", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteNapinOfDoom from the configuration name resources.</summary>
+        public static string EliteNapinOfDoom {
+            get {
+                return ResourceManager.GetString("EliteNapinOfDoom", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteSapiQueenOfDoom from the configuration name resources.</summary>
+        public static string EliteSapiQueenOfDoom {
+            get {
+                return ResourceManager.GetString("EliteSapiQueenOfDoom", resourceCulture);
             }
         }
     }
