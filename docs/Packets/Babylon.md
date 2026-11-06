@@ -11,6 +11,8 @@
   * [C1 EE 42 - EnhanceTreeAddPointResult (by server)](C1-EE-42-EnhanceTreeAddPointResult_by-server.md)
   * [C2 EE 46 - MasterSkillListWide (by server)](C2-EE-46-MasterSkillListWide_by-server.md)
   * [C2 EE 48 - SkillListWide (by server)](C2-EE-48-SkillListWide_by-server.md)
+  * [C2 EE A0 - EliteZones (by server)](C2-EE-A0-EliteZones_by-server.md)
+  * [C1 EE A1 - FieldBossState (by server)](C1-EE-A1-FieldBossState_by-server.md)
   * [C1 EE C4 - EvolutionQuestState (by server)](C1-EE-C4-EvolutionQuestState_by-server.md)
   * [C1 EE F0 - ForkHello (by client)](C1-EE-F0-ForkHello_by-client.md)
   * [C1 EE F1 - ForkWelcome (by server)](C1-EE-F1-ForkWelcome_by-server.md)

@@ -247,6 +247,101 @@ public readonly struct EnhanceTreeSkill
 
 
 /// <summary>
+/// An elite zone of the map..
+/// </summary>
+public readonly struct EliteZone
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EliteZone"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public EliteZone(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets or sets 1 fire, 2 water, 3 earth, 4 wind, 5 darkness.
+    /// </summary>
+    public byte Element
+    {
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the entrance x.
+    /// </summary>
+    public byte EntranceX
+    {
+        get => this._data.Span[1];
+        set => this._data.Span[1] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the entrance y.
+    /// </summary>
+    public byte EntranceY
+    {
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the lowest x coordinate of the area.
+    /// </summary>
+    public byte X1
+    {
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the lowest y coordinate of the area.
+    /// </summary>
+    public byte Y1
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the highest x coordinate of the area.
+    /// </summary>
+    public byte X2
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the highest y coordinate of the area.
+    /// </summary>
+    public byte Y2
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 1 when the character meets the entry rule.
+    /// </summary>
+    public byte CanEnter
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+}
+
+
+/// <summary>
 /// Is sent by the client when: After the login succeeded, when the client logged in with the version of the Babylon client.
 /// Causes reaction on server side: The server answers with the ForkWelcome which tells the client the wire format and the features which are active.
 /// </summary>
@@ -1810,4 +1905,228 @@ public readonly struct EvolutionQuestState
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(EvolutionQuestState packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: When the own character enters a map with elite zones, on a world with the elite zones.
+/// Causes reaction on client side: The client marks the zones on the map and the minimap.
+/// </summary>
+public readonly struct EliteZones
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EliteZones"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public EliteZones(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EliteZones"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private EliteZones(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xA0;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the map number.
+    /// </summary>
+    public ushort MapNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[5..]);
+        set => WriteUInt16LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the zone count.
+    /// </summary>
+    public byte ZoneCount
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="EliteZone"/> of the specified index.
+    /// </summary>
+        public EliteZone this[int index] => new (this._data.Slice(8 + index * EliteZone.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="EliteZones"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator EliteZones(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="EliteZones"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(EliteZones packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="EliteZone"/>.
+    /// </summary>
+    /// <param name="zonesCount">The count of <see cref="EliteZone"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int zonesCount) => zonesCount * EliteZone.Length + 8;
+}
+
+
+/// <summary>
+/// Is sent by the server when: When the own character enters the map of a field boss, and when the boss spawns, changes its stage, loses a tenth of its health, is killed or the battle ends.
+/// Causes reaction on client side: The client shows the boss state, e.g. the health bar, the respawn timer and the light of the boss zone.
+/// </summary>
+public readonly struct FieldBossState
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FieldBossState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public FieldBossState(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FieldBossState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private FieldBossState(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xA1;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 14;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the map number.
+    /// </summary>
+    public ushort MapNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[4..]);
+        set => WriteUInt16LittleEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the monster number of the boss itself (the last stage).
+    /// </summary>
+    public ushort BossNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets 0 waiting, 1 alive, 2 in a fight, 3 defeated.
+    /// </summary>
+    public byte Status
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the health of the monster of the current stage, 0 when none lives.
+    /// </summary>
+    public byte HealthPercent
+    {
+        get => this._data.Span[9];
+        set => this._data.Span[9] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the seconds to the spawn (waiting), to the end of the battle (in a fight) or to the move out of the arena (defeated); 0 when unknown.
+    /// </summary>
+    public uint SecondsLeft
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[10..]);
+        set => WriteUInt32LittleEndian(this._data.Span[10..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="FieldBossState"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator FieldBossState(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="FieldBossState"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(FieldBossState packet) => packet._data; 
 }

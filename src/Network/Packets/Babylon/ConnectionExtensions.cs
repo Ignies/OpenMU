@@ -350,4 +350,40 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="FieldBossState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="mapNumber">The map number.</param>
+    /// <param name="bossNumber">The monster number of the boss itself (the last stage).</param>
+    /// <param name="status">0 waiting, 1 alive, 2 in a fight, 3 defeated.</param>
+    /// <param name="healthPercent">The health of the monster of the current stage, 0 when none lives.</param>
+    /// <param name="secondsLeft">The seconds to the spawn (waiting), to the end of the battle (in a fight) or to the move out of the arena (defeated); 0 when unknown.</param>
+    /// <remarks>
+    /// Is sent by the server when: When the own character enters the map of a field boss, and when the boss spawns, changes its stage, loses a tenth of its health, is killed or the battle ends.
+    /// Causes reaction on client side: The client shows the boss state, e.g. the health bar, the respawn timer and the light of the boss zone.
+    /// </remarks>
+    public static async ValueTask SendFieldBossStateAsync(this IConnection? connection, ushort @mapNumber, ushort @bossNumber, byte @status, byte @healthPercent, uint @secondsLeft)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = FieldBossStateRef.Length;
+            var packet = new FieldBossStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.MapNumber = @mapNumber;
+            packet.BossNumber = @bossNumber;
+            packet.Status = @status;
+            packet.HealthPercent = @healthPercent;
+            packet.SecondsLeft = @secondsLeft;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

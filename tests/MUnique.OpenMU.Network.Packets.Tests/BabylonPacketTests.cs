@@ -147,6 +147,52 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the structure size calculation for EliteZone.
+    /// </summary>
+    [Test]
+    public void EliteZone_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 8;
+        var actualLength = EliteZone.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Element' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Element' exceeds structure boundary");
+        
+        // Validate field 'EntranceX' boundary
+        Assert.That(1 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'EntranceX' exceeds structure boundary");
+        
+        // Validate field 'EntranceY' boundary
+        Assert.That(2 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'EntranceY' exceeds structure boundary");
+        
+        // Validate field 'X1' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'X1' exceeds structure boundary");
+        
+        // Validate field 'Y1' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Y1' exceeds structure boundary");
+        
+        // Validate field 'X2' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'X2' exceeds structure boundary");
+        
+        // Validate field 'Y2' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Y2' exceeds structure boundary");
+        
+        // Validate field 'CanEnter' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'CanEnter' exceeds structure boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for ForkHello.
     /// </summary>
     [Test]
@@ -502,5 +548,57 @@ public class PacketStructureTests
         // Validate field 'RequiredLevel' boundary
         Assert.That(8 + 2, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'RequiredLevel' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for EliteZones.
+    /// </summary>
+    [Test]
+    public void EliteZones_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'MapNumber' starts at index 5 with size 2
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'MapNumber' has invalid negative index");
+        
+        // Field 'ZoneCount' starts at index 7 with size 1
+        Assert.That(7, Is.GreaterThanOrEqualTo(0), 
+            "Field 'ZoneCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for FieldBossState.
+    /// </summary>
+    [Test]
+    public void FieldBossState_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 14;
+        var actualLength = FieldBossStateRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'MapNumber' boundary
+        Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MapNumber' exceeds packet boundary");
+        
+        // Validate field 'BossNumber' boundary
+        Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'BossNumber' exceeds packet boundary");
+        
+        // Validate field 'Status' boundary
+        Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Status' exceeds packet boundary");
+        
+        // Validate field 'HealthPercent' boundary
+        Assert.That(9 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'HealthPercent' exceeds packet boundary");
+        
+        // Validate field 'SecondsLeft' boundary
+        Assert.That(10 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SecondsLeft' exceeds packet boundary");
     }
 }
