@@ -16,7 +16,8 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 /// <remarks>
 /// Classes which exist are kept with every change of the operator; only a missing class or a missing link of an
-/// evolution chain is added. Fork feature ids <c>class_codes</c>, <c>classes_s21</c> and <c>evolutions_45</c>.
+/// evolution chain is added. Version 2 replaces the formulas of the nine new classes, which version 1 took from Season 6
+/// classes, with those of the S21Emu character calculation (<see cref="Season21ClassFormulas"/>). Fork feature ids <c>class_codes</c>, <c>classes_s21</c> and <c>evolutions_45</c>.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(Properties.PlugInResources.AddSeason21ClassesUpdatePlugIn_Name), Description = nameof(Properties.PlugInResources.AddSeason21ClassesUpdatePlugIn_Description), ResourceType = typeof(Properties.PlugInResources))]
@@ -42,9 +43,30 @@ public class AddSeason21ClassesUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 05, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 06, 12, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
+    {
+        var initialization = new CharacterClassInitialization(context, gameConfiguration);
+        if (installedVersion < 2)
+        {
+            foreach (var characterClass in gameConfiguration.CharacterClasses)
+            {
+                initialization.ReplaceSeason21Formulas(characterClass);
+            }
+        }
+
+        initialization.InitializeSeason21();
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        new CharacterClassInitialization(context, gameConfiguration).InitializeSeason21();
-        return ValueTask.CompletedTask;
+        return this.ApplyAsync(context, gameConfiguration, null);
     }
 }

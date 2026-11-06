@@ -12,7 +12,10 @@ using MUnique.OpenMU.GameLogic.Classes;
 /// </summary>
 /// <remarks>
 /// The S21Emu data marks the Crusader row as unfinished ("Queda hacer: LevelLife, LevelMana, VitalityToLife,
-/// EnergyToMana"); its four values equal the dark knight's. They are kept until a second source corrects them.
+/// EnergyToMana"); its four values equal the dark knight's and no other source has them. They are kept as the source
+/// writes them and stay the operator's setting: the health and mana relationships of the crusader classes in the admin
+/// panel. Its damage, defense, rates, speeds and ability come from the S21Emu character calculation, which has a
+/// complete crusader (<see cref="Season21ClassFormulas"/>).
 /// The first evolution of each class can get created without a level (S21Emu <c>CreateType = 0</c>,
 /// <c>CreateLevel = 0</c> in <c>GameServerInfo - Common.dat</c>).
 /// </remarks>

@@ -5,28 +5,26 @@
 namespace MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
 /// <summary>
-/// The formula set of a Season 21 class: which stat drives its damage and defense.
+/// The kind of a Season 21 class for what its source doesn't define: the fenrir damage, the ability recovery and the
+/// wizardry bonuses of items and buffs, taken from the Season 6 class of the same kind.
 /// </summary>
 /// <remarks>
-/// The S21Emu data names the main stats of each class (<c>Character/StatsSpecialize.txt</c>), but keeps the damage,
-/// defense, rate and speed formulas in its binary. Each archetype takes the coefficients of the Season 6 class of the
-/// same kind, so the new classes play on the Season 6 curve; they are their own rows, so balancing them never touches
-/// a Season 6 class.
+/// The stat formulas themselves come from the S21Emu character calculation (<see cref="Season21ClassFormulas"/>).
 /// </remarks>
 public enum Season21ClassArchetype
 {
     /// <summary>
-    /// Strength drives the physical damage, like the dark knight.
+    /// A strength fighter, like the dark knight.
     /// </summary>
     Knight,
 
     /// <summary>
-    /// Energy drives the wizardry damage, like the dark wizard.
+    /// A caster with wizardry damage, like the dark wizard.
     /// </summary>
     Wizard,
 
     /// <summary>
-    /// Strength and agility drive the physical damage, like the melee attack of the fairy elf.
+    /// An agility fighter, like the fairy elf.
     /// </summary>
     Agility,
 }

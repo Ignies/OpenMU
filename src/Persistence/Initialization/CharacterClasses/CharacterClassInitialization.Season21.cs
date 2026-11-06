@@ -17,6 +17,20 @@ using MUnique.OpenMU.Persistence.Initialization.Properties;
 /// </summary>
 internal partial class CharacterClassInitialization
 {
+    private static readonly Guid SkillRateAttributeId = new("6E1B5C2A-8F43-4D7E-9A21-3C5D7B9E0F14");
+
+    private static readonly HashSet<AttributeDefinition?> FormulaInputs =
+    [
+        Stats.TotalStrength, Stats.TotalAgility, Stats.TotalVitality, Stats.TotalEnergy, Stats.TotalLevel, Stats.TotalStrengthAndAgility,
+    ];
+
+    private static readonly HashSet<AttributeDefinition?> FormulaTargets =
+    [
+        Stats.MinimumPhysBaseDmg, Stats.MaximumPhysBaseDmg, Stats.MinimumWizBaseDmg, Stats.MaximumWizBaseDmg, Stats.DefenseBase,
+        Stats.DefenseRatePvm, Stats.DefenseRatePvp, Stats.AttackRatePvm, Stats.AttackRatePvp, Stats.AttackSpeed, Stats.MagicSpeed,
+        Stats.MaximumAbility, Stats.SkillMultiplier,
+    ];
+
     /// <summary>
     /// Adds the classes of Season 21 which the configuration doesn't have yet. Existing classes are kept as they are; a
     /// missing link of an evolution chain is set, an existing one is kept.
@@ -35,6 +49,33 @@ internal partial class CharacterClassInitialization
         {
             this.AddSeason21Class(info);
         }
+    }
+
+    /// <summary>
+    /// Replaces the stat formulas of a class of Season 21 with those of <see cref="Season21ClassFormulas"/>: the formula
+    /// relationships of the total stats and the skill multiplier. Health, mana, shield and the archetype attributes stay.
+    /// </summary>
+    /// <param name="characterClass">The class of Season 21.</param>
+    public void ReplaceSeason21Formulas(CharacterClass characterClass)
+    {
+        if (ClassCodes.GetBaseClass(characterClass.Number) is not { } baseClass
+            || !Season21ClassFormulas.Classes.TryGetValue(baseClass, out var formulas))
+        {
+            return;
+        }
+
+        var skillRate = this.GetSkillRateAttribute();
+        foreach (var relationship in characterClass.AttributeCombinations.Where(r => IsFormula(r, skillRate)).ToList())
+        {
+            characterClass.AttributeCombinations.Remove(relationship);
+        }
+
+        foreach (var value in characterClass.BaseAttributeValues.Where(v => v.Definition == Stats.SkillMultiplier || v.Definition == skillRate).ToList())
+        {
+            characterClass.BaseAttributeValues.Remove(value);
+        }
+
+        this.AddSeason21Formulas(characterClass, formulas);
     }
 
     private static LocalizedString GetClassName(byte number)
@@ -156,18 +197,8 @@ internal partial class CharacterClassInitialization
 
         this.AddCommonAttributeRelationships(result.AttributeCombinations);
         this.AddSeason21HealthAndMana(result, info);
-        switch (info.Archetype)
-        {
-            case Season21ClassArchetype.Knight:
-                this.AddKnightFormulas(result);
-                break;
-            case Season21ClassArchetype.Wizard:
-                this.AddWizardFormulas(result);
-                break;
-            default:
-                this.AddAgilityFormulas(result);
-                break;
-        }
+        this.AddSeason21Formulas(result, Season21ClassFormulas.Classes[info.BaseClass]);
+        this.AddArchetypeAttributes(result, info.Archetype);
 
         this.AddShield(result);
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(MovementSpeedConstants.RunningGearMovementSpeed, Stats.MovementSpeed, AggregateType.Maximum));
@@ -190,93 +221,111 @@ internal partial class CharacterClassInitialization
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(info.MaxMana - info.LevelMana - (info.EnergyToMana * info.Energy), Stats.MaximumMana));
     }
 
-    /// <summary>
-    /// Adds the formulas of the dark knight (<see cref="CreateDarkKnight"/>) without its combo and weapon masteries.
-    /// </summary>
-    private void AddKnightFormulas(CharacterClass result)
+    private static bool IsFormula(AttributeRelationship relationship, AttributeDefinition skillRate)
     {
-        var combinations = result.AttributeCombinations;
-        combinations.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1.0f / 3, Stats.TotalAgility));
-        combinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvm, 1.0f / 3, Stats.TotalAgility));
-        this.AddAttackRatePvm(combinations);
-        combinations.Add(this.CreateAttributeRelationship(Stats.AttackSpeed, 1.0f / 15, Stats.TotalAgility));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MagicSpeed, 1.0f / 20, Stats.TotalAgility));
-        this.AddMaximumAbility(combinations, 1, 0.3f, 0.2f, 0.15f);
-        combinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1.0f / 6, Stats.TotalStrength));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 4, Stats.TotalStrength));
-        combinations.Add(this.CreateAttributeRelationship(Stats.SkillMultiplier, 0.001f, Stats.TotalEnergy));
-        this.AddFenrirDamage(combinations, 1.0f / 3, 1.0f / 5, 1.0f / 5, 1.0f / 7);
-        this.AddPvpRates(combinations, 0.5f, 4.5f);
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(2, Stats.SkillMultiplier));
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.05f, Stats.AbilityRecoveryMultiplier));
+        if (relationship.TargetAttribute == Stats.TotalStrengthAndAgility || relationship.TargetAttribute == skillRate)
+        {
+            return true;
+        }
+
+        return FormulaTargets.Contains(relationship.TargetAttribute)
+            && (FormulaInputs.Contains(relationship.InputAttribute) || relationship.InputAttribute == skillRate);
+    }
+
+    private void AddSeason21Formulas(CharacterClass result, Season21ClassFormulas formulas)
+    {
+        this.AddFactors(result, Stats.MinimumPhysBaseDmg, formulas.MinimumPhysical);
+        this.AddFactors(result, Stats.MaximumPhysBaseDmg, formulas.MaximumPhysical);
+        this.AddFactors(result, Stats.MinimumWizBaseDmg, formulas.MinimumWizardry);
+        this.AddFactors(result, Stats.MaximumWizBaseDmg, formulas.MaximumWizardry);
+        this.AddFactors(result, Stats.DefenseBase, formulas.Defense);
+        this.AddFactors(result, Stats.DefenseRatePvm, formulas.DefenseRate);
+        this.AddFactors(result, Stats.AttackRatePvm, formulas.AttackRate);
+        this.AddFactors(result, Stats.AttackSpeed, formulas.AttackSpeed);
+        this.AddFactors(result, Stats.MagicSpeed, formulas.MagicSpeed);
+        this.AddFactors(result, Stats.MaximumAbility, formulas.Ability);
+        if (!this.UseClassicPvp)
+        {
+            this.AddFactors(result, Stats.DefenseRatePvp, formulas.DefenseRatePvp);
+            this.AddFactors(result, Stats.AttackRatePvp, formulas.AttackRatePvp);
+        }
+
+        if (formulas.SkillMultiplier with { Constant = 0 } == default)
+        {
+            this.AddFactors(result, Stats.SkillMultiplier, formulas.SkillMultiplier);
+            return;
+        }
+
+        var skillRate = this.GetSkillRateAttribute();
+        this.AddFactors(result, skillRate, formulas.SkillMultiplier);
+        result.AttributeCombinations.Add(this.CreateAttributeRelationship(Stats.SkillMultiplier, Season21ClassFormulas.MaximumSkillMultiplier, skillRate, InputOperator.Minimum));
+    }
+
+    private void AddFactors(CharacterClass result, AttributeDefinition target, Season21StatFactors factors)
+    {
+        Add(Stats.TotalStrength, factors.Strength);
+        Add(Stats.TotalAgility, factors.Agility);
+        Add(Stats.TotalVitality, factors.Vitality);
+        Add(Stats.TotalEnergy, factors.Energy);
+        Add(Stats.TotalLevel, factors.Level);
+        if (factors.Constant != 0)
+        {
+            result.BaseAttributeValues.Add(this.CreateConstValueAttribute(factors.Constant, target));
+        }
+
+        void Add(AttributeDefinition input, float factor)
+        {
+            if (factor != 0)
+            {
+                result.AttributeCombinations.Add(this.CreateAttributeRelationship(target, factor, input));
+            }
+        }
+    }
+
+    private AttributeDefinition GetSkillRateAttribute()
+    {
+        if (this.GameConfiguration.Attributes.FirstOrDefault(a => a.Id == SkillRateAttributeId) is { } existing)
+        {
+            return existing;
+        }
+
+        var skillRate = this.Context.CreateNew<AttributeDefinition>(SkillRateAttributeId, "Season 21 skill damage rate", "The skill damage multiplier of a Season 21 class before its maximum.");
+        this.GameConfiguration.Attributes.Add(skillRate);
+        return skillRate;
     }
 
     /// <summary>
-    /// Adds the formulas of the dark wizard (<see cref="CreateDarkWizard"/>) without its staff bonuses.
+    /// Adds what the S21Emu calculation doesn't define, from the Season 6 class of the same kind: the fenrir damage, the
+    /// ability recovery and, for a caster, the wizardry bonuses of items and buffs.
     /// </summary>
-    private void AddWizardFormulas(CharacterClass result)
+    private void AddArchetypeAttributes(CharacterClass result, Season21ClassArchetype archetype)
     {
         var combinations = result.AttributeCombinations;
-        combinations.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 0.25f, Stats.TotalAgility));
-        combinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvm, 1.0f / 3, Stats.TotalAgility));
-        this.AddAttackRatePvm(combinations);
-        combinations.Add(this.CreateAttributeRelationship(Stats.AttackSpeed, 1.0f / 20, Stats.TotalAgility));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MagicSpeed, 1.0f / 10, Stats.TotalAgility));
-        this.AddMaximumAbility(combinations, 0.2f, 0.3f, 0.4f, 0.2f);
-        combinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1.0f / 8, Stats.TotalStrength));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 4, Stats.TotalStrength));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1.0f / 9, Stats.TotalEnergy));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1.0f / 4, Stats.TotalEnergy));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.BaseMinDamageBonus));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.BaseMaxDamageBonus));
-        combinations.Add(this.CreateAttributeRelationship(Stats.WizardryBaseDmg, 1, Stats.BaseDamageBonus));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.WizardryBaseDmg));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.WizardryBaseDmg));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.WizardryBaseDmgIncrease, aggregateType: AggregateType.Multiplicate));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.WizardryBaseDmgIncrease, aggregateType: AggregateType.Multiplicate));
-        combinations.Add(this.CreateAttributeRelationship(Stats.WizardryAttackDamageIncrease, 1.0f / 100, Stats.StaffRise));
-        this.AddFenrirDamage(combinations, 1.0f / 5, 1.0f / 5, 1.0f / 7, 1.0f / 3);
-        this.AddPvpRates(combinations, 0.25f, 4);
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SkillMultiplier));
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f, Stats.WizardryAttackDamageIncrease));
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.03f, Stats.AbilityRecoveryMultiplier));
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.WizardryBaseDmgIncrease));
-    }
-
-    /// <summary>
-    /// Adds the melee formulas of the fairy elf (<see cref="CreateFairyElf"/>): strength and agility drive the damage.
-    /// </summary>
-    private void AddAgilityFormulas(CharacterClass result)
-    {
-        var combinations = result.AttributeCombinations;
-        combinations.Add(this.CreateAttributeRelationship(Stats.TotalStrengthAndAgility, Stats.TotalAgility, Stats.TotalStrength, InputOperator.Add));
-        combinations.Add(this.CreateAttributeRelationship(Stats.DefenseBase, 1.0f / 10, Stats.TotalAgility));
-        combinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvm, 0.25f, Stats.TotalAgility));
-        this.AddAttackRatePvm(combinations);
-        combinations.Add(this.CreateAttributeRelationship(Stats.AttackSpeed, 1.0f / 50, Stats.TotalAgility));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MagicSpeed, 1.0f / 50, Stats.TotalAgility));
-        this.AddMaximumAbility(combinations, 0.2f, 0.3f, 0.2f, 0.3f);
-        combinations.Add(this.CreateAttributeRelationship(Stats.MinimumPhysBaseDmg, 1.0f / 7, Stats.TotalStrengthAndAgility));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MaximumPhysBaseDmg, 1.0f / 4, Stats.TotalStrengthAndAgility));
-        this.AddFenrirDamage(combinations, 1.0f / 5, 1.0f / 3, 1.0f / 7, 1.0f / 5);
-        this.AddPvpRates(combinations, 0.1f, 0.6f);
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.SkillMultiplier));
-        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.03f, Stats.AbilityRecoveryMultiplier));
-    }
-
-    private void AddAttackRatePvm(ICollection<AttributeRelationship> combinations)
-    {
-        combinations.Add(this.CreateAttributeRelationship(Stats.AttackRatePvm, 5, Stats.TotalLevel));
-        combinations.Add(this.CreateAttributeRelationship(Stats.AttackRatePvm, 1.5f, Stats.TotalAgility));
-        combinations.Add(this.CreateAttributeRelationship(Stats.AttackRatePvm, 0.25f, Stats.TotalStrength));
-    }
-
-    private void AddMaximumAbility(ICollection<AttributeRelationship> combinations, float energy, float vitality, float agility, float strength)
-    {
-        combinations.Add(this.CreateAttributeRelationship(Stats.MaximumAbility, energy, Stats.TotalEnergy));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MaximumAbility, vitality, Stats.TotalVitality));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MaximumAbility, agility, Stats.TotalAgility));
-        combinations.Add(this.CreateAttributeRelationship(Stats.MaximumAbility, strength, Stats.TotalStrength));
+        switch (archetype)
+        {
+            case Season21ClassArchetype.Knight:
+                this.AddFenrirDamage(combinations, 1.0f / 3, 1.0f / 5, 1.0f / 5, 1.0f / 7);
+                result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.05f, Stats.AbilityRecoveryMultiplier));
+                break;
+            case Season21ClassArchetype.Wizard:
+                combinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.BaseMinDamageBonus));
+                combinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.BaseMaxDamageBonus));
+                combinations.Add(this.CreateAttributeRelationship(Stats.WizardryBaseDmg, 1, Stats.BaseDamageBonus));
+                combinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.WizardryBaseDmg));
+                combinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.WizardryBaseDmg));
+                combinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.WizardryBaseDmgIncrease, aggregateType: AggregateType.Multiplicate));
+                combinations.Add(this.CreateAttributeRelationship(Stats.MaximumWizBaseDmg, 1, Stats.WizardryBaseDmgIncrease, aggregateType: AggregateType.Multiplicate));
+                combinations.Add(this.CreateAttributeRelationship(Stats.WizardryAttackDamageIncrease, 1.0f / 100, Stats.StaffRise));
+                this.AddFenrirDamage(combinations, 1.0f / 5, 1.0f / 5, 1.0f / 7, 1.0f / 3);
+                result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f, Stats.WizardryAttackDamageIncrease));
+                result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.03f, Stats.AbilityRecoveryMultiplier));
+                result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.WizardryBaseDmgIncrease));
+                break;
+            default:
+                this.AddFenrirDamage(combinations, 1.0f / 5, 1.0f / 3, 1.0f / 7, 1.0f / 5);
+                result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.03f, Stats.AbilityRecoveryMultiplier));
+                break;
+        }
     }
 
     private void AddFenrirDamage(ICollection<AttributeRelationship> combinations, float strength, float agility, float vitality, float energy)
@@ -285,19 +334,6 @@ internal partial class CharacterClassInitialization
         combinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, agility, Stats.TotalAgility));
         combinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, vitality, Stats.TotalVitality));
         combinations.Add(this.CreateAttributeRelationship(Stats.FenrirBaseDmg, energy, Stats.TotalEnergy));
-    }
-
-    private void AddPvpRates(ICollection<AttributeRelationship> combinations, float defenseRateByAgility, float attackRateByAgility)
-    {
-        if (this.UseClassicPvp)
-        {
-            return;
-        }
-
-        combinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, defenseRateByAgility, Stats.TotalAgility));
-        combinations.Add(this.CreateAttributeRelationship(Stats.DefenseRatePvp, 2, Stats.TotalLevel));
-        combinations.Add(this.CreateAttributeRelationship(Stats.AttackRatePvp, attackRateByAgility, Stats.TotalAgility));
-        combinations.Add(this.CreateAttributeRelationship(Stats.AttackRatePvp, 3, Stats.TotalLevel));
     }
 
     private void AddShield(CharacterClass result)
