@@ -60,6 +60,8 @@ Rules:
 | `s21_skills` | The skills of Season 21: the nine new classes, the fourth and fifth evolution skills, the master tree nodes Season 21 adds, the books (update "Add the skills of Season 21") |
 | `enhance_tree` | The skill enhancement tree of the fourth evolution and its points per progression mode (`src/GameLogic/EnhanceTree`) |
 | `evolution_quests` | The fourth and fifth class quests, the Trial Area and the experience hold at the fourth evolution (update "Add the evolution quests of Season 21", `src/GameLogic/EvolutionQuests`) |
+| `elite_zones` | The five elemental elite zones of the maps from Atlans Abyss 3 and Scorched Canyon on, with their elites inside (update "Add the elite zones of Season 21", plugin "Elite zones", `src/GameLogic/EliteZones`) |
+| `world_bosses` | The field bosses Medusa, Lord Silvester, Core Magriffy, Lord of Ferea, Nix and the God of Darkness with the shared 18 to 24 hour respawn, stages, arenas, item bags and `/fieldboss` (update "Add the field bosses of Season 21", plugin "Field bosses", `src/GameLogic/FieldBosses`) |
 
 ## Balance
 
@@ -155,6 +157,18 @@ numbers 7-12 (S21Emu `Quest/Quest.xml`). On top of them, for the Babylon client:
   required level (u16 LE) at 8. Sent on every map entry, after a completed quest and when the hold starts.
 - `C1 EE 13 ClassEvolved` (server, 8, characters range): player id (u16 BE) at 4, class code at 6, reason at 7
   (0 quest, 1 game master, 2 item). Sent to the player and every player who sees it.
+
+World packets (range A0-AF). A Season 6 client gets none of them; it sees the bosses and the announcements through the
+Season 6 packets (golden notices for a spawn, a kill and a lost battle, blue notices at the arena).
+
+- `C2 EE A0 EliteZones` (server): map number (u16 LE) at 5, count at 7, then per zone 8 bytes: element (1 fire, 2 water,
+  3 earth, 4 wind, 5 darkness), entrance x, y, area x1, y1, x2, y2, can enter (0/1). Sent when the character enters a map
+  with zones.
+- `C1 EE A1 FieldBossState` (server, 14): map number (u16 LE) at 4, boss number (u16 LE, the last stage) at 6, status at 8
+  (0 waiting, 1 alive, 2 in a fight, 3 defeated), health percent of the current stage at 9, seconds left (u32 LE) at 10:
+  to the spawn, to the end of the battle or to the move out of the arena (0 unknown). Sent on entering the boss map and
+  on every change (spawn, stage, each tenth of health, kill, lost battle, back to waiting).
+- A2-A4 stay kept for mining and the invasion notice.
 
 ### W32
 

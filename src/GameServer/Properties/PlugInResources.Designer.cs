@@ -8162,6 +8162,11 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string ClassEvolvedBabylonPlugIn_Name {
             get {
                 return ResourceManager.GetString("ClassEvolvedBabylonPlugIn_Name", resourceCulture);
+        ///   Looks up a localized string similar to Babylon: elite zones.
+        /// </summary>
+        public static string EliteZonesBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("EliteZonesBabylonPlugIn_Name", resourceCulture);
             }
         }
         
@@ -8171,6 +8176,11 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string ClassEvolvedBabylonPlugIn_Description {
             get {
                 return ResourceManager.GetString("ClassEvolvedBabylonPlugIn_Description", resourceCulture);
+        ///   Looks up a localized string similar to Shows the elite zones of the map to the Babylon client (C2 EE A0)..
+        /// </summary>
+        public static string EliteZonesBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("EliteZonesBabylonPlugIn_Description", resourceCulture);
             }
         }
         
@@ -8180,6 +8190,11 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string EvolutionQuestStateBabylonPlugIn_Name {
             get {
                 return ResourceManager.GetString("EvolutionQuestStateBabylonPlugIn_Name", resourceCulture);
+        ///   Looks up a localized string similar to Babylon: field boss state.
+        /// </summary>
+        public static string FieldBossStateBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("FieldBossStateBabylonPlugIn_Name", resourceCulture);
             }
         }
         
@@ -8189,6 +8204,47 @@ namespace MUnique.OpenMU.GameServer.Properties {
         public static string EvolutionQuestStateBabylonPlugIn_Description {
             get {
                 return ResourceManager.GetString("EvolutionQuestStateBabylonPlugIn_Description", resourceCulture);
+        ///   Looks up a localized string similar to Shows the state of a field boss of the map to the Babylon client (C1 EE A1)..
+        /// </summary>
+        public static string FieldBossStateBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("FieldBossStateBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: elite zones.
+        /// </summary>
+        public static string EliteZonesBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("EliteZonesBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the elite zones of the map to the Babylon client (C2 EE A0)..
+        /// </summary>
+        public static string EliteZonesBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("EliteZonesBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: field boss state.
+        /// </summary>
+        public static string FieldBossStateBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("FieldBossStateBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the state of a field boss of the map to the Babylon client (C1 EE A1)..
+        /// </summary>
+        public static string FieldBossStateBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("FieldBossStateBabylonPlugIn_Description", resourceCulture);
             }
         }
     }

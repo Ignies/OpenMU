@@ -115,14 +115,17 @@ internal class ConfigurationNameResourcesTests
             var configuration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).Single();
             if (version == "Season6")
             {
-                // The names of the maps, classes and evolution quests of the later seasons are used by optional updates, which a new database leaves pending.
+                // The names of the maps, classes, evolution quests, elites and bosses of the later seasons are used by optional updates, which a new database leaves pending.
                 await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
                 await new AddSeason21ClassesUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
                 await new AddSeason21EvolutionQuestsUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
+                await new AddSeason21ItemCatalogUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
+                await new AddSeason21EliteZonesUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
+                await new AddSeason21FieldBossesUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
             }
 
             var names = LocalizedCaption.FindAll(configuration).Select(caption => caption.Value)
-                .Where(name => name.SourceKey is not null && !name.SourceKey.StartsWith("ItemNames/", StringComparison.Ordinal));
+                .Where(name => name.SourceKey is not null && !name.SourceKey.StartsWith("ItemNames/", StringComparison.Ordinal) && !name.SourceKey.StartsWith("Season21CatalogItemNames/", StringComparison.Ordinal));
             foreach (var name in names.Where(n => n.SourceKey is not null))
             {
                 usedSourceKeys.Add(name.SourceKey!);
