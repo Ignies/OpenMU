@@ -73,6 +73,7 @@ public static class ForkInfo
         "soul_converter",
         "helper_plus",
         "party_instances",
+        "doppelganger_s21",
     ];
 
     /// <summary>

@@ -1434,5 +1434,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21InstancesUpdatePlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Renew the Doppelganger for Season 21.
+        /// </summary>
+        public static string AddSeason21DoppelgangerUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21DoppelgangerUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Seven rooms by total level (50, 400, 800, 900, 1100, 1300, 1500) with the monster multipliers, experience and silver and golden chests of Season 21; every level from 50 may enter, a game needs two players. Replaces the monster scaling of the Doppelganger..
+        /// </summary>
+        public static string AddSeason21DoppelgangerUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21DoppelgangerUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

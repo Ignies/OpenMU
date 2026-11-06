@@ -63,6 +63,19 @@ internal class Season21EventsDataTest
     }
 
     /// <summary>
+    /// The Doppelganger is open to every level from 50, needs two players, and has the seven rooms with their chests.
+    /// </summary>
+    [Test]
+    public void DoppelgangerHasTheSeason21Rooms()
+    {
+        var definitions = this._gameConfiguration.MiniGameDefinitions.Where(d => d.Type == MiniGameType.Doppelganger).ToList();
+        Assert.That(definitions.Select(d => (d.MinimumCharacterLevel, d.MaximumCharacterLevel, d.MinimumPlayerCount)), Has.All.EqualTo((50, int.MaxValue, 2)));
+        var json = this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(GameLogic.MiniGames.Doppelganger.DoppelgangerFeaturePlugIn).GUID).CustomConfiguration;
+        Assert.That(json, Does.Contain("240000").And.Contain("FinalChestItems"));
+        Assert.That(this._gameConfiguration.DropItemGroups.Count(g => g.Description.ValueInNeutralLanguage == "Event reward of Season 21"), Is.EqualTo(14));
+    }
+
+    /// <summary>
     /// Applying the updates again changes nothing.
     /// </summary>
     [Test]
@@ -73,6 +86,7 @@ internal class Season21EventsDataTest
         var spawns = this._gameConfiguration.Maps.Sum(m => m.MonsterSpawns.Count);
         var maps = this._gameConfiguration.Maps.Count;
         var monsters = this._gameConfiguration.Monsters.Count;
+        var groups = this._gameConfiguration.DropItemGroups.Count;
 
         foreach (var update in Updates())
         {
@@ -84,12 +98,14 @@ internal class Season21EventsDataTest
         Assert.That(this._gameConfiguration.Maps.Sum(m => m.MonsterSpawns.Count), Is.EqualTo(spawns));
         Assert.That(this._gameConfiguration.Maps, Has.Count.EqualTo(maps));
         Assert.That(this._gameConfiguration.Monsters, Has.Count.EqualTo(monsters));
+        Assert.That(this._gameConfiguration.DropItemGroups, Has.Count.EqualTo(groups));
     }
 
     private static IEnumerable<UpdatePlugInBase> Updates() =>
     [
         new AddSeason21EvolutionQuestsUpdatePlugIn(),
         new AddSeason21InstancesUpdatePlugIn(),
+        new AddSeason21DoppelgangerUpdatePlugIn(),
     ];
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6Async()

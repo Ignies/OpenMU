@@ -84,6 +84,7 @@ Rules:
 | `soul_converter` | The monster soul converter: five tiers (items 14/460-464, total level 400 to 1450), two soul missions drawn from the tier, souls absorbed by kills and shared in a party, the reward kinds Ruud, jewels, elemental options and accessories, three a week, expiring on Thursday (update "Add the monster soul converter of Season 21", plugin "Monster soul converter (Season 21)", `src/GameLogic/SoulConverter`) |
 | `helper_plus` | The MU Helper Plus: the rules of the helper for the Babylon client (the plus mode from total level 400, alone or as party leader, its ranges and cost in percent of the helper cost) and the moves of the plus mode into the 330 hunting zones of the 31 hunting grounds, with the level and zen of their warps (update "Add the MU Helper Plus of Season 21", plugin "MU Helper Plus (Season 21)", `src/GameLogic/HelperPlus`) |
 | `party_instances` | The party instances of Season 21: a copy of a map for each party with its own monsters and timer (`MiniGameType.PartyInstance`); the trial of the fourth and fifth class quest runs in one (update "Add the party instances of Season 21", `src/GameLogic/MiniGames/Readme.md`) |
+| `doppelganger_s21` | The Doppelganger of Season 21: seven rooms by total level with their multipliers, experience and chests, two players at least (update "Renew the Doppelganger for Season 21", `src/GameLogic/MiniGames/Readme.md`) |
 
 ## Balance
 

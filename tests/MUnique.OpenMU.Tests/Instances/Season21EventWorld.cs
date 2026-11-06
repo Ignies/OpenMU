@@ -75,7 +75,7 @@ internal sealed class Season21EventWorld
 
         var mapInitializer = new MapInitializer(configuration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
-        var gameContext = new GameContext(configuration, contextProvider, mapInitializer, new NullLoggerFactory(), plugInManager, NullDropGenerator.Instance, new ConfigurationChangeMediator());
+        var gameContext = new GameContext(configuration, contextProvider, mapInitializer, new NullLoggerFactory(), plugInManager, new DefaultDropGenerator(configuration, Rand.GetRandomizer()), new ConfigurationChangeMediator());
         mapInitializer.PlugInManager = gameContext.PlugInManager;
         mapInitializer.PathFinderPool = gameContext.PathFinderPool;
         return new Season21EventWorld(configuration, gameContext, plugInManager);

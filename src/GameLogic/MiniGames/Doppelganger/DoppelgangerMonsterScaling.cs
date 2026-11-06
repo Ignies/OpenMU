@@ -34,4 +34,21 @@ public class DoppelgangerMonsterScaling
     /// Gets or sets the multipliers for the defense of the monsters.
     /// </summary>
     public IList<float> DefenseMultipliers { get; set; } = new List<float>();
+
+    /// <summary>
+    /// Gets or sets the experience which every player gets when the defense succeeded (Season 21 rooms); 0 for none.
+    /// </summary>
+    public long RewardExperience { get; set; }
+
+    /// <summary>
+    /// Gets or sets the items of the interim chests (Season 21 silver chest of the room); <c>null</c> for the drops of
+    /// the chest monster.
+    /// </summary>
+    public DropItemGroup? InterimChestItems { get; set; }
+
+    /// <summary>
+    /// Gets or sets the items of the final chest (Season 21 golden chest of the room); <c>null</c> for the drops of the
+    /// chest monster.
+    /// </summary>
+    public DropItemGroup? FinalChestItems { get; set; }
 }

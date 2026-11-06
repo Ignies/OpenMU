@@ -79,6 +79,7 @@ public sealed class DoppelgangerContext : MiniGameContext
     private int _lastShownMonsterPosition = -1;
     private int _initialPlayerCount;
     private MonsterMultipliers _monsterMultipliers = MonsterMultipliers.None;
+    private DoppelgangerMonsterScaling? _scaling;
     private int _isIceWalkerMissionFailed;
     private Destructible? _finalChest;
     private int _isFinalChestOpened;
@@ -343,6 +344,11 @@ public sealed class DoppelgangerContext : MiniGameContext
                 await p.ShowResultAsync(result).ConfigureAwait(false);
                 await p.ShowStateAsync(DoppelgangerState.Ended).ConfigureAwait(false);
             }).ConfigureAwait(false);
+            if (result == DoppelgangerResult.Success && this._scaling is { RewardExperience: > 0 } room)
+            {
+                // The experience of the room (Season 21 renewal).
+                await player.AddEventExperienceAsync(room.RewardExperience).ConfigureAwait(false);
+            }
         }
 
         if (result == DoppelgangerResult.Success && finishers.FirstOrDefault(player => player.IsAlive) is { } firstFinisher)
@@ -666,7 +672,10 @@ public sealed class DoppelgangerContext : MiniGameContext
 
     private async ValueTask DropChestItemsAsync(Player player, Destructible chest)
     {
-        var (items, _) = await this.DropGenerator.GenerateItemDropsAsync(chest.Definition, 0, player).ConfigureAwait(false);
+        var roomItems = chest == this._finalChest ? this._scaling?.FinalChestItems : this._scaling?.InterimChestItems;
+        var items = roomItems is not null
+            ? this.DropGenerator.GenerateItemDrop(roomItems).GetAsEnumerable().OfType<Item>()
+            : (await this.DropGenerator.GenerateItemDropsAsync(chest.Definition, 0, player).ConfigureAwait(false)).Items;
         var owners = player.Party?.PartyList.AsEnumerable() ?? player.GetAsEnumerable();
         var isFirstItem = true;
         foreach (var item in items)
@@ -750,6 +759,8 @@ public sealed class DoppelgangerContext : MiniGameContext
         {
             return MonsterMultipliers.None;
         }
+
+        this._scaling = scaling;
 
         var index = Math.Clamp(players.Count, 1, 5) - 1;
         var multipliers = new MonsterMultipliers(

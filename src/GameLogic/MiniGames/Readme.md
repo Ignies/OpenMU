@@ -29,3 +29,15 @@ a copy of a map for each party, with its own monsters and timer. The game level 
 `ISeason21EventViewPlugIn` shows the state, score, result and refused entry of the Season 21 events (packets `EE B0`-`B4`,
 docs/babylon.md "Events"). The Season 6 client has no view of them and gets the mini game messages in words; its enter
 result plugin sends nothing for these types.
+
+## Doppelganger of Season 21 (fork feature `doppelganger_s21`)
+
+The update "Renew the Doppelganger for Season 21" (S21Emu `Event/DoubleGoerRenewal`) keeps the Season 6 event and
+gives it the rooms of the renewal as its monster scalings (`DoppelgangerMonsterScaling`): seven rooms by total level
+(up to 399, 799, 899, 1099, 1299, 1499 and above) with one multiplier each for level, health, damage and defense, the
+experience of the room for every player when the defense succeeded (`RewardExperience`, as master experience at the
+maximum level) and the silver and golden chests of the room (`InterimChestItems`, `FinalChestItems`, bags 78-87 and
+452-455, one random item). Every level from 50 may enter; a game needs two players (`MinUserInParty`).
+
+Not ported: the race of up to four parties on parallel lanes of one map (`DoppelGanger_PositionInfo.xml`), which needs
+the lanes in the client; each party keeps its own copy and path.
