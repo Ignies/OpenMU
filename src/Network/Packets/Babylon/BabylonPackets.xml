@@ -366,6 +366,131 @@
         </Field>
       </Fields>
     </Structure>
+    <Structure>
+      <Name>SoulConverterMission</Name>
+      <Description>A soul mission of a monster soul converter.</Description>
+      <Length>8</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MapNumber</Name>
+          <Description>The map of the monster.</Description>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MonsterNumber</Name>
+          <Description>The monster whose souls count.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Souls</Name>
+          <Description>The souls absorbed so far.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>RequiredSouls</Name>
+          <Description>The souls the mission needs.</Description>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
+      <Name>RankingEntry</Name>
+      <Description>A character of a ranking page.</Description>
+      <Length>17</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Rank</Name>
+          <Description>The rank, from 1.</Description>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Description>The name of the character.</Description>
+          <Length>10</Length>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Byte</Type>
+          <Name>ClassCode</Name>
+          <Description>The class code of the character (docs/babylon.md, "Class code").</Description>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Value</Name>
+          <Description>The value the ranking orders by.</Description>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
+      <Name>HuntingRecordDay</Name>
+      <Description>The hunting of one day on one map.</Description>
+      <Length>28</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Day</Name>
+          <Description>The start of the day (UTC), in seconds since 1970-01-01.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Seconds</Name>
+          <Description>The seconds the character spent on the map.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Kills</Name>
+          <Description>The monsters the character killed.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>LongLittleEndian</Type>
+          <Name>Experience</Name>
+          <Description>The experience the character gained by kills, normal and master.</Description>
+        </Field>
+        <Field>
+          <Index>20</Index>
+          <Type>LongLittleEndian</Type>
+          <Name>Damage</Name>
+          <Description>The damage the character dealt to monsters.</Description>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
+      <Name>SeasonPassMission</Name>
+      <Description>The progress of a daily mission of the season pass.</Description>
+      <Length>6</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>Index</Name>
+          <Description>The mission index (S21 MUPassMissionText).</Description>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>Byte</Type>
+          <Name>Completions</Name>
+          <Description>How often the mission was completed today.</Description>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Progress</Name>
+          <Description>The progress towards the next completion.</Description>
+        </Field>
+      </Fields>
+    </Structure>
   </Structures>
   <Packets>
     <Packet>
@@ -1765,6 +1890,527 @@
       <SentWhen>The client needs the elemental stats of the own character, e.g. after an equipment change or to open the character window.</SentWhen>
       <CausedReaction>The server answers with ElementInfo.</CausedReaction>
       <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>A2</SubCode>
+      <Name>MiningRequest</Name>
+      <Length>7</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player mines the next stage of a mining spot, or stops and collects what the spot gave so far.</SentWhen>
+      <CausedReaction>The server answers with MiningResult.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>NpcId</Name>
+          <Description>The object id of the mining spot.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Action</Name>
+          <Description>0 mine the next stage, 1 stop and collect.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>A3</SubCode>
+      <Name>MiningResult</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The player talked to a mining spot, mined a stage or collected.</SentWhen>
+      <CausedReaction>The client shows the mining window: the stage, the pending reward or the loss.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>NpcId</Name>
+          <Description>The object id of the mining spot.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 opened, 1 stage mined, 2 failed (the pending reward is lost), 3 collected, 4 no pickaxe in the hands, 5 pickaxe worn out, 6 no spot in reach, 7 another player mines the spot, 8 mining is off.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Stage</Name>
+          <Description>The stage reached, 0 before the first.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ItemCount</Name>
+          <Description>The items the stage gives (pending), or the collected ones.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>BonusCount</Name>
+          <Description>The bonus items of the jackpot of the last stage, 0 when none.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>A5</SubCode>
+      <Name>SoulConverterState</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The character enters a map, the state changes (a soul is absorbed, a mission is done, the week ends) and on request.</SentWhen>
+      <CausedReaction>The client shows the active monster soul converter with its missions.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Tier</Name>
+          <Description>The tier of the active converter, 1 to 5; 0 when none is active.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>PurchasesLeft</Name>
+          <Description>The converters the account may still activate this week.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ExpiresAt</Name>
+          <Description>The point in time at which the converter expires, in seconds since 1970-01-01 UTC; 0 when none.</Description>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Byte</Type>
+          <Name>MissionCount</Name>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>Structure[]</Type>
+          <TypeName>SoulConverterMission</TypeName>
+          <Name>Missions</Name>
+          <ItemCountField>MissionCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>A6</SubCode>
+      <Name>SoulConverterRewardRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player chooses the reward of a completed monster soul converter.</SentWhen>
+      <CausedReaction>The server delivers the reward and answers with SoulConverterResult.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>RewardKind</Name>
+          <Description>0 Ruud, 1 jewels, 2 elemental options, 3 accessory.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>A7</SubCode>
+      <Name>SoulConverterResult</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a SoulConverterRewardRequest.</SentWhen>
+      <CausedReaction>The client shows the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 rewarded, 1 missions not done, 2 no active converter, 3 the reward kind is not offered at this tier, 4 the converter is off, 5 the reward could not be delivered.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>RewardKind</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>A8</SubCode>
+      <Name>SoulConverterStateRequest</Name>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client opens the monster soul converter window.</SentWhen>
+      <CausedReaction>The server answers with SoulConverterState.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>D0</SubCode>
+      <Name>RankingPage</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a RankingRequest.</SentWhen>
+      <CausedReaction>The client shows the page of the ranking.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Kind</Name>
+          <Description>0 total level, 1 monster kills of the week, 2 hunting experience of the week.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Page</Name>
+          <Description>The page, from 0.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>PageCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>OwnRank</Name>
+          <Description>The rank of the own character, 0 when it is not ranked.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>EntryCount</Name>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Structure[]</Type>
+          <TypeName>RankingEntry</TypeName>
+          <Name>Entries</Name>
+          <ItemCountField>EntryCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>D1</SubCode>
+      <Name>HuntingRecordList</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a HuntingRecordRequest.</SentWhen>
+      <CausedReaction>The client shows the hunting record of the map, one row a day, newest first.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MapNumber</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>DayCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>HuntingRecordDay</TypeName>
+          <Name>Days</Name>
+          <ItemCountField>DayCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>D2</SubCode>
+      <Name>SeasonPassState</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The character enters a map, the pass gains experience or a level, a reward is claimed, and on request.</SentWhen>
+      <CausedReaction>The client shows the season pass.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Season</Name>
+          <Description>The number of the running season, 0 when none runs.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>EndsAt</Name>
+          <Description>The end of the season, in seconds since 1970-01-01 UTC.</Description>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>Byte</Type>
+          <Name>Level</Name>
+          <Description>The pass level, 0 before the first.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Experience</Name>
+          <Description>The pass experience.</Description>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>Byte</Type>
+          <Name>Passes</Name>
+          <Description>Bit 0 the free pass, bit 1 the gold pass, bit 2 the premium pass.</Description>
+        </Field>
+        <Field>
+          <Index>17</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ClaimedFree</Name>
+          <Description>One bit per level (bit 0 = level 1) whose free reward was claimed.</Description>
+        </Field>
+        <Field>
+          <Index>21</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ClaimedGold</Name>
+          <Description>The same for the gold pass.</Description>
+        </Field>
+        <Field>
+          <Index>25</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ClaimedPremium</Name>
+          <Description>The same for the premium pass.</Description>
+        </Field>
+        <Field>
+          <Index>29</Index>
+          <Type>Byte</Type>
+          <Name>MissionCount</Name>
+        </Field>
+        <Field>
+          <Index>30</Index>
+          <Type>Structure[]</Type>
+          <TypeName>SeasonPassMission</TypeName>
+          <Name>Missions</Name>
+          <ItemCountField>MissionCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>D3</SubCode>
+      <Name>RankingRequest</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player opens a page of a ranking.</SentWhen>
+      <CausedReaction>The server answers with RankingPage.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Kind</Name>
+          <Description>0 total level, 1 monster kills of the week, 2 hunting experience of the week.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Page</Name>
+          <Description>The page, from 0.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>D4</SubCode>
+      <Name>HuntingRecordRequest</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player opens the hunting record of a map.</SentWhen>
+      <CausedReaction>The server answers with HuntingRecordList.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MapNumber</Name>
+          <Description>The map; 0xFFFF for the current one.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>D5</SubCode>
+      <Name>SeasonPassClaim</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player claims the reward of a pass level.</SentWhen>
+      <CausedReaction>The server delivers it into the gremory case and answers with SeasonPassClaimResult.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Pass</Name>
+          <Description>0 free, 1 gold, 2 premium.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Level</Name>
+          <Description>The pass level of the reward.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>D6</SubCode>
+      <Name>SeasonPassClaimResult</Name>
+      <Length>7</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a SeasonPassClaim.</SentWhen>
+      <CausedReaction>The client shows the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Pass</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Level</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 claimed, 1 level not reached, 2 already claimed, 3 the pass is not owned, 4 no reward at this level, 5 the reward could not be delivered, 6 the season pass is off.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>D7</SubCode>
+      <Name>SeasonPassStateRequest</Name>
+      <Length>4</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client opens the season pass window.</SentWhen>
+      <CausedReaction>The server answers with SeasonPassState.</CausedReaction>
+      <Fields />
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>E0</SubCode>
+      <Name>HelperPlusRules</Name>
+      <Length>13</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The character enters a map while the helper plus rules are on, and after a HelperPlusModeRequest.</SentWhen>
+      <CausedReaction>The client limits its helper settings to the ranges and shows whether the helper and its plus mode may run.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Flags</Name>
+          <Description>Bit 0 the helper may run on this map, bit 1 the character may use the plus mode, bit 2 the plus mode is on.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>PlusMinimumLevel</Name>
+          <Description>The total level (level + master level) the plus mode needs.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>HuntRange</Name>
+          <Description>The largest hunting range of the normal helper, in tiles.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>PickupRange</Name>
+          <Description>The largest pick-up range of the normal helper, in tiles.</Description>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>PlusHuntRange</Name>
+          <Description>The largest hunting range of the plus mode, in tiles.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>PlusPickupRange</Name>
+          <Description>The largest pick-up range of the plus mode, in tiles.</Description>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>PlusCostPercent</Name>
+          <Description>The cost of the plus mode in percent of the normal helper cost.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>E1</SubCode>
+      <Name>HelperPlusMoveRequest</Name>
+      <Length>6</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The helper plus moves the character to a hunting zone.</SentWhen>
+      <CausedReaction>The server checks the zone and the warp rules, moves the character and answers with HelperPlusMoveResult.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ZoneIndex</Name>
+          <Description>The index of the hunting zone (S21 MuHelperPlus.xml HuntingZone).</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>E2</SubCode>
+      <Name>HelperPlusMoveResult</Name>
+      <Length>7</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After a HelperPlusMoveRequest.</SentWhen>
+      <CausedReaction>The client continues the helper in the zone, or stops it.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>ZoneIndex</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 moved, 1 unknown zone, 2 level too low for the zone, 3 not enough money, 4 the plus mode is not on, 5 the helper plus rules are off, 6 the character can not move now.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>E3</SubCode>
+      <Name>HelperPlusModeRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player switches the plus mode of the helper on or off.</SentWhen>
+      <CausedReaction>The server answers with HelperPlusRules.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>Enabled</Name>
+        </Field>
+      </Fields>
     </Packet>
   </Packets>
 </PacketDefinitions>

@@ -1184,4 +1184,424 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MiningRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="npcId">The object id of the mining spot.</param>
+    /// <param name="action">0 mine the next stage, 1 stop and collect.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player mines the next stage of a mining spot, or stops and collects what the spot gave so far.
+    /// Causes reaction on server side: The server answers with MiningResult.
+    /// </remarks>
+    public static async ValueTask SendMiningRequestAsync(this IConnection? connection, ushort @npcId, byte @action)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MiningRequestRef.Length;
+            var packet = new MiningRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.NpcId = @npcId;
+            packet.Action = @action;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MiningResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="npcId">The object id of the mining spot.</param>
+    /// <param name="result">0 opened, 1 stage mined, 2 failed (the pending reward is lost), 3 collected, 4 no pickaxe in the hands, 5 pickaxe worn out, 6 no spot in reach, 7 another player mines the spot, 8 mining is off.</param>
+    /// <param name="stage">The stage reached, 0 before the first.</param>
+    /// <param name="itemCount">The items the stage gives (pending), or the collected ones.</param>
+    /// <param name="bonusCount">The bonus items of the jackpot of the last stage, 0 when none.</param>
+    /// <remarks>
+    /// Is sent by the server when: The player talked to a mining spot, mined a stage or collected.
+    /// Causes reaction on client side: The client shows the mining window: the stage, the pending reward or the loss.
+    /// </remarks>
+    public static async ValueTask SendMiningResultAsync(this IConnection? connection, ushort @npcId, byte @result, byte @stage, ushort @itemCount, ushort @bonusCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MiningResultRef.Length;
+            var packet = new MiningResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.NpcId = @npcId;
+            packet.Result = @result;
+            packet.Stage = @stage;
+            packet.ItemCount = @itemCount;
+            packet.BonusCount = @bonusCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SoulConverterRewardRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="rewardKind">0 Ruud, 1 jewels, 2 elemental options, 3 accessory.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player chooses the reward of a completed monster soul converter.
+    /// Causes reaction on server side: The server delivers the reward and answers with SoulConverterResult.
+    /// </remarks>
+    public static async ValueTask SendSoulConverterRewardRequestAsync(this IConnection? connection, byte @rewardKind)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = SoulConverterRewardRequestRef.Length;
+            var packet = new SoulConverterRewardRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.RewardKind = @rewardKind;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SoulConverterResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">0 rewarded, 1 missions not done, 2 no active converter, 3 the reward kind is not offered at this tier, 4 the converter is off, 5 the reward could not be delivered.</param>
+    /// <param name="rewardKind">The reward kind.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a SoulConverterRewardRequest.
+    /// Causes reaction on client side: The client shows the result.
+    /// </remarks>
+    public static async ValueTask SendSoulConverterResultAsync(this IConnection? connection, byte @result, byte @rewardKind)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = SoulConverterResultRef.Length;
+            var packet = new SoulConverterResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.RewardKind = @rewardKind;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SoulConverterStateRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client opens the monster soul converter window.
+    /// Causes reaction on server side: The server answers with SoulConverterState.
+    /// </remarks>
+    public static async ValueTask SendSoulConverterStateRequestAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = SoulConverterStateRequestRef.Length;
+            var packet = new SoulConverterStateRequestRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="RankingRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="kind">0 total level, 1 monster kills of the week, 2 hunting experience of the week.</param>
+    /// <param name="page">The page, from 0.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player opens a page of a ranking.
+    /// Causes reaction on server side: The server answers with RankingPage.
+    /// </remarks>
+    public static async ValueTask SendRankingRequestAsync(this IConnection? connection, byte @kind, byte @page)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = RankingRequestRef.Length;
+            var packet = new RankingRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Kind = @kind;
+            packet.Page = @page;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="HuntingRecordRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="mapNumber">The map; 0xFFFF for the current one.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player opens the hunting record of a map.
+    /// Causes reaction on server side: The server answers with HuntingRecordList.
+    /// </remarks>
+    public static async ValueTask SendHuntingRecordRequestAsync(this IConnection? connection, ushort @mapNumber)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = HuntingRecordRequestRef.Length;
+            var packet = new HuntingRecordRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.MapNumber = @mapNumber;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SeasonPassClaim" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="pass">0 free, 1 gold, 2 premium.</param>
+    /// <param name="level">The pass level of the reward.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player claims the reward of a pass level.
+    /// Causes reaction on server side: The server delivers it into the gremory case and answers with SeasonPassClaimResult.
+    /// </remarks>
+    public static async ValueTask SendSeasonPassClaimAsync(this IConnection? connection, byte @pass, byte @level)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = SeasonPassClaimRef.Length;
+            var packet = new SeasonPassClaimRef(connection.Output.GetSpan(length)[..length]);
+            packet.Pass = @pass;
+            packet.Level = @level;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SeasonPassClaimResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="pass">The pass.</param>
+    /// <param name="level">The level.</param>
+    /// <param name="result">0 claimed, 1 level not reached, 2 already claimed, 3 the pass is not owned, 4 no reward at this level, 5 the reward could not be delivered, 6 the season pass is off.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a SeasonPassClaim.
+    /// Causes reaction on client side: The client shows the result.
+    /// </remarks>
+    public static async ValueTask SendSeasonPassClaimResultAsync(this IConnection? connection, byte @pass, byte @level, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = SeasonPassClaimResultRef.Length;
+            var packet = new SeasonPassClaimResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Pass = @pass;
+            packet.Level = @level;
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="SeasonPassStateRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client opens the season pass window.
+    /// Causes reaction on server side: The server answers with SeasonPassState.
+    /// </remarks>
+    public static async ValueTask SendSeasonPassStateRequestAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = SeasonPassStateRequestRef.Length;
+            var packet = new SeasonPassStateRequestRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="HelperPlusRules" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="flags">Bit 0 the helper may run on this map, bit 1 the character may use the plus mode, bit 2 the plus mode is on.</param>
+    /// <param name="plusMinimumLevel">The total level (level + master level) the plus mode needs.</param>
+    /// <param name="huntRange">The largest hunting range of the normal helper, in tiles.</param>
+    /// <param name="pickupRange">The largest pick-up range of the normal helper, in tiles.</param>
+    /// <param name="plusHuntRange">The largest hunting range of the plus mode, in tiles.</param>
+    /// <param name="plusPickupRange">The largest pick-up range of the plus mode, in tiles.</param>
+    /// <param name="plusCostPercent">The cost of the plus mode in percent of the normal helper cost.</param>
+    /// <remarks>
+    /// Is sent by the server when: The character enters a map while the helper plus rules are on, and after a HelperPlusModeRequest.
+    /// Causes reaction on client side: The client limits its helper settings to the ranges and shows whether the helper and its plus mode may run.
+    /// </remarks>
+    public static async ValueTask SendHelperPlusRulesAsync(this IConnection? connection, byte @flags, ushort @plusMinimumLevel, byte @huntRange, byte @pickupRange, byte @plusHuntRange, byte @plusPickupRange, ushort @plusCostPercent)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = HelperPlusRulesRef.Length;
+            var packet = new HelperPlusRulesRef(connection.Output.GetSpan(length)[..length]);
+            packet.Flags = @flags;
+            packet.PlusMinimumLevel = @plusMinimumLevel;
+            packet.HuntRange = @huntRange;
+            packet.PickupRange = @pickupRange;
+            packet.PlusHuntRange = @plusHuntRange;
+            packet.PlusPickupRange = @plusPickupRange;
+            packet.PlusCostPercent = @plusCostPercent;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="HelperPlusMoveRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="zoneIndex">The index of the hunting zone (S21 MuHelperPlus.xml HuntingZone).</param>
+    /// <remarks>
+    /// Is sent by the client when: The helper plus moves the character to a hunting zone.
+    /// Causes reaction on server side: The server checks the zone and the warp rules, moves the character and answers with HelperPlusMoveResult.
+    /// </remarks>
+    public static async ValueTask SendHelperPlusMoveRequestAsync(this IConnection? connection, ushort @zoneIndex)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = HelperPlusMoveRequestRef.Length;
+            var packet = new HelperPlusMoveRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.ZoneIndex = @zoneIndex;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="HelperPlusMoveResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="zoneIndex">The zone index.</param>
+    /// <param name="result">0 moved, 1 unknown zone, 2 level too low for the zone, 3 not enough money, 4 the plus mode is not on, 5 the helper plus rules are off, 6 the character can not move now.</param>
+    /// <remarks>
+    /// Is sent by the server when: After a HelperPlusMoveRequest.
+    /// Causes reaction on client side: The client continues the helper in the zone, or stops it.
+    /// </remarks>
+    public static async ValueTask SendHelperPlusMoveResultAsync(this IConnection? connection, ushort @zoneIndex, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = HelperPlusMoveResultRef.Length;
+            var packet = new HelperPlusMoveResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.ZoneIndex = @zoneIndex;
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="HelperPlusModeRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="enabled">The enabled.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player switches the plus mode of the helper on or off.
+    /// Causes reaction on server side: The server answers with HelperPlusRules.
+    /// </remarks>
+    public static async ValueTask SendHelperPlusModeRequestAsync(this IConnection? connection, bool @enabled)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = HelperPlusModeRequestRef.Length;
+            var packet = new HelperPlusModeRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Enabled = @enabled;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}
