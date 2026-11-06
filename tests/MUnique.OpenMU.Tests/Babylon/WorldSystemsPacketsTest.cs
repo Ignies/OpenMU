@@ -9,6 +9,7 @@ using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.HelperPlus;
 using MUnique.OpenMU.GameLogic.HuntingRecord;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.SeasonPass;
 using MUnique.OpenMU.GameLogic.SoulConverter;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -204,5 +205,54 @@ public class WorldSystemsPacketsTest
 
         var packet = new Network.Packets.Babylon.HelperPlusMoveResult(output.ToArray());
         Assert.That((packet.Header.SubCode, packet.ZoneIndex, packet.Result), Is.EqualTo(((byte)0xE2, (ushort)42, (byte)3)));
+    }
+
+    /// <summary>
+    /// Only the Babylon client gets the season pass view.
+    /// </summary>
+    [Test]
+    public void OnlyTheBabylonClientGetsTheSeasonPassView()
+    {
+        var (player, _) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        player.GameContext.PlugInManager.RegisterPlugIn<IViewPlugIn, SeasonPassBabylonPlugIn>();
+
+        player.ClientVersion = BabylonClient.Version;
+        Assert.That(player.ViewPlugIns.GetPlugIn<ISeasonPassViewPlugIn>(), Is.InstanceOf<SeasonPassBabylonPlugIn>());
+
+        player.ClientVersion = new(6, 3, Network.PlugIns.ClientLanguage.English);
+        Assert.That(player.ViewPlugIns.GetPlugIn<ISeasonPassViewPlugIn>(), Is.Null);
+    }
+
+    /// <summary>
+    /// The season pass state carries the season, the level, the passes, the claims and the missions; a special mission has
+    /// the bit 7 in its index.
+    /// </summary>
+    [Test]
+    public async ValueTask SeasonPassStateHasItsFieldsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(BabylonClient.Version);
+        var state = new SeasonPassView(11, new DateTime(2026, 11, 12, 0, 0, 0, DateTimeKind.Utc), 3, 650, 0b011, 0b101, 0b1, 0, [new SeasonPassMissionState(1, 2, 300), new SeasonPassMissionState(128, 0, 7200)]);
+
+        await new SeasonPassBabylonPlugIn(player).ShowSeasonPassStateAsync(state).ConfigureAwait(false);
+
+        var packet = new SeasonPassState(output.ToArray());
+        Assert.That((packet.Header.SubCode, packet.Season, packet.EndsAt, packet.Level, packet.Experience), Is.EqualTo(((byte)0xD2, (ushort)11, 1794441600u, (byte)3, 650u)));
+        Assert.That((packet.Passes, packet.ClaimedFree, packet.ClaimedGold, packet.ClaimedPremium, packet.MissionCount), Is.EqualTo(((byte)3, 5u, 1u, 0u, (byte)2)));
+        Assert.That((packet[0].Index, packet[0].Completions, packet[0].Progress), Is.EqualTo(((byte)1, (byte)2, 300u)));
+        Assert.That((packet[1].Index, packet[1].Progress), Is.EqualTo(((byte)0x80, 7200u)));
+    }
+
+    /// <summary>
+    /// The claim result carries the pass, the level and the result.
+    /// </summary>
+    [Test]
+    public async ValueTask SeasonPassClaimResultHasItsFieldsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(BabylonClient.Version);
+
+        await new SeasonPassBabylonPlugIn(player).ShowSeasonPassClaimResultAsync(SeasonPassKind.Gold, 4, GameLogic.SeasonPass.SeasonPassClaimResult.AlreadyClaimed).ConfigureAwait(false);
+
+        var packet = new Network.Packets.Babylon.SeasonPassClaimResult(output.ToArray());
+        Assert.That((packet.Header.SubCode, packet.Pass, packet.Level, packet.Result), Is.EqualTo(((byte)0xD6, (byte)1, (byte)4, (byte)2)));
     }
 }

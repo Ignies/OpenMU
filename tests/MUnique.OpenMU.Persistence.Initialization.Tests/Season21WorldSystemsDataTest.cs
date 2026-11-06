@@ -11,6 +11,7 @@ using MUnique.OpenMU.GameLogic.HelperPlus;
 using MUnique.OpenMU.GameLogic.HuntingRecord;
 using MUnique.OpenMU.GameLogic.Mining;
 using MUnique.OpenMU.GameLogic.PlugIns.InvasionEvents;
+using MUnique.OpenMU.GameLogic.SeasonPass;
 using MUnique.OpenMU.GameLogic.SoulConverter;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -257,6 +258,63 @@ internal class Season21WorldSystemsDataTest
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         Assert.That(GetConfiguration<HelperPlusConfiguration>(gameConfiguration, typeof(HelperPlusPlugIn).GUID, out _).Zones, Has.Count.EqualTo(1));
+        Assert.That(plugIn.IsActive, Is.False);
+        Assert.That(update.IsMandatory, Is.False);
+    }
+
+    /// <summary>
+    /// The season pass update sets the schedule, levels, missions, rewards and buffs of <c>BattlePass.xml</c> and switches the
+    /// season pass on. The missions have no kind yet (the data only numbers them); the Max HP buff raises the maximum health.
+    /// </summary>
+    [Test]
+    public async Task SeasonPassUpdateSetsThePassOfTheDataAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+
+        await new AddSeason21SeasonPassUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var configuration = GetConfiguration<SeasonPassConfiguration>(gameConfiguration, typeof(SeasonPassPlugIn).GUID, out var plugIn);
+        Assert.That(plugIn.IsActive, Is.True);
+        Assert.That((configuration.GoldPassEnabled, configuration.PremiumPassEnabled, configuration.TicketExperience, configuration.RepeatEveryYear), Is.EqualTo((true, false, 300, true)));
+        Assert.That(configuration.Seasons, Has.Count.EqualTo(12));
+        Assert.That((configuration.Seasons[0].Number, configuration.Seasons[0].Start, configuration.Seasons[0].End), Is.EqualTo(((ushort)1, new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc), new DateTime(2025, 1, 30, 23, 59, 0, DateTimeKind.Utc))));
+        Assert.That(configuration.LevelExperience, Has.Count.EqualTo(20));
+        Assert.That((configuration.LevelExperience[0], configuration.LevelExperience[19]), Is.EqualTo((100, 6000)));
+        Assert.That(configuration.Missions, Has.Count.EqualTo(26));
+        Assert.That(configuration.Missions.Select(m => m.Kind), Has.All.EqualTo(SeasonPassMissionKind.None));
+        var first = configuration.Missions[0];
+        Assert.That((first.Index, first.Experience, first.Required, first.Repeat, first.IsSpecial), Is.EqualTo(((byte)0, 5, 2160, 10, false)));
+        var special = configuration.Missions.Single(m => m.IsSpecial);
+        Assert.That((special.Index, special.Experience, special.Required, special.Repeat), Is.EqualTo(((byte)0, 10, 21600, 2)));
+        Assert.That(configuration.Rewards, Has.Count.EqualTo(14));
+        var bless = configuration.Rewards.Single(r => r.Id == 5);
+        Assert.That((bless.EffectIndex, bless.ItemGroup, bless.ItemNumber, bless.Count), Is.EqualTo((-1, (byte)14, (short)371, (byte)3)));
+        Assert.That(configuration.LevelRewards.Single(r => r.Pass == SeasonPassKind.Free && r.Level == 1).RewardIds, Is.EqualTo(new[] { 0 }));
+        Assert.That(configuration.LevelRewards.Single(r => r.Pass == SeasonPassKind.Gold && r.Level == 2).RewardIds, Is.EqualTo(new[] { 10 }));
+        var health = configuration.Buffs.Single(b => b.EffectIndex == 411);
+        Assert.That((health.AttributeId, health.Values[0], health.Values[19]), Is.EqualTo(((Guid?)Stats.MaximumHealth.Id, 30, 300)));
+        Assert.That(configuration.Buffs.Where(b => b.EffectIndex != 411).Select(b => b.AttributeId), Has.All.Null);
+        Assert.That(GameLogic.ForkInfo.Has("battle_pass"), Is.True);
+    }
+
+    /// <summary>
+    /// Applied twice, the season pass update keeps the missions and the switch of the operator; it is optional.
+    /// </summary>
+    [Test]
+    public async Task SeasonPassUpdateKeepsTheOperatorsPassAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+        var update = new AddSeason21SeasonPassUpdatePlugIn();
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var plugIn = gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(SeasonPassPlugIn).GUID);
+        var custom = plugIn.GetConfiguration<SeasonPassConfiguration>(new IdIgnoringReferenceHandler())!;
+        custom.Missions[0].Kind = SeasonPassMissionKind.PlaySeconds;
+        plugIn.SetConfiguration(custom, null);
+        plugIn.IsActive = false;
+
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(GetConfiguration<SeasonPassConfiguration>(gameConfiguration, typeof(SeasonPassPlugIn).GUID, out _).Missions[0].Kind, Is.EqualTo(SeasonPassMissionKind.PlaySeconds));
         Assert.That(plugIn.IsActive, Is.False);
         Assert.That(update.IsMandatory, Is.False);
     }

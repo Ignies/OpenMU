@@ -92,6 +92,7 @@ Rules:
 | `acheron_guardian` | The Protector of Acheron of Season 21 (maps 92 and 96): 30 waves of monsters, a bag reward for 100 points (update "Add the Protector of Acheron of Season 21"; event type 12) |
 | `imperial_guardian_s18` | The Imperial Guardian rework of Season 18: from total level 1000, artifact rewards at the completion (update "Apply the Imperial Guardian rework of Season 18") |
 | `crywolf_s21` | The Crywolf renewal of Season 21: the army takes the element of the week, Balgass at 6:40, the rewards into the gremory case, the Season 21 timings (update "Apply the Crywolf renewal of Season 21") |
+| `battle_pass` | The season pass (MU Pass): the monthly seasons of the data repeated every year, 20 levels, 25 daily missions and one special mission (their kind set by the operator), the free, gold and premium pass with their rewards (buffs until the season ends, items into the gremory case), the Exp, Gold and Premium Pass Tickets (update "Add the season pass of Season 21", plugin "Season pass (Season 21)", `src/GameLogic/SeasonPass`) |
 
 ## Balance
 
@@ -218,6 +219,13 @@ Social and ranking packets (range D0-DF):
 - `C1 EE D4 HuntingRecordRequest` (client, 6): map number (u16 LE, 0xFFFF the current map) at 4. Answered by
   `C2 EE D1 HuntingRecordList`: map number (u16 LE) at 5, count at 7, then per day, newest first, 28 bytes: day start
   (u32 LE, UTC seconds), seconds on the map, kills (u32 LE each), experience and damage (u64 LE each).
+- `C2 EE D2 SeasonPassState` (server): season (u16 LE, 0 none runs) at 5, end (u32 LE, UTC seconds) at 7, level at 11,
+  experience (u32 LE) at 12, passes at 16 (bit 0 free, 1 gold, 2 premium), claimed levels of the free, gold and premium pass
+  (u32 LE each, bit 0 = level 1) at 17, 21 and 25, count at 29, then per mission 6 bytes: index (bit 7 a special mission),
+  completions, progress (u32 LE). Sent on entering a map, on every gain, after a claim and on `C1 EE D7 SeasonPassStateRequest`.
+- `C1 EE D5 SeasonPassClaim` (client, 6): pass at 4 (0 free, 1 gold, 2 premium), level at 5. Answered by
+  `C1 EE D6 SeasonPassClaimResult` (7): pass, level, result at 6 (0 claimed, 1 level not reached, 2 already claimed, 3 pass
+  not owned, 4 no reward, 5 not delivered, 6 off).
 
 MU Helper Plus packets (range E0-EF):
 

@@ -81,6 +81,7 @@ public static class ForkInfo
         "acheron_guardian",
         "imperial_guardian_s18",
         "crywolf_s21",
+        "battle_pass",
     ];
 
     /// <summary>

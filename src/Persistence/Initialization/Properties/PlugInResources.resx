@@ -606,4 +606,10 @@
   <data name="AddSeason21CrywolfUpdatePlugIn_Description" xml:space="preserve">
     <value>Crywolf of Season 21 Part 1 Update 3: the army takes the element of the week (fire, water, earth, wind, darkness, changing on Thursday 00:00), Balgass appears 6:40 into the battle, the rewards go into the gremory case, and the state durations of the Season 21 data. Keeps a renewal the operator set.</value>
   </data>
+  <data name="AddSeason21SeasonPassUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the season pass of Season 21</value>
+  </data>
+  <data name="AddSeason21SeasonPassUpdatePlugIn_Description" xml:space="preserve">
+    <value>Sets the season pass (MU Pass) of Season 21: the monthly schedule (repeated every year), 20 levels, 25 daily and one special mission (their kind is yours to set), the rewards of the free and gold pass and the buffs, and turns it on. A configuration with seasons stays. Optional; needs the item catalog.</value>
+  </data>
 </root>

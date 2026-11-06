@@ -1560,5 +1560,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21CrywolfUpdatePlugIn_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the season pass of Season 21.
+        /// </summary>
+        public static string AddSeason21SeasonPassUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21SeasonPassUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the season pass (MU Pass) of Season 21: the monthly schedule (repeated every year), 20 levels, 25 daily and one special mission (their kind is yours to set), the rewards of the free and gold pass and the buffs, and turns it on. A configuration with seasons stays. Optional; needs the item catalog..
+        /// </summary>
+        public static string AddSeason21SeasonPassUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21SeasonPassUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

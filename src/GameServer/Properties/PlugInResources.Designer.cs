@@ -8803,5 +8803,59 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("EventEnterRequestHandlerPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: season pass.
+        /// </summary>
+        public static string SeasonPassBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the season pass with its missions (C2 EE D2) and the result of a claimed reward (C1 EE D6) to the Babylon client..
+        /// </summary>
+        public static string SeasonPassBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SeasonPassBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: season pass claim.
+        /// </summary>
+        public static string SeasonPassClaimHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassClaimHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the claim of a reward of the season pass (C1 EE D5)..
+        /// </summary>
+        public static string SeasonPassClaimHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SeasonPassClaimHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: season pass state.
+        /// </summary>
+        public static string SeasonPassStateRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassStateRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the season pass window (C1 EE D7)..
+        /// </summary>
+        public static string SeasonPassStateRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SeasonPassStateRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

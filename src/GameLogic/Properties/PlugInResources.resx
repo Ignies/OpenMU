@@ -2862,4 +2862,130 @@
   <data name="AcheronGuardianStartPlugIn_Description" xml:space="preserve">
     <value>Opens the Protector of Acheron of Season 21 by its timetable: 30 waves of monsters in the event copies of Acheron and Deventer.</value>
   </data>
+  <data name="SeasonPassPlugIn_Name" xml:space="preserve">
+    <value>Season pass (Season 21)</value>
+  </data>
+  <data name="SeasonPassPlugIn_Description" xml:space="preserve">
+    <value>The MU Pass of Season 21: missions give pass experience, the pass levels give the rewards of the free, gold and premium pass (buffs until the season ends, items into the gremory case); the seasons follow the schedule. The Babylon client shows the window.</value>
+  </data>
+  <data name="SeasonPassConfiguration_GoldPassEnabled_Name" xml:space="preserve">
+    <value>Gold pass enabled</value>
+  </data>
+  <data name="SeasonPassConfiguration_PremiumPassEnabled_Name" xml:space="preserve">
+    <value>Premium pass enabled</value>
+  </data>
+  <data name="SeasonPassConfiguration_TicketExperience_Name" xml:space="preserve">
+    <value>Experience of an Exp Pass Ticket</value>
+  </data>
+  <data name="SeasonPassConfiguration_RepeatEveryYear_Name" xml:space="preserve">
+    <value>Repeat the schedule every year</value>
+  </data>
+  <data name="SeasonPassConfiguration_Seasons_Name" xml:space="preserve">
+    <value>Seasons</value>
+  </data>
+  <data name="SeasonPassConfiguration_LevelExperience_Name" xml:space="preserve">
+    <value>Experience per level</value>
+  </data>
+  <data name="SeasonPassConfiguration_Missions_Name" xml:space="preserve">
+    <value>Missions</value>
+  </data>
+  <data name="SeasonPassConfiguration_Rewards_Name" xml:space="preserve">
+    <value>Rewards</value>
+  </data>
+  <data name="SeasonPassConfiguration_LevelRewards_Name" xml:space="preserve">
+    <value>Rewards of the levels</value>
+  </data>
+  <data name="SeasonPassConfiguration_Buffs_Name" xml:space="preserve">
+    <value>Buffs</value>
+  </data>
+  <data name="SeasonPassConfiguration_SaveInterval_Name" xml:space="preserve">
+    <value>Save interval</value>
+  </data>
+  <data name="SeasonPassConfiguration_StateFile_Name" xml:space="preserve">
+    <value>State file</value>
+  </data>
+  <data name="SeasonPassSeason_Number_Name" xml:space="preserve">
+    <value>Number</value>
+  </data>
+  <data name="SeasonPassSeason_Start_Name" xml:space="preserve">
+    <value>Start (UTC)</value>
+  </data>
+  <data name="SeasonPassSeason_End_Name" xml:space="preserve">
+    <value>End (UTC)</value>
+  </data>
+  <data name="SeasonPassMission_Index_Name" xml:space="preserve">
+    <value>Index</value>
+  </data>
+  <data name="SeasonPassMission_IsSpecial_Name" xml:space="preserve">
+    <value>Special mission</value>
+  </data>
+  <data name="SeasonPassMission_Kind_Name" xml:space="preserve">
+    <value>Counts</value>
+  </data>
+  <data name="SeasonPassMission_Experience_Name" xml:space="preserve">
+    <value>Pass experience</value>
+  </data>
+  <data name="SeasonPassMission_Required_Name" xml:space="preserve">
+    <value>Required count</value>
+  </data>
+  <data name="SeasonPassMission_Repeat_Name" xml:space="preserve">
+    <value>Completions a day</value>
+  </data>
+  <data name="SeasonPassReward_Id_Name" xml:space="preserve">
+    <value>Id</value>
+  </data>
+  <data name="SeasonPassReward_EffectIndex_Name" xml:space="preserve">
+    <value>Buff effect (-1 for an item)</value>
+  </data>
+  <data name="SeasonPassReward_ItemGroup_Name" xml:space="preserve">
+    <value>Item group</value>
+  </data>
+  <data name="SeasonPassReward_ItemNumber_Name" xml:space="preserve">
+    <value>Item number</value>
+  </data>
+  <data name="SeasonPassReward_Count_Name" xml:space="preserve">
+    <value>Count</value>
+  </data>
+  <data name="SeasonPassReward_Name_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="SeasonPassLevelReward_Pass_Name" xml:space="preserve">
+    <value>Pass</value>
+  </data>
+  <data name="SeasonPassLevelReward_Level_Name" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="SeasonPassLevelReward_RewardIds_Name" xml:space="preserve">
+    <value>Reward ids</value>
+  </data>
+  <data name="SeasonPassBuff_EffectIndex_Name" xml:space="preserve">
+    <value>Effect</value>
+  </data>
+  <data name="SeasonPassBuff_AttributeId_Name" xml:space="preserve">
+    <value>Attribute id</value>
+  </data>
+  <data name="SeasonPassBuff_Values_Name" xml:space="preserve">
+    <value>Values by level</value>
+  </data>
+  <data name="SeasonPassBuff_Name_Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="SeasonPassTicketConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Exp Pass Ticket (20, 122)</value>
+  </data>
+  <data name="SeasonPassTicketConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Gives the season pass the experience of a ticket and uses the ticket up.</value>
+  </data>
+  <data name="GoldPassTicketConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Gold Pass Ticket (20, 123)</value>
+  </data>
+  <data name="GoldPassTicketConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Unlocks the gold pass of the running season and uses the ticket up.</value>
+  </data>
+  <data name="PremiumPassTicketConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Premium Pass Ticket (20, 124)</value>
+  </data>
+  <data name="PremiumPassTicketConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Unlocks the premium pass of the running season for a character with the gold pass and uses the ticket up.</value>
+  </data>
 </root>

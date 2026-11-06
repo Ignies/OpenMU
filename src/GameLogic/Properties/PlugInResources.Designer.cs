@@ -8121,5 +8121,383 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("AcheronGuardianStartPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Season pass (Season 21).
+        /// </summary>
+        public static string SeasonPassPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The MU Pass of Season 21: missions give pass experience, the pass levels give the rewards of the free, gold and premium pass (buffs until the season ends, items into the gremory case); the seasons follow the schedule. The Babylon client shows the window..
+        /// </summary>
+        public static string SeasonPassPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SeasonPassPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gold pass enabled.
+        /// </summary>
+        public static string SeasonPassConfiguration_GoldPassEnabled_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassConfiguration_GoldPassEnabled_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Premium pass enabled.
+        /// </summary>
+        public static string SeasonPassConfiguration_PremiumPassEnabled_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassConfiguration_PremiumPassEnabled_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience of an Exp Pass Ticket.
+        /// </summary>
+        public static string SeasonPassConfiguration_TicketExperience_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassConfiguration_TicketExperience_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Repeat the schedule every year.
+        /// </summary>
+        public static string SeasonPassConfiguration_RepeatEveryYear_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassConfiguration_RepeatEveryYear_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Seasons.
+        /// </summary>
+        public static string SeasonPassConfiguration_Seasons_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassConfiguration_Seasons_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Experience per level.
+        /// </summary>
+        public static string SeasonPassConfiguration_LevelExperience_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassConfiguration_LevelExperience_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missions.
+        /// </summary>
+        public static string SeasonPassConfiguration_Missions_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassConfiguration_Missions_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rewards.
+        /// </summary>
+        public static string SeasonPassConfiguration_Rewards_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassConfiguration_Rewards_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Rewards of the levels.
+        /// </summary>
+        public static string SeasonPassConfiguration_LevelRewards_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassConfiguration_LevelRewards_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buffs.
+        /// </summary>
+        public static string SeasonPassConfiguration_Buffs_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassConfiguration_Buffs_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save interval.
+        /// </summary>
+        public static string SeasonPassConfiguration_SaveInterval_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassConfiguration_SaveInterval_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to State file.
+        /// </summary>
+        public static string SeasonPassConfiguration_StateFile_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassConfiguration_StateFile_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number.
+        /// </summary>
+        public static string SeasonPassSeason_Number_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassSeason_Number_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start (UTC).
+        /// </summary>
+        public static string SeasonPassSeason_Start_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassSeason_Start_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to End (UTC).
+        /// </summary>
+        public static string SeasonPassSeason_End_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassSeason_End_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Index.
+        /// </summary>
+        public static string SeasonPassMission_Index_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassMission_Index_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Special mission.
+        /// </summary>
+        public static string SeasonPassMission_IsSpecial_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassMission_IsSpecial_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Counts.
+        /// </summary>
+        public static string SeasonPassMission_Kind_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassMission_Kind_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pass experience.
+        /// </summary>
+        public static string SeasonPassMission_Experience_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassMission_Experience_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required count.
+        /// </summary>
+        public static string SeasonPassMission_Required_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassMission_Required_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completions a day.
+        /// </summary>
+        public static string SeasonPassMission_Repeat_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassMission_Repeat_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Id.
+        /// </summary>
+        public static string SeasonPassReward_Id_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassReward_Id_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Buff effect (-1 for an item).
+        /// </summary>
+        public static string SeasonPassReward_EffectIndex_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassReward_EffectIndex_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item group.
+        /// </summary>
+        public static string SeasonPassReward_ItemGroup_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassReward_ItemGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number.
+        /// </summary>
+        public static string SeasonPassReward_ItemNumber_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassReward_ItemNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Count.
+        /// </summary>
+        public static string SeasonPassReward_Count_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassReward_Count_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string SeasonPassReward_Name_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassReward_Name_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pass.
+        /// </summary>
+        public static string SeasonPassLevelReward_Pass_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassLevelReward_Pass_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level.
+        /// </summary>
+        public static string SeasonPassLevelReward_Level_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassLevelReward_Level_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reward ids.
+        /// </summary>
+        public static string SeasonPassLevelReward_RewardIds_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassLevelReward_RewardIds_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Effect.
+        /// </summary>
+        public static string SeasonPassBuff_EffectIndex_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassBuff_EffectIndex_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Attribute id.
+        /// </summary>
+        public static string SeasonPassBuff_AttributeId_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassBuff_AttributeId_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Values by level.
+        /// </summary>
+        public static string SeasonPassBuff_Values_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassBuff_Values_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string SeasonPassBuff_Name_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassBuff_Name_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exp Pass Ticket (20, 122).
+        /// </summary>
+        public static string SeasonPassTicketConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SeasonPassTicketConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gives the season pass the experience of a ticket and uses the ticket up..
+        /// </summary>
+        public static string SeasonPassTicketConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SeasonPassTicketConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gold Pass Ticket (20, 123).
+        /// </summary>
+        public static string GoldPassTicketConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GoldPassTicketConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unlocks the gold pass of the running season and uses the ticket up..
+        /// </summary>
+        public static string GoldPassTicketConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GoldPassTicketConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Premium Pass Ticket (20, 124).
+        /// </summary>
+        public static string PremiumPassTicketConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PremiumPassTicketConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unlocks the premium pass of the running season for a character with the gold pass and uses the ticket up..
+        /// </summary>
+        public static string PremiumPassTicketConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("PremiumPassTicketConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

@@ -28,6 +28,8 @@ them, as optional updates of a Season 6 database:
   bags and turns it on (`Season21SoulConverterInitializer`); it needs the item catalog. See `GameLogic/SoulConverter/Readme.md`.
 * `AddSeason21HelperPlusUpdatePlugIn` sets the hunting grounds and zones of the MU Helper Plus and turns it on
   (`Season21HelperPlusInitializer`); it needs the maps (the grounds use their warps). See `GameLogic/HelperPlus/Readme.md`.
+* `AddSeason21SeasonPassUpdatePlugIn` sets the season pass and turns it on (`Season21SeasonPassInitializer`); it needs the
+  item catalog (tickets, item rewards). See `GameLogic/SeasonPass/Readme.md`.
 
 They run on a new database too (`RunsOnNewDatabase`), but as they are optional,
 a new database leaves them pending. So a Season 6 server only changes when its
@@ -360,3 +362,6 @@ pentagram options, errtel set options, radiance effects and the earring enhancem
   becomes a draw with the chance of its section (the lower of `DropRate` and `SectionRate`); its durability is the count.
 - Helper plus: the grounds with their warp (`MoveReqIndex`) and the zones with map, element and hunting point
   (`HuntingCordX/Y`); the rectangles, buff, channel and gate columns are left out (a move only needs the hunting point).
+- Season pass: the switches, the ticket experience, the schedule, the level experience, the daily and special missions
+  (kind `None`), the rewards (a buff for `Type` 0, an item with its count for 1), the reward lists of the passes and the
+  buff values; the Max HP buff (411) gets the maximum health, the other buffs no attribute.

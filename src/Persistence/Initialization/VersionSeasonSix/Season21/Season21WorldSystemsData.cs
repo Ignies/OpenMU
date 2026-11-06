@@ -35,6 +35,11 @@ internal sealed class Season21WorldSystemsData
     /// </summary>
     public HelperPlusRows HelperPlus { get; init; } = new();
 
+    /// <summary>
+    /// Gets the season pass data (<c>Event/BattlePass/BattlePass.xml</c>).
+    /// </summary>
+    public SeasonPassRows SeasonPass { get; init; } = new();
+
     private static Season21WorldSystemsData Load()
     {
         using var stream = typeof(Season21WorldSystemsData).Assembly.GetManifestResourceStream(ResourceName)
@@ -62,6 +67,73 @@ internal sealed class Season21WorldSystemsData
         /// <summary>Gets the tiers.</summary>
         public List<SoulTierRow> Tiers { get; init; } = [];
     }
+
+    /// <summary>The season pass data.</summary>
+    internal sealed class SeasonPassRows
+    {
+        /// <summary>Gets a value indicating whether the gold pass is on.</summary>
+        public bool Gold { get; init; }
+
+        /// <summary>Gets a value indicating whether the premium pass is on.</summary>
+        public bool Premium { get; init; }
+
+        /// <summary>Gets the experience of a pass ticket.</summary>
+        public int TicketExperience { get; init; }
+
+        /// <summary>Gets the seasons.</summary>
+        public List<PassSeasonRow> Schedule { get; init; } = [];
+
+        /// <summary>Gets the experience of the levels.</summary>
+        public List<int> Levels { get; init; } = [];
+
+        /// <summary>Gets the daily missions.</summary>
+        public List<PassMissionRow> Missions { get; init; } = [];
+
+        /// <summary>Gets the special missions.</summary>
+        public List<PassMissionRow> Special { get; init; } = [];
+
+        /// <summary>Gets the rewards.</summary>
+        public List<PassRewardRow> Rewards { get; init; } = [];
+
+        /// <summary>Gets the reward lists of the passes.</summary>
+        public List<PassListRow> Lists { get; init; } = [];
+
+        /// <summary>Gets the buffs.</summary>
+        public List<PassBuffRow> Buffs { get; init; } = [];
+    }
+
+    /// <summary>A season.</summary>
+    /// <param name="Id">The number.</param>
+    /// <param name="Start">The start, <c>yyyy-MM-dd HH:mm</c>.</param>
+    /// <param name="End">The end, <c>yyyy-MM-dd HH:mm</c>.</param>
+    internal sealed record PassSeasonRow(ushort Id, string Start, string End);
+
+    /// <summary>A mission.</summary>
+    /// <param name="Index">The index.</param>
+    /// <param name="Experience">The experience of a completion.</param>
+    /// <param name="Required">The count of a completion.</param>
+    /// <param name="Repeat">The completions.</param>
+    internal sealed record PassMissionRow(byte Index, int Experience, int Required, int Repeat);
+
+    /// <summary>A reward.</summary>
+    /// <param name="Id">The id.</param>
+    /// <param name="Type">0 a buff, 1 an item.</param>
+    /// <param name="Effect">The effect index of a buff.</param>
+    /// <param name="G">The item group.</param>
+    /// <param name="I">The item number.</param>
+    /// <param name="N">The item count.</param>
+    /// <param name="Name">The name.</param>
+    internal sealed record PassRewardRow(int Id, int Type, int Effect, int G, int I, int N, string Name);
+
+    /// <summary>The reward list of a pass.</summary>
+    /// <param name="Pass">The pass.</param>
+    /// <param name="Levels">The reward ids per level, from level 1.</param>
+    internal sealed record PassListRow(int Pass, List<List<int>> Levels);
+
+    /// <summary>A buff.</summary>
+    /// <param name="Effect">The effect index.</param>
+    /// <param name="Values">The values by level.</param>
+    internal sealed record PassBuffRow(int Effect, List<int> Values);
 
     /// <summary>The helper plus data.</summary>
     internal sealed class HelperPlusRows

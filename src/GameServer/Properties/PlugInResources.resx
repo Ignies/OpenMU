@@ -3077,4 +3077,22 @@
   <data name="EventEnterRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of the Babylon client to enter a Season 21 event or party instance (EE B1).</value>
   </data>
+  <data name="SeasonPassBabylonPlugIn_Name" xml:space="preserve">
+    <value>Babylon: season pass</value>
+  </data>
+  <data name="SeasonPassBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the season pass with its missions (C2 EE D2) and the result of a claimed reward (C1 EE D6) to the Babylon client.</value>
+  </data>
+  <data name="SeasonPassClaimHandlerPlugIn_Name" xml:space="preserve">
+    <value>Babylon: season pass claim</value>
+  </data>
+  <data name="SeasonPassClaimHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the claim of a reward of the season pass (C1 EE D5).</value>
+  </data>
+  <data name="SeasonPassStateRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Babylon: season pass state</value>
+  </data>
+  <data name="SeasonPassStateRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the season pass window (C1 EE D7).</value>
+  </data>
 </root>
