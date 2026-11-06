@@ -190,9 +190,9 @@ Season 6 packets (golden notices for a spawn, a kill and a lost battle, blue not
 
 The Muun system (`src/GameLogic/Muuns`, plugin "Muuns of Season 21", off by default). A Season 6 client gets none of these
 packets and has no Muun system: Muuns are wide items, so it never sees one (test `MuunPacketsTest.OnlyTheBabylonClientGetsTheMuunView`).
-Storages in the packets: 0 the inventory, 1 the Muun inventory (slot 0 main Muun, 1 sub Muun, 2-101 bag). Results: 0 done,
+Storages in the packets: 0 the inventory, 1 the Muun inventory (slot 0 main Muun, 1 sub Muun, 2-101 bag, 102 hero slot). Results: 0 done,
 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the
-exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun. Item data is 32
+exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun, 14 the same Muun is equipped already, 15 slot locked (the hero slot before its total level, 1750 by default, or a Muun which is no hero Muun). Item data is 32
 bytes in the connection's item format (W32); 0xFF for no item.
 
 - `C2 EE 50 MuunInventoryList` (server): count at 5, then per item 33 bytes: slot (u8), item data (32). Sent on every map entry.
@@ -216,6 +216,9 @@ bytes in the connection's item format (W32); 0xFF for no item.
 - `C2 EE 58 MuunExchangeList` (server): count at 5, then per offer 10 bytes: index, price group, number (u16 LE), count, result
   group, number (u16 LE), the Muun of the evolution stone (u16 LE, 0xFFFF none). Sent when the character talks to Monica (682).
 - `C1 EE 59 MuunExchangeRequest` (client, 5): offer index at 4. Answered by EE 55 (action 5); the stone lands in the Muun bag.
+- `C1 EE 5A MuunSkillUsed` (server, 13): player id (u16 BE) at 4, monster id (u16 BE) at 6, skill level at 8, damage (u32 LE) at 9.
+  Sent to the owner and everyone who sees it when a Muun with an attack skill option hits the nearest monster (every
+  10 s by default, less the cooldown reduction of its additional option).
 
 ### Economy (ranges 30-3F, 60-7F)
 
@@ -270,7 +273,7 @@ keeps its Season 6 meaning; the fields of later seasons stay zero until their sy
 | 13-17 | five slots: socket option index over all elements (0-49), 0xFE empty, 0xFF no slot |
 | 18-20 | five slot levels, 4 bits each (slot 0 = byte 18 low nibble): sphere level 1-10 (1-15 representable) |
 | 21 | element (bits 0-3), element kind (bits 4-7), see "Elements, pentagrams and earrings" |
-| 22-27 | kind block. Fourth and fifth wings: three grade options, each option number (u8, 0-10, 0xFF none) and grade (u8, 0-3); errtels and earrings: see "Elements, pentagrams and earrings". Muun: the end of its additional option at 22-25 (u32 LE, Unix seconds UTC, 0 not started); its level is byte 3, its health byte 4. Evolution stone: the Muun it evolves at 22-23 (u16 LE, item group 16). Muun energy converter: its energy is the durability (byte 4). The others stay zero |
+| 22-27 | kind block. Fourth and fifth wings: three grade options, each option number (u8, 0-10, 0xFF none) and grade (u8, 0-3); errtels and earrings: see "Elements, pentagrams and earrings". Muun: the end of its additional option at 22-25 (u32 LE, Unix seconds UTC, 0 not started); its level is byte 3, its health byte 4; its play time (minutes, for the play time condition) is server side only (`Item.PetExperience`). Evolution stone: the Muun it evolves at 22-23 (u16 LE, item group 16). Muun energy converter: its energy is the durability (byte 4). The others stay zero |
 | 28-31 | expiry, u32 LE Unix seconds UTC, 0 = never |
 
 ## Wide items

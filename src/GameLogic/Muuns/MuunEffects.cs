@@ -16,8 +16,8 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// (<see cref="Stats.FinalDamageIncreasePvp"/>) for the PvP ones, against monsters (<see cref="Stats.FinalDamageBonusPvm"/>)
 /// for the others, and against both once their Muun is evolved ("applies to PvP when evolved"; the evolved premium Muuns
 /// of the data carry the PvP type of the option of their first form). OpenMU has no excellent,
-/// critical or skill damage bonus for monsters only, so those Non-PvP options apply against players as well. Not applied:
-/// the repair cost (no attribute), the attack skills of the Muuns (the Muun doesn't cast).
+/// critical or skill damage bonus for monsters only, so those Non-PvP options apply against players as well. The attack
+/// skills (types 50 and 53) are no attribute: the Muun attacks itself (<see cref="MuunService.UseAttackSkillsAsync"/>).
 /// </remarks>
 public static class MuunEffects
 {
@@ -40,6 +40,7 @@ public static class MuunEffects
             MuunOptionType.ExcellentDamage or MuunOptionType.ExcellentDamagePvm => (Stats.ExcellentDamageBonus, 1),
             MuunOptionType.CriticalDamage or MuunOptionType.CriticalDamagePvm => (Stats.CriticalDamageBonus, 1),
             MuunOptionType.Money => (Stats.MoneyAmountRate, Percent),
+            MuunOptionType.RepairCost => (Stats.ItemRepairCostDecrease, Percent),
             MuunOptionType.ElementalDamage => (Stats.ElementDamageBonus, 1),
             MuunOptionType.ElementalDefense or MuunOptionType.ElementalDefensePvm => (Stats.ElementDefense, 1),
             _ => null,

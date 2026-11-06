@@ -2891,7 +2891,7 @@ public readonly ref struct MuunItemMoveResponseRef
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets 0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun.
+    /// Gets or sets 0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun, 14 the same Muun is equipped, 15 slot locked (the hero slot before the highest level, or no hero Muun).
     /// </summary>
     public byte Result
     {
@@ -3238,7 +3238,7 @@ public readonly ref struct MuunActionResponseRef
     }
 
     /// <summary>
-    /// Gets or sets 0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun.
+    /// Gets or sets 0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun, 14 the same Muun is equipped, 15 slot locked (the hero slot before the highest level, or no hero Muun).
     /// </summary>
     public byte Result
     {
@@ -3679,6 +3679,119 @@ public readonly ref struct MuunExchangeRequestRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(MuunExchangeRequestRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The Muun of a player in view hit a monster with its attack skill.
+/// Causes reaction on client side: The client shows the attack of the Muun and the damage on the monster.
+/// </summary>
+public readonly ref struct MuunSkillUsedRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MuunSkillUsedRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MuunSkillUsedRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MuunSkillUsedRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private MuunSkillUsedRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x5A;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 13;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the player id.
+    /// </summary>
+    public ushort PlayerId
+    {
+        get => ReadUInt16BigEndian(this._data[4..]);
+        set => WriteUInt16BigEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the target id.
+    /// </summary>
+    public ushort TargetId
+    {
+        get => ReadUInt16BigEndian(this._data[6..]);
+        set => WriteUInt16BigEndian(this._data[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the skill level.
+    /// </summary>
+    public byte SkillLevel
+    {
+        get => this._data[8];
+        set => this._data[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the damage.
+    /// </summary>
+    public uint Damage
+    {
+        get => ReadUInt32LittleEndian(this._data[9..]);
+        set => WriteUInt32LittleEndian(this._data[9..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="MuunSkillUsed"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator MuunSkillUsedRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="MuunSkillUsed"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(MuunSkillUsedRef packet) => packet._data; 
 }
 
 

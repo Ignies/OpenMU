@@ -22,6 +22,7 @@
   * [C2 EE 57 - MuunOptions (by server)](C2-EE-57-MuunOptions_by-server.md)
   * [C2 EE 58 - MuunExchangeList (by server)](C2-EE-58-MuunExchangeList_by-server.md)
   * [C1 EE 59 - MuunExchangeRequest (by client)](C1-EE-59-MuunExchangeRequest_by-client.md)
+  * [C1 EE 5A - MuunSkillUsed (by server)](C1-EE-5A-MuunSkillUsed_by-server.md)
   * [C2 EE 60 - GremoryCaseList (by server)](C2-EE-60-GremoryCaseList_by-server.md)
   * [C1 EE 61 - GremoryCaseItemAdded (by server)](C1-EE-61-GremoryCaseItemAdded_by-server.md)
   * [C1 EE 62 - GremoryCaseClaim (by client)](C1-EE-62-GremoryCaseClaim_by-client.md)

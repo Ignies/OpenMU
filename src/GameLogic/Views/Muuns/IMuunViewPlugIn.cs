@@ -48,6 +48,15 @@ public interface IMuunViewPlugIn : IViewPlugIn
     ValueTask ShowMuunAppearanceAsync(Player owner, Item? mainMuun, bool isRiding);
 
     /// <summary>
+    /// Shows the attack of the Muun of a player on a monster to the player of this view.
+    /// </summary>
+    /// <param name="owner">The player who owns the Muun.</param>
+    /// <param name="target">The monster which was hit.</param>
+    /// <param name="level">The level of the attack skill.</param>
+    /// <param name="damage">The damage.</param>
+    ValueTask ShowMuunSkillAsync(Player owner, IAttackable target, int level, uint damage);
+
+    /// <summary>
     /// Shows the options of the equipped Muuns.
     /// </summary>
     /// <param name="options">The options.</param>

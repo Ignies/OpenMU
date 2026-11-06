@@ -7230,5 +7230,59 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("MuunExchangeOffer_TargetNumber_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cooldown of the attack skill.
+        /// </summary>
+        public static string MuunConfiguration_AttackSkillCooldown_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_AttackSkillCooldown_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Damage of the attack skill per level.
+        /// </summary>
+        public static string MuunConfiguration_AttackSkillDamagePerLevel_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_AttackSkillDamagePerLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Range of the attack skill.
+        /// </summary>
+        public static string MuunConfiguration_AttackSkillRange_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_AttackSkillRange_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Movement speed when riding.
+        /// </summary>
+        public static string MuunConfiguration_RidingMovementSpeed_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_RidingMovementSpeed_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total level of the hero slot.
+        /// </summary>
+        public static string MuunConfiguration_HeroSlotLevel_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_HeroSlotLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Hero slot takes hero Muuns only.
+        /// </summary>
+        public static string MuunConfiguration_HeroSlotHeroMuunsOnly_Name {
+            get {
+                return ResourceManager.GetString("MuunConfiguration_HeroSlotHeroMuunsOnly_Name", resourceCulture);
+            }
+        }
     }
 }

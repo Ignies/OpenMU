@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.Items;
 
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Interfaces;
@@ -122,10 +123,21 @@ public class ItemRepairAction
         }
     }
 
+    /// <summary>
+    /// Gets the repair price of an item for the player, less its repair cost decrease (e.g. of a Muun).
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="item">The item.</param>
+    /// <returns>The price.</returns>
+    internal static long GetRepairPrice(Player player, Item item)
+    {
+        var price = new ItemPriceCalculator().CalculateRepairPrice(item, player.OpenedNpc != null);
+        var decrease = Math.Clamp(player.Attributes?[Stats.ItemRepairCostDecrease] ?? 0, 0f, 1f);
+        return (long)(price * (1 - decrease));
+    }
+
     private static bool IsMoneySufficient(Player player, Item item)
     {
-        var priceCalculator = new ItemPriceCalculator();
-        var price = priceCalculator.CalculateRepairPrice(item, player.OpenedNpc != null);
-        return player.TryRemoveMoney((int)price);
+        return player.TryRemoveMoney((int)GetRepairPrice(player, item));
     }
 }

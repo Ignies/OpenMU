@@ -108,6 +108,7 @@ public class MuunFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISupportCus
     public async ValueTask ExecuteTaskAsync(GameContext gameContext)
     {
         var now = DateTime.UtcNow;
+        await this.UseAttackSkillsAsync(gameContext, now).ConfigureAwait(false);
         if (now < this._nextCheckUtc)
         {
             return;
@@ -130,6 +131,7 @@ public class MuunFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISupportCus
 
             try
             {
+                MuunService.AddPlayTime(player, now);
                 if (decay)
                 {
                     await MuunService.DecayHealthAsync(player, configuration.HealthDecayAmount).ConfigureAwait(false);
@@ -165,6 +167,26 @@ public class MuunFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISupportCus
 
         eventArgs.LeavesDialogOpen = true;
         await view.ShowMuunExchangeAsync(configuration.ExchangeOffers).ConfigureAwait(false);
+    }
+
+    private async ValueTask UseAttackSkillsAsync(GameContext gameContext, DateTime now)
+    {
+        foreach (var player in await gameContext.GetPlayersAsync().ConfigureAwait(false))
+        {
+            if (player.PlayerState.CurrentState != PlayerState.EnteredWorld || player.SelectedCharacter?.MuunInventory is null)
+            {
+                continue;
+            }
+
+            try
+            {
+                await MuunService.UseAttackSkillsAsync(player, now).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                player.Logger.LogError(ex, "Error when the Muun of player '{player}' attacked.", player);
+            }
+        }
     }
 
     private void Index()

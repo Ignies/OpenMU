@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameLogic.Muuns;
 
 /// <summary>
 /// The slots of the Muun inventory (<see cref="Character.MuunInventory"/>): two equipped Muuns and a bag of 100,
-/// as the Muun window of the Season 21 client has them.
+/// as the Muun window of the Season 21 client has them, and the hero slot of the highest level.
 /// </summary>
 public static class MuunSlots
 {
@@ -21,19 +21,29 @@ public static class MuunSlots
     public const byte Sub = 1;
 
     /// <summary>
+    /// The slot after the last slot of the bag.
+    /// </summary>
+    public const byte EndOfBag = 102;
+
+    /// <summary>
     /// The first slot of the bag.
     /// </summary>
     public const byte FirstBagSlot = 2;
 
     /// <summary>
+    /// The hero slot, which opens at the highest level (<see cref="MuunConfiguration.HeroSlotLevel"/>).
+    /// </summary>
+    public const byte Hero = 102;
+
+    /// <summary>
     /// The number of slots.
     /// </summary>
-    public const byte Count = 102;
+    public const byte Count = 103;
 
     /// <summary>
     /// Determines whether a slot is an equipped slot.
     /// </summary>
     /// <param name="slot">The slot.</param>
     /// <returns><c>true</c>, if the Muun of the slot is equipped.</returns>
-    public static bool IsEquipped(byte slot) => slot is Main or Sub;
+    public static bool IsEquipped(byte slot) => slot is Main or Sub or Hero;
 }

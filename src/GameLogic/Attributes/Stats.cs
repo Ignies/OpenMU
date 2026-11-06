@@ -523,6 +523,11 @@ public class Stats
     public static AttributeDefinition FinalDamageBonusPvm { get; } = new(new Guid("6E2B8F14-3C9A-4D57-A0E6-91F4B2C7D385"), "Late Damage Bonus (PvM)", "A bonus value which gets added to the final damage value against monsters during the damage calculation.");
 
     /// <summary>
+    /// Gets the item repair cost decrease attribute definition, as a fraction (0.04 is 4 % less), e.g. of a Muun.
+    /// </summary>
+    public static AttributeDefinition ItemRepairCostDecrease { get; } = new(new Guid("B3A57E19-4D82-4C6F-9E10-7F2D8C5A1B46"), "Item Repair Cost Decrease", "The fraction by which the cost of an item repair decreases.");
+
+    /// <summary>
     /// Gets the player's skill multiplier attribute definition.
     /// </summary>
     public static AttributeDefinition SkillMultiplier { get; } = new(new Guid("D9FB3323-6DF5-48F7-8253-FDBB5EF82114"), "Skill Damage Multiplier", string.Empty);

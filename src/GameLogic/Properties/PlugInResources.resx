@@ -2565,4 +2565,22 @@
   <data name="MuunExchangeOffer_TargetNumber_Name" xml:space="preserve">
     <value>Muun of the evolution stone (item number)</value>
   </data>
+  <data name="MuunConfiguration_AttackSkillCooldown_Name" xml:space="preserve">
+    <value>Cooldown of the attack skill</value>
+  </data>
+  <data name="MuunConfiguration_AttackSkillDamagePerLevel_Name" xml:space="preserve">
+    <value>Damage of the attack skill per level</value>
+  </data>
+  <data name="MuunConfiguration_AttackSkillRange_Name" xml:space="preserve">
+    <value>Range of the attack skill</value>
+  </data>
+  <data name="MuunConfiguration_RidingMovementSpeed_Name" xml:space="preserve">
+    <value>Movement speed when riding</value>
+  </data>
+  <data name="MuunConfiguration_HeroSlotLevel_Name" xml:space="preserve">
+    <value>Total level of the hero slot</value>
+  </data>
+  <data name="MuunConfiguration_HeroSlotHeroMuunsOnly_Name" xml:space="preserve">
+    <value>Hero slot takes hero Muuns only</value>
+  </data>
 </root>

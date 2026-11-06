@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.Muuns;
 using MUnique.OpenMU.Persistence;
@@ -24,7 +25,9 @@ public static class MuunService
 {
     private static readonly ConditionalWeakTable<Player, MuunState> States = new();
 
-    private static readonly byte[] EquippedSlots = [MuunSlots.Main, MuunSlots.Sub];
+    private static readonly byte[] EquippedSlots = [MuunSlots.Main, MuunSlots.Sub, MuunSlots.Hero];
+
+    private static readonly TimeSpan MinimumCooldown = TimeSpan.FromSeconds(1);
 
     /// <summary>
     /// Determines whether the player has the Muun system: it is on and the client shows it.
@@ -113,10 +116,13 @@ public static class MuunService
     {
         var state = GetState(player);
         var plugIn = MuunFeaturePlugIn.Get(player.GameContext);
-        var options = new List<MuunActiveOption>(2);
-        var elements = new List<(AttributeDefinition Attribute, IElement Element)>(2);
+        var options = new List<MuunActiveOption>(EquippedSlots.Length);
+        var elements = new List<(AttributeDefinition Attribute, IElement Element)>(EquippedSlots.Length + 1);
+        var attackLevel = 0;
+        var attackCooldown = TimeSpan.MaxValue;
         if (plugIn is not null && player.Attributes is { } attributes && GetStorage(player, false) is { } storage)
         {
+            var configuration = plugIn.GetConfiguration();
             var now = DateTime.UtcNow;
             var totalLevel = Math.Max(1, (int)attributes[Stats.TotalLevel]);
             var map = player.CurrentMap?.MapId ?? -1;
@@ -135,13 +141,25 @@ public static class MuunService
                     }
 
                     var condition = muun.IsEvolved ? option.EvolvedCondition : option.Condition;
-                    var isActive = item.Durability > 0 && value != 0 && condition.IsMet(map, totalLevel, now);
+                    var isActive = item.Durability > 0 && value != 0 && condition.IsMet(map, totalLevel, now, item.PetExperience);
                     options.Add(new MuunActiveOption(slot, option.Type, value, isActive, addOption is not null));
-                    if (isActive && MuunEffects.GetEffect(option.Type, muun.IsEvolved) is { } effect)
+                    if (isActive && option.Type is MuunOptionType.AttackSkill or MuunOptionType.AttackSkillPvm)
+                    {
+                        attackLevel = Math.Max(attackLevel, value);
+                        var reduction = TimeSpan.FromSeconds(addOption?.GetCooldownReduction(level, muun.IsEvolved) ?? 0);
+                        var cooldown = TimeSpan.FromTicks(Math.Max(MinimumCooldown.Ticks, (configuration.AttackSkillCooldown - reduction).Ticks));
+                        attackCooldown = cooldown < attackCooldown ? cooldown : attackCooldown;
+                    }
+                    else if (isActive && MuunEffects.GetEffect(option.Type, muun.IsEvolved) is { } effect)
                     {
                         elements.Add((effect.Attribute, new SimpleElement(value * effect.Factor, AggregateType.AddRaw)));
                     }
                 }
+            }
+
+            if (state.IsRiding)
+            {
+                elements.Add((Stats.MovementSpeed, new SimpleElement(configuration.RidingMovementSpeed, AggregateType.Maximum)));
             }
         }
 
@@ -161,6 +179,8 @@ public static class MuunService
             }
 
             state.Elements = elements;
+            state.AttackSkillLevel = attackLevel;
+            state.AttackSkillCooldown = attackCooldown;
             changed = !state.Options.SequenceEqual(options);
             state.Options = options;
         }
@@ -246,6 +266,7 @@ public static class MuunService
         await player.InvokeViewPlugInAsync<IMuunViewPlugIn>(p => p.MuunActionResultAsync(MuunAction.Ride, result, MuunStorageKind.MuunInventory, MuunSlots.Main, GetMainMuun(player))).ConfigureAwait(false);
         if (result == MuunActionResult.Success)
         {
+            await RefreshAsync(player, false).ConfigureAwait(false);
             await ShowAppearanceAsync(player).ConfigureAwait(false);
         }
 
@@ -315,6 +336,87 @@ public static class MuunService
         return true;
     }
 
+    /// <summary>
+    /// Adds the play time since the last call to the equipped Muuns of the player, for the play time condition
+    /// (<see cref="Item.PetExperience"/> holds the minutes of a Muun).
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="utcNow">The current point in time (UTC).</param>
+    public static void AddPlayTime(Player player, DateTime utcNow)
+    {
+        var state = GetState(player);
+        var last = state.LastPlayTimeUtc ?? utcNow;
+        var minutes = (int)(utcNow - last).TotalMinutes;
+        if (minutes <= 0)
+        {
+            state.LastPlayTimeUtc = last;
+            return;
+        }
+
+        state.LastPlayTimeUtc = last.AddMinutes(minutes);
+        foreach (var item in GetStorage(player, false)?.Items.Where(i => MuunSlots.IsEquipped(i.ItemSlot)) ?? [])
+        {
+            item.PetExperience = (int)Math.Min(int.MaxValue, (long)item.PetExperience + minutes);
+        }
+    }
+
+    /// <summary>
+    /// Lets the attack skill of the equipped Muuns hit the nearest monster around the player, when its cooldown passed.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="utcNow">The current point in time (UTC).</param>
+    /// <returns>The monster which was hit, if any.</returns>
+    public static async ValueTask<IAttackable?> UseAttackSkillsAsync(Player player, DateTime utcNow)
+    {
+        var state = GetState(player);
+        if (state.AttackSkillLevel <= 0
+            || utcNow < state.NextAttackUtc
+            || MuunFeaturePlugIn.Get(player.GameContext) is not { } plugIn
+            || player.CurrentMap is not { } map
+            || player.IsAtSafezone())
+        {
+            return null;
+        }
+
+        var configuration = plugIn.GetConfiguration();
+        var target = map.GetAttackablesInRange(player.Position, configuration.AttackSkillRange)
+            .OfType<Monster>()
+            .Where(m => m.IsAlive && m.SummonedBy is null)
+            .MinBy(m => m.Position.EuclideanDistanceTo(player.Position));
+        if (target is null)
+        {
+            return null;
+        }
+
+        state.NextAttackUtc = utcNow + state.AttackSkillCooldown;
+        var level = state.AttackSkillLevel;
+        var damage = (uint)Math.Clamp((long)level * configuration.AttackSkillDamagePerLevel, 0, uint.MaxValue);
+        await target.ApplyBleedingDamageAsync(player, damage).ConfigureAwait(false);
+        await player.ForEachWorldObserverAsync<IMuunViewPlugIn>(p => p.ShowMuunSkillAsync(player, target, level, damage), true).ConfigureAwait(false);
+        return target;
+    }
+
+    private static MuunActionResult? CheckEquip(Player player, MuunFeaturePlugIn plugIn, Item item, byte slot)
+    {
+        var configuration = plugIn.GetConfiguration();
+        var muun = plugIn.GetMuun(item);
+        if (slot == MuunSlots.Hero
+            && ((player.Attributes?[Stats.TotalLevel] ?? 0) < configuration.HeroSlotLevel
+                || (configuration.HeroSlotHeroMuunsOnly && muun?.Kind != MuunKind.Hero)))
+        {
+            return MuunActionResult.SlotLocked;
+        }
+
+        // "You cannot equip same Muun on both slots" (muonline.webzen.com guide 61): the same Muun, or its other form.
+        var equipped = GetStorage(player, false)?.Items
+            .Where(i => i != item && i.ItemSlot != slot && MuunSlots.IsEquipped(i.ItemSlot))
+            .Select(plugIn.GetMuun)
+            .OfType<MuunDefinition>() ?? [];
+        return equipped.Any(other => other.Number == muun?.Number || other.EvolvesTo == muun?.Number || muun?.EvolvesTo == other.Number)
+            ? MuunActionResult.SameMuunEquipped
+            : null;
+    }
+
     private static MuunState GetState(Player player) => States.GetValue(player, _ => new MuunState());
 
     private static bool IsEquippedPlace(MuunStorageKind storage, byte slot) => storage == MuunStorageKind.MuunInventory && MuunSlots.IsEquipped(slot);
@@ -365,6 +467,11 @@ public static class MuunService
                 || (MuunSlots.IsEquipped(toSlot) && plugIn.GetMuun(item) is null))
             {
                 return MuunActionResult.NotAMuun;
+            }
+
+            if (MuunSlots.IsEquipped(toSlot) && CheckEquip(player, plugIn, item, toSlot) is { } refused)
+            {
+                return refused;
             }
 
             if (GetItem(player, MuunStorageKind.MuunInventory, toSlot) is not null)
@@ -666,7 +773,7 @@ public static class MuunService
     private static byte? FindFreeBagSlot(ItemStorage storage)
     {
         var used = storage.Items.Select(i => i.ItemSlot).ToHashSet();
-        for (var slot = MuunSlots.FirstBagSlot; slot < MuunSlots.Count; slot++)
+        for (var slot = MuunSlots.FirstBagSlot; slot < MuunSlots.EndOfBag; slot++)
         {
             if (!used.Contains(slot))
             {
@@ -700,5 +807,13 @@ public static class MuunService
         public IReadOnlyList<MuunActiveOption> Options { get; set; } = [];
 
         public bool IsRiding { get; set; }
+
+        public int AttackSkillLevel { get; set; }
+
+        public TimeSpan AttackSkillCooldown { get; set; } = TimeSpan.MaxValue;
+
+        public DateTime NextAttackUtc { get; set; }
+
+        public DateTime? LastPlayTimeUtc { get; set; }
     }
 }

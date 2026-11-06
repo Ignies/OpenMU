@@ -32,6 +32,10 @@ public class MuunServiceTest
     private const short Converter = 239;
     private const short WizardryStone = 240;
     private const short Branch = 411;
+    private const short AttackMuun = 4;
+    private const short RepairMuun = 8;
+    private const short PlayTimeMuun = 40;
+    private const short HeroMuun = 69;
 
     /// <summary>
     /// A Muun moved from the inventory into the main slot applies its option of its level to the owner; moved into the
@@ -283,6 +287,106 @@ public class MuunServiceTest
         Assert.That(player.Inventory!.Items, Is.EquivalentTo(new[] { muun }));
     }
 
+    /// <summary>
+    /// A Muun with an attack skill hits the nearest monster for its level times the damage per level, then waits for
+    /// its cooldown, which the additional option (kind 3) shortens by its seconds.
+    /// </summary>
+    [Test]
+    public async ValueTask AttackSkillHitsTheNearestMonsterAfterItsCooldownAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var monster = await CreateMonsterAsync(player).ConfigureAwait(false);
+        var muun = await AddToMuunInventoryAsync(player, AttackMuun, MuunSlots.Main).ConfigureAwait(false);
+        muun.Level = 3;
+        await MuunService.RefreshAsync(player, false).ConfigureAwait(false);
+        var health = monster.Health;
+        var now = DateTime.UtcNow;
+
+        var target = await MuunService.UseAttackSkillsAsync(player, now).ConfigureAwait(false);
+
+        Assert.That(target, Is.SameAs(monster));
+        Assert.That(health - monster.Health, Is.EqualTo(8 * 100), "level 3 of the skill is 8, 100 damage each");
+        Assert.That(await MuunService.UseAttackSkillsAsync(player, now.AddSeconds(7)).ConfigureAwait(false), Is.Null, "10 s cooldown minus 2 s");
+        Assert.That(await MuunService.UseAttackSkillsAsync(player, now.AddSeconds(8)).ConfigureAwait(false), Is.SameAs(monster));
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IMuunViewPlugIn>()!).Verify(v => v.ShowMuunSkillAsync(player, monster, 8, 800), Times.Exactly(2));
+    }
+
+    /// <summary>
+    /// The repair cost option lowers the repair price by its percentage, x5 while the additional option lasts.
+    /// </summary>
+    [Test]
+    public async ValueTask RepairCostOptionLowersTheRepairPriceAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var sword = new BasicModel.Item { Definition = new BasicModel.ItemDefinition { Group = 0, Number = 0, Width = 1, Height = 3, Durability = 20, Value = 1000, DropLevel = 10 }, Durability = 5 };
+        sword.Definition!.ItemSlot = new BasicModel.ItemSlotType();
+        var price = GameLogic.PlayerActions.Items.ItemRepairAction.GetRepairPrice(player, sword);
+        Assert.That(price, Is.GreaterThan(100));
+
+        await AddToMuunInventoryAsync(player, RepairMuun, MuunSlots.Sub).ConfigureAwait(false);
+
+        Assert.That(player.Attributes![Stats.ItemRepairCostDecrease], Is.EqualTo(0.05f).Within(0.0001f), "1 % x5");
+        Assert.That(GameLogic.PlayerActions.Items.ItemRepairAction.GetRepairPrice(player, sword), Is.EqualTo((long)(price * 0.95f)));
+    }
+
+    /// <summary>
+    /// The hero slot opens at its total level and takes hero Muuns only; the same Muun can't be equipped twice.
+    /// </summary>
+    [Test]
+    public async ValueTask HeroSlotOpensAtItsLevelAndTheSameMuunIsEquippedOnceAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var hero = await AddToInventoryAsync(player, HeroMuun).ConfigureAwait(false);
+        Assert.That(await MuunService.MoveAsync(player, MuunStorageKind.Inventory, hero.ItemSlot, MuunStorageKind.MuunInventory, MuunSlots.Hero).ConfigureAwait(false), Is.EqualTo(MuunActionResult.SlotLocked), "below 1750");
+
+        MuunFeaturePlugIn.Get(player.GameContext)!.Configuration!.HeroSlotLevel = 0;
+        var defense = await AddToInventoryAsync(player, DefenseMuun).ConfigureAwait(false);
+        Assert.That(await MuunService.MoveAsync(player, MuunStorageKind.Inventory, defense.ItemSlot, MuunStorageKind.MuunInventory, MuunSlots.Hero).ConfigureAwait(false), Is.EqualTo(MuunActionResult.SlotLocked), "no hero Muun");
+        Assert.That(await MuunService.MoveAsync(player, MuunStorageKind.Inventory, hero.ItemSlot, MuunStorageKind.MuunInventory, MuunSlots.Hero).ConfigureAwait(false), Is.EqualTo(MuunActionResult.Success));
+        Assert.That(MuunService.GetOptions(player).Single().Slot, Is.EqualTo(MuunSlots.Hero));
+
+        await MuunService.MoveAsync(player, MuunStorageKind.Inventory, defense.ItemSlot, MuunStorageKind.MuunInventory, MuunSlots.Main).ConfigureAwait(false);
+        var second = await AddToInventoryAsync(player, DefenseMuun).ConfigureAwait(false);
+        Assert.That(await MuunService.MoveAsync(player, MuunStorageKind.Inventory, second.ItemSlot, MuunStorageKind.MuunInventory, MuunSlots.Sub).ConfigureAwait(false), Is.EqualTo(MuunActionResult.SameMuunEquipped));
+    }
+
+    /// <summary>
+    /// Riding a mount raises the movement speed to the riding speed; dismounting gives the old speed back.
+    /// </summary>
+    [Test]
+    public async ValueTask RidingRaisesTheMovementSpeedAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        await AddToMuunInventoryAsync(player, Tibetton, MuunSlots.Main).ConfigureAwait(false);
+        var speed = player.Attributes![Stats.MovementSpeed];
+
+        await MuunService.RideAsync(player, true).ConfigureAwait(false);
+        Assert.That(player.Attributes[Stats.MovementSpeed], Is.EqualTo(15));
+
+        await MuunService.RideAsync(player, false).ConfigureAwait(false);
+        Assert.That(player.Attributes[Stats.MovementSpeed], Is.EqualTo(speed));
+    }
+
+    /// <summary>
+    /// A Muun with the play time condition counts the minutes it is equipped; after 5 hours its option applies.
+    /// </summary>
+    [Test]
+    public async ValueTask PlayTimeConditionCountsTheEquippedMinutesAsync()
+    {
+        var player = await CreatePlayerAsync().ConfigureAwait(false);
+        var muun = await AddToMuunInventoryAsync(player, PlayTimeMuun, MuunSlots.Main).ConfigureAwait(false);
+        var start = DateTime.UtcNow;
+        MuunService.AddPlayTime(player, start);
+        Assert.That(MuunService.GetOptions(player).Single().IsActive, Is.False);
+
+        MuunService.AddPlayTime(player, start.AddHours(5));
+        await MuunService.RefreshAsync(player, false).ConfigureAwait(false);
+
+        Assert.That(muun.PetExperience, Is.EqualTo(300));
+        Assert.That(MuunService.GetOptions(player).Single().IsActive, Is.True);
+        Assert.That(player.Attributes![Stats.MoneyAmountRate], Is.EqualTo(1.02f).Within(0.0001f));
+    }
+
     private static MuunConfiguration CreateConfiguration()
     {
         var always = new MuunCondition();
@@ -297,6 +401,10 @@ public class MuunServiceTest
                 new MuunDefinition { Number = PinocchioEvolved, Grade = MuunGrade.Premium, Rank = 4, OptionGroup = 43, AddOptionType = 2, AddOptionDays = 30, IsEvolved = true },
                 new MuunDefinition { Number = DefenseMuun, Rank = 2, OptionGroup = 0 },
                 new MuunDefinition { Number = Tibetton, Kind = MuunKind.Mount, Rank = 3, OptionGroup = 11 },
+                new MuunDefinition { Number = AttackMuun, Rank = 2, OptionGroup = 25, AddOptionType = 5, AddOptionDays = 30 },
+                new MuunDefinition { Number = RepairMuun, Rank = 2, OptionGroup = 38, AddOptionType = 3, AddOptionDays = 30 },
+                new MuunDefinition { Number = PlayTimeMuun, Rank = 2, OptionGroup = 37 },
+                new MuunDefinition { Number = HeroMuun, Kind = MuunKind.Hero, Rank = 4, OptionGroup = 69 },
             ],
             Options =
             [
@@ -304,8 +412,17 @@ public class MuunServiceTest
                 new MuunOptionDefinition { Group = 42, Type = MuunOptionType.MaximumAttackPower, Values = [24, 14, 16, 18, 20, 22], Condition = always, EvolvedCondition = always },
                 new MuunOptionDefinition { Group = 43, Type = MuunOptionType.MaximumAttackPowerPvp, Values = [24, 14, 16, 18, 20, 22], Condition = always, EvolvedCondition = always },
                 new MuunOptionDefinition { Group = 11, Type = MuunOptionType.AttackPowerPvp, Values = [14, 6, 8, 10, 12, 0], Condition = always, EvolvedCondition = always },
+                new MuunOptionDefinition { Group = 25, Type = MuunOptionType.AttackSkillPvm, Values = [10, 4, 6, 8, 0, 0], Condition = always, EvolvedCondition = always },
+                new MuunOptionDefinition { Group = 38, Type = MuunOptionType.RepairCost, Values = [4, 1, 2, 3, 0, 0], Condition = always, EvolvedCondition = always },
+                new MuunOptionDefinition { Group = 37, Type = MuunOptionType.Money, Values = [8, 2, 4, 6, 0, 0], Condition = new MuunCondition { Type = MuunConditionType.PlayTime, Value1 = 5 }, EvolvedCondition = always },
+                new MuunOptionDefinition { Group = 69, Type = MuunOptionType.SkillAttackPower, Values = [15, 15, 15, 15, 15, 15], Condition = always, EvolvedCondition = always },
             ],
-            AddOptions = [new MuunAddOptionDefinition { Type = 2, Kind = MuunAddOptionKind.Multiplier, Values = [20, 20, 20, 20, 20, 20] }],
+            AddOptions =
+            [
+                new MuunAddOptionDefinition { Type = 2, Kind = MuunAddOptionKind.Multiplier, Values = [20, 20, 20, 20, 20, 20] },
+                new MuunAddOptionDefinition { Type = 3, Kind = MuunAddOptionKind.Multiplier, Values = [5, 5, 5, 5, 5, 5] },
+                new MuunAddOptionDefinition { Type = 5, Kind = MuunAddOptionKind.SkillCooldownReduction, Values = [2, 2, 2, 2, 2, 2] },
+            ],
         };
     }
 
@@ -320,7 +437,7 @@ public class MuunServiceTest
     private static void AddDefinitions(Player player)
     {
         var items = player.GameContext.Configuration.Items;
-        foreach (var number in new[] { Pinocchio, PinocchioEvolved, DefenseMuun, Tibetton, Converter, WizardryStone })
+        foreach (var number in new[] { Pinocchio, PinocchioEvolved, DefenseMuun, Tibetton, Converter, WizardryStone, AttackMuun, RepairMuun, PlayTimeMuun, HeroMuun })
         {
             items.Add(new ItemDefinition { Group = Group, Number = number, Width = 1, Height = 1, Durability = number is Converter or WizardryStone ? (byte)1 : (byte)255 });
         }
@@ -369,7 +486,7 @@ public class MuunServiceTest
         definition.Attributes.Add(new BasicModel.MonsterAttribute { AttributeDefinition = Stats.MaximumHealth, Value = 1_000_000 });
         definition.Attributes.Add(new BasicModel.MonsterAttribute { AttributeDefinition = Stats.Level, Value = 1 });
         var map = player.CurrentMap!;
-        var area = new BasicModel.MonsterSpawnArea { MonsterDefinition = definition, GameMap = map.Definition, SpawnTrigger = SpawnTrigger.OnceAtEventStart, X1 = 100, Y1 = 100, X2 = 101, Y2 = 101, Quantity = 1 };
+        var area = new BasicModel.MonsterSpawnArea { MonsterDefinition = definition, GameMap = map.Definition, SpawnTrigger = SpawnTrigger.OnceAtEventStart, X1 = player.Position.X, Y1 = player.Position.Y, X2 = player.Position.X, Y2 = player.Position.Y, Quantity = 1 };
         var monster = new Monster(area, definition, map, NullDropGenerator.Instance, new BasicMonsterIntelligence(), player.GameContext.PlugInManager, player.GameContext.PathFinderPool);
         monster.Initialize();
         await map.AddAsync(monster).ConfigureAwait(false);

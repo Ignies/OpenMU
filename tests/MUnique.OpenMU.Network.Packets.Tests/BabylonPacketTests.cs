@@ -1073,6 +1073,36 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for MuunSkillUsed.
+    /// </summary>
+    [Test]
+    public void MuunSkillUsed_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 13;
+        var actualLength = MuunSkillUsedRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'PlayerId' boundary
+        Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PlayerId' exceeds packet boundary");
+        
+        // Validate field 'TargetId' boundary
+        Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'TargetId' exceeds packet boundary");
+        
+        // Validate field 'SkillLevel' boundary
+        Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SkillLevel' exceeds packet boundary");
+        
+        // Validate field 'Damage' boundary
+        Assert.That(9 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Damage' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for GremoryCaseList.
     /// </summary>
     [Test]

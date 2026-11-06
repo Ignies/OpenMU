@@ -34,6 +34,8 @@ internal class Season21MuunsInitializer
 
     private const short FirstSpawnNumber = 6820;
 
+    private static readonly TimeSpan FirstHealthDecayInterval = TimeSpan.FromMinutes(10);
+
     private readonly IContext _context;
 
     private readonly GameConfiguration _gameConfiguration;
@@ -119,10 +121,17 @@ internal class Season21MuunsInitializer
             Season21NpcSpawns.Place(this._context, this._gameConfiguration, ++number, npc.Map, npc.Npc, LocalizedString.FromResource(() => MonsterNames.Monica), npc.X, npc.Y, (Direction)npc.Direction);
         }
 
-        if (Season21PlugInConfigurations.GetOrCreate<MuunConfiguration>(this._context, this._gameConfiguration, typeof(MuunFeaturePlugIn).GUID, out var plugIn) is { Muuns.Count: 0 })
+        var configuration = Season21PlugInConfigurations.GetOrCreate<MuunConfiguration>(this._context, this._gameConfiguration, typeof(MuunFeaturePlugIn).GUID, out var plugIn);
+        if (configuration is { Muuns.Count: 0 })
         {
             plugIn.SetConfiguration(CreateConfiguration(), null);
             plugIn.IsActive = true;
+        }
+        else if (configuration is not null && configuration.HealthDecayInterval == FirstHealthDecayInterval)
+        {
+            // Version 1 wrote the designed 10 minutes; a value the operator changed stays.
+            configuration.HealthDecayInterval = new MuunConfiguration().HealthDecayInterval;
+            plugIn.SetConfiguration(configuration, null);
         }
     }
 

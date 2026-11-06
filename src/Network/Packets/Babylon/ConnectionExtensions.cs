@@ -460,7 +460,7 @@ public static class ConnectionExtensions
     /// Sends a <see cref="MuunItemMoveResponse" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="result">0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun.</param>
+    /// <param name="result">0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun, 14 the same Muun is equipped, 15 slot locked (the hero slot before the highest level, or no hero Muun).</param>
     /// <param name="fromStorage">0 the inventory, 1 the Muun inventory.</param>
     /// <param name="fromSlot">The from slot.</param>
     /// <param name="toStorage">0 the inventory, 1 the Muun inventory.</param>
@@ -563,7 +563,7 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="action">1 level up, 2 evolve, 3 charge energy, 4 restore or health changed, 5 exchange, 6 ride.</param>
-    /// <param name="result">0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun.</param>
+    /// <param name="result">0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun, 14 the same Muun is equipped, 15 slot locked (the hero slot before the highest level, or no hero Muun).</param>
     /// <param name="storage">0 the inventory, 1 the Muun inventory.</param>
     /// <param name="slot">The slot.</param>
     /// <param name="itemData">The item in the W32 item format; 0xFF when there is none.</param>
@@ -651,6 +651,40 @@ public static class ConnectionExtensions
             var length = MuunExchangeRequestRef.Length;
             var packet = new MuunExchangeRequestRef(connection.Output.GetSpan(length)[..length]);
             packet.OfferIndex = @offerIndex;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="MuunSkillUsed" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="playerId">The player id.</param>
+    /// <param name="targetId">The target id.</param>
+    /// <param name="skillLevel">The skill level.</param>
+    /// <param name="damage">The damage.</param>
+    /// <remarks>
+    /// Is sent by the server when: The Muun of a player in view hit a monster with its attack skill.
+    /// Causes reaction on client side: The client shows the attack of the Muun and the damage on the monster.
+    /// </remarks>
+    public static async ValueTask SendMuunSkillUsedAsync(this IConnection? connection, ushort @playerId, ushort @targetId, byte @skillLevel, uint @damage)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MuunSkillUsedRef.Length;
+            var packet = new MuunSkillUsedRef(connection.Output.GetSpan(length)[..length]);
+            packet.PlayerId = @playerId;
+            packet.TargetId = @targetId;
+            packet.SkillLevel = @skillLevel;
+            packet.Damage = @damage;
 
             return packet.Header.Length;
         }

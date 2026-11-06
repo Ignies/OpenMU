@@ -133,6 +133,15 @@ public class MuunBabylonPlugIn : IMuunViewPlugIn
     }
 
     /// <inheritdoc />
+    public async ValueTask ShowMuunSkillAsync(Player owner, IAttackable target, int level, uint damage)
+    {
+        if (this._player.Connection is { } connection)
+        {
+            await connection.SendMuunSkillUsedAsync(owner.GetId(this._player), target.GetId(this._player), (byte)Math.Clamp(level, 0, byte.MaxValue), damage).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask ShowMuunOptionsAsync(IReadOnlyList<MuunActiveOption> options)
     {
         if (this._player.Connection is not { } connection)

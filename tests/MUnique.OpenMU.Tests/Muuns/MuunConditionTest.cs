@@ -30,7 +30,7 @@ public class MuunConditionTest
     public void WeekdaysAreAMask(int mask, int day, bool expected)
     {
         var condition = new MuunCondition { Type = MuunConditionType.Weekdays, Value1 = mask };
-        Assert.That(condition.IsMet(0, 1, new DateTime(2026, 11, day, 10, 0, 0, DateTimeKind.Utc)), Is.EqualTo(expected));
+        Assert.That(condition.IsMet(0, 1, new DateTime(2026, 11, day, 10, 0, 0, DateTimeKind.Utc), 0), Is.EqualTo(expected));
     }
 
     /// <summary>
@@ -44,7 +44,7 @@ public class MuunConditionTest
     public void HoursCountFromOne(int hour, bool expected)
     {
         var condition = new MuunCondition { Type = MuunConditionType.Hours, Value1 = 13, Value2 = 24 };
-        Assert.That(condition.IsMet(0, 1, Wednesday.Date.AddHours(hour)), Is.EqualTo(expected));
+        Assert.That(condition.IsMet(0, 1, Wednesday.Date.AddHours(hour), 0), Is.EqualTo(expected));
     }
 
     /// <summary>
@@ -54,9 +54,43 @@ public class MuunConditionTest
     public void LevelAndMapConditions()
     {
         var level = new MuunCondition { Type = MuunConditionType.CharacterLevel, Value1 = 1, Value2 = 200 };
-        Assert.That((level.IsMet(0, 200, Wednesday), level.IsMet(0, 201, Wednesday)), Is.EqualTo((true, false)));
+        Assert.That((level.IsMet(0, 200, Wednesday, 0), level.IsMet(0, 201, Wednesday, 0)), Is.EqualTo((true, false)));
 
         var map = new MuunCondition { Type = MuunConditionType.Map, Value1 = 51 };
-        Assert.That((map.IsMet(51, 1, Wednesday), map.IsMet(0, 1, Wednesday)), Is.EqualTo((true, false)));
+        Assert.That((map.IsMet(51, 1, Wednesday, 0), map.IsMet(0, 1, Wednesday, 0)), Is.EqualTo((true, false)));
+    }
+
+    /// <summary>
+    /// The play time condition ("play the game for longer than 5 hours") is met from 300 minutes on.
+    /// </summary>
+    [Test]
+    public void PlayTimeCountsTheHoursPlayed()
+    {
+        var condition = new MuunCondition { Type = MuunConditionType.PlayTime, Value1 = 5 };
+        Assert.That((condition.IsMet(0, 1, Wednesday, 299), condition.IsMet(0, 1, Wednesday, 300)), Is.EqualTo((false, true)));
+    }
+
+    /// <summary>
+    /// The additional option of kind 3 reduces the cooldown of the attack skill and leaves the option value alone; kind
+    /// 1 multiplies it.
+    /// </summary>
+    [Test]
+    public void AdditionalOptionKinds()
+    {
+        var cooldown = new MuunAddOptionDefinition { Kind = MuunAddOptionKind.SkillCooldownReduction, Values = [3, 3, 3, 3, 3, 3] };
+        Assert.That((cooldown.Apply(4, 4, false), cooldown.GetCooldownReduction(4, false)), Is.EqualTo((4, 3)));
+        var multiplier = new MuunAddOptionDefinition { Kind = MuunAddOptionKind.Multiplier, Values = [5, 5, 5, 5, 5, 5] };
+        Assert.That((multiplier.Apply(4, 1, false), multiplier.GetCooldownReduction(1, false)), Is.EqualTo((20, 0)));
+    }
+
+    /// <summary>
+    /// The defaults of the numbers which the sources give or which are designed.
+    /// </summary>
+    [Test]
+    public void ConfigurationDefaults()
+    {
+        var configuration = new MuunConfiguration();
+        Assert.That(configuration.HealthDecayInterval, Is.EqualTo(TimeSpan.FromMinutes(40)), "guardian mount: 1 every 40 minutes");
+        Assert.That((configuration.HeroSlotLevel, configuration.RidingMovementSpeed, configuration.WizardryStoneEnergy), Is.EqualTo((1750, 15f, 120)));
     }
 }

@@ -55,13 +55,27 @@ public class MuunAddOptionDefinition
     /// <returns>The raised value.</returns>
     public int Apply(int value, int level, bool isEvolved)
     {
-        var index = isEvolved ? 0 : Math.Clamp(level, 1, MuunDefinition.HighestLevel);
-        var amount = index < this.Values.Count ? this.Values[index] : 0;
+        var amount = this.GetAmount(level, isEvolved);
         return this.Kind switch
         {
-            MuunAddOptionKind.Multiplier or MuunAddOptionKind.LowMultiplier when amount > 0 => value * amount,
+            MuunAddOptionKind.Multiplier when amount > 0 => value * amount,
             MuunAddOptionKind.Bonus => value + amount,
             _ => value,
         };
+    }
+
+    /// <summary>
+    /// Gets the seconds by which the additional option reduces the cooldown of the attack skill of the Muun.
+    /// </summary>
+    /// <param name="level">The level of the Muun.</param>
+    /// <param name="isEvolved">If set to <c>true</c>, the Muun is evolved.</param>
+    /// <returns>The seconds; 0 for another kind.</returns>
+    public int GetCooldownReduction(int level, bool isEvolved)
+        => this.Kind == MuunAddOptionKind.SkillCooldownReduction ? Math.Max(0, this.GetAmount(level, isEvolved)) : 0;
+
+    private int GetAmount(int level, bool isEvolved)
+    {
+        var index = isEvolved ? 0 : Math.Clamp(level, 1, MuunDefinition.HighestLevel);
+        return index < this.Values.Count ? this.Values[index] : 0;
     }
 }

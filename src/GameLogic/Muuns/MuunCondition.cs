@@ -14,6 +14,8 @@ public class MuunCondition
     /// </summary>
     internal const int EveryDay = -1;
 
+    private const int MinutesPerHour = 60;
+
     /// <summary>
     /// Gets or sets the type.
     /// </summary>
@@ -38,8 +40,9 @@ public class MuunCondition
     /// <param name="mapNumber">The number of the map of the character.</param>
     /// <param name="totalLevel">The total level of the character (level and master level).</param>
     /// <param name="utcNow">The current point in time (UTC).</param>
+    /// <param name="playedMinutes">The minutes for which the Muun was equipped while its owner played.</param>
     /// <returns><c>true</c>, if the option applies.</returns>
-    public bool IsMet(int mapNumber, int totalLevel, DateTime utcNow)
+    public bool IsMet(int mapNumber, int totalLevel, DateTime utcNow, int playedMinutes)
     {
         switch (this.Type)
         {
@@ -50,6 +53,8 @@ public class MuunCondition
             case MuunConditionType.Hours:
                 var hour = utcNow.Hour + 1;
                 return this.Value1 < 0 || (hour >= this.Value1 && (this.Value2 < 0 || hour <= this.Value2));
+            case MuunConditionType.PlayTime:
+                return this.Value1 <= 0 || playedMinutes >= this.Value1 * MinutesPerHour;
             case MuunConditionType.Weekdays:
                 return this.Value1 == EveryDay || (this.Value1 & (1 << (6 - (int)utcNow.DayOfWeek))) != 0;
             default:

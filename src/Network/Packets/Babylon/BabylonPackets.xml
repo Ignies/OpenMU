@@ -996,7 +996,7 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>Result</Name>
-          <Description>0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun.</Description>
+          <Description>0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun, 14 the same Muun is equipped, 15 slot locked (the hero slot before the highest level, or no hero Muun).</Description>
         </Field>
         <Field>
           <Index>5</Index>
@@ -1107,7 +1107,7 @@
           <Index>5</Index>
           <Type>Byte</Type>
           <Name>Result</Name>
-          <Description>0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun.</Description>
+          <Description>0 done, 1 off, 2 no item, 3 wrong material, 4 highest level, 5 level too low, 6 no evolution, 7 not enough items, 8 not at the exchange NPC, 9 no free slot, 10 riding not allowed here, 11 no mount, 12 slot occupied, 13 not a Muun, 14 the same Muun is equipped, 15 slot locked (the hero slot before the highest level, or no hero Muun).</Description>
         </Field>
         <Field>
           <Index>6</Index>
@@ -1228,6 +1228,38 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>OfferIndex</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>5A</SubCode>
+      <Name>MuunSkillUsed</Name>
+      <Length>13</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The Muun of a player in view hit a monster with its attack skill.</SentWhen>
+      <CausedReaction>The client shows the attack of the Muun and the damage on the monster.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>PlayerId</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>TargetId</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>SkillLevel</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Damage</Name>
         </Field>
       </Fields>
     </Packet>

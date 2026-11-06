@@ -25,7 +25,8 @@ public enum MuunAddOptionKind : byte
     Bonus = 2,
 
     /// <summary>
-    /// It multiplies the value of the option, by 2 or 3 in the data.
+    /// It reduces the cooldown of the attack skill of the Muun by its value in seconds ("skill cooldown reduced by 2 / 3
+    /// for the first 30 days", muonlinefanz.com/guide/items/muun); the data has it only on attack skill Muuns.
     /// </summary>
-    LowMultiplier = 3,
+    SkillCooldownReduction = 3,
 }

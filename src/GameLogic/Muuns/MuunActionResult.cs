@@ -78,4 +78,14 @@ public enum MuunActionResult : byte
     /// Only a Muun can be equipped, and only Muun items go into the Muun inventory.
     /// </summary>
     NotAMuun = 13,
+
+    /// <summary>
+    /// The same Muun is equipped in another slot.
+    /// </summary>
+    SameMuunEquipped = 14,
+
+    /// <summary>
+    /// The slot isn't open yet (the hero slot, before the highest level) or takes no such Muun.
+    /// </summary>
+    SlotLocked = 15,
 }

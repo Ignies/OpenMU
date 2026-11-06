@@ -33,7 +33,14 @@ public class AddSeason21MuunsUpdatePlugIn : UpdatePlugInBase
     public override bool RunsOnNewDatabase => true;
 
     /// <inheritdoc />
+    /// <remarks>Version 2: the health decay of 40 minutes of the sources instead of the designed 10.</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 11, 06, 20, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 06, 22, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(ActivateSeason21WideItemsUpdatePlugIn).GUID];

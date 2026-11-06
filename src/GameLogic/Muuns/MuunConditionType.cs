@@ -35,7 +35,7 @@ public enum MuunConditionType : byte
     Weekdays = 4,
 
     /// <summary>
-    /// By the hours played; applies always, the play time isn't counted (designed).
+    /// Once the Muun was equipped for the hours of the first value while its owner played ("play the game for longer than 5 hours", muonlinefanz.com/guide/items/muun; counted while connected, muonline.webzen.com guide 60).
     /// </summary>
     PlayTime = 7,
 }

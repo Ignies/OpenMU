@@ -79,6 +79,32 @@ internal class Season21MuunsDataTest
         Assert.That(update.DependsOn.Select(d => d.Key), Does.Contain(new ActivateSeason21WideItemsUpdatePlugIn().Key));
     }
 
+    /// <summary>
+    /// Version 2 replaces the designed health decay of version 1 (10 minutes) by the 40 minutes of the sources, and keeps a
+    /// value the operator chose.
+    /// </summary>
+    [Test]
+    public async Task MuunsUpdateVersion2SetsTheHealthDecayOfTheSourcesAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+        var update = new AddSeason21MuunsUpdatePlugIn();
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var plugIn = gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(MuunFeaturePlugIn).GUID);
+        var version1 = plugIn.GetConfiguration<MuunConfiguration>(new IdIgnoringReferenceHandler())!;
+        version1.HealthDecayInterval = TimeSpan.FromMinutes(10);
+        plugIn.SetConfiguration(version1, null);
+
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.That(update.Version, Is.EqualTo(2));
+        Assert.That(plugIn.GetConfiguration<MuunConfiguration>(new IdIgnoringReferenceHandler())!.HealthDecayInterval, Is.EqualTo(TimeSpan.FromMinutes(40)));
+
+        var custom = plugIn.GetConfiguration<MuunConfiguration>(new IdIgnoringReferenceHandler())!;
+        custom.HealthDecayInterval = TimeSpan.FromMinutes(25);
+        plugIn.SetConfiguration(custom, null);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.That(plugIn.GetConfiguration<MuunConfiguration>(new IdIgnoringReferenceHandler())!.HealthDecayInterval, Is.EqualTo(TimeSpan.FromMinutes(25)));
+    }
+
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateAsync()
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
