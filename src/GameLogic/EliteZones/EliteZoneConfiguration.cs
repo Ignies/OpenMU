@@ -25,4 +25,28 @@ public class EliteZoneConfiguration
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EliteZoneConfiguration_Zones_Name))]
     public List<EliteZoneDefinition> Zones { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the debuffs the elites of each element put on the characters they hit.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EliteZoneConfiguration_Debuffs_Name))]
+    public List<EliteDebuff> Debuffs { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the weekly drop limits per character.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EliteZoneConfiguration_DropLimits_Name))]
+    public List<EliteDropLimit> DropLimits { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the day on which the weekly limits start again (S21Emu <c>DayOfWeek="2"</c>, Tuesday, the maintenance day).
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EliteZoneConfiguration_WeekStartsOn_Name))]
+    public DayOfWeek WeekStartsOn { get; set; } = DayOfWeek.Tuesday;
+
+    /// <summary>
+    /// Gets or sets the file which keeps the weekly drop counts over a restart, relative to the server directory; empty for none.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EliteZoneConfiguration_StateFile_Name))]
+    public string StateFile { get; set; } = "state/elite_drops.json";
 }
