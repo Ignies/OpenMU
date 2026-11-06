@@ -41,17 +41,34 @@ The classes are added by the optional update `AddSeason21ClassesUpdatePlugIn`
 
 - The fourth and fifth evolution of each Season 6 class use the formulas of its third and may use its items and skills.
 - The nine new classes take base stats, health, mana and points per level from the S21Emu data
-  (`Character/DefaultClassInfo.txt`); their damage, defense, rate and speed formulas come from the Season 6 class of the
-  same kind (`Season21ClassArchetype`), as the S21Emu data keeps those in its binary. The Crusader row is marked
-  unfinished in the source (its four growth values equal the dark knight's).
+  (`Character/DefaultClassInfo.txt`) and their damage, defense, rates, speeds, ability and skill multiplier from the
+  S21Emu character calculation (`Data/Scripts/LuaCalc/Character/Calculations`), reimplemented as attribute relationships
+  (`Season21ClassFormulas.cs`). The skill multiplier is the rate of the general physical skills, at most 500 %; casters
+  keep 1 because one OpenMU multiplier covers their spells too. What the calculation leaves out (fenrir damage, ability
+  recovery, the wizardry bonuses of items) comes from the Season 6 class of the same kind (`Season21ClassArchetype`).
+  Version 2 of the update replaces the formulas which version 1 took from Season 6 classes; a run of the current
+  version keeps the operator's formulas.
+- Crusader: the source marks its four growth values (health and mana per level, per vitality, per energy) as not done
+  and they equal the dark knight's; no other source has them, so they stay as written and are the operator's setting
+  (the health and mana relationships of the crusader classes in the admin panel). Its formulas come complete from the
+  calculation above.
 - Every first evolution can get created without a level (S21Emu `CreateType = 0`). An operator who sets
   `LevelRequirementByCreation` on a class without a Season 6 unlock flag gets it checked by the server
   (`CreateCharacterAction`): another character of the account has the level, or the account has unlocked the class.
 
+## Stat specialization (`StatsSpecializationPlugIn`)
+
+S21Emu `Character/StatsSpecialize.txt` gives each class one to three rows: a stat (strength, agility, energy) raises
+an option (attack power, attack rate, PvP attack rate, defense, defense rate, PvP defense rate, wizardry or curse
+damage) by a value per stat section (1500 / 2000 / 65535 for most, 10 / 30 / 45). The source has no curve; the plugin
+reads a row literally: the value of the first section whose upper stat is not below the stat is the percent, applied as
+a factor on the option's attributes (`Multiplicate`, so it follows the stat). Off by default (feature `stats_specialize`);
+the whole table is its configuration, so an operator who wants no bonus below 1500 adds a 0 % section first.
+
 ## Seams for later tracks
+
 
 - Skills (S1, S2): a class gets its skills through `Skill.QualifiedCharacters`, the start skills of S21Emu
   `Character/CharacterSkillInit.xml` through the character creation plugins.
-- Stat specialization (S21Emu `Character/StatsSpecialize.txt`) is open: the data has the thresholds, not the curve.
 - Evolution quests (Q) call `EvolveCharacterAction.TryEvolve(player, true)`.
 - Trees (T) read `CharacterClass.GetEvolution()` for the enhancement tree of the fourth evolution.

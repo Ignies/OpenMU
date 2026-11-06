@@ -8499,5 +8499,86 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("PremiumPassTicketConsumeHandlerPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stat specialization (Season 21).
+        /// </summary>
+        public static string StatsSpecializationPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StatsSpecializationPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A stat of a class raises attack power, attack or defense rates, defense, wizardry or curse damage by the percent of the section the stat is in, as the Season 21 data lists them. Off by default; the source gives no curve, so each section reads as: up to this stat, this percent..
+        /// </summary>
+        public static string StatsSpecializationPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StatsSpecializationPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Specializations.
+        /// </summary>
+        public static string StatsSpecializationConfiguration_Specializations_Name {
+            get {
+                return ResourceManager.GetString("StatsSpecializationConfiguration_Specializations_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Base class.
+        /// </summary>
+        public static string StatsSpecialization_BaseClass_Name {
+            get {
+                return ResourceManager.GetString("StatsSpecialization_BaseClass_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stat.
+        /// </summary>
+        public static string StatsSpecialization_Stat_Name {
+            get {
+                return ResourceManager.GetString("StatsSpecialization_Stat_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Raised option.
+        /// </summary>
+        public static string StatsSpecialization_Option_Name {
+            get {
+                return ResourceManager.GetString("StatsSpecialization_Option_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sections.
+        /// </summary>
+        public static string StatsSpecialization_Sections_Name {
+            get {
+                return ResourceManager.GetString("StatsSpecialization_Sections_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Up to stat.
+        /// </summary>
+        public static string StatsSpecializationSection_UpToStat_Name {
+            get {
+                return ResourceManager.GetString("StatsSpecializationSection_UpToStat_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Percent.
+        /// </summary>
+        public static string StatsSpecializationSection_Percent_Name {
+            get {
+                return ResourceManager.GetString("StatsSpecializationSection_Percent_Name", resourceCulture);
+            }
+        }
     }
 }

@@ -55,7 +55,7 @@ Rules:
 | `wire_w32` | The W32 item format for the Babylon client (section "W32") |
 | `class_codes` | The one-byte class code of the Babylon packets (section "Class code"); numbers and helpers in `src/GameLogic/Classes` |
 | `s21_items_all` | Every item of the Season 21 data (update "Add every item of Season 21"); what the Season 6 item format can't carry is defined but inactive |
-| `classes_s21` | The nine classes of Season 21 with all their evolutions (update "Add the classes of Season 21") |
+| `classes_s21` | The nine classes of Season 21 with all their evolutions and the stat formulas of the S21Emu character calculation (update "Add the classes of Season 21", version 2) |
 | `evolutions_45` | The fourth and fifth evolution of the Season 6 classes and their level rules per progression mode |
 | `s21_skills` | The skills of Season 21: the nine new classes, the fourth and fifth evolution skills, the master tree nodes Season 21 adds, the books (update "Add the skills of Season 21") |
 | `enhance_tree` | The skill enhancement tree of the fourth evolution and its points per progression mode (`src/GameLogic/EnhanceTree`) |
@@ -93,6 +93,7 @@ Rules:
 | `imperial_guardian_s18` | The Imperial Guardian rework of Season 18: from total level 1000, artifact rewards at the completion (update "Apply the Imperial Guardian rework of Season 18") |
 | `crywolf_s21` | The Crywolf renewal of Season 21: the army takes the element of the week, Balgass at 6:40, the rewards into the gremory case, the Season 21 timings (update "Apply the Crywolf renewal of Season 21") |
 | `battle_pass` | The season pass (MU Pass): the monthly seasons of the data repeated every year, 20 levels, 25 daily missions and one special mission (their kind set by the operator), the free, gold and premium pass with their rewards (buffs until the season ends, items into the gremory case), the Exp, Gold and Premium Pass Tickets (update "Add the season pass of Season 21", plugin "Season pass (Season 21)", `src/GameLogic/SeasonPass`) |
+| `stats_specialize` | The stat specialization of Season 21: a stat of a class raises an option by the percent of its section (S21Emu `Character/StatsSpecialize.txt`; plugin "Stat specialization (Season 21)", off by default, `src/GameLogic/Classes`). No packet: the raised values reach the client through the Season 6 stat packets |
 
 ## Balance
 

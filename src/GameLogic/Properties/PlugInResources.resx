@@ -2988,4 +2988,31 @@
   <data name="PremiumPassTicketConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Unlocks the premium pass of the running season for a character with the gold pass and uses the ticket up.</value>
   </data>
+  <data name="StatsSpecializationPlugIn_Name" xml:space="preserve">
+    <value>Stat specialization (Season 21)</value>
+  </data>
+  <data name="StatsSpecializationPlugIn_Description" xml:space="preserve">
+    <value>A stat of a class raises attack power, attack or defense rates, defense, wizardry or curse damage by the percent of the section the stat is in, as the Season 21 data lists them. Off by default; the source gives no curve, so each section reads as: up to this stat, this percent.</value>
+  </data>
+  <data name="StatsSpecializationConfiguration_Specializations_Name" xml:space="preserve">
+    <value>Specializations</value>
+  </data>
+  <data name="StatsSpecialization_BaseClass_Name" xml:space="preserve">
+    <value>Base class</value>
+  </data>
+  <data name="StatsSpecialization_Stat_Name" xml:space="preserve">
+    <value>Stat</value>
+  </data>
+  <data name="StatsSpecialization_Option_Name" xml:space="preserve">
+    <value>Raised option</value>
+  </data>
+  <data name="StatsSpecialization_Sections_Name" xml:space="preserve">
+    <value>Sections</value>
+  </data>
+  <data name="StatsSpecializationSection_UpToStat_Name" xml:space="preserve">
+    <value>Up to stat</value>
+  </data>
+  <data name="StatsSpecializationSection_Percent_Name" xml:space="preserve">
+    <value>Percent</value>
+  </data>
 </root>

@@ -82,6 +82,7 @@ public static class ForkInfo
         "imperial_guardian_s18",
         "crywolf_s21",
         "battle_pass",
+        "stats_specialize",
     ];
 
     /// <summary>
