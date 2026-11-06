@@ -33,11 +33,11 @@ public class AddSeason21ElementsUpdatePlugIn : UpdatePlugInBase
     public override bool IsMandatory => false;
 
     /// <inheritdoc />
-    /// <remarks>Version 2: the pentagram options, errtel sets, radiance effects, earring values and enhancement.</remarks>
-    public override int Version => 2;
+    /// <remarks>Version 2: the pentagram options, errtel sets, radiance effects, earring values and enhancement. Version 3: the elemental stats of the classes.</remarks>
+    public override int Version => 3;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 07, 6, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 07, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override bool RunsOnNewDatabase => true;

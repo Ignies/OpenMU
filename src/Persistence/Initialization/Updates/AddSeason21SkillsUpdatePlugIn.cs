@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using MUnique.OpenMU.GameLogic.EnhanceTree;
+using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 using MUnique.OpenMU.PlugIns;
 
@@ -17,7 +18,8 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 /// <remarks>
 /// Existing skills keep every value of the operator; they only get the classes of Season 21 the data names. An existing
-/// configuration of the skill enhancement tree is kept. Fork feature ids <c>s21_skills</c> and <c>enhance_tree</c>.
+/// configuration of the skill enhancement tree is kept. Version 2 adds the damage rates of single skills
+/// (<see cref="Season21SkillRates"/>) to the skills which have no final multiplier. Fork feature ids <c>s21_skills</c> and <c>enhance_tree</c>.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(Properties.PlugInResources.AddSeason21SkillsUpdatePlugIn_Name), Description = nameof(Properties.PlugInResources.AddSeason21SkillsUpdatePlugIn_Description), ResourceType = typeof(Properties.PlugInResources))]
@@ -43,12 +45,25 @@ public class AddSeason21SkillsUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 06, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 07, 12, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21ClassesUpdatePlugIn).GUID, typeof(AddSeason21ItemCatalogUpdatePlugIn).GUID];
 
     /// <inheritdoc />
-    protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
+    protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
     {
         new Season21SkillsInitializer(context, gameConfiguration).Initialize();
+        if (installedVersion is null or < 2)
+        {
+            foreach (var skill in gameConfiguration.Skills)
+            {
+                Season21SkillRates.AddTo(context, gameConfiguration, skill);
+            }
+        }
 
         var typeId = typeof(EnhanceTreeFeaturePlugIn).GUID;
         var plugIn = gameConfiguration.PlugInConfigurations.FirstOrDefault(c => c.TypeId == typeId);
@@ -78,5 +93,11 @@ public class AddSeason21SkillsUpdatePlugIn : UpdatePlugInBase
         }
 
         return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
+    {
+        return this.ApplyAsync(context, gameConfiguration, null);
     }
 }

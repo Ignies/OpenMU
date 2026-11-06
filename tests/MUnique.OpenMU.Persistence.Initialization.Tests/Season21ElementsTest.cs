@@ -161,7 +161,7 @@ public class Season21ElementsTest
     [Test]
     public void Version2AddsOptionsSetsAndTheEarringEnhancement()
     {
-        Assert.That(new AddSeason21ElementsUpdatePlugIn().Version, Is.EqualTo(2));
+        Assert.That(new AddSeason21ElementsUpdatePlugIn().Version, Is.GreaterThanOrEqualTo(2));
         var ironShield = this.Item(203);
         var option = ironShield.PossibleItemOptions.SelectMany(o => o.PossibleOptions).Single(o => o.OptionType == Season21ItemOptionTypes.PentagramOption);
         Assert.That((option.Number, option.PowerUpDefinition!.TargetAttribute), Is.EqualTo(((short)3, Stats.ElementDefenseIncrease)));

@@ -17,7 +17,8 @@ using MUnique.OpenMU.PlugIns;
 /// <remarks>
 /// Classes which exist are kept with every change of the operator; only a missing class or a missing link of an
 /// evolution chain is added. Version 2 replaces the formulas of the nine new classes, which version 1 took from Season 6
-/// classes, with those of the S21Emu character calculation (<see cref="Season21ClassFormulas"/>). Fork feature ids <c>class_codes</c>, <c>classes_s21</c> and <c>evolutions_45</c>.
+/// classes, with those of the S21Emu character calculation (<see cref="Season21ClassFormulas"/>). Version 3 adds the skill
+/// rates, the shield recovery point and the ability recovery of 3 % of that calculation where a class misses them. Fork feature ids <c>class_codes</c>, <c>classes_s21</c> and <c>evolutions_45</c>.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(Properties.PlugInResources.AddSeason21ClassesUpdatePlugIn_Name), Description = nameof(Properties.PlugInResources.AddSeason21ClassesUpdatePlugIn_Description), ResourceType = typeof(Properties.PlugInResources))]
@@ -43,10 +44,10 @@ public class AddSeason21ClassesUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 05, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    public override int Version => 2;
+    public override int Version => 3;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 06, 12, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 07, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
@@ -57,6 +58,14 @@ public class AddSeason21ClassesUpdatePlugIn : UpdatePlugInBase
             foreach (var characterClass in gameConfiguration.CharacterClasses)
             {
                 initialization.ReplaceSeason21Formulas(characterClass);
+            }
+        }
+
+        if (installedVersion < 3)
+        {
+            foreach (var characterClass in gameConfiguration.CharacterClasses)
+            {
+                initialization.AddSeason21SkillRatesAndRecovery(characterClass);
             }
         }
 

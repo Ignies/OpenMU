@@ -11,6 +11,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Elements;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
+using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -212,11 +213,18 @@ internal class Season21ElementsInitializer
 
     /// <summary>
     /// Adds the element stats, the pentagrams with their slot, element and sockets, the errtels with their element
-    /// and rank options, the element columns of the monsters and the configuration of the <see cref="ElementsFeaturePlugIn"/>.
+    /// and rank options, the element columns of the monsters, the elemental stats of every class
+    /// (<see cref="Season21ElementalFormulas"/>) and the configuration of the <see cref="ElementsFeaturePlugIn"/>.
     /// </summary>
     public void AddElements()
     {
         this.EnsureAttributes(ElementStats);
+        var classes = new CharacterClassInitialization(this._context, this._gameConfiguration);
+        foreach (var characterClass in this._gameConfiguration.CharacterClasses)
+        {
+            classes.AddSeason21ElementalFormulas(characterClass);
+        }
+
         var data = Season21ElementData.Instance;
         var slot = this.GetOrCreateSlotType(InventoryConstants.PentagramSlot, "Pentagram");
         var elements = this.GetOrCreateDefinition(ElementOptionsNumber, "Element", 1, 1, definition =>

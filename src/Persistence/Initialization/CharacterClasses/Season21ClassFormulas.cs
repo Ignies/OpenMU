@@ -24,6 +24,9 @@ using MUnique.OpenMU.GameLogic.Classes;
 /// <param name="MagicSpeed">The magic speed.</param>
 /// <param name="Ability">The maximum ability (AG).</param>
 /// <param name="SkillMultiplier">The skill damage multiplier (2 = 200 %), at most <see cref="MaximumSkillMultiplier"/>.</param>
+/// <param name="GeneralSkillRate">The rate of a caster's general skills, see <see cref="Season21SkillRates.GeneralRateId"/>.</param>
+/// <param name="FirstSkillRate">The first own skill rate, see <see cref="Season21SkillRates.FirstRateId"/>.</param>
+/// <param name="SecondSkillRate">The second own skill rate, see <see cref="Season21SkillRates.SecondRateId"/>.</param>
 public sealed record Season21ClassFormulas(
     Season21StatFactors MinimumPhysical,
     Season21StatFactors MaximumPhysical,
@@ -37,7 +40,10 @@ public sealed record Season21ClassFormulas(
     Season21StatFactors AttackSpeed,
     Season21StatFactors MagicSpeed,
     Season21StatFactors Ability,
-    Season21StatFactors SkillMultiplier)
+    Season21StatFactors SkillMultiplier,
+    Season21StatFactors GeneralSkillRate = default,
+    Season21StatFactors FirstSkillRate = default,
+    Season21StatFactors SecondSkillRate = default)
 {
     /// <summary>
     /// The highest skill damage multiplier, 500 % in the source.
@@ -57,8 +63,8 @@ public sealed record Season21ClassFormulas(
     /// </summary>
     /// <remarks>
     /// The skill multiplier is the rate of the general physical skills of the source. Casters keep 1: OpenMU has one
-    /// multiplier for every skill of a class, and their spells don't get the rate of the physical skills; the rates of
-    /// single skills (rune wizard, grow lancer) belong to the skill data.
+    /// multiplier for every skill of a class, and their spells don't get the rate of the physical skills. The skills with
+    /// a rate of their own take one of the three skill rates (<see cref="Season21SkillRates"/>).
     /// </remarks>
     public static IReadOnlyDictionary<BaseClassCode, Season21ClassFormulas> Classes { get; } = new Dictionary<BaseClassCode, Season21ClassFormulas>
     {
@@ -75,7 +81,9 @@ public sealed record Season21ClassFormulas(
             new(Agility: 1.0f / 20),
             new(Agility: 1.0f / 20),
             FighterBattlePoints,
-            new(Constant: 2)),
+            new(Constant: 2),
+            FirstSkillRate: new(Strength: 1.0f / 1000, Constant: 1),
+            SecondSkillRate: new(Agility: 1.0f / 1000, Constant: 1)),
         [BaseClassCode.RuneWizard] = new(
             new(1.0f / 6),
             new(1.0f / 4),
@@ -89,7 +97,9 @@ public sealed record Season21ClassFormulas(
             new(Agility: 1.0f / 20),
             new(Agility: 1.0f / 10),
             WizardBattlePoints,
-            new(Constant: 1)),
+            new(Constant: 1),
+            GeneralSkillRate: new(Constant: 2),
+            FirstSkillRate: new(Energy: 1.0f / 4000, Constant: 1.7f)),
         [BaseClassCode.Slayer] = new(
             new(1.0f / 9, 1.0f / 20),
             new(1.0f / 5, 1.0f / 14),
@@ -117,7 +127,8 @@ public sealed record Season21ClassFormulas(
             new(Agility: 1.0f / 20),
             new(Agility: 1.0f / 10),
             WizardBattlePoints,
-            new(Constant: 1)),
+            new(Constant: 1),
+            GeneralSkillRate: new(Constant: 2)),
         [BaseClassCode.LightWizard] = new(
             new(1.0f / 8),
             new(1.0f / 4),
@@ -131,7 +142,8 @@ public sealed record Season21ClassFormulas(
             new(Agility: 1.0f / 4),
             new(Agility: 1.0f / 10),
             WizardBattlePoints,
-            new(Constant: 1)),
+            new(Constant: 1),
+            GeneralSkillRate: new(Energy: 1.0f / 5000, Constant: 2)),
         [BaseClassCode.LemuriaMage] = new(
             new(1.0f / 8),
             new(1.0f / 4),
@@ -145,7 +157,8 @@ public sealed record Season21ClassFormulas(
             new(Agility: 1.0f / 4),
             new(Agility: 1.0f / 10),
             WizardBattlePoints,
-            new(Constant: 1)),
+            new(Constant: 1),
+            GeneralSkillRate: new(Energy: 1.0f / 10000, Constant: 1.4f)),
         [BaseClassCode.IllusionKnight] = new(
             new(1.0f / 11, 1.0f / 9),
             new(1.0f / 9, 1.0f / 6),
@@ -173,7 +186,8 @@ public sealed record Season21ClassFormulas(
             new(Agility: 1.0f / 10),
             new(Agility: 1.0f / 15),
             WizardBattlePoints,
-            new(Constant: 1)),
+            new(Constant: 1),
+            GeneralSkillRate: new(Constant: 2)),
         [BaseClassCode.Crusader] = new(
             new(1.0f / 6),
             new(1.0f / 4),

@@ -17,6 +17,16 @@ using MUnique.OpenMU.Persistence.Initialization.Properties;
 /// </summary>
 internal partial class CharacterClassInitialization
 {
+    /// <summary>
+    /// The ability recovery of AutoRecuperation.lua: 3 % of the maximum, 5 % for the dark knight only.
+    /// </summary>
+    private const float Season21AbilityRecovery = 0.03f;
+
+    /// <summary>
+    /// The ability recovery which version 2 of the classes update gave the knights (grow lancer, crusader).
+    /// </summary>
+    private const float KnightAbilityRecoveryOfVersion2 = 0.05f;
+
     private static readonly Guid SkillRateAttributeId = new("6E1B5C2A-8F43-4D7E-9A21-3C5D7B9E0F14");
 
     private static readonly HashSet<AttributeDefinition?> FormulaInputs =
@@ -76,6 +86,64 @@ internal partial class CharacterClassInitialization
         }
 
         this.AddSeason21Formulas(characterClass, formulas);
+    }
+
+    /// <summary>
+    /// Adds to a class of Season 21 what the S21Emu calculation defines besides the stat formulas, where the class doesn't
+    /// have it yet: the skill rates (<see cref="Season21SkillRates"/>), the shield point of each shield recovery and an
+    /// ability recovery of 3 % instead of the 5 % which version 2 gave the knights (AutoRecuperation.lua).
+    /// </summary>
+    /// <param name="characterClass">The class of Season 21.</param>
+    public void AddSeason21SkillRatesAndRecovery(CharacterClass characterClass)
+    {
+        if (ClassCodes.GetBaseClass(characterClass.Number) is not { } baseClass
+            || !Season21ClassFormulas.Classes.TryGetValue(baseClass, out var formulas))
+        {
+            return;
+        }
+
+        this.AddSkillRate(characterClass, Season21SkillRates.GeneralRateId, formulas.GeneralSkillRate);
+        this.AddSkillRate(characterClass, Season21SkillRates.FirstRateId, formulas.FirstSkillRate);
+        this.AddSkillRate(characterClass, Season21SkillRates.SecondRateId, formulas.SecondSkillRate);
+
+        if (characterClass.AttributeCombinations.Any(r => r.TargetAttribute == Stats.MaximumShield)
+            && characterClass.BaseAttributeValues.All(v => v.Definition != Stats.ShieldRecoveryAbsolute))
+        {
+            characterClass.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.ShieldRecoveryAbsolute));
+        }
+
+        if (characterClass.BaseAttributeValues.FirstOrDefault(v => v.Definition == Stats.AbilityRecoveryMultiplier && Math.Abs(v.Value - KnightAbilityRecoveryOfVersion2) < 0.0001f) is { } knightRecovery)
+        {
+            characterClass.BaseAttributeValues.Remove(knightRecovery);
+            characterClass.BaseAttributeValues.Add(this.CreateConstValueAttribute(Season21AbilityRecovery, Stats.AbilityRecoveryMultiplier));
+        }
+    }
+
+    /// <summary>
+    /// Adds the elemental stats of <see cref="Season21ElementalFormulas"/> to a class, each one the class doesn't have yet.
+    /// </summary>
+    /// <param name="characterClass">The class, of Season 6 or Season 21.</param>
+    public void AddSeason21ElementalFormulas(CharacterClass characterClass)
+    {
+        if (ClassCodes.GetBaseClass(characterClass.Number) is not { } baseClass
+            || !Season21ElementalFormulas.Classes.TryGetValue(baseClass, out var formulas))
+        {
+            return;
+        }
+
+        Add(Stats.ElementDefense, formulas.Defense);
+        Add(Stats.ElementDamageMin, formulas.DamageMin);
+        Add(Stats.ElementDamageMax, formulas.DamageMax);
+        Add(Stats.ElementAttackRate, formulas.AttackRate);
+        Add(Stats.ElementDefenseRate, formulas.DefenseRate);
+
+        void Add(AttributeDefinition target, Season21StatFactors factors)
+        {
+            if (characterClass.AttributeCombinations.All(r => r.TargetAttribute != target))
+            {
+                this.AddFactors(characterClass, target, factors);
+            }
+        }
     }
 
     private static LocalizedString GetClassName(byte number)
@@ -201,6 +269,12 @@ internal partial class CharacterClassInitialization
         this.AddArchetypeAttributes(result, info.Archetype);
 
         this.AddShield(result);
+        this.AddSeason21SkillRatesAndRecovery(result);
+        if (this.GameConfiguration.Attributes.Any(a => a.Id == Stats.ElementDefense.Id))
+        {
+            this.AddSeason21ElementalFormulas(result);
+        }
+
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(MovementSpeedConstants.RunningGearMovementSpeed, Stats.MovementSpeed, AggregateType.Maximum));
         result.BaseAttributeValues.Add(this.CreateConstValueAttribute(MovementSpeedConstants.RunningGearMovementSpeed, Stats.MovementSpeedUnderwater, AggregateType.Maximum));
         this.AddCommonBaseAttributeValues(result.BaseAttributeValues, isMaster);
@@ -282,6 +356,23 @@ internal partial class CharacterClassInitialization
         }
     }
 
+    private void AddSkillRate(CharacterClass characterClass, Guid id, Season21StatFactors factors)
+    {
+        if (factors == default)
+        {
+            return;
+        }
+
+        var attribute = Season21SkillRates.GetAttribute(this.Context, this.GameConfiguration, id);
+        if (characterClass.AttributeCombinations.Any(r => r.TargetAttribute == attribute)
+            || characterClass.BaseAttributeValues.Any(v => v.Definition == attribute))
+        {
+            return;
+        }
+
+        this.AddFactors(characterClass, attribute, factors);
+    }
+
     private AttributeDefinition GetSkillRateAttribute()
     {
         if (this.GameConfiguration.Attributes.FirstOrDefault(a => a.Id == SkillRateAttributeId) is { } existing)
@@ -295,8 +386,8 @@ internal partial class CharacterClassInitialization
     }
 
     /// <summary>
-    /// Adds what the S21Emu calculation doesn't define, from the Season 6 class of the same kind: the fenrir damage, the
-    /// ability recovery and, for a caster, the wizardry bonuses of items and buffs.
+    /// Adds what the S21Emu calculation doesn't define, from the Season 6 class of the same kind: the fenrir damage and,
+    /// for a caster, the wizardry bonuses of items and buffs. The ability recovery is the 3 % of AutoRecuperation.lua.
     /// </summary>
     private void AddArchetypeAttributes(CharacterClass result, Season21ClassArchetype archetype)
     {
@@ -305,7 +396,6 @@ internal partial class CharacterClassInitialization
         {
             case Season21ClassArchetype.Knight:
                 this.AddFenrirDamage(combinations, 1.0f / 3, 1.0f / 5, 1.0f / 5, 1.0f / 7);
-                result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.05f, Stats.AbilityRecoveryMultiplier));
                 break;
             case Season21ClassArchetype.Wizard:
                 combinations.Add(this.CreateAttributeRelationship(Stats.MinimumWizBaseDmg, 1, Stats.BaseMinDamageBonus));
@@ -318,14 +408,14 @@ internal partial class CharacterClassInitialization
                 combinations.Add(this.CreateAttributeRelationship(Stats.WizardryAttackDamageIncrease, 1.0f / 100, Stats.StaffRise));
                 this.AddFenrirDamage(combinations, 1.0f / 5, 1.0f / 5, 1.0f / 7, 1.0f / 3);
                 result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1.0f, Stats.WizardryAttackDamageIncrease));
-                result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.03f, Stats.AbilityRecoveryMultiplier));
                 result.BaseAttributeValues.Add(this.CreateConstValueAttribute(1, Stats.WizardryBaseDmgIncrease));
                 break;
             default:
                 this.AddFenrirDamage(combinations, 1.0f / 5, 1.0f / 3, 1.0f / 7, 1.0f / 5);
-                result.BaseAttributeValues.Add(this.CreateConstValueAttribute(0.03f, Stats.AbilityRecoveryMultiplier));
                 break;
         }
+
+        result.BaseAttributeValues.Add(this.CreateConstValueAttribute(Season21AbilityRecovery, Stats.AbilityRecoveryMultiplier));
     }
 
     private void AddFenrirDamage(ICollection<AttributeRelationship> combinations, float strength, float agility, float vitality, float energy)
