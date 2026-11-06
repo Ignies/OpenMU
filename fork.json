@@ -19,6 +19,8 @@
     "s21_items_all",
     "config_api",
     "classes_s21",
-    "evolutions_45"
+    "evolutions_45",
+    "s21_skills",
+    "enhance_tree"
   ]
 }

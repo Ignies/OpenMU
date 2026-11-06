@@ -46,6 +46,8 @@ public static class ForkInfo
         "config_api",
         "classes_s21",
         "evolutions_45",
+        "s21_skills",
+        "enhance_tree",
     ];
 
     /// <summary>
