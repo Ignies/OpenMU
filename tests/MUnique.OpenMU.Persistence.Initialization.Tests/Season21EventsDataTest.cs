@@ -262,6 +262,30 @@ internal class Season21EventsDataTest
     }
 
     /// <summary>
+    /// On a database from before the debuff immunity existed, the renewal adds its definition and makes Balgass immune.
+    /// </summary>
+    [Test]
+    public async Task CrywolfRenewalAddsTheMissingImmunityAsync()
+    {
+        var immunityId = GameLogic.Attributes.Stats.IsImmuneToDebuffs.Id;
+        var balgass = this._gameConfiguration.Monsters.Single(m => m.Number == 349);
+        foreach (var attribute in balgass.Attributes.Where(a => a.AttributeDefinition?.Id == immunityId).ToList())
+        {
+            balgass.Attributes.Remove(attribute);
+        }
+
+        foreach (var definition in this._gameConfiguration.Attributes.Where(a => a.Id == immunityId).ToList())
+        {
+            this._gameConfiguration.Attributes.Remove(definition);
+        }
+
+        await new AddSeason21CrywolfUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
+
+        var persistent = this._gameConfiguration.Attributes.Single(a => a.Id == immunityId);
+        Assert.That(balgass.Attributes.Single(a => a.AttributeDefinition == persistent).Value, Is.EqualTo(1));
+    }
+
+    /// <summary>
     /// Applying the updates again changes nothing.
     /// </summary>
     [Test]

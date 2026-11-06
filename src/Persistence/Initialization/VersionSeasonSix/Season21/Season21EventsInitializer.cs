@@ -341,6 +341,12 @@ internal class Season21EventsInitializer
             return;
         }
 
+        // A database from before the immunity existed lacks its definition.
+        if (this._gameConfiguration.Attributes.All(a => a.Id != Stats.IsImmuneToDebuffs.Id))
+        {
+            this._gameConfiguration.Attributes.Add(this._context.CreateNew<AttributeDefinition>(Stats.IsImmuneToDebuffs.Id, Stats.IsImmuneToDebuffs.Designation, Stats.IsImmuneToDebuffs.Description));
+        }
+
         var immunity = Stats.IsImmuneToDebuffs.GetPersistent(this._gameConfiguration);
         if (monster.Attributes.Any(a => a.AttributeDefinition == immunity))
         {
