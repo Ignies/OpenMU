@@ -46,7 +46,7 @@ public static class ResetPointsExtensions
         var pointsPerLevel = (int)(characterClass.StatAttributes.FirstOrDefault(s => s.Attribute == Stats.PointsPerLevelUp)?.BaseValue ?? 0);
         if (stars is not null)
         {
-            character.MasterLevelUpPoints += StarRules.GetTreePoints(1, stars);
+            character.MasterLevelUpPoints += StarRules.GetTreePoints(progression.NextResetCount, stars) - StarRules.GetTreePoints(progression.NextResetCount - 1, stars);
         }
 
         if (!configuration.ReplacePointsPerReset)

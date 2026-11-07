@@ -5441,6 +5441,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Master tree points cap (0 = none).
+        /// </summary>
+        public static string ProgressionConfiguration_MasterTreePointsCap_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_MasterTreePointsCap_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Power against monsters per star (%).
         /// </summary>
         public static string ProgressionConfiguration_StarPowerPercent_Name {

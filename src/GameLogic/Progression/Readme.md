@@ -38,6 +38,13 @@ Its rewards are the progression configuration's: stat points of 100 levels of th
 
 A reset which resets the stats keeps the level-up points of the finished quests (`ResetPointsExtensions`).
 
+## Master tree points (`MasterTreeRules`)
+
+Season 21 gives master tree points up to master level 400; the later levels (a total level above 800) feed the skill
+enhancement tree (`EnhanceTreePoints`). `MasterTreePointsCap` (400, 0 = no cap) stops the points of the master levels
+in every mode, and the stars' points at the same number, so a master level 1350 character fills about a third of the
+Season 6 tree instead of all of it.
+
 ## In the running world
 
 `ProgressionFeaturePlugIn` applies the mode without changing a stored row, so switching back to Original restores

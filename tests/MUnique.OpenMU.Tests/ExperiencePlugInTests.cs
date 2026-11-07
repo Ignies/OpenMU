@@ -12,6 +12,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Progression;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
@@ -109,6 +110,33 @@ public class ExperiencePlugInTests
         Assert.That(plugIn.LevelUpCount, Is.EqualTo(1));
     }
 
+    /// <summary>
+    /// Tests that a master level above 400 gives no master tree point in the original progression (Season 21: the
+    /// later levels feed the skill enhancement tree).
+    /// </summary>
+    [Test]
+    public async ValueTask MasterLevelAbove400GivesNoTreePointAsync()
+    {
+        var player = await this.CreatePlayerAsync(maximumLevel: 10, isMasterClass: true, level: 10, maximumMasterLevel: 1350).ConfigureAwait(false);
+        if (player.GameContext.FeaturePlugIns.GetPlugIn<ProgressionFeaturePlugIn>() is not { } progression)
+        {
+            progression = new ProgressionFeaturePlugIn();
+            player.GameContext.FeaturePlugIns.AddPlugIn(progression, true);
+        }
+
+        progression.Configuration = new() { Mode = ProgressionMode.Original };
+        var table = player.GameContext.MasterExperienceTable;
+        player.Attributes![Stats.MasterLevel] = 399;
+        player.Attributes.AddElement(new SimpleElement(1, AggregateType.AddRaw), Stats.MasterPointsPerLevelUp);
+        player.SelectedCharacter!.MasterExperience = table[399];
+
+        await player.AddMasterExperienceAsync((int)(table[400] - table[399] + 1), null).ConfigureAwait(false);
+        await player.AddMasterExperienceAsync((int)(table[401] - table[400] + 1), null).ConfigureAwait(false);
+
+        Assert.That((int)player.Attributes[Stats.MasterLevel], Is.EqualTo(401));
+        Assert.That(player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(1));
+    }
+
     private static Mock<IAttackable> CreateKilledObjectMock(float level)
     {
         var attributes = new Mock<IAttributeSystem>();
@@ -122,13 +150,13 @@ public class ExperiencePlugInTests
 
     private static IAttackable CreateKilledObject(float level) => CreateKilledObjectMock(level).Object;
 
-    private async ValueTask<Player> CreatePlayerAsync(short maximumLevel = 100, bool isMasterClass = false, short level = 1)
+    private async ValueTask<Player> CreatePlayerAsync(short maximumLevel = 100, bool isMasterClass = false, short level = 1, short maximumMasterLevel = 200)
     {
         var contextProvider = new InMemoryPersistenceContextProvider();
         var gameConfiguration = contextProvider.CreateNewContext().CreateNew<GameConfiguration>();
         gameConfiguration.RecoveryInterval = int.MaxValue;
         gameConfiguration.MaximumLevel = maximumLevel;
-        gameConfiguration.MaximumMasterLevel = 200;
+        gameConfiguration.MaximumMasterLevel = maximumMasterLevel;
         gameConfiguration.MinimumMonsterLevelForMasterExperience = 0;
         gameConfiguration.ExperienceRate = 1.0f;
         gameConfiguration.MasterExperienceRate = 1.0f;

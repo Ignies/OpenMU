@@ -125,14 +125,14 @@ public static class StarRules
     }
 
     /// <summary>
-    /// Gets the master tree points of a star count.
+    /// Gets the master tree points of a star count, at most <see cref="ProgressionConfiguration.MasterTreePointsCap"/>.
     /// </summary>
     /// <param name="stars">The stars.</param>
     /// <param name="configuration">The configuration.</param>
     /// <returns>The master tree points.</returns>
     public static int GetTreePoints(int stars, ProgressionConfiguration configuration)
     {
-        return Math.Max(0, stars) * Math.Clamp(configuration.StarTreePoints, 0, 50);
+        return MasterTreeRules.Cap(Math.Max(0, stars) * Math.Clamp(configuration.StarTreePoints, 0, 50), configuration);
     }
 
     /// <summary>

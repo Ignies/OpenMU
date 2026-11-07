@@ -1968,6 +1968,9 @@
   <data name="ProgressionConfiguration_StarTreePoints_Name" xml:space="preserve">
     <value>Master tree points per star</value>
   </data>
+  <data name="ProgressionConfiguration_MasterTreePointsCap_Name" xml:space="preserve">
+    <value>Master tree points cap (0 = none)</value>
+  </data>
   <data name="ProgressionConfiguration_StarPowerPercent_Name" xml:space="preserve">
     <value>Power against monsters per star (%)</value>
   </data>

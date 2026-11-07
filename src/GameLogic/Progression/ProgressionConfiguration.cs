@@ -251,6 +251,17 @@ public class ProgressionConfiguration
     public int StarTreePoints { get; set; } = 20;
 
     /// <summary>
+    /// Gets or sets the most master tree points a character earns from master levels, and the most the stars give; 0 is no cap.
+    /// </summary>
+    /// <remarks>
+    /// Season 21 gives master tree points up to master level 400; the later levels (a total level above 800) feed the skill
+    /// enhancement tree instead (Webzen guides 112 and 362, S21Emu MasterSkillTree.xml).
+    /// </remarks>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ProgressionConfiguration_MasterTreePointsCap_Name))]
+    [Range(0, 2000)]
+    public int MasterTreePointsCap { get; set; } = 400;
+
+    /// <summary>
     /// Gets or sets the damage and defense percentage a star adds against monsters.
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ProgressionConfiguration_StarPowerPercent_Name))]
