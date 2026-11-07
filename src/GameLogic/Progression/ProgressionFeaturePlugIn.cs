@@ -261,6 +261,14 @@ public class ProgressionFeaturePlugIn : IDeactivationAwareFeaturePlugIn, ISuppor
     /// Gives a player the power of its stars: more damage against monsters and less damage from them, capped; against
     /// players too when <see cref="ProgressionConfiguration.StarPowerInPvp"/> is set.
     /// </summary>
+    private static void SetSpeedLimit(GameConfiguration gameConfiguration, float? limit)
+    {
+        foreach (var speed in (gameConfiguration.Attributes ?? []).Where(a => a == Stats.AttackSpeed || a == Stats.MagicSpeed))
+        {
+            speed.MaximumValue = limit;
+        }
+    }
+
     private void ApplyPower(Player player, ProgressionWorld? world)
     {
         if (world is not { Configuration: { Mode: ProgressionMode.Stars } configuration } || player.Attributes is not { } attributes)
@@ -329,7 +337,7 @@ public class ProgressionFeaturePlugIn : IDeactivationAwareFeaturePlugIn, ISuppor
         StoredCaps stored;
         lock (StoredCapsPerConfiguration)
         {
-            stored = StoredCapsPerConfiguration.GetValue(gameConfiguration, c => new StoredCaps(c.MaximumLevel, c.MaximumMasterLevel));
+            stored = StoredCapsPerConfiguration.GetValue(gameConfiguration, StoredCaps.Of);
             stored.Holders.Add(this);
             this._cappedConfigurations.Add(gameConfiguration);
         }
@@ -339,6 +347,13 @@ public class ProgressionFeaturePlugIn : IDeactivationAwareFeaturePlugIn, ISuppor
             : ProgressionMapping.GetMasterLevelCap(configuration);
         gameConfiguration.MaximumLevel = (short)Math.Min(ProgressionMapping.GetLevelCap(configuration), stored.MaximumLevel);
         gameConfiguration.MaximumMasterLevel = (short)Math.Min(masterLevelCap, stored.MaximumMasterLevel);
+        var speedLimit = configuration.AttackSpeedLimit switch
+        {
+            null => stored.MaximumSpeed,
+            0 => null,
+            { } limit => limit,
+        };
+        SetSpeedLimit(gameConfiguration, speedLimit);
     }
 
     private void ReleaseCaps(GameConfiguration gameConfiguration)
@@ -354,6 +369,7 @@ public class ProgressionFeaturePlugIn : IDeactivationAwareFeaturePlugIn, ISuppor
 
             gameConfiguration.MaximumLevel = stored.MaximumLevel;
             gameConfiguration.MaximumMasterLevel = stored.MaximumMasterLevel;
+            SetSpeedLimit(gameConfiguration, stored.MaximumSpeed);
             StoredCapsPerConfiguration.Remove(gameConfiguration);
         }
     }
@@ -361,11 +377,15 @@ public class ProgressionFeaturePlugIn : IDeactivationAwareFeaturePlugIn, ISuppor
     /// <summary>
     /// The caps which the game configuration had before the progression changed them, and the plugins (one per game
     /// server) which apply their caps to it. The experience tables are built for these caps, so the progression only
-    /// lowers a cap; the last holder which is turned off puts them back.
+    /// lowers a cap; the last holder which is turned off puts them back. The speed maximum is the one of the attack
+    /// speed, which the magic speed shares.
     /// </summary>
-    private sealed record StoredCaps(short MaximumLevel, short MaximumMasterLevel)
+    private sealed record StoredCaps(short MaximumLevel, short MaximumMasterLevel, float? MaximumSpeed)
     {
         public HashSet<ProgressionFeaturePlugIn> Holders { get; } = [];
+
+        public static StoredCaps Of(GameConfiguration gameConfiguration)
+            => new(gameConfiguration.MaximumLevel, gameConfiguration.MaximumMasterLevel, gameConfiguration.Attributes?.FirstOrDefault(a => a == Stats.AttackSpeed)?.MaximumValue);
     }
 
     /// <summary>

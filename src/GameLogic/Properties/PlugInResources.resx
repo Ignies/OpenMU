@@ -1977,6 +1977,9 @@
   <data name="ProgressionConfiguration_MasterTreePointsCap_Name" xml:space="preserve">
     <value>Master tree points cap (0 = none)</value>
   </data>
+  <data name="ProgressionConfiguration_AttackSpeedLimit_Name" xml:space="preserve">
+    <value>Attack and magic speed limit (empty = the database's, 0 = none)</value>
+  </data>
   <data name="ProgressionConfiguration_EnhancedMinimumMonsterLevel_Name" xml:space="preserve">
     <value>Lowest monster level for master experience from the total level 800 (0 = off)</value>
   </data>

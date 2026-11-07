@@ -252,6 +252,36 @@ public class ProgressionWorldTest
     }
 
     /// <summary>
+    /// The attack speed limit replaces the stored maximum of the attack and magic speed (0 is none, as S21Emu
+    /// DisableAttackSpeedLimit), and the stored one comes back when the plugin is off; no limit keeps the database's.
+    /// </summary>
+    [Test]
+    public void AttackSpeedLimitReplacesTheStoredOne()
+    {
+        var attackSpeed = new Persistence.BasicModel.AttributeDefinition(Stats.AttackSpeed.Id, "Attack Speed", string.Empty) { MaximumValue = 200 };
+        var magicSpeed = new Persistence.BasicModel.AttributeDefinition(Stats.MagicSpeed.Id, "Magic Speed", string.Empty) { MaximumValue = 200 };
+        this._configuration.Attributes.Add(attackSpeed);
+        this._configuration.Attributes.Add(magicSpeed);
+        var plugIn = new ProgressionFeaturePlugIn { Configuration = new ProgressionConfiguration { Mode = ProgressionMode.Original } };
+
+        plugIn.GetWorld(this._configuration);
+        Assert.That(attackSpeed.MaximumValue, Is.EqualTo(200), "no limit keeps the database's");
+
+        plugIn.Configuration = new ProgressionConfiguration { Mode = ProgressionMode.Original, AttackSpeedLimit = 0 };
+        plugIn.GetWorld(this._configuration);
+        Assert.That(attackSpeed.MaximumValue, Is.Null);
+        Assert.That(magicSpeed.MaximumValue, Is.Null);
+
+        plugIn.Configuration = new ProgressionConfiguration { Mode = ProgressionMode.Original, AttackSpeedLimit = 450 };
+        plugIn.GetWorld(this._configuration);
+        Assert.That(attackSpeed.MaximumValue, Is.EqualTo(450));
+
+        plugIn.OnDeactivated();
+        Assert.That(attackSpeed.MaximumValue, Is.EqualTo(200));
+        Assert.That(magicSpeed.MaximumValue, Is.EqualTo(200));
+    }
+
+    /// <summary>
     /// The stars give 1 % more damage against monsters and 1 % less damage from them per star, capped at 10 %, and
     /// nothing against players by default; it goes away with the map or the plugin.
     /// </summary>

@@ -5468,6 +5468,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Attack and magic speed limit (empty = the database's, 0 = none).
+        /// </summary>
+        public static string ProgressionConfiguration_AttackSpeedLimit_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_AttackSpeedLimit_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Lowest monster level for master experience from the total level 800 (0 = off).
         /// </summary>
         public static string ProgressionConfiguration_EnhancedMinimumMonsterLevel_Name {

@@ -276,6 +276,18 @@ public class ProgressionConfiguration
     public int MasterTreePointsCap { get; set; } = 400;
 
     /// <summary>
+    /// Gets or sets the most attack and magic speed of a character; <c>null</c> keeps the maximum of the database (200),
+    /// 0 is no limit.
+    /// </summary>
+    /// <remarks>
+    /// S21Emu has no limit (Common.dat DisableAttackSpeedLimit = 1). The class caps of Season 12 (288 Dark Knight to 450
+    /// Dark Lord, one fan source) are above the database's 200 except the Summoner's 188.
+    /// </remarks>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ProgressionConfiguration_AttackSpeedLimit_Name))]
+    [Range(0, 65535)]
+    public int? AttackSpeedLimit { get; set; }
+
+    /// <summary>
     /// Gets or sets the lowest monster level which gives master experience from a total level (level plus master level)
     /// of 800; 0 is off.
     /// </summary>
