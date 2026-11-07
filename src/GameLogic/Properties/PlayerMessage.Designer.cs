@@ -2838,6 +2838,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("MiniGameNotOpenFormat", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to You can't enter {0} again today..
+        /// </summary>
+        public static string MiniGameDailyLimitReached {
+            get {
+                return ResourceManager.GetString("MiniGameDailyLimitReached", resourceCulture);
+            }
+        }
 
         /// <summary>
         ///   Looks up a localized string similar to The battle has begun!.

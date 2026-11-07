@@ -36,6 +36,12 @@ public class Season21EventsConfiguration
     public List<EventEntrance> Entrances { get; set; } = [];
 
     /// <summary>
+    /// Gets or sets how often a character may enter an event a day; an event without a limit (or with 0) has none. The
+    /// event rules update sets the ones of S21Emu <c>Event/EventEntryLimit.dat</c>.
+    /// </summary>
+    public List<EventEntryLimit> DailyEntryLimits { get; set; } = [];
+
+    /// <summary>
     /// Gets the definition of a rounds event.
     /// </summary>
     /// <param name="type">The type.</param>

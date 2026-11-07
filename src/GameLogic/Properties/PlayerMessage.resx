@@ -555,6 +555,9 @@
   <data name="MiniGameNotOpenFormat" xml:space="preserve">
     <value>{0} is not open right now.</value>
   </data>
+  <data name="MiniGameDailyLimitReached" xml:space="preserve">
+    <value>You can't enter {0} again today.</value>
+  </data>
   <data name="IllusionTempleBattleStartedMessage" xml:space="preserve">
     <value>The battle has begun!</value>
   </data>

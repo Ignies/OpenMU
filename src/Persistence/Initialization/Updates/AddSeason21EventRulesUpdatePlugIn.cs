@@ -7,7 +7,9 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -30,6 +32,16 @@ public class AddSeason21EventRulesUpdatePlugIn : UpdatePlugInBase
     private static readonly (int Minimum, int Maximum)[] Grades =
     [
         (50, 399), (400, 799), (800, 999), (1000, 1199), (1200, 1399), (1400, 1599), (1600, int.MaxValue),
+    ];
+
+    /// <summary>
+    /// The entries a day of S21Emu <c>Event/EventEntryLimit.dat</c> (switched on there): 15 for Blood Castle, Chaos Castle,
+    /// Devil Square, Doppelganger, Imperial Guardian, Illusion Temple and the Boss Battle, 10 for the Labyrinth.
+    /// </summary>
+    private static readonly (MiniGameType Type, int Limit)[] DailyEntryLimits =
+    [
+        (MiniGameType.BloodCastle, 15), (MiniGameType.ChaosCastle, 15), (MiniGameType.DevilSquare, 15), (MiniGameType.Doppelganger, 15),
+        (MiniGameType.ImperialGuardian, 15), (MiniGameType.IllusionTemple, 15), (MiniGameType.BossBattle, 15), (MiniGameType.LabyrinthOfDimensions, 10),
     ];
 
     /// <summary>
@@ -57,6 +69,13 @@ public class AddSeason21EventRulesUpdatePlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 11, 05, 14, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    /// <remarks>Version 2: the daily entry limits of S21Emu Event/EventEntryLimit.dat.</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 07, 14, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21LevelCapsUpdatePlugIn).GUID];
@@ -93,7 +112,20 @@ public class AddSeason21EventRulesUpdatePlugIn : UpdatePlugInBase
         }
 
         SetPartyBonus(context, gameConfiguration);
+        SetDailyEntryLimits(context, gameConfiguration);
         return ValueTask.CompletedTask;
+    }
+
+    private static void SetDailyEntryLimits(IContext context, GameConfiguration gameConfiguration)
+    {
+        // Limits the operator set stay.
+        if (Season21PlugInConfigurations.GetOrCreate<Season21EventsConfiguration>(context, gameConfiguration, typeof(Season21EventsFeaturePlugIn).GUID, out var plugIn) is not { DailyEntryLimits.Count: 0 } configuration)
+        {
+            return;
+        }
+
+        configuration.DailyEntryLimits = DailyEntryLimits.Select(l => new EventEntryLimit { Type = l.Type, Limit = l.Limit }).ToList();
+        plugIn.SetConfiguration(configuration, null);
     }
 
     private static void SetPartyBonus(IContext context, GameConfiguration gameConfiguration)

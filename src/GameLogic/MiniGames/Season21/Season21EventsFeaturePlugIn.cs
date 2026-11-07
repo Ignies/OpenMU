@@ -29,12 +29,46 @@ public class Season21EventsFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigu
     public Season21EventsConfiguration? Configuration { get; set; }
 
     /// <summary>
+    /// Gets the counts of the event entries of today.
+    /// </summary>
+    public EventEntryCounter Entries { get; } = new();
+
+    private static DateOnly Today => DateOnly.FromDateTime(DateTime.UtcNow);
+
+    /// <summary>
     /// Gets the configuration of the events of a game, or an empty one.
     /// </summary>
     /// <param name="gameContext">The game context.</param>
     /// <returns>The configuration.</returns>
     public static Season21EventsConfiguration GetConfiguration(IGameContext gameContext)
         => gameContext.FeaturePlugIns.GetPlugIn<Season21EventsFeaturePlugIn>()?.Configuration ?? new Season21EventsConfiguration();
+
+    /// <summary>
+    /// Gets a value indicating whether the player's character entered an event as often as the daily limit allows.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="type">The event.</param>
+    /// <returns><c>true</c>, if the limit is reached.</returns>
+    public static bool IsDailyLimitReached(Player player, MiniGameType type)
+    {
+        return player.GameContext.FeaturePlugIns.GetPlugIn<Season21EventsFeaturePlugIn>() is { Configuration: { } configuration } plugIn
+               && player.SelectedCharacter is { } character
+               && plugIn.Entries.IsLimitReached(character.Id, type, configuration.DailyEntryLimits, Today);
+    }
+
+    /// <summary>
+    /// Counts an entry of the player's character into an event.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="type">The event.</param>
+    public static void CountEntry(Player player, MiniGameType type)
+    {
+        if (player.GameContext.FeaturePlugIns.GetPlugIn<Season21EventsFeaturePlugIn>() is { Configuration.DailyEntryLimits.Count: > 0 } plugIn
+            && player.SelectedCharacter is { } character)
+        {
+            plugIn.Entries.Count(character.Id, type, Today);
+        }
+    }
 
     /// <inheritdoc />
     public object CreateDefaultConfig() => new Season21EventsConfiguration();

@@ -8,6 +8,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.GuildWar;
 using MUnique.OpenMU.GameLogic.MiniGames;
+using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.PlayerActions.PlayerStore;
 using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -121,6 +122,13 @@ public class EnterMiniGameAction
             }
         }
 
+        if (Season21EventsFeaturePlugIn.IsDailyLimitReached(player, miniGameType))
+        {
+            await ShowRefusalAsync(player, nameof(PlayerMessage.MiniGameDailyLimitReached), miniGameDefinition.Name).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IShowMiniGameEnterResultPlugIn>(p => p.ShowResultAsync(miniGameType, EnterResult.Failed)).ConfigureAwait(false);
+            return;
+        }
+
         var entrance = miniGameDefinition.Entrance ?? throw new InvalidOperationException("mini game entrance not defined");
         var miniGame = await player.GameContext.MiniGames.GetOrCreateAsync(miniGameDefinition, player).ConfigureAwait(false);
 
@@ -131,6 +139,7 @@ public class EnterMiniGameAction
         var enterResult = await miniGame.TryEnterAsync(player).ConfigureAwait(false);
         if (enterResult == EnterResult.Success)
         {
+            Season21EventsFeaturePlugIn.CountEntry(player, miniGameType);
             if (entranceFee > 0)
             {
                 player.TryRemoveMoney(entranceFee);

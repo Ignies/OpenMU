@@ -186,6 +186,14 @@ points are kept in `state/chaos_castle_survival.json`.
 Not ported: the Hall of Fame, the Battle Core exchange of the event items and the `ExperienceTable` of the data (no
 meaning given).
 
+### Daily entry limits
+
+`Season21EventsConfiguration.DailyEntryLimits` caps how often a character enters an event a day (UTC); the event rules
+update sets the numbers of S21Emu `Event/EventEntryLimit.dat`: 15 for Blood Castle, Chaos Castle, Devil Square,
+Doppelganger, Imperial Guardian, Illusion Temple and the Boss Battle, 10 for the Labyrinth. `EnterMiniGameAction` refuses
+an entry above the limit and counts a successful one (`EventEntryCounter`). The counts are kept by the game server, not
+stored: a restart clears them and another game server of the world counts on its own.
+
 ### Not ported (no data)
 
 - Arca War: plan in the S21 hub notes ("[E2] Arca War").

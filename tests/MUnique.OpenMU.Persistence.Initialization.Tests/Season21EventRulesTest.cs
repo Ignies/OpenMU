@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -67,6 +68,30 @@ internal class Season21EventRulesTest
         Assert.That(plugIn.IsActive, Is.True);
         var configuration = plugIn.GetConfiguration<PartyExperienceBonusConfiguration>(null);
         Assert.That(configuration!.GetBonus(5, 3), Is.EqualTo(6.4).Within(1e-9));
+    }
+
+    /// <summary>
+    /// The update sets the daily entry limits of S21Emu Event/EventEntryLimit.dat, and keeps limits the operator set.
+    /// </summary>
+    [Test]
+    public async Task UpdateSetsTheDailyEntryLimitsAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        var update = new AddSeason21EventRulesUpdatePlugIn();
+
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var plugIn = gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(Season21EventsFeaturePlugIn).GUID);
+        var limits = plugIn.GetConfiguration<Season21EventsConfiguration>(new IdIgnoringReferenceHandler())!.DailyEntryLimits;
+        Assert.That(limits, Has.Count.EqualTo(8));
+        Assert.That(limits.Single(l => l.Type == MiniGameType.BloodCastle).Limit, Is.EqualTo(15));
+        Assert.That(limits.Single(l => l.Type == MiniGameType.LabyrinthOfDimensions).Limit, Is.EqualTo(10));
+
+        var configuration = plugIn.GetConfiguration<Season21EventsConfiguration>(new IdIgnoringReferenceHandler())!;
+        configuration.DailyEntryLimits = [new EventEntryLimit { Type = MiniGameType.BloodCastle, Limit = 3 }];
+        plugIn.SetConfiguration(configuration, null);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.That(plugIn.GetConfiguration<Season21EventsConfiguration>(new IdIgnoringReferenceHandler())!.DailyEntryLimits.Single().Limit, Is.EqualTo(3));
     }
 
     /// <summary>
