@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Properties;
 
@@ -161,9 +162,13 @@ internal static class Season21ClassicSpawns
         }
 
         spawns.ForEach(s => map.MonsterSpawns.Remove(s));
+        var terrain = new GameMapTerrain(map);
         var number = FirstSpawnNumber;
-        foreach (var (monster, x1, x2, y1, y2, quantity) in Season21Devias)
+        foreach (var (monster, dataX1, dataX2, dataY1, dataY2, quantity) in Season21Devias)
         {
+            var (x1, x2, y1, y2) = dataX1 == dataX2 && dataY1 == dataY2 && NearestSpawnTile(terrain, dataX1, dataY1) is { } tile
+                ? (tile.X, tile.X, tile.Y, tile.Y)
+                : (dataX1, dataX2, dataY1, dataY2);
             var area = context.CreateNew<MonsterSpawnArea>();
             area.SetGuid(map.Number, number++);
             area.GameMap = map;
@@ -174,5 +179,31 @@ internal static class Season21ClassicSpawns
             area.SpawnTrigger = SpawnTrigger.Automatic;
             map.MonsterSpawns.Add(area);
         }
+    }
+
+    /// <summary>
+    /// Gets the nearest tile to a point of the data on which a monster can spawn: the point itself when it is walkable and
+    /// no safe zone. A few points of the data lie on blocked tiles, where the game server can't place their monster.
+    /// </summary>
+    private static (byte X, byte Y)? NearestSpawnTile(GameMapTerrain terrain, byte x, byte y)
+    {
+        const int maximumDistance = 5;
+        for (var distance = 0; distance <= maximumDistance; distance++)
+        {
+            for (var dx = -distance; dx <= distance; dx++)
+            {
+                for (var dy = -distance; dy <= distance; dy++)
+                {
+                    if (Math.Max(Math.Abs(dx), Math.Abs(dy)) == distance
+                        && x + dx is >= 0 and <= byte.MaxValue && y + dy is >= 0 and <= byte.MaxValue
+                        && terrain.WalkMap[x + dx, y + dy] && !terrain.SafezoneMap[x + dx, y + dy])
+                    {
+                        return ((byte)(x + dx), (byte)(y + dy));
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 }

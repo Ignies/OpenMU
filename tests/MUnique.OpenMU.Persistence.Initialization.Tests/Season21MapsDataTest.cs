@@ -436,6 +436,28 @@ internal class Season21MapsDataTest
     }
 
     /// <summary>
+    /// Every monster of the Season 21 roster of Devias can spawn: a point of the data on a blocked tile moves to the
+    /// nearest tile a monster can stand on, so the game server doesn't drop it at the start.
+    /// </summary>
+    [Test]
+    public async Task DeviasRosterSpawnsOnWalkableTilesAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        await new AddSeason21LevelCapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var map = gameConfiguration.Maps.Single(m => m.Number == DeviasNumber);
+        var terrain = new GameLogic.GameMapTerrain(map);
+        var blocked = map.MonsterSpawns
+            .Where(s => s.MonsterDefinition?.ObjectKind == DataModel.Configuration.NpcObjectKind.Monster)
+            .Where(s => !Enumerable.Range(s.X1, s.X2 - s.X1 + 1).Any(x => Enumerable.Range(s.Y1, s.Y2 - s.Y1 + 1).Any(y => terrain.WalkMap[x, y] && !terrain.SafezoneMap[x, y])))
+            .Select(s => $"{s.MonsterDefinition!.Number} @ {s.X1}/{s.Y1}")
+            .ToList();
+        Assert.That(blocked, Is.Empty);
+        Assert.That(SpawnsOf(gameConfiguration, DeviasNumber).Values.Sum(), Is.EqualTo(280), "no monster is left out");
+    }
+
+    /// <summary>
     /// The town NPCs of S21Emu MonsterSetBase which Season 6 lacks stand in their towns: Captain Slough 580 and the maple
     /// NPCs 873/874 in Noria, and the event NPCs which Season 21 placed in
     /// Lorencia (Apostle Devin 406, Moss 492, Lugard 540, Jerint 522).
