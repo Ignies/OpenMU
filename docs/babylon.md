@@ -100,7 +100,7 @@ Rules:
 | `stats_specialize` | The stat specialization of Season 21: a stat of a class raises an option by the percent of its section (S21Emu `Character/StatsSpecialize.txt`; plugin "Stat specialization (Season 21)", off by default, `src/GameLogic/Classes`). No packet: the raised values reach the client through the Season 6 stat packets |
 | `creatable_classes` | `C1 EE 14 CreatableClasses` after the class codes of the list: every class the creation offers with the state of the server's creation rule (`GameLogic/Classes/ClassCreationRule.cs`) and its creation level |
 | `level_penalties` | The damage and experience penalties of Season 21 below a monster's level + 600 (S21Emu `DamagePenalty.lua`, `ExperienciePenalty.lua`; plugin "Level penalties (Season 21)", off by default, levels mapped through the progression mode, `src/GameLogic/Progression`). No packet |
-| `ability_core` | The Ability Enhancement Core of the fifth evolution: 45 skill, option, elite and extra damage cards in 22 slots (`Character.AbilityCore`, migration `AddSeason21AbilityCore`), their options as item options by card level, the fifth evolution skills of the skill cards, level up and reduction (update "Add the Ability Enhancement Core of Season 21", plugin "Ability Enhancement Core (Season 21)", off by default; slot levels mapped through the progression mode; `src/GameLogic/AbilityCore`; `EE 43`-`45`) |
+| `ability_core` | The Ability Enhancement Core of the fifth evolution: 45 skill, option, elite and extra damage cards in 22 slots (`Character.AbilityCore`, migration `AddSeason21AbilityCore`), their options as item options by card level, the fifth evolution skills of the skill cards, level up and reduction, card crafting at the chaos goblin (update "Add the Ability Enhancement Core of Season 21", plugin "Ability Enhancement Core (Season 21)", off by default; slot levels mapped through the progression mode; `src/GameLogic/AbilityCore`; `EE 43`-`45`) |
 
 ## Balance
 
@@ -205,6 +205,19 @@ carry the skill number in 16 bits and stay as they are for both clients.
   stones after a reduction) at 8 (W32, 0xFF none). The inventory side gets the Season 6 item removed / added / upgraded
   packets. A card option of the item is the item option type "Ability Card Option" (number = the S21Emu option index,
   the names of the client table ParticleOptionText).
+- Card crafting (chaos goblin, update "Add the Ability Enhancement Core of Season 21" version 2, only while the core is
+  on): the client puts the crystals (20/164 or bound 20/238, mixed) and the jewels of bless (14/13) into the mix box and
+  sends the mix request `C1 86` with the crafting number; all at 100 % (Webzen guide 343, S21Emu ChaosMix.dat):
+
+  | Crafting number | Mix | Result |
+  |---|---|---|
+  | 180 | 50 crystals, 10 bless, 100 M zen | a skill card of the class (random among them), one HP/MP/AG option |
+  | 181-185 | 5 crystals, 1 bless, 10 M zen | an option card of type 1-5 in a random color, one random option |
+  | 186-188 | 25 crystals, 5 bless, 50 M zen | the blue / green / purple elite card, one random option |
+  | 189 | 25 crystals, 5 bless, 50 M zen | 5 Ability Upgrade Stones (20/239) |
+
+  The card is level 0; its option is drawn by the option weights (skill cards 3 / 6 / 1 from AbilityAddOption.xml).
+  The amounts are exact (more is "too many items"). The same items fit several numbers, so the number is required.
 - 47 is kept for an effect status with a 16-bit effect number (the Season 6 status has a byte; no effect above 255 is
   applied yet).
 

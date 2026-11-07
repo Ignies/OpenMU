@@ -6,9 +6,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
+using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.AbilityCore;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 
 /// <summary>
 /// Adds the Ability Enhancement Core of Season 21 (<see cref="Season21AbilityCoreData"/>): the options of the ability
@@ -26,6 +28,26 @@ internal class Season21AbilityCoreInitializer
     private const float Percent = 0.01f;
 
     private const int ChanceToWeight = 100_000;
+
+    private const byte CardGroup = 20;
+
+    private const short AbilityCrystalNumber = 164;
+
+    private const short BoundAbilityCrystalNumber = 238;
+
+    private const short UpgradeStoneNumber = 239;
+
+    private const byte JewelGroup = 14;
+
+    private const short JewelOfBlessNumber = 13;
+
+    private const byte UpgradeStonesPerCrafting = 5;
+
+    private static readonly (byte Crystals, byte Blesses, int Money) SkillCardPrice = (50, 10, 100_000_000);
+
+    private static readonly (byte Crystals, byte Blesses, int Money) OptionCardPrice = (5, 1, 10_000_000);
+
+    private static readonly (byte Crystals, byte Blesses, int Money) EliteCardPrice = (25, 5, 50_000_000);
 
     /// <summary>
     /// The attribute of each option which has one in OpenMU, by the static option index; the other options (the
@@ -162,6 +184,87 @@ internal class Season21AbilityCoreInitializer
                 item.PossibleItemOptions.Add(definition);
             }
         }
+
+        this.AddCraftings();
+    }
+
+    /// <summary>
+    /// Adds the card craftings to the chaos goblin (Webzen guide 343: 100 %, the prices below; the S21Emu ChaosMix.dat
+    /// Ability* rates are 100). A crafting which exists stays as the operator left it.
+    /// </summary>
+    private void AddCraftings()
+    {
+        if (this._gameConfiguration.Monsters.FirstOrDefault(m => m.NpcWindow == NpcWindow.ChaosMachine) is not { } goblin)
+        {
+            return;
+        }
+
+        var cards = Season21AbilityCoreData.Data.Cards;
+        this.AddCrafting(goblin, AbilityCardCrafting.SkillCardNumber, "Skill Ability Card", SkillCardPrice, cards.Where(c => c.Kind == (byte)AbilityCardKind.Skill).Select(c => c.Number), 1);
+        for (byte type = 1; type <= 5; type++)
+        {
+            var optionType = type;
+            this.AddCrafting(goblin, (byte)(AbilityCardCrafting.FirstOptionCardNumber + type - 1), $"Option Ability Card Type {type}", OptionCardPrice, cards.Where(c => c.Kind == (byte)AbilityCardKind.Option && c.Type == optionType).Select(c => c.Number), 1);
+        }
+
+        foreach (var color in new[] { AbilityCardColor.Blue, AbilityCardColor.Green, AbilityCardColor.Purple })
+        {
+            this.AddCrafting(goblin, (byte)(AbilityCardCrafting.FirstEliteCardNumber + (byte)color - 1), $"{color} Elite Ability Card", EliteCardPrice, cards.Where(c => c.Kind == (byte)AbilityCardKind.Elite && c.Color == (byte)color).Select(c => c.Number), 1);
+        }
+
+        this.AddCrafting(goblin, AbilityCardCrafting.UpgradeStonesNumber, "Ability Upgrade Stones", EliteCardPrice, [UpgradeStoneNumber], UpgradeStonesPerCrafting);
+    }
+
+    private void AddCrafting(MonsterDefinition goblin, byte number, string name, (byte Crystals, byte Blesses, int Money) price, IEnumerable<short> results, byte durability)
+    {
+        var crystals = this.FindItems(CardGroup, [AbilityCrystalNumber, BoundAbilityCrystalNumber]);
+        var bless = this.FindItems(JewelGroup, [JewelOfBlessNumber]);
+        var resultItems = this.FindItems(CardGroup, results);
+        if (goblin.ItemCraftings.Any(c => c.Number == number) || crystals.Count == 0 || bless.Count == 0 || resultItems.Count == 0)
+        {
+            return;
+        }
+
+        var crafting = this._context.CreateNew<ItemCrafting>();
+        crafting.Name = name;
+        crafting.Number = number;
+        crafting.ItemCraftingHandlerClassName = typeof(AbilityCardCrafting).FullName!;
+        var settings = this._context.CreateNew<SimpleCraftingSettings>();
+        settings.Money = price.Money;
+        settings.SuccessPercent = 100;
+        settings.ResultItemSelect = ResultItemSelection.Any;
+        settings.RequiredItems.Add(this.CreateRequiredItem(crystals, price.Crystals));
+        settings.RequiredItems.Add(this.CreateRequiredItem(bless, price.Blesses));
+        foreach (var item in resultItems)
+        {
+            var resultItem = this._context.CreateNew<ItemCraftingResultItem>();
+            resultItem.ItemDefinition = item;
+            resultItem.Durability = durability;
+            settings.ResultItems.Add(resultItem);
+        }
+
+        crafting.SimpleCraftingSettings = settings;
+        goblin.ItemCraftings.Add(crafting);
+    }
+
+    private ItemCraftingRequiredItem CreateRequiredItem(IEnumerable<ItemDefinition> items, byte amount)
+    {
+        var requiredItem = this._context.CreateNew<ItemCraftingRequiredItem>();
+        requiredItem.MinimumAmount = amount;
+        requiredItem.MaximumAmount = amount;
+        requiredItem.MaximumItemLevel = byte.MaxValue;
+        foreach (var item in items)
+        {
+            requiredItem.PossibleItems.Add(item);
+        }
+
+        return requiredItem;
+    }
+
+    private List<ItemDefinition> FindItems(byte group, IEnumerable<short> numbers)
+    {
+        var wanted = numbers.ToHashSet();
+        return this._gameConfiguration.Items.Where(i => i.Group == group && wanted.Contains(i.Number)).ToList();
     }
 
     private ItemOptionDefinition GetOrCreateDefinition(Season21AbilityCoreData.CardRow row, ItemDefinition item, ItemOptionType optionType)

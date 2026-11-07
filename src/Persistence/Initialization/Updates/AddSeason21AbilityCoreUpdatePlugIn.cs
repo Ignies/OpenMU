@@ -39,6 +39,13 @@ public class AddSeason21AbilityCoreUpdatePlugIn : UpdatePlugInBase
     public override bool RunsOnNewDatabase => true;
 
     /// <inheritdoc />
+    /// <remarks>Version 2 adds the card craftings at the chaos goblin.</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 07, 18, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 11, 07, 14, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />

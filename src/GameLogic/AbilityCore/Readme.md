@@ -44,7 +44,12 @@ mastery, bleeding, poison, splash, and the static skill card options) are data w
 - **Reduce**: a card of the inventory into stones (`AbilityReduction.xml`: zen; skill 10, option 1, elite 5 stones).
   Extra damage cards have no level up and no reduction.
 
-Card creation (the Chaos Goblin mix of the Ability Crystals) is not part of the core.
+## Card crafting (`AbilityCardCrafting`)
+
+At the chaos goblin, while the core is on: Ability Crystals (bound or not) and jewels of bless into a skill card of the
+class, an option card of the chosen type in a random color, an elite card of the chosen color, or five Ability Upgrade
+Stones (crafting numbers 180-189, prices and rates in docs/babylon.md). A crafted card is level 0 with one card option,
+drawn by the option weights. Prices and results are ordinary crafting settings of the chaos goblin.
 
 ## View
 

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.AbilityCore;
 using MUnique.OpenMU.GameLogic.Attributes;
@@ -104,6 +105,61 @@ internal class Season21AbilityCoreDataTest
         Assert.That(plugIn.GetConfiguration<AbilityCoreConfiguration>(new IdIgnoringReferenceHandler())!.SkillSlotLevels[0], Is.EqualTo(1150));
         Assert.That(plugIn.IsActive, Is.False);
         Assert.That(minimum.LevelDependentOptions.Single(l => l.Level == 5).PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(99));
+    }
+
+    /// <summary>
+    /// The chaos goblin crafts the cards and the stones from Ability Crystals for the Webzen prices.
+    /// </summary>
+    /// <param name="number">The crafting number.</param>
+    /// <param name="crystals">The crystals.</param>
+    /// <param name="blesses">The jewels of bless.</param>
+    /// <param name="money">The zen.</param>
+    /// <param name="results">The result items, or some of them.</param>
+    [TestCase((byte)180, 50, 10, 100_000_000, new short[] { 165, 168, 171, 172, 175, 177, 179, 182, 186, 188, 189, 191, 193, 196, 199, 201, 204, 208, 210, 234 })]
+    [TestCase((byte)181, 5, 1, 10_000_000, new short[] { 213, 218, 223 })]
+    [TestCase((byte)185, 5, 1, 10_000_000, new short[] { 217, 222, 227 })]
+    [TestCase((byte)186, 25, 5, 50_000_000, new short[] { 228 })]
+    [TestCase((byte)188, 25, 5, 50_000_000, new short[] { 230 })]
+    [TestCase((byte)189, 25, 5, 50_000_000, new short[] { 239 })]
+    public async Task CardsAreCraftedAtTheChaosGoblinAsync(byte number, int crystals, int blesses, int money, short[] results)
+    {
+        var (_, gameConfiguration) = await CreateWithCoreAsync().ConfigureAwait(false);
+
+        var goblin = gameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ChaosMachine);
+        Assert.That(goblin.ItemCraftings.Select(c => c.Number), Does.Contain(number));
+        var crafting = goblin.ItemCraftings.Single(c => c.Number == number);
+        var settings = crafting.SimpleCraftingSettings!;
+        Assert.That(crafting.ItemCraftingHandlerClassName, Is.EqualTo("MUnique.OpenMU.GameLogic.PlayerActions.Craftings.AbilityCardCrafting"));
+        Assert.That((settings.Money, settings.SuccessPercent, settings.ResultItemSelect), Is.EqualTo((money, (byte)100, ResultItemSelection.Any)));
+        var crystal = settings.RequiredItems.Single(r => r.PossibleItems.Any(i => i.Group == CardGroup));
+        Assert.That(crystal.PossibleItems.Select(i => i.Number), Is.EquivalentTo(new short[] { 164, 238 }));
+        Assert.That((crystal.MinimumAmount, crystal.MaximumAmount), Is.EqualTo(((byte)crystals, (byte)crystals)));
+        var bless = settings.RequiredItems.Single(r => r.PossibleItems.Any(i => i.Group == 14 && i.Number == 13));
+        Assert.That((bless.MinimumAmount, bless.MaximumAmount), Is.EqualTo(((byte)blesses, (byte)blesses)));
+        Assert.That(settings.ResultItems.Select(r => r.ItemDefinition!.Number), Is.SupersetOf(results));
+        Assert.That(settings.ResultItems, Has.Count.EqualTo(number == 180 ? 24 : results.Length));
+        Assert.That(settings.ResultItems.Single(r => r.ItemDefinition!.Number == results[0]).Durability, Is.EqualTo(number == 189 ? (byte)5 : (byte)1));
+    }
+
+    /// <summary>
+    /// Version 2 adds the craftings which are missing and keeps the edited ones.
+    /// </summary>
+    [Test]
+    public async Task VersionTwoAddsTheCraftingsAndKeepsTheirEditsAsync()
+    {
+        var (context, gameConfiguration) = await CreateWithCoreAsync().ConfigureAwait(false);
+        var goblin = gameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ChaosMachine);
+        Assert.That(goblin.ItemCraftings.Select(c => c.Number), Is.SupersetOf(new byte[] { 180, 181 }));
+        var skillCard = goblin.ItemCraftings.Single(c => c.Number == 180);
+        skillCard.SimpleCraftingSettings!.Money = 1234;
+        goblin.ItemCraftings.Remove(goblin.ItemCraftings.Single(c => c.Number == 181));
+        var count = goblin.ItemCraftings.Count;
+
+        await new AddSeason21AbilityCoreUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(new AddSeason21AbilityCoreUpdatePlugIn().Version, Is.EqualTo(2));
+        Assert.That(goblin.ItemCraftings, Has.Count.EqualTo(count + 1));
+        Assert.That(goblin.ItemCraftings.Single(c => c.Number == 180).SimpleCraftingSettings!.Money, Is.EqualTo(1234));
     }
 
     private static List<IncreasableItemOption> Options(GameConfiguration gameConfiguration, short number)

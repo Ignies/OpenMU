@@ -1661,7 +1661,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adds the Ability Enhancement Core of the fifth evolution: the options of the 45 ability cards (values by card level) and the slots, cards, level ups and reductions of the plugin "Ability Enhancement Core (Season 21)", which it turns on (S21Emu Skill/AbilityEnhancementCore). Existing card options and an existing core configuration are kept..
+        ///   Looks up a localized string similar to Adds the Ability Enhancement Core of the fifth evolution: the options of the 45 ability cards (values by card level) and the slots, cards, level ups and reductions of the plugin "Ability Enhancement Core (Season 21)", which it turns on (S21Emu Skill/AbilityEnhancementCore), and the card craftings of the chaos goblin from Ability Crystals (Webzen guide). Existing card options, craftings and an existing core configuration are kept..
         /// </summary>
         public static string AddSeason21AbilityCoreUpdatePlugIn_Description {
             get {
