@@ -99,6 +99,10 @@ maps and elite zones updates, version 2, repair a database which still has them,
 * Twisted Karutan 958-960 (`EliteMonster` 0 in the data) are real elites by their numbers and keep them; Aquilas Temple
   (975-980) isn't shipped.
 
+Devias (`Season21ClassicSpawns`, maps update version 5): the 280 monsters of `MonsterSetBase/002 - Devias.xml` (10
+spots and 47 single monsters: 40 Yeti, 82 Elite Yeti, 11 Ice Queens) replace the 560 of Season 6 (no Yeti, 235 Elite
+Yeti, 75 Ice Queens) while the roster is still the Season 6 one; the NPCs stay.
+
 ## What is applied
 
 * The monster level is the experience level of the data, as for the other maps.

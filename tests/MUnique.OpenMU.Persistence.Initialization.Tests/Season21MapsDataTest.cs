@@ -408,6 +408,29 @@ internal class Season21MapsDataTest
         Assert.That(gates[0].LevelRequirement, Is.EqualTo(350), "the operator's level");
     }
 
+    /// <summary>
+    /// Devias takes the 280 monsters of S21Emu MonsterSetBase "002 - Devias.xml" (40 Yeti, 82 Elite Yeti, 11 Ice Queens) in
+    /// place of the 560 of Season 6; a roster the operator changed stays.
+    /// </summary>
+    [Test]
+    public async Task DeviasTakesTheSeason21RosterAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        await new AddSeason21LevelCapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var devias = SpawnsOf(gameConfiguration, DeviasNumber);
+        Assert.That(devias.Values.Sum(), Is.EqualTo(280));
+        Assert.That((devias[19], devias[20], devias[25]), Is.EqualTo((40, 82, 11)));
+        Assert.That(gameConfiguration.Maps.Single(m => m.Number == DeviasNumber).MonsterSpawns.Any(s => s.MonsterDefinition?.Number == 566), "the NPCs stay");
+
+        var map = gameConfiguration.Maps.Single(m => m.Number == DeviasNumber);
+        var yeti = map.MonsterSpawns.First(s => s.MonsterDefinition?.Number == 19);
+        yeti.Quantity = 50;
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.That(SpawnsOf(gameConfiguration, DeviasNumber).Values.Sum(), Is.EqualTo(290), "the operator's roster");
+    }
+
     private static Dictionary<short, int> SpawnsOf(GameConfiguration gameConfiguration, byte mapNumber)
         => gameConfiguration.Maps.Single(m => m.Number == mapNumber).MonsterSpawns
             .Where(s => s.MonsterDefinition?.ObjectKind == NpcObjectKind.Monster)
