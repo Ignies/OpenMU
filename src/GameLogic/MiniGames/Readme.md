@@ -143,7 +143,8 @@ Update "Add the Protector of Acheron of Season 21" (S21Emu `Event/AcheronGuardia
 A rounds event of 30 one-minute waves, each ten monsters in every area of the data (Alkmaar 89/41, Ubaid 188/101,
 Deventer 162/54) from the monsters of that area; a kill is 10 points, 100 points give an item of the Protection of
 Acheron bag (164). Timetable 4:29, 12:00, 23:06 (`AcheronGuardianStartPlugIn`).
-Not ported: the obelisks and free PvP of Global (the data has no obelisk monster), and the entry by Sir Lesnar.
+Not ported: the obelisks and free PvP of Global, and the entry by Sir Lesnar. The obelisks are the Arca War's
+(`src/GameLogic/ArcaWar/Readme.md`), which plays on the plain maps 92 and 96.
 
 ### Imperial Guardian rework of Season 18 (fork feature `imperial_guardian_s18`)
 

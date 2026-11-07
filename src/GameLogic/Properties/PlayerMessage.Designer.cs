@@ -3504,5 +3504,68 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ChaosCastleSurvivalNotQualified", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Arca War: guild masters may register their guilds for {0} minute(s)..
+        /// </summary>
+        public static string ArcaWarMasterRegistration {
+            get {
+                return ResourceManager.GetString("ArcaWarMasterRegistration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Arca War: members of the registered guilds may register for {0} minute(s)..
+        /// </summary>
+        public static string ArcaWarMemberRegistration {
+            get {
+                return ResourceManager.GetString("ArcaWarMemberRegistration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Arca War starts in {0} minute(s)..
+        /// </summary>
+        public static string ArcaWarStartsSoon {
+            get {
+                return ResourceManager.GetString("ArcaWarStartsSoon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Arca War has started!.
+        /// </summary>
+        public static string ArcaWarStarted {
+            get {
+                return ResourceManager.GetString("ArcaWarStarted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Arca War was cancelled: not enough guilds registered..
+        /// </summary>
+        public static string ArcaWarCancelled {
+            get {
+                return ResourceManager.GetString("ArcaWarCancelled", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The guild {0} took an obelisk..
+        /// </summary>
+        public static string ArcaWarObeliskTaken {
+            get {
+                return ResourceManager.GetString("ArcaWarObeliskTaken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Arca War has ended..
+        /// </summary>
+        public static string ArcaWarEnded {
+            get {
+                return ResourceManager.GetString("ArcaWarEnded", resourceCulture);
+            }
+        }
     }
 }

@@ -1091,4 +1091,7 @@
   <data name="ChaosCastle16" xml:space="preserve">
     <value>Chaos Castle 16</value>
   </data>
+  <data name="FireTower" xml:space="preserve">
+    <value>Fire Tower</value>
+  </data>
 </root>

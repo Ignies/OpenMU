@@ -3107,4 +3107,16 @@
   <data name="LabyrinthMoveRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of the Babylon client to move through a portal of its room in the Labyrinth of Dimensions (C1 EE B8).</value>
   </data>
+  <data name="ArcaWarBabylonPlugIn_Name" xml:space="preserve">
+    <value>Arca War view (Babylon)</value>
+  </data>
+  <data name="ArcaWarBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the Arca War to the Babylon client: the request results, the stage and the obelisks (C1 EE BB, BC and BD).</value>
+  </data>
+  <data name="ArcaWarRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Arca War request handler (Babylon)</value>
+  </data>
+  <data name="ArcaWarRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the requests of the Babylon client to the Arca War: register the guild, register as a member, enter the war (C1 EE BA).</value>
+  </data>
 </root>

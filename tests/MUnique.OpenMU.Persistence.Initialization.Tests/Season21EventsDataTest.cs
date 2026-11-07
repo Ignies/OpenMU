@@ -262,6 +262,57 @@ internal class Season21EventsDataTest
     }
 
     /// <summary>
+    /// The Arca War has the Fire Tower (598, a destructible), its effects, the schedule, three obelisks with three auras
+    /// each, three monster groups and three spawn groups of the data, and is on.
+    /// </summary>
+    [Test]
+    public void ArcaWarHasTheDataOfArcaBattle()
+    {
+        var plugIn = this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(GameLogic.ArcaWar.ArcaWarPlugIn).GUID);
+        var war = plugIn.GetConfiguration<GameLogic.ArcaWar.ArcaWarConfiguration>(new GameConfigurationReferenceHandler(this._gameConfiguration))!;
+        Assert.That(plugIn.IsActive, Is.True);
+        var tower = this._gameConfiguration.Monsters.Single(m => m.Number == 598);
+        Assert.That(tower.ObjectKind, Is.EqualTo(NpcObjectKind.Destructible));
+        Assert.That(tower.Attributes.Single(a => a.AttributeDefinition!.Id == GameLogic.Attributes.Stats.MaximumHealth.Id).Value, Is.EqualTo(3000));
+        Assert.That(this._gameConfiguration.MagicEffects.Select(e => e.Number), Is.SupersetOf(new short[] { 179, 180, 181, 182, 183, 184 }));
+        Assert.That((war.StartTimes.Single(), war.DurationMinutes, war.CloseMinutes), Is.EqualTo((new TimeOnly(10, 45), 30, 10)));
+        Assert.That(war.Obelisks.Select(o => (o.MapNumber, o.X, o.Y, o.Health, o.OccupiedHealth, o.RegenSeconds, o.Auras.Count)), Is.EqualTo(new[] { ((short)92, (byte)89, (byte)41, 500_000, 300_000, 20, 3), ((short)92, (byte)188, (byte)101, 500_000, 300_000, 20, 3), ((short)96, (byte)162, (byte)54, 500_000, 300_000, 20, 3) }));
+        Assert.That(war.MonsterGroups.Select(g => (g.MapNumber, g.Count, g.RegenMinutes, g.Monsters.Count, g.Spots.Count)), Is.All.Matches<(short, int, int, int, int)>(g => g.Item2 == 10 && g.Item3 == 10 && g.Item4 == 5 && g.Item5 == 4));
+        Assert.That(war.MonsterGroups.SelectMany(g => g.Monsters).Distinct(), Is.All.Matches<short>(n => this._gameConfiguration.Monsters.Any(m => m.Number == n)), "every monster exists");
+        Assert.That(war.SpawnGroups.Select(g => (g.MapNumber, g.Areas.Count)), Is.EqualTo(new[] { ((short)92, 5), ((short)92, 5), ((short)96, 5) }));
+        Assert.That(war.Buffs.Select(b => b.EffectNumber), Is.EqualTo(new short[] { 179, 180, 181, 182, 183 }));
+        Assert.That((war.Trophy?.Group, war.Trophy?.Number, war.DeathPenaltyEffectNumber), Is.EqualTo(((byte?)13, (short?)147, (short)184)));
+    }
+
+    /// <summary>
+    /// A second run of the Arca War update keeps what the operator changed.
+    /// </summary>
+    [Test]
+    public async Task ArcaWarKeepsTheOperatorsConfigurationAsync()
+    {
+        var plugIn = this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(GameLogic.ArcaWar.ArcaWarPlugIn).GUID);
+        var referenceHandler = new GameConfigurationReferenceHandler(this._gameConfiguration);
+        var war = plugIn.GetConfiguration<GameLogic.ArcaWar.ArcaWarConfiguration>(referenceHandler)!;
+        war.CaptureSeconds = 9;
+        plugIn.SetConfiguration(war, referenceHandler);
+        plugIn.IsActive = false;
+        try
+        {
+            await new AddSeason21ArcaWarUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
+
+            Assert.That(plugIn.GetConfiguration<GameLogic.ArcaWar.ArcaWarConfiguration>(referenceHandler)!.CaptureSeconds, Is.EqualTo(9));
+            Assert.That(plugIn.IsActive, Is.False);
+            Assert.That(this._gameConfiguration.Monsters.Count(m => m.Number == 598), Is.EqualTo(1));
+        }
+        finally
+        {
+            war.CaptureSeconds = 5;
+            plugIn.SetConfiguration(war, referenceHandler);
+            plugIn.IsActive = true;
+        }
+    }
+
+    /// <summary>
     /// On a database from before the debuff immunity existed, the renewal adds its definition and makes Balgass immune.
     /// </summary>
     [Test]
@@ -329,6 +380,7 @@ internal class Season21EventsDataTest
         new AddSeason21LabyrinthLeagueUpdatePlugIn(),
         new AddSeason21ChaosCastleSurvivalUpdatePlugIn(),
         new AddSeason21LabyrinthRoomsUpdatePlugIn(),
+        new AddSeason21ArcaWarUpdatePlugIn(),
     ];
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6Async()

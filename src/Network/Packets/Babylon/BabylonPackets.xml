@@ -541,6 +541,70 @@
         </Field>
       </Fields>
     </Structure>
+    <Structure>
+      <Name>ArcaObeliskState</Name>
+      <Description>An obelisk of the Arca War as the player sees it.</Description>
+      <Length>24</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>Index</Name>
+          <Description>The index of the obelisk (1-3 in the data).</Description>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>Byte</Type>
+          <Name>Element</Name>
+          <Description>The element of this war: 1 fire, 2 water, 3 earth, 4 wind, 5 darkness.</Description>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>MapNumber</Name>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>X</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Y</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>HealthPercent</Name>
+          <Description>The health in percent; 0 while the obelisk is destroyed and comes back.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>AuraMask</Name>
+          <Description>The auras members of the player's guild stand on: bit i for aura i.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Boolean</Type>
+          <Name>IsOpen</Name>
+          <Description>The shield is down for the player's guild, which may destroy the obelisk.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>OwnerGuildId</Name>
+          <Description>The guild which holds the obelisk, 0 for none.</Description>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>String</Type>
+          <Name>OwnerGuildName</Name>
+          <Length>8</Length>
+        </Field>
+      </Fields>
+    </Structure>
   </Structures>
   <Packets>
     <Packet>
@@ -2869,6 +2933,112 @@
           <Type>Byte</Type>
           <Name>Result</Name>
           <Description>0 moved, 1 no portal or no room behind it, 2 the mission of the room isn't done, 3 not playing the rooms of a labyrinth.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>BA</SubCode>
+      <Name>ArcaWarRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A guild master registers the guild for the Arca War, a member registers, or a registered member enters the war.</SentWhen>
+      <CausedReaction>The server answers with ArcaWarRequestResponse; an entry warps the character to the spawns of its guild.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Kind</Name>
+          <Description>0 register the guild (master), 1 register as a member, 2 enter the war.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>BB</SubCode>
+      <Name>ArcaWarRequestResponse</Name>
+      <Length>6</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>After an ArcaWarRequest.</SentWhen>
+      <CausedReaction>The client tells the result.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Kind</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 success, 1 not open, 2 no guild, 3 not the guild master, 4 already registered, 5 too many guilds, 6 guild not registered, 7 too many members, 8 not registered.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>BC</SubCode>
+      <Name>ArcaWarStageState</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>To every player when the stage of the Arca War changes, after a request and when a character enters the world while the war isn't closed.</SentWhen>
+      <CausedReaction>The client shows the stage and its countdown.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Stage</Name>
+          <Description>0 closed, 1 guild master registration, 2 member registration, 3 waiting, 4 war, 5 closing.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Guilds</Name>
+          <Description>The registered guilds.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Boolean</Type>
+          <Name>Registered</Name>
+          <Description>The character is registered.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>SecondsLeft</Name>
+          <Description>The seconds until the next stage.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Points</Name>
+          <Description>The points of the character in this war.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>BD</SubCode>
+      <Name>ArcaWarObelisks</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>Once a second during the Arca War, to the players on its maps.</SentWhen>
+      <CausedReaction>The client shows the obelisks, their holders, health, auras and shields.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>ObeliskCount</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>ArcaObeliskState</TypeName>
+          <Name>Obelisks</Name>
+          <ItemCountField>ObeliskCount</ItemCountField>
         </Field>
       </Fields>
     </Packet>

@@ -1276,4 +1276,25 @@ Inventory Extensions: {18}</value>
   <data name="ChaosCastleSurvivalNotQualified" xml:space="preserve">
     <value>You haven't qualified for this stage of the Chaos Castle Survival.</value>
   </data>
+  <data name="ArcaWarMasterRegistration" xml:space="preserve">
+    <value>Arca War: guild masters may register their guilds for {0} minute(s).</value>
+  </data>
+  <data name="ArcaWarMemberRegistration" xml:space="preserve">
+    <value>Arca War: members of the registered guilds may register for {0} minute(s).</value>
+  </data>
+  <data name="ArcaWarStartsSoon" xml:space="preserve">
+    <value>The Arca War starts in {0} minute(s).</value>
+  </data>
+  <data name="ArcaWarStarted" xml:space="preserve">
+    <value>The Arca War has started!</value>
+  </data>
+  <data name="ArcaWarCancelled" xml:space="preserve">
+    <value>The Arca War was cancelled: not enough guilds registered.</value>
+  </data>
+  <data name="ArcaWarObeliskTaken" xml:space="preserve">
+    <value>The guild {0} took an obelisk.</value>
+  </data>
+  <data name="ArcaWarEnded" xml:space="preserve">
+    <value>The Arca War has ended.</value>
+  </data>
 </root>

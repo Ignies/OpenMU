@@ -8893,5 +8893,41 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("LabyrinthMoveRequestHandlerPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Arca War view (Babylon).
+        /// </summary>
+        public static string ArcaWarBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ArcaWarBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the Arca War to the Babylon client: the request results, the stage and the obelisks (C1 EE BB, BC and BD)..
+        /// </summary>
+        public static string ArcaWarBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ArcaWarBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Arca War request handler (Babylon).
+        /// </summary>
+        public static string ArcaWarRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ArcaWarRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the requests of the Babylon client to the Arca War: register the guild, register as a member, enter the war (C1 EE BA)..
+        /// </summary>
+        public static string ArcaWarRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ArcaWarRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

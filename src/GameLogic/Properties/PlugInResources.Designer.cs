@@ -8760,5 +8760,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("LabyrinthRoomsPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Arca War (Season 21).
+        /// </summary>
+        public static string ArcaWarPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ArcaWarPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The guild war of Season 21 over three obelisks on Acheron and Deventer: guild masters register their guilds, then the members; during the war, a guild whose members stand on the three auras of an obelisk can destroy it and holds it; kills and obelisks give points for experience, and the guilds holding obelisks at the end get the buff of their elements for a week (S21Emu Event/ArcaBattle.xml, webzen guide). Only clients with the Arca War view (Babylon) can register..
+        /// </summary>
+        public static string ArcaWarPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ArcaWarPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

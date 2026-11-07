@@ -90,6 +90,7 @@ Rules:
 | `labyrinth` | The Labyrinth of Dimensions of Season 21 (map 115): a solo instance of 41 floors with Ruud and boxes (same update; event type 10) |
 | `labyrinth_league` | The scores and weekly leagues of the labyrinth: floor points by the daily record, first play and fast finish, a Maze of Dimensions box per floor, groups of five per tier (Bronze, Silver, Gold, Legend), two up and the fifth down every week, the tier reward on the 29th (update "Add the leagues of the Labyrinth of Dimensions of Season 21", plugin "Labyrinth of Dimensions league (Season 21)", off by default; `C1 EE B5 LabyrinthLeague`) |
 | `labyrinth_rooms` | The 10 x 10 rooms of the labyrinth floors: 30 paths of rooms which show areas of 38 other maps, portals between them, mission rooms (kills, kills in time, damage, MU Helper time, no health or mana potion) which open their mission portals, the main mission which clears the floor, the goblin in newly opened rooms (update "Add the rooms of the Labyrinth of Dimensions of Season 21", plugin "Labyrinth of Dimensions rooms (Season 21)", off by default; only a Babylon client plays them; `C1 EE B6`-`B9`) |
+| `arca_war` | The Arca War of Season 21 (maps 92 and 96): guild masters register (1 minute), then members (1 minute), a 30-minute guild war over three obelisks (Fire Tower 598, 500,000 health, 300,000 once held, back after 20 s) whose shield drops for a guild standing on its three auras; 5 points a monster, 10 an enemy, 50 an obelisk, experience by points, Trophies of Battle, and a week's buff of the element for the guilds holding obelisks at the end (update "Add the Arca War of Season 21", plugin "Arca War (Season 21)", off by default; `C1 EE BA`-`BD`, `src/GameLogic/ArcaWar/Readme.md`) |
 | `chaos_castle_survival` | The Chaos Castle Survival of the Fittest of Season 21 (map 97, gate 443): a Chaos Castle for up to 70 players from level 280 whose games are the try-outs (8th-10th), semi-finals (11th-12th) and final (13th, 1:25) of a monthly tournament; 1 point a monster, 2 a player, 3 the win; the best 20 and 10 go on; the Conqueror's Badge for the champion (update "Add the Chaos Castle Survival of Season 21", plugins "Chaos Castle Survival of the Fittest (Season 21)" and "Chaos Castle Survival start", off by default; event type 13 of the event packets, the castle itself shows the Chaos Castle states) |
 | `boss_battle` | The Boss Battle Together of Season 21 (map 139): one of five bosses for everybody, rewards for damage, top damage and the last hit (update "Add the Boss Battle Together of Season 21"; event type 11) |
 | `acheron_guardian` | The Protector of Acheron of Season 21 (maps 92 and 96): 30 waves of monsters, a bag reward for 100 points (update "Add the Protector of Acheron of Season 21"; event type 12) |
@@ -340,6 +341,28 @@ The board comes when a floor starts (in its entrance room), after each move and 
 with every room and on progress (damage and helper time at most once a second). The client draws the area of the map as
 the room; the server keeps only that area walkable on the run's copy of map 115 and moves the character to the side of
 the room it came through. A client without these packets plays the labyrinth floors without rooms.
+
+```
+C1 05 EE BA  ArcaWarRequest (client; fork id arca_war)        C1 06 EE BB  ArcaWarRequestResponse (server)
+  4  u8      0 register the guild (master),                     4  u8      request kind
+             1 register as a member, 2 enter the war             5  u8      0 success, 1 not open, 2 no guild,
+                                                                            3 not the master, 4 already registered,
+C1 10 EE BC  ArcaWarStageState (server)                                     5 too many guilds, 6 guild not registered,
+  4  u8      0 closed, 1 master registration, 2 member                      7 too many members, 8 not registered
+             registration, 3 waiting, 4 war, 5 closing
+  5  u8      registered guilds, 6 bool registered
+  8  u32 LE  seconds to the next stage, 12 u32 LE points
+
+C1 08+24n EE BD  ArcaWarObelisks (server, once a second to the players on maps 92 and 96 during the war)
+  4  u8      obelisk count n
+  8  n x 24  0 u8 index, 1 u8 element (1 fire, 2 water, 3 earth, 4 wind, 5 darkness), 2 u16 LE map, 4 u8 x, 5 u8 y,
+             6 u8 health %, 7 u8 auras the viewer's guild stands on (bit i), 8 bool shield down for the viewer's guild,
+             12 u32 LE holder guild id (0 none), 16 8 B holder guild name
+```
+
+The state comes to everyone at each stage change, after a request and on entering the world while the war isn't closed;
+the Season 6 client gets the stage changes as golden messages and can't register (no packet). Monster 598 is a
+destructible the client draws as the obelisk; its shield (`IsOpen`) is down only for the guild on all three auras.
 
 Item rewards go into the gremory case where Season 21 does (and the plugin is on), else into the inventory.
 

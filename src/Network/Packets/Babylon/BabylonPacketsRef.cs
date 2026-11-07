@@ -1056,6 +1056,119 @@ public readonly ref struct LabyrinthGoalStateRef
 
 
 /// <summary>
+/// An obelisk of the Arca War as the player sees it..
+/// </summary>
+public readonly ref struct ArcaObeliskStateRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArcaObeliskStateRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ArcaObeliskStateRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 24;
+
+    /// <summary>
+    /// Gets or sets the index of the obelisk (1-3 in the data).
+    /// </summary>
+    public byte Index
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the element of this war: 1 fire, 2 water, 3 earth, 4 wind, 5 darkness.
+    /// </summary>
+    public byte Element
+    {
+        get => this._data[1];
+        set => this._data[1] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the map number.
+    /// </summary>
+    public ushort MapNumber
+    {
+        get => ReadUInt16LittleEndian(this._data[2..]);
+        set => WriteUInt16LittleEndian(this._data[2..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the x.
+    /// </summary>
+    public byte X
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the y.
+    /// </summary>
+    public byte Y
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the health in percent; 0 while the obelisk is destroyed and comes back.
+    /// </summary>
+    public byte HealthPercent
+    {
+        get => this._data[6];
+        set => this._data[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the auras members of the player's guild stand on: bit i for aura i.
+    /// </summary>
+    public byte AuraMask
+    {
+        get => this._data[7];
+        set => this._data[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the shield is down for the player's guild, which may destroy the obelisk.
+    /// </summary>
+    public bool IsOpen
+    {
+        get => this._data[8..].GetBoolean();
+        set => this._data[8..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the guild which holds the obelisk, 0 for none.
+    /// </summary>
+    public uint OwnerGuildId
+    {
+        get => ReadUInt32LittleEndian(this._data[12..]);
+        set => WriteUInt32LittleEndian(this._data[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the owner guild name.
+    /// </summary>
+    public string OwnerGuildName
+    {
+        get => this._data.ExtractString(16, 8, System.Text.Encoding.UTF8);
+        set => this._data.Slice(16, 8).WriteString(value, System.Text.Encoding.UTF8);
+    }
+}
+
+
+/// <summary>
 /// Is sent by the client when: After the login succeeded, when the client logged in with the version of the Babylon client.
 /// Causes reaction on server side: The server answers with the ForkWelcome which tells the client the wire format and the features which are active.
 /// </summary>
@@ -9171,4 +9284,400 @@ public readonly ref struct LabyrinthRoomMoveResultRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(LabyrinthRoomMoveResultRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: A guild master registers the guild for the Arca War, a member registers, or a registered member enters the war.
+/// Causes reaction on server side: The server answers with ArcaWarRequestResponse; an entry warps the character to the spawns of its guild.
+/// </summary>
+public readonly ref struct ArcaWarRequestRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArcaWarRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ArcaWarRequestRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArcaWarRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ArcaWarRequestRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xBA;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets 0 register the guild (master), 1 register as a member, 2 enter the war.
+    /// </summary>
+    public byte Kind
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ArcaWarRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ArcaWarRequestRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ArcaWarRequest"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ArcaWarRequestRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After an ArcaWarRequest.
+/// Causes reaction on client side: The client tells the result.
+/// </summary>
+public readonly ref struct ArcaWarRequestResponseRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArcaWarRequestResponseRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ArcaWarRequestResponseRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArcaWarRequestResponseRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ArcaWarRequestResponseRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xBB;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 6;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the kind.
+    /// </summary>
+    public byte Kind
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 0 success, 1 not open, 2 no guild, 3 not the guild master, 4 already registered, 5 too many guilds, 6 guild not registered, 7 too many members, 8 not registered.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ArcaWarRequestResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ArcaWarRequestResponseRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ArcaWarRequestResponse"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ArcaWarRequestResponseRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: To every player when the stage of the Arca War changes, after a request and when a character enters the world while the war isn't closed.
+/// Causes reaction on client side: The client shows the stage and its countdown.
+/// </summary>
+public readonly ref struct ArcaWarStageStateRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArcaWarStageStateRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ArcaWarStageStateRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArcaWarStageStateRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ArcaWarStageStateRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xBC;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 16;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets 0 closed, 1 guild master registration, 2 member registration, 3 waiting, 4 war, 5 closing.
+    /// </summary>
+    public byte Stage
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the registered guilds.
+    /// </summary>
+    public byte Guilds
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the character is registered.
+    /// </summary>
+    public bool Registered
+    {
+        get => this._data[6..].GetBoolean();
+        set => this._data[6..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the seconds until the next stage.
+    /// </summary>
+    public uint SecondsLeft
+    {
+        get => ReadUInt32LittleEndian(this._data[8..]);
+        set => WriteUInt32LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the points of the character in this war.
+    /// </summary>
+    public uint Points
+    {
+        get => ReadUInt32LittleEndian(this._data[12..]);
+        set => WriteUInt32LittleEndian(this._data[12..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ArcaWarStageState"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ArcaWarStageStateRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ArcaWarStageState"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ArcaWarStageStateRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: Once a second during the Arca War, to the players on its maps.
+/// Causes reaction on client side: The client shows the obelisks, their holders, health, auras and shields.
+/// </summary>
+public readonly ref struct ArcaWarObelisksRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArcaWarObelisksRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ArcaWarObelisksRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ArcaWarObelisksRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ArcaWarObelisksRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xBD;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the obelisk count.
+    /// </summary>
+    public byte ObeliskCount
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="ArcaObeliskStateRef"/> of the specified index.
+    /// </summary>
+        public ArcaObeliskStateRef this[int index] => new (this._data[(8 + index * ArcaObeliskStateRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ArcaWarObelisks"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ArcaWarObelisksRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ArcaWarObelisks"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ArcaWarObelisksRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="ArcaObeliskStateRef"/>.
+    /// </summary>
+    /// <param name="obelisksCount">The count of <see cref="ArcaObeliskStateRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int obelisksCount) => obelisksCount * ArcaObeliskStateRef.Length + 8;
 }

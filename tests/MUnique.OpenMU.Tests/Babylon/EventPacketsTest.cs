@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests.Babylon;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.ArcaWar;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
@@ -165,5 +166,33 @@ public class EventPacketsTest
         await view.ShowMoveResultAsync(LabyrinthDirection.Right, LabyrinthMoveResult.MissionNotDone).ConfigureAwait(false);
         var result = new LabyrinthRoomMoveResult(output.ToArray());
         Assert.That((result.Header.SubCode, result.Direction, result.Result), Is.EqualTo(((byte)0xB9, (byte)3, (byte)2)));
+    }
+
+    /// <summary>
+    /// The Arca War view sends the request result, the stage and the obelisks; only the Babylon client has it.
+    /// </summary>
+    [Test]
+    public async ValueTask ArcaWarPacketsHaveTheirFieldsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(BabylonClient.Version);
+        player.GameContext.PlugInManager.RegisterPlugIn<IViewPlugIn, ArcaWarBabylonPlugIn>();
+        Assert.That(player.ViewPlugIns.GetPlugIn<IArcaWarViewPlugIn>(), Is.InstanceOf<ArcaWarBabylonPlugIn>());
+        var view = new ArcaWarBabylonPlugIn(player);
+
+        await view.ShowRequestResultAsync(ArcaWarRequestKind.RegisterMember, ArcaWarRequestResult.GuildNotRegistered).ConfigureAwait(false);
+        var result = new ArcaWarRequestResponse(output.ToArray());
+        Assert.That((result.Header.SubCode, result.Kind, result.Result), Is.EqualTo(((byte)0xBB, (byte)1, (byte)6)));
+
+        output.SetLength(0);
+        await view.ShowStateAsync(ArcaWarStage.Playing, 1799, 3, true, 65).ConfigureAwait(false);
+        var state = new ArcaWarStageState(output.ToArray());
+        Assert.That((state.Header.SubCode, state.Stage, state.Guilds, state.Registered, state.SecondsLeft, state.Points), Is.EqualTo(((byte)0xBC, (byte)4, (byte)3, true, 1799u, 65u)));
+
+        output.SetLength(0);
+        await view.ShowObelisksAsync([new ArcaObeliskView(1, ArcaElement.Fire, 92, 89, 41, 60, 5, false, 0, string.Empty), new ArcaObeliskView(3, ArcaElement.Darkness, 96, 162, 54, 100, 7, true, 1234, "Ignies")]).ConfigureAwait(false);
+        var obelisks = new ArcaWarObelisksRef(output.ToArray());
+        Assert.That((obelisks.Header.SubCode, obelisks.ObeliskCount, (int)obelisks.Header.Length), Is.EqualTo(((byte)0xBD, (byte)2, 8 + (2 * 24))));
+        var second = obelisks[1];
+        Assert.That((second.Index, second.Element, second.MapNumber, second.X, second.Y, second.HealthPercent, second.AuraMask, second.IsOpen, second.OwnerGuildId, second.OwnerGuildName), Is.EqualTo(((byte)3, (byte)5, (ushort)96, (byte)162, (byte)54, (byte)100, (byte)7, true, 1234u, "Ignies")));
     }
 }

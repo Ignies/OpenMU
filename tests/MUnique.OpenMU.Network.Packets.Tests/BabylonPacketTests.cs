@@ -557,6 +557,60 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the structure size calculation for ArcaObeliskState.
+    /// </summary>
+    [Test]
+    public void ArcaObeliskState_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 24;
+        var actualLength = ArcaObeliskState.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Index' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Index' exceeds structure boundary");
+        
+        // Validate field 'Element' boundary
+        Assert.That(1 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Element' exceeds structure boundary");
+        
+        // Validate field 'MapNumber' boundary
+        Assert.That(2 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MapNumber' exceeds structure boundary");
+        
+        // Validate field 'X' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'X' exceeds structure boundary");
+        
+        // Validate field 'Y' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Y' exceeds structure boundary");
+        
+        // Validate field 'HealthPercent' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'HealthPercent' exceeds structure boundary");
+        
+        // Validate field 'AuraMask' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'AuraMask' exceeds structure boundary");
+        
+        // Validate field 'IsOpen' boundary
+        Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsOpen' exceeds structure boundary");
+        
+        // Validate field 'OwnerGuildId' boundary
+        Assert.That(12 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'OwnerGuildId' exceeds structure boundary");
+        
+        // Validate field 'OwnerGuildName' boundary
+        Assert.That(16 + 8, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'OwnerGuildName' exceeds structure boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for ForkHello.
     /// </summary>
     [Test]
@@ -2480,5 +2534,93 @@ public class PacketStructureTests
         // Validate field 'Result' boundary
         Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Result' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ArcaWarRequest.
+    /// </summary>
+    [Test]
+    public void ArcaWarRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = ArcaWarRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Kind' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Kind' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ArcaWarRequestResponse.
+    /// </summary>
+    [Test]
+    public void ArcaWarRequestResponse_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 6;
+        var actualLength = ArcaWarRequestResponseRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Kind' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Kind' exceeds packet boundary");
+        
+        // Validate field 'Result' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ArcaWarStageState.
+    /// </summary>
+    [Test]
+    public void ArcaWarStageState_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 16;
+        var actualLength = ArcaWarStageStateRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Stage' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Stage' exceeds packet boundary");
+        
+        // Validate field 'Guilds' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Guilds' exceeds packet boundary");
+        
+        // Validate field 'Registered' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Registered' exceeds packet boundary");
+        
+        // Validate field 'SecondsLeft' boundary
+        Assert.That(8 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SecondsLeft' exceeds packet boundary");
+        
+        // Validate field 'Points' boundary
+        Assert.That(12 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Points' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ArcaWarObelisks.
+    /// </summary>
+    [Test]
+    public void ArcaWarObelisks_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'ObeliskCount' starts at index 4 with size 1
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'ObeliskCount' has invalid negative index");
     }
 }

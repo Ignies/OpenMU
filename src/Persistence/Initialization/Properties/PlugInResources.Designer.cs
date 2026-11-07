@@ -1632,5 +1632,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21LabyrinthRoomsUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the Arca War of Season 21.
+        /// </summary>
+        public static string AddSeason21ArcaWarUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21ArcaWarUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds the Arca War of S21Emu Event/ArcaBattle.xml: the Fire Tower (598) as the obelisk, the buffs and the death penalty of the war (effects 179-184), the schedule (daily 10:45), the three obelisks with their auras on Acheron and Deventer (maps 92 and 96), the monster groups and the spawns of the guilds, the points, experience and trophies of the webzen guide, and switches the plugin 'Arca War (Season 21)' on once. A second run keeps the operator's configuration and switch..
+        /// </summary>
+        public static string AddSeason21ArcaWarUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21ArcaWarUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

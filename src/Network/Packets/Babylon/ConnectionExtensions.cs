@@ -1924,4 +1924,98 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ArcaWarRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="kind">0 register the guild (master), 1 register as a member, 2 enter the war.</param>
+    /// <remarks>
+    /// Is sent by the client when: A guild master registers the guild for the Arca War, a member registers, or a registered member enters the war.
+    /// Causes reaction on server side: The server answers with ArcaWarRequestResponse; an entry warps the character to the spawns of its guild.
+    /// </remarks>
+    public static async ValueTask SendArcaWarRequestAsync(this IConnection? connection, byte @kind)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ArcaWarRequestRef.Length;
+            var packet = new ArcaWarRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Kind = @kind;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ArcaWarRequestResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="kind">The kind.</param>
+    /// <param name="result">0 success, 1 not open, 2 no guild, 3 not the guild master, 4 already registered, 5 too many guilds, 6 guild not registered, 7 too many members, 8 not registered.</param>
+    /// <remarks>
+    /// Is sent by the server when: After an ArcaWarRequest.
+    /// Causes reaction on client side: The client tells the result.
+    /// </remarks>
+    public static async ValueTask SendArcaWarRequestResponseAsync(this IConnection? connection, byte @kind, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ArcaWarRequestResponseRef.Length;
+            var packet = new ArcaWarRequestResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Kind = @kind;
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ArcaWarStageState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="stage">0 closed, 1 guild master registration, 2 member registration, 3 waiting, 4 war, 5 closing.</param>
+    /// <param name="guilds">The registered guilds.</param>
+    /// <param name="registered">The character is registered.</param>
+    /// <param name="secondsLeft">The seconds until the next stage.</param>
+    /// <param name="points">The points of the character in this war.</param>
+    /// <remarks>
+    /// Is sent by the server when: To every player when the stage of the Arca War changes, after a request and when a character enters the world while the war isn't closed.
+    /// Causes reaction on client side: The client shows the stage and its countdown.
+    /// </remarks>
+    public static async ValueTask SendArcaWarStageStateAsync(this IConnection? connection, byte @stage, byte @guilds, bool @registered, uint @secondsLeft, uint @points)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ArcaWarStageStateRef.Length;
+            var packet = new ArcaWarStageStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.Stage = @stage;
+            packet.Guilds = @guilds;
+            packet.Registered = @registered;
+            packet.SecondsLeft = @secondsLeft;
+            packet.Points = @points;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

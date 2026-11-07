@@ -4697,5 +4697,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ChaosCastle16", resourceCulture);
             }
         }
+
+        /// <summary>Gets Fire Tower from the configuration name resources.</summary>
+        public static string FireTower {
+            get {
+                return ResourceManager.GetString("FireTower", resourceCulture);
+            }
+        }
     }
 }
