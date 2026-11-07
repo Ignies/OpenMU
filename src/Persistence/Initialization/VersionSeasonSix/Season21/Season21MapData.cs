@@ -181,8 +181,8 @@ internal static class Season21MapData
         Monsters:
         [
             new(743, LocalizedString.FromResource(() => MonsterNames.Paraca), Level: 768, Health: 240000, MinimumDamage: 2500, MaximumDamage: 2550, Defense: 1800, AttackRate: 1750, DefenseRate: 710, MoveRange: 2, AttackRange: 2, ViewRange: 8, MoveDelay: 600, AttackDelay: 1100, RespawnDelay: 5, Attribute: 2, Resistances: [0, 0, 0, 0, 0, 0, 0]),
-            new(744, LocalizedString.FromResource(() => MonsterNames.Bass), Level: 772, Health: 125000, MinimumDamage: 3100, MaximumDamage: 3200, Defense: 1500, AttackRate: 1950, DefenseRate: 700, MoveRange: 2, AttackRange: 2, ViewRange: 8, MoveDelay: 600, AttackDelay: 2000, RespawnDelay: 5, Attribute: 2, Resistances: [0, 0, 0, 0, 0, 0, 0]),
-            new(745, LocalizedString.FromResource(() => MonsterNames.Vasuki), Level: 776, Health: 120000, MinimumDamage: 1500, MaximumDamage: 1600, Defense: 1400, AttackRate: 1850, DefenseRate: 2500, MoveRange: 0, AttackRange: 6, ViewRange: 8, MoveDelay: 300, AttackDelay: 800, RespawnDelay: 5, Attribute: 2, Resistances: [0, 0, 0, 0, 0, 0, 0]),
+            new(744, LocalizedString.FromResource(() => MonsterNames.Bass), Level: 776, Health: 120000, MinimumDamage: 1500, MaximumDamage: 1600, Defense: 1500, AttackRate: 1950, DefenseRate: 700, MoveRange: 2, AttackRange: 2, ViewRange: 8, MoveDelay: 600, AttackDelay: 2000, RespawnDelay: 5, Attribute: 2, Resistances: [0, 0, 0, 0, 0, 0, 0]),
+            new(745, LocalizedString.FromResource(() => MonsterNames.Vasuki), Level: 772, Health: 125000, MinimumDamage: 3100, MaximumDamage: 3200, Defense: 1400, AttackRate: 1850, DefenseRate: 2500, MoveRange: 0, AttackRange: 6, ViewRange: 8, MoveDelay: 300, AttackDelay: 800, RespawnDelay: 5, Attribute: 2, Resistances: [0, 0, 0, 0, 0, 0, 0]),
             new(746, LocalizedString.FromResource(() => MonsterNames.Nix), Level: 920, Health: 30000000, MinimumDamage: 6000, MaximumDamage: 7500, Defense: 3100, AttackRate: 8800, DefenseRate: 5400, MoveRange: 5, AttackRange: 8, ViewRange: 15, MoveDelay: 300, AttackDelay: 900, RespawnDelay: 86400, Attribute: 2, Resistances: [0, 0, 0, 0, 0, 0, 0]),
         ],
         Spawns:

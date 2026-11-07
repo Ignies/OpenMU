@@ -326,6 +326,8 @@ internal class Season21MapsDataTest
     [TestCase(947, 6_397_000)]
     [TestCase(834, 1_815_000)]
     [TestCase(836, 2_015_000)]
+    [TestCase(744, 120_000)]
+    [TestCase(745, 125_000)]
     public async Task PlaceholderRowsAreReplacedAsync(int number, int health)
     {
         var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);

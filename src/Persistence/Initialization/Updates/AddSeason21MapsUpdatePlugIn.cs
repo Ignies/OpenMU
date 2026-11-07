@@ -51,11 +51,12 @@ public class AddSeason21MapsUpdatePlugIn : UpdatePlugInBase
     /// Version 5: Devias takes the 280 monsters of the Season 21 data in place of the 560 of Season 6.
     /// Version 6: the town NPCs of the Season 21 data which Season 6 lacks stand in Noria and Lorencia.
     /// Version 7: Kanturu Underground respawns in its own safe zone (<see cref="OwnMapRespawnPlugIn"/>).
+    /// Version 8: Bass 744 and Vasuki 745 swap level, health and damage (muonlinefanz.com, muonline.net).
     /// </remarks>
-    public override int Version => 7;
+    public override int Version => 8;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 08, 16, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 08, 17, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21LevelCapsUpdatePlugIn).GUID];

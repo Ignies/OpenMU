@@ -101,6 +101,10 @@ maps and elite zones updates, version 2, repair a database which still has them,
   muonlinefanz.com (1,815,000 / 2,015,000 health); level, attack and defense rate stay (version 4).
 * Season 6 rows S21Emu changed: Phoenix of Darkness 77 75,000 health (95,000), Death Spirit 410 level 118 (119)
   (`ClassicRows`, version 4). The Dark Elf 412 keeps 1,500,000: S21Emu has 1,000,000, muonlinefanz.com 1.5 million.
+* Nixie Lake Bass 744 and Vasuki 745 (version 8): level, health and damage of the two rows swapped (Bass 776, 120,000,
+  1,500-1,600; Vasuki 772, 125,000, 3,100-3,200): muonlinefanz.com and muonline.net both give Bass, the monster with
+  the most spawns, the 120,000 and the higher level, and fanz gives Vasuki the 3,200 damage. Defense and rates stay.
+  Kubera 812/813 stay: muonline.net agrees with S21Emu.
 * Elites equal to or weaker than their normals (Atlans Abyss 3 839/840, Tormenta 945-947, Swamp of Doom 972-974): the
   normal's row times the median elite factor of the data's real elite pairs (health 1.267, damage 1.1, defense 1.059,
   defense rate 1.037, attack rate 1), never below the data's own value; the level stays. No source gives these rows.

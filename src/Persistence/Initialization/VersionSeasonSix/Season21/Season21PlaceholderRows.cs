@@ -19,6 +19,8 @@ internal static class Season21PlaceholderRows
     /// </summary>
     public static IReadOnlyList<(short Number, int Level, int Health, int MinimumDamage, int MaximumDamage, int Defense, int AttackRate, int DefenseRate)> Rows { get; } =
     [
+        (744, 772, 125000, 3100, 3200, 1500, 1950, 700),
+        (745, 776, 120000, 1500, 1600, 1400, 1850, 2500),
         (834, 970, 1515000, 4900, 5040, 5000, 4400, 2050),
         (836, 1085, 1930000, 5300, 5400, 6150, 4670, 1700),
         (839, 1160, 800000, 5600, 5780, 3800, 5000, 2450),
