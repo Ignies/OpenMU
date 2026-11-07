@@ -60,10 +60,12 @@ public class MasteryItemMixCrafting : BaseItemCraftingHandler
         var result = player.PersistenceContext.CreateNew<Item>();
         result.Definition = player.GameContext.Configuration.Items.First(d => IndexOf(d) == recipe.ResultIndex);
         result.Level = recipe.Keep.HasFlag(MasteryMixKeep.CopyAll) ? main.Level : recipe.ResultLevel;
-        result.HasSkill = result.Definition.Skill is not null && (main.HasSkill || !recipe.Keep.HasFlag(MasteryMixKeep.CopyAll));
-        result.SocketCount = Math.Min(main.SocketCount, result.Definition.MaximumSockets);
+        result.HasSkill = result.Definition.Skill is not null
+                          && (recipe.SkillPercent is { } skillPercent ? Rand.NextRandomBool(skillPercent) : main.HasSkill || !recipe.Keep.HasFlag(MasteryMixKeep.CopyAll));
+        result.SocketCount = Math.Min(recipe.SocketWeights.Count > 0 ? RollSockets(recipe.SocketWeights) : main.SocketCount, result.Definition.MaximumSockets);
         CopyOptions(main, result, recipe.Keep, player.PersistenceContext);
         AddNewOptions(result, recipe.Keep, player.PersistenceContext);
+        AddLuck(result, recipe.LuckPercent, player.PersistenceContext);
         result.Durability = result.GetMaximumDurabilityOfOnePiece();
 
         await player.TemporaryStorage!.RemoveItemAsync(main).ConfigureAwait(false);
@@ -83,7 +85,35 @@ public class MasteryItemMixCrafting : BaseItemCraftingHandler
         => item.Definition is { } definition
            && IndexOf(definition) >= material.IndexMin && IndexOf(definition) <= material.IndexMax
            && item.Level >= material.LevelMin && item.Level <= material.LevelMax
-           && OptionValueOf(item) >= material.OptionMin && OptionValueOf(item) <= material.OptionMax;
+           && OptionValueOf(item) >= material.OptionMin && OptionValueOf(item) <= material.OptionMax
+           && (material.EmptySocketsMin == 0
+               || (item.SocketCount >= material.EmptySocketsMin && item.ItemOptions.All(o => o.ItemOption?.OptionType != ItemOptionTypes.SocketOption)));
+
+    private static int RollSockets(List<int> weights)
+    {
+        var roll = Rand.NextInt(0, Math.Max(weights.Sum(), 1));
+        for (var i = 0; i < weights.Count; i++)
+        {
+            roll -= weights[i];
+            if (roll < 0)
+            {
+                return i + 1;
+            }
+        }
+
+        return weights.Count;
+    }
+
+    private static void AddLuck(Item result, byte luckPercent, IContext context)
+    {
+        if (luckPercent > 0
+            && result.ItemOptions.All(l => l.ItemOption?.OptionType != ItemOptionTypes.Luck)
+            && result.Definition!.PossibleItemOptions.SelectMany(o => o.PossibleOptions).FirstOrDefault(p => p.OptionType == ItemOptionTypes.Luck) is { } luck
+            && Rand.NextRandomBool(luckPercent))
+        {
+            AddLink(result, luck, 0, context);
+        }
+    }
 
     private static List<CraftingRequiredItemLink>? Match(MasteryMixRecipe recipe, List<Item> storage)
     {

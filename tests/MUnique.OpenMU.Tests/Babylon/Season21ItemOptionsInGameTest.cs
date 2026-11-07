@@ -315,6 +315,44 @@ public class Season21ItemOptionsInGameTest
     }
 
     /// <summary>
+    /// The socket upgrade of S21Emu SocketSystemCombinationMixUpgrade.xml: a socket item +11 to +15 with at least two empty
+    /// sockets, a Socket Upgrade Note, 5 Bless, 5 Soul and a Chaos give the next socket item +0 (Inberial Staff to Miracle
+    /// Staff), 80 %, 10,000,000 Zen, with 1 to 3 new sockets. A filled socket or a single socket is refused.
+    /// </summary>
+    [Test]
+    public async ValueTask SocketUpgradeGivesTheNextSocketItemAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        var staff = await this.AddAsync(player, this.Item(5, 31), 11).ConfigureAwait(false);
+        staff.SocketCount = 2;
+        await this.AddAsync(player, this.Item(14, 364), 0).ConfigureAwait(false);
+        for (var i = 0; i < 5; i++)
+        {
+            await this.AddAsync(player, this.Item(14, 13), 0).ConfigureAwait(false);
+            await this.AddAsync(player, this.Item(14, 14), 0).ConfigureAwait(false);
+        }
+
+        await this.AddAsync(player, this.Item(12, 15), 0).ConfigureAwait(false);
+
+        Assert.That(new MasteryItemMixCrafting().TryGetRequiredItems(player, out _, out var rate), Is.Null);
+        Assert.That(rate, Is.EqualTo(80));
+        var recipe = this._items.Configuration!.MasteryMixes.Single(r => r.Materials[0].IndexMin == (5 * 512) + 31 && r.Materials[0].EmptySocketsMin == 2);
+        Assert.That((recipe.ResultIndex, recipe.Money), Is.EqualTo(((5 * 512) + 35, 10_000_000)));
+
+        var result = await new TestMasteryMix().CraftAsync(player).ConfigureAwait(false);
+        Assert.That((result.Definition, result.Level), Is.EqualTo((this.Item(5, 35), (byte)0)));
+        Assert.That(result.SocketCount, Is.InRange(1, 3));
+
+        staff.SocketCount = 1;
+        Assert.That(new MasteryItemMixCrafting().TryGetRequiredItems(player, out _, out _), Is.EqualTo(CraftingResult.IncorrectMixItems));
+
+        staff.SocketCount = 2;
+        var socketOption = staff.Definition!.PossibleItemOptions.SelectMany(o => o.PossibleOptions).First(o => o.OptionType == ItemOptionTypes.SocketOption);
+        staff.ItemOptions.Add(new Persistence.BasicModel.ItemOptionLink { ItemOption = socketOption, Index = 0 });
+        Assert.That(new MasteryItemMixCrafting().TryGetRequiredItems(player, out _, out _), Is.EqualTo(CraftingResult.IncorrectMixItems));
+    }
+
+    /// <summary>
     /// Items which form no mix are refused.
     /// </summary>
     [Test]
@@ -373,7 +411,7 @@ public class Season21ItemOptionsInGameTest
         item.ItemOptions.Add(new Persistence.BasicModel.ItemOptionLink { ItemOption = option, Level = level, Index = index });
     }
 
-    private static async ValueTask<Item> CraftAsync(SimpleItemCraftingHandler handler, Player player, Func<IList<CraftingRequiredItemLink>, ValueTask<List<Item>>> createResult)
+    private static async ValueTask<Item> CraftAsync(BaseItemCraftingHandler handler, Player player, Func<IList<CraftingRequiredItemLink>, ValueTask<List<Item>>> createResult)
     {
         Assert.That(handler.TryGetRequiredItems(player, out var requiredItems, out _), Is.Null, handler.GetType().Name);
         return (await createResult(requiredItems).ConfigureAwait(false)).Single();
@@ -424,6 +462,11 @@ public class Season21ItemOptionsInGameTest
         {
             await this.AddAsync(player, this.Item(12, 401), 0).ConfigureAwait(false);
         }
+    }
+
+    private sealed class TestMasteryMix : MasteryItemMixCrafting
+    {
+        public ValueTask<Item> CraftAsync(Player player) => Season21ItemOptionsInGameTest.CraftAsync(this, player, items => this.CreateOrModifyResultItemsAsync(items, player, 0, 100));
     }
 
     private sealed class TestEnhanceCrafting(SimpleCraftingSettings settings) : SeedSphereEnhanceCrafting(settings)

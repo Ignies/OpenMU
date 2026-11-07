@@ -48,4 +48,9 @@ public class MasteryMixMaterial
     /// Gets or sets the highest count.
     /// </summary>
     public int CountMax { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the lowest number of sockets the item has, all of them empty; 0 = any item.
+    /// </summary>
+    public int EmptySocketsMin { get; set; }
 }

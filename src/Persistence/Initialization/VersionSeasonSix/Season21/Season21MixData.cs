@@ -23,6 +23,11 @@ internal static class Season21MixData
     /// </summary>
     public const int FirstMonsterWingMixId = 9101;
 
+    /// <summary>
+    /// The id of the first socket upgrade mix.
+    /// </summary>
+    public const int FirstSocketUpgradeMixId = 9201;
+
     private const string ResourceName = "MUnique.OpenMU.Persistence.Initialization.Resources.Season21.MasteryMixes.json";
 
     private static readonly Lazy<IReadOnlyList<MasteryMixRecipe>> LazyMixes = new(Load);
@@ -49,6 +54,29 @@ internal static class Season21MixData
     ];
 
     /// <summary>
+    /// The socket items of <c>SocketSystemCombinationMixUpgrade.xml</c> and the next socket item each upgrades to (item index
+    /// group * 512 + number).
+    /// </summary>
+    private static readonly (int Item, int Result)[] SocketUpgrades =
+    [
+        (2591, 2595), (3092, 3096), (3636, 3639), (4148, 4151), (4660, 4663), (5172, 5175), (5684, 5687), (26, 36),
+        (3629, 3658), (4141, 4170), (4653, 4682), (5165, 5194), (5677, 5706), (27, 29), (3630, 3638), (4142, 4150),
+        (4654, 4662), (5166, 5174), (5678, 5686), (2071, 2073), (3091, 3095), (3633, 3640), (4145, 4152), (4657, 4664),
+        (5169, 5176), (5681, 5688), (3634, 3659), (4146, 4171), (4658, 4683), (5170, 5195), (5682, 5707), (28, 30),
+        (2590, 2595), (3090, 3097), (4143, 4153), (4655, 4665), (5167, 5177), (5679, 5689), (2590, 2595), (4144, 4172),
+        (4656, 4684), (5168, 5196), (5680, 5708), (1041, 1043), (3635, 3642), (4147, 4154), (4659, 4666), (5171, 5178),
+        (5683, 5690), (2580, 2592), (3628, 3637), (4140, 4149), (4652, 4661), (5164, 5173), (5676, 5685), (52, 53),
+        (3730, 3731), (4242, 4243), (4754, 4755), (5778, 5779), (1558, 1559), (3112, 3113), (3732, 3733), (4244, 4245),
+        (4756, 4757), (5268, 5269), (5780, 5781), (3089, 3094), (1054, 1055), (3704, 3705), (4216, 4217), (4728, 4729),
+        (5240, 5241), (5752, 5753), (69, 70), (3762, 3763), (4274, 4275), (4786, 4787), (5298, 5299), (5810, 5811),
+        (2092, 2093), (3794, 3795), (4306, 4307), (4818, 4819), (5330, 5331), (5842, 5843), (2631, 2632), (3823, 3824),
+        (4335, 4336), (4847, 4848), (5359, 5360), (5871, 5872), (2644, 2645), (3841, 3842), (4353, 4354), (4865, 4866),
+        (5377, 5378), (5889, 5890), (103, 104), (3888, 3889), (4400, 4401), (4912, 4913), (5424, 5425), (5936, 5937),
+        (2672, 2673), (2691, 2692), (3923, 3924), (4435, 4436), (4947, 4948), (5459, 5460), (5971, 5972), (1080, 1081),
+        (3172, 3173), (3977, 3978), (4489, 4490), (5001, 5002), (5513, 5514), (6025, 6026),
+    ];
+
+    /// <summary>
     /// Gets the mixes.
     /// </summary>
     public static IReadOnlyList<MasteryMixRecipe> MasteryMixes => LazyMixes.Value;
@@ -71,9 +99,17 @@ internal static class Season21MixData
     public static IReadOnlyList<MasteryMixRecipe> MonsterWingMixes { get; } = CreateMonsterWingMixes();
 
     /// <summary>
+    /// Gets the socket upgrade of S21Emu <c>Item/SocketSystemCombination - Settings/SocketSystemCombinationMixUpgrade.xml</c>:
+    /// a socket item +11 to +15 with at least two sockets, all empty, a Socket Upgrade Note, 5 Bless, 5 Soul and a Chaos give
+    /// the next socket item +0, 80 %, 10,000,000 Zen, with its skill and its luck by 20 % each and 1 to 3 sockets by 30, 45 and
+    /// 25 % (one row: 1 to 5 sockets). A failed upgrade keeps the item.
+    /// </summary>
+    public static IReadOnlyList<MasteryMixRecipe> SocketUpgradeMixes { get; } = CreateSocketUpgradeMixes();
+
+    /// <summary>
     /// Gets the mixes of this class which aren't part of the generated data.
     /// </summary>
-    public static IEnumerable<MasteryMixRecipe> CodeMixes => ArchangelMixes.Concat(MonsterWingMixes);
+    public static IEnumerable<MasteryMixRecipe> CodeMixes => ArchangelMixes.Concat(MonsterWingMixes).Concat(SocketUpgradeMixes);
 
     private static IReadOnlyList<MasteryMixRecipe> Load()
     {
@@ -160,6 +196,31 @@ internal static class Season21MixData
                 new() { IndexMin = (14 * 512) + 176, IndexMax = (14 * 512) + 179 },
                 new() { IndexMin = (14 * 512) + 22, IndexMax = (14 * 512) + 22 },
                 new() { IndexMin = (12 * 512) + 15, IndexMax = (12 * 512) + 15 },
+            ],
+        }).ToList();
+    }
+
+    private static IReadOnlyList<MasteryMixRecipe> CreateSocketUpgradeMixes()
+    {
+        const int fiveSocketItem = (4 * 512) + 23;
+        static MasteryMixMaterial Material(int index, int count = 1) => new() { IndexMin = index, IndexMax = index, CountMin = count, CountMax = count };
+        return SocketUpgrades.Select((upgrade, i) => new MasteryMixRecipe
+        {
+            Id = FirstSocketUpgradeMixId + i,
+            Name = "Socket Upgrade",
+            SuccessRate = 80,
+            Money = 10_000_000,
+            ResultIndex = upgrade.Result,
+            SkillPercent = 20,
+            LuckPercent = 20,
+            SocketWeights = upgrade.Item == fiveSocketItem ? [1450, 2500, 2250, 2000, 1800] : [3000, 4500, 2500],
+            Materials =
+            [
+                new() { IndexMin = upgrade.Item, IndexMax = upgrade.Item, LevelMin = 11, LevelMax = 15, EmptySocketsMin = 2 },
+                Material((14 * 512) + 364),
+                Material((14 * 512) + 13, 5),
+                Material((14 * 512) + 14, 5),
+                Material((12 * 512) + 15),
             ],
         }).ToList();
     }

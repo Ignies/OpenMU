@@ -325,6 +325,11 @@ damage reduction table, the Ability Enhancement Core (track T, later).
   (`MonsterWingMixes`, ids from 9101): a second wing +9 with the +4 option, a Kundun boss part (14/176-179), a Creation
   and a Chaos, 60 %, 100,000 Zen. The data picks the result in code; each second wing gives the monster wing of its
   class (`Item.xml` classes; the Magic Gladiator's Wings of Darkness the Wings of Chaos).
+  Version 6 adds the socket upgrade (`SocketUpgradeMixes`, ids from 9201) of
+  `SocketSystemCombination - Settings/SocketSystemCombinationMixUpgrade.xml`: each of its 118 socket items +11 to +15
+  with two or more sockets, all empty (`EmptySocketsMin`), a Socket Upgrade Note (14/364), 5 Bless, 5 Soul and a Chaos
+  give the next socket item +0, 80 %, 10,000,000 Zen; skill and luck 20 % each (`SkillPercent`, `LuckPercent`), 1 to 3
+  sockets by 30/45/25 % (`SocketWeights`; the 4/23 row 1 to 5). A failed upgrade keeps the item (fail type 1).
 * "Add the sphere levels 6 to 10" (`AddSeason21SphereLevelsUpdatePlugIn`): socket option levels 6-10, the seed spheres
   12/311-340 with their element's options and mounting, and the seed sphere enhancement (crafting numbers 100-104 at
   the seed researcher).

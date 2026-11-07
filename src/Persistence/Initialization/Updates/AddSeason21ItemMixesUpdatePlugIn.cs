@@ -43,11 +43,12 @@ public class AddSeason21ItemMixesUpdatePlugIn : UpdatePlugInBase
     /// <remarks>Version 2: the +10 to +15 combinations at 60, 60, 50, 50, 40 and 40 % (S21Emu ChaosMix.dat). Version 3: the
     /// archangel upgrade and the Archangel's Hammer (<see cref="Season21MixData.ArchangelMixes"/>). Version 4: the
     /// monster wings (<see cref="Season21MixData.MonsterWingMixes"/>). Version 5: the third wings combination
-    /// costs 15,000,000 zen at any rate (S21Emu GoblinCombination.xml mix 39).</remarks>
-    public override int Version => 5;
+    /// costs 15,000,000 zen at any rate (S21Emu GoblinCombination.xml mix 39). Version 6: the socket upgrade with the Socket
+    /// Upgrade Note (<see cref="Season21MixData.SocketUpgradeMixes"/>).</remarks>
+    public override int Version => 6;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 08, 12, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 08, 14, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     /// <remarks>The mixes give mastery items and graded wings.</remarks>

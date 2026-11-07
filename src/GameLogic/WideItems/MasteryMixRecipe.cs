@@ -48,4 +48,20 @@ public class MasteryMixRecipe
     /// Gets or sets the item level of the result.
     /// </summary>
     public byte ResultLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the weights of 1, 2, ... sockets of the result, which the mix rolls; empty = the sockets of the main item.
+    /// </summary>
+    public List<int> SocketWeights { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the chance in percent that the result has its skill; <c>null</c> = the skill of the main item or, when the
+    /// options aren't copied, the skill of the definition.
+    /// </summary>
+    public byte? SkillPercent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the chance in percent that the result gets the luck option.
+    /// </summary>
+    public byte LuckPercent { get; set; }
 }
