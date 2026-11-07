@@ -17,7 +17,13 @@ using MUnique.OpenMU.GameLogic.Views.World;
 public class MagicEffectsList : AsyncDisposable
 {
     private const byte InvisibleEffectStartIndex = 200;
-    private readonly BitArray _contains = new(0x100);
+
+    /// <summary>
+    /// The effect numbers the list tracks: Season 21 numbers its effects up to 458 (S21Emu Effect.txt).
+    /// </summary>
+    private const int EffectNumberLimit = 0x200;
+
+    private readonly BitArray _contains = new(EffectNumberLimit);
     private readonly IAttackable _owner;
     private readonly Lock _sync = new();
     private readonly SortedList<short, MagicEffect> _activeEffects = new(6);
