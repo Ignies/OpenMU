@@ -17,7 +17,12 @@ turns it on.
   both 1146, skill damage 1144) carry a `MasterSkillDefinition` without a root: its value formula is the S21Emu formula
   of the level (one formula up to 30 points, the second above) and its passive power-up adds it, like a passive master
   skill. No root means no master points go into it and the master skill list leaves it out. The stat point, impenetrable
-  defense and 4th wing passives, the node effects and the debuff fields stay data.
+  defense and 4th wing passives, the other node effects and the debuff fields stay data.
+- **Node effects** (`EnhanceTreeEffects`): "Add Ext Skill Damage" (1001) adds the value of its formula at its level to
+  the damage of the skill which the extension node of its sheet (index 0, e.g. Meteor Strike Extended 1075 for Meteor
+  Strike 724) improves, while that extension is learned (`AttackableExtensions.GetDamage`). The node is one skill in
+  every sheet of a class, so its level counts for each learned extension. The lookups are indexed per configuration and
+  the formula values cached. Left: extra damage rate, damage count, range, splash, speed, targets, the debuff nodes.
 
 ## Points (`EnhanceTreePoints`)
 

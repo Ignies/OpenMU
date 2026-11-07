@@ -10,6 +10,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Elements;
+using MUnique.OpenMU.GameLogic.EnhanceTree;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Pet;
 using MUnique.OpenMU.GameLogic.Progression;
@@ -823,7 +824,13 @@ public static class AttackableExtensions
         var skill = skillEntry.Skill;
 
         var result = skill.AttackDamage;
-        if (attacker is Player { } player && skill.MasterDefinition is { } masterDefinition)
+        if (attacker is not Player { } player)
+        {
+            return result;
+        }
+
+        result += (int)EnhanceTreeEffects.GetExtraSkillDamage(player, skill);
+        if (skill.MasterDefinition is { } masterDefinition)
         {
             if (masterDefinition.TargetAttribute is null)
             {

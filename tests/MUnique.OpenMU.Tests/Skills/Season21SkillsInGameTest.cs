@@ -182,6 +182,25 @@ public class Season21SkillsInGameTest
     }
 
     /// <summary>
+    /// "Add Ext Skill Damage" (1001) of the Dark Wizard's first sheet adds formula 44 at its level (20: 600) to Meteor
+    /// Strike (724), once its extension (1075) is learned.
+    /// </summary>
+    [Test]
+    public async ValueTask ExtSkillDamageRaisesTheImprovedSkillAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.DarkWizard, ClassEvolution.Fourth).ConfigureAwait(false);
+        var meteorStrike = this._gameConfiguration.Skills.Single(s => s.Number == 724);
+        await player.SkillList!.AddLearnedSkillAsync(meteorStrike).ConfigureAwait(false);
+        await player.SkillList.AddLearnedSkillAsync(this._gameConfiguration.Skills.Single(s => s.Number == EnhanceTreeEffects.ExtSkillDamage)).ConfigureAwait(false);
+        player.SelectedCharacter!.LearnedSkills.Single(s => s.Skill!.Number == EnhanceTreeEffects.ExtSkillDamage).Level = 20;
+        Assert.That(EnhanceTreeEffects.GetExtraSkillDamage(player, meteorStrike), Is.Zero, "the extension isn't learned");
+
+        await player.SkillList.AddLearnedSkillAsync(this._gameConfiguration.Skills.Single(s => s.Number == 1075)).ConfigureAwait(false);
+
+        Assert.That(EnhanceTreeEffects.GetExtraSkillDamage(player, meteorStrike), Is.EqualTo(600).Within(1));
+    }
+
+    /// <summary>
     /// A tree passive is no master tree skill: master points can't be spent on it.
     /// </summary>
     [Test]
