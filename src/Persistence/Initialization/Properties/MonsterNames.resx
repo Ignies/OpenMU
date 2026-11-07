@@ -1094,4 +1094,7 @@
   <data name="FireTower" xml:space="preserve">
     <value>Fire Tower</value>
   </data>
+  <data name="SirLesnar" xml:space="preserve">
+    <value>Sir Lesnar</value>
+  </data>
 </root>

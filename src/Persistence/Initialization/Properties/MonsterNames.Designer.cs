@@ -4704,5 +4704,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("FireTower", resourceCulture);
             }
         }
+
+        /// <summary>Gets Sir Lesnar from the configuration name resources.</summary>
+        public static string SirLesnar {
+            get {
+                return ResourceManager.GetString("SirLesnar", resourceCulture);
+            }
+        }
     }
 }

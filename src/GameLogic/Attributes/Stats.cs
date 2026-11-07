@@ -314,6 +314,11 @@ public class Stats
     public static AttributeDefinition TotalRegisteredRenas { get; } = new(new Guid("56C2D3B4-4F5A-6B7C-8D9E-0F1A2B3C4D5E"), "Total Registered Renas", "Total registered items (all-time counter)");
 
     /// <summary>
+    /// Gets the item drop rate bonus attribute definition.
+    /// </summary>
+    public static AttributeDefinition ItemDropRateBonus { get; } = new(new Guid("6E3B0D58-91F2-4C7A-A84E-2D95C1F07B36"), "Item Drop Rate Bonus", "The bonus on the chance of the chance based item drops of a killed monster, e.g. 0.1 for 10 %.");
+
+    /// <summary>
     /// Gets the zen amount rate attribute definition.
     /// </summary>
     public static AttributeDefinition MoneyAmountRate { get; } = new(new Guid("D84D1A5C-3A56-4CB9-8DD4-158AFD4D1EDB"), "Money Drop Amount Rate", "Defines a multiplier for the amount of a money drop.");

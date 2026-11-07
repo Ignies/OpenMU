@@ -5,9 +5,13 @@
 namespace MUnique.OpenMU.Tests.Instances;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.ArcaWar;
+using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
@@ -54,6 +58,9 @@ public class ArcaWarTest
         this._world.AddFeaturePlugIn(this._plugIn);
         this._world.Register<IPlayerAttackRestrictionPlugIn>(this._plugIn);
         this._world.Register<IPlayerKillPenaltyExemptionPlugIn>(this._plugIn);
+        this._world.Register<IPlayerDamageFactorPlugIn>(this._plugIn);
+        this._world.Register<IObjectAddedToMapPlugIn>(this._plugIn);
+        this._world.Register<IObjectRemovedFromMapPlugIn>(this._plugIn);
     }
 
     /// <summary>
@@ -225,6 +232,130 @@ public class ArcaWarTest
         Assert.That(this.Context.Guilds, Is.Empty);
     }
 
+    /// <summary>
+    /// A master pays the Signs of Lord of the fee (webzen: 10) to register the guild; with fewer the guild stays out.
+    /// </summary>
+    [Test]
+    public async ValueTask MasterPaysTheSignsOfLordAsync()
+    {
+        await this.AdvanceAsync(TimeSpan.Zero).ConfigureAwait(false);
+        await this.AdvanceAsync(TimeSpan.FromMinutes(1)).ConfigureAwait(false);
+        var master = await this.CreateMemberAsync(GuildPosition.GuildMaster, signs: 9).ConfigureAwait(false);
+
+        var fee = this._plugIn.Configuration!.RegistrationFee;
+        Assert.That((fee?.Group, fee?.Number, fee?.Level, fee?.Count), Is.EqualTo(((byte?)14, (short?)21, (byte?)3, (byte?)10)));
+        Assert.That(await this._plugIn.RequestAsync(master, ArcaWarRequestKind.RegisterGuild).ConfigureAwait(false), Is.EqualTo(ArcaWarRequestResult.NotEnoughSignsOfLord));
+        Assert.That(CountSigns(master), Is.EqualTo(9), "nothing is taken from a refused master");
+
+        await this.GiveSignsAsync(master, 1).ConfigureAwait(false);
+        Assert.That(await this._plugIn.RequestAsync(master, ArcaWarRequestKind.RegisterGuild).ConfigureAwait(false), Is.EqualTo(ArcaWarRequestResult.Success));
+        Assert.That(CountSigns(master), Is.Zero);
+    }
+
+    /// <summary>
+    /// The damage between the members of the war is reduced by the settings of the data (S21Emu <c>DamageReduction</c>):
+    /// against another guild by <c>OppositeTeam</c>, within the own guild (friendly fire) by <c>SelfTeam</c>.
+    /// </summary>
+    [Test]
+    public async ValueTask TeamDamageIsReducedAsync()
+    {
+        var (master, members) = await this.StartWarAsync(1).ConfigureAwait(false);
+        var (enemy, _) = await this.RegisterGuildAsync(0, false).ConfigureAwait(false);
+        var configuration = this._plugIn.Configuration!;
+        configuration.OppositeTeamDamageReduction = 30;
+        configuration.SelfTeamDamageReduction = 20;
+        configuration.FriendlyFire = true;
+        foreach (var (player, x) in new[] { (master, (byte)60), (members[0], (byte)61), (enemy, (byte)62) })
+        {
+            await this.PlaceAsync(player, 92, x, 120).ConfigureAwait(false);
+        }
+
+        Assert.That(this.DamageFactor(master, enemy), Is.EqualTo(0.7).Within(0.0001));
+        Assert.That(this.DamageFactor(master, members[0]), Is.EqualTo(0.8).Within(0.0001));
+
+        configuration.OppositeTeamDamageReduction = 100;
+        var before = enemy.Attributes![Stats.CurrentHealth] + enemy.Attributes[Stats.CurrentShield];
+        for (var i = 0; i < 20; i++)
+        {
+            await enemy.AttackByAsync(master, null, false).ConfigureAwait(false);
+        }
+
+        Assert.That(enemy.Attributes[Stats.CurrentHealth] + enemy.Attributes[Stats.CurrentShield], Is.EqualTo(before), "a full reduction takes every hit");
+    }
+
+    /// <summary>
+    /// A member of a guild which holds an obelisk has the reward of Acheron (effect 187, S21Emu <c>Effect.txt</c>: 20 %
+    /// experience, 10 % item drop) while it is in Acheron, and loses it when it leaves.
+    /// </summary>
+    [Test]
+    public async ValueTask HoldersHaveTheBonusInAcheronAsync()
+    {
+        var (master, _) = await this.StartWarAsync().ConfigureAwait(false);
+        var obelisk = this.Context.Obelisks[0];
+        obelisk.OpenForGuildId = master.GuildStatus!.GuildId;
+        await this.Context.OnKilledAsync(obelisk.Npc!, master).ConfigureAwait(false);
+        await this.AdvanceAsync(TimeSpan.FromMinutes(30)).ConfigureAwait(false);
+        var outsider = await this.CreateMemberAsync(GuildPosition.GuildMaster).ConfigureAwait(false);
+
+        await this.WarpToSpawnAsync(master, 91).ConfigureAwait(false);
+        await this.WarpToSpawnAsync(outsider, 91).ConfigureAwait(false);
+
+        Assert.That(master.MagicEffectList.ContainsEffect(187), Is.True);
+        Assert.That(master.Attributes![Stats.BonusExperienceRate], Is.EqualTo(0.2f).Within(0.0001));
+        Assert.That(master.Attributes[Stats.ItemDropRateBonus], Is.EqualTo(0.1f).Within(0.0001));
+        Assert.That(outsider.MagicEffectList.ContainsEffect(187), Is.False, "only the holders");
+
+        await this.WarpToSpawnAsync(master, 0).ConfigureAwait(false);
+        Assert.That(master.MagicEffectList.ContainsEffect(187), Is.False, "only in Acheron");
+        Assert.That(master.Attributes[Stats.BonusExperienceRate], Is.Zero);
+    }
+
+    /// <summary>
+    /// Sir Lesnar exchanges 1 to 100 Trophies of Battle for an item of the bag of their tens (S21Emu bags 153-162): the
+    /// rate starts at 50 % for each ten and grows by 5 % for each further trophy of it
+    /// (<c>TrophiesOfBattleMixRate</c>, <c>TrophiesOfBattleMixRateAdd</c>).
+    /// </summary>
+    [Test]
+    public async ValueTask SirLesnarExchangesTheTrophiesAsync()
+    {
+        Assert.That(this._world.Configuration.Monsters.Where(m => m.Number == 584), Has.Exactly(1).Items);
+        var lesnar = this._world.Configuration.Monsters.Single(m => m.Number == 584);
+        Assert.That(lesnar.NpcWindow, Is.EqualTo(NpcWindow.NpcDialog));
+        var settings = lesnar.ItemCraftings.Single(c => c.Number == TrophiesOfBattleCrafting.Number).SimpleCraftingSettings!;
+        var handler = new TrophiesOfBattleCrafting(settings);
+        var player = await this.CreateMemberAsync(GuildPosition.NormalMember).ConfigureAwait(false);
+
+        await this.AddTrophiesAsync(player, 15).ConfigureAwait(false);
+        Assert.That(handler.TryGetRequiredItems(player, out _, out var rate), Is.Null);
+        Assert.That(rate, Is.EqualTo(70), "the fifth trophy of the second ten");
+
+        var success = settings.SuccessPercent;
+        settings.SuccessPercent = 100;
+        try
+        {
+            var (result, _) = await handler.DoMixAsync(player, 0).ConfigureAwait(false);
+            Assert.That(result, Is.EqualTo(CraftingResult.Success));
+        }
+        finally
+        {
+            settings.SuccessPercent = success;
+        }
+
+        var tier = settings.ResultItems.Where(r => r.Reference == 2).Select(r => r.ItemDefinition).ToArray();
+        Assert.That(player.TemporaryStorage!.Items.Single().Definition, Is.AnyOf(tier));
+
+        foreach (var item in player.TemporaryStorage.Items.ToList())
+        {
+            await player.TemporaryStorage.RemoveItemAsync(item).ConfigureAwait(false);
+        }
+
+        await this.AddTrophiesAsync(player, 101).ConfigureAwait(false);
+        Assert.That(handler.TryGetRequiredItems(player, out _, out _), Is.EqualTo(CraftingResult.TooManyItems));
+    }
+
+    private static int CountSigns(Player player)
+        => player.Inventory!.Items.Count(i => i.Definition is { Group: 14, Number: 21 } && i.Level == 3);
+
     private async ValueTask<(Player Master, List<Player> Members)> StartWarAsync(int members = 0)
     {
         await this.AdvanceAsync(TimeSpan.Zero).ConfigureAwait(false);
@@ -262,12 +393,58 @@ public class ArcaWarTest
         return (master, list);
     }
 
-    private async ValueTask<Player> CreateMemberAsync(GuildPosition position, Player? masterOfGuild = null)
+    private async ValueTask<Player> CreateMemberAsync(GuildPosition position, Player? masterOfGuild = null, int signs = 10)
     {
         var player = await this._world.CreatePlayerAsync(CharacterClassNumber.DarkKnight, 300, 0).ConfigureAwait(false);
         player.GuildStatus = new GuildMemberStatus(masterOfGuild?.GuildStatus?.GuildId ?? this._nextGuildId++, position);
         await this._world.GameContext.AddPlayerAsync(player).ConfigureAwait(false);
+        if (position == GuildPosition.GuildMaster)
+        {
+            await this.GiveSignsAsync(player, signs).ConfigureAwait(false);
+        }
+
         return player;
+    }
+
+    private async ValueTask GiveSignsAsync(Player player, int count)
+    {
+        var definition = this._world.Configuration.Items.Single(i => i.Group == 14 && i.Number == 21);
+        for (var i = 0; i < count; i++)
+        {
+            var item = player.PersistenceContext.CreateNew<Item>();
+            item.Definition = definition;
+            item.Level = 3;
+            item.Durability = 1;
+            Assert.That(await player.Inventory!.AddItemAsync(item).ConfigureAwait(false), Is.True);
+        }
+    }
+
+    private async ValueTask AddTrophiesAsync(Player player, int count)
+    {
+        var definition = this._world.Configuration.Items.Single(i => i.Group == 13 && i.Number == 147);
+        for (var left = count; left > 0; left -= definition.Durability)
+        {
+            var item = player.PersistenceContext.CreateNew<Item>();
+            item.Definition = definition;
+            item.Durability = Math.Min(left, definition.Durability);
+            Assert.That(await player.TemporaryStorage!.AddItemAsync(item).ConfigureAwait(false), Is.True);
+        }
+    }
+
+    private double DamageFactor(Player attacker, Player defender)
+    {
+        var args = new PlayerDamageFactorArgs();
+        this._plugIn.ModifyDamageFactor(attacker, defender, args);
+        return args.Factor;
+    }
+
+    private async ValueTask WarpToSpawnAsync(Player player, short mapNumber)
+    {
+        await Season21EventWorld.CompleteMapChangeAsync(player).ConfigureAwait(false);
+        var map = this._world.Configuration.Maps.Single(m => m.Number == mapNumber && m.Discriminator == 0);
+        await player.WarpToAsync(map.ExitGates.First(g => g.IsSpawnGate)).ConfigureAwait(false);
+        await Season21EventWorld.CompleteMapChangeAsync(player).ConfigureAwait(false);
+        Assert.That(player.CurrentMap?.Definition.Number, Is.EqualTo(mapNumber));
     }
 
     private async ValueTask PlaceAsync(Player player, short mapNumber, byte x, byte y)

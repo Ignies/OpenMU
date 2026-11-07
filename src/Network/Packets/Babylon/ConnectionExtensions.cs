@@ -1959,7 +1959,7 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="kind">The kind.</param>
-    /// <param name="result">0 success, 1 not open, 2 no guild, 3 not the guild master, 4 already registered, 5 too many guilds, 6 guild not registered, 7 too many members, 8 not registered.</param>
+    /// <param name="result">0 success, 1 not open, 2 no guild, 3 not the guild master, 4 already registered, 5 too many guilds, 6 guild not registered, 7 too many members, 8 not registered, 9 not enough Signs of Lord.</param>
     /// <remarks>
     /// Is sent by the server when: After an ArcaWarRequest.
     /// Causes reaction on client side: The client tells the result.

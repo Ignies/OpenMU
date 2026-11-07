@@ -8771,7 +8771,7 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The guild war of Season 21 over three obelisks on Acheron and Deventer: guild masters register their guilds, then the members; during the war, a guild whose members stand on the three auras of an obelisk can destroy it and holds it; kills and obelisks give points for experience, and the guilds holding obelisks at the end get the buff of their elements for a week (S21Emu Event/ArcaBattle.xml, webzen guide). Only clients with the Arca War view (Babylon) can register..
+        ///   Looks up a localized string similar to The guild war of Season 21 over three obelisks on Acheron and Deventer: guild masters register their guilds, then the members; during the war, a guild whose members stand on the three auras of an obelisk can destroy it and holds it; kills and obelisks give points for experience, and the guilds holding obelisks at the end get the buff of their elements and, in Acheron, more experience and item drops for a week (S21Emu Event/ArcaBattle.xml, webzen guide). A master pays 10 Signs of Lord to register; the damage between the guilds can be reduced; Sir Lesnar exchanges the Trophies of Battle. Only clients with the Arca War view (Babylon) can register..
         /// </summary>
         public static string ArcaWarPlugIn_Description {
             get {

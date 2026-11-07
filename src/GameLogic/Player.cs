@@ -822,7 +822,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             skill = new SkillEntry { Skill = ice };
         }
 
-        var hitInfo = await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false);
+        var hitInfo = this.ApplyDamageFactorOfPlugIns(attacker, await attacker.CalculateDamageAsync(this, skill, isCombo, damageFactor).ConfigureAwait(false));
 
         if (skill?.Skill is not { } attackSkill || attackSkill.DamageType != DamageType.Fenrir)
         {
@@ -2217,6 +2217,33 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
         var eventArgs = new CancelEventArgs();
         plugInPoint.CheckAttack(attackerPlayer, this, eventArgs);
         return eventArgs.Cancel;
+    }
+
+    /// <summary>
+    /// Scales the damage of a hit of another player by the <see cref="IPlayerDamageFactorPlugIn"/>s.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <param name="hitInfo">The hit.</param>
+    /// <returns>The scaled hit.</returns>
+    private HitInfo ApplyDamageFactorOfPlugIns(IAttacker attacker, HitInfo hitInfo)
+    {
+        if (hitInfo.TotalDamage == 0
+            || (attacker as Player ?? (attacker as IPlayerSurrogate)?.Owner) is not { } attackerPlayer
+            || attackerPlayer == this
+            || this.GameContext.PlugInManager.GetPlugInPoint<IPlayerDamageFactorPlugIn>() is not { } plugInPoint)
+        {
+            return hitInfo;
+        }
+
+        var args = new PlayerDamageFactorArgs();
+        plugInPoint.ModifyDamageFactor(attackerPlayer, this, args);
+        if (args.Factor == 1)
+        {
+            return hitInfo;
+        }
+
+        var factor = Math.Max(0, args.Factor);
+        return hitInfo with { HealthDamage = (uint)(hitInfo.HealthDamage * factor), ShieldDamage = (uint)(hitInfo.ShieldDamage * factor) };
     }
 
     /// <summary>

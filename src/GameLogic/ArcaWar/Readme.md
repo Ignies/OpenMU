@@ -2,13 +2,15 @@
 
 Update "Add the Arca War of Season 21" (S21Emu `Event/ArcaBattle.xml`, `Monster/Monster.xml`, `Effect.txt`, `Define.lua`,
 and the webzen guide of the Arca War for what the data doesn't have), plugin "Arca War (Season 21)" (`ArcaWarPlugIn`, off
-by default, the update switches it on once). One `ArcaWarContext` per game context runs the war on the plain maps 92 and
+by default, the update switches it on once; version 2 adds the effect 187 and Sir Lesnar, and an existing configuration
+gets the new settings with their defaults). One `ArcaWarContext` per game context runs the war on the plain maps 92 and
 96 (Acheron and Deventer of the Arca War, which only the war uses; the Protector of Acheron plays on copies of them).
 
 ## Stages
 
 Daily at 10:45 (server time, every day of the week): the guild masters register their guilds (1 minute, at most 6, first
-come), then the members of the registered guilds (1 minute, at most 20 a guild with the master), a minute of waiting, 30
+come, each paying `RegistrationFee`, 10 Signs of Lord (14/21 level 3) of the webzen guide; a stack counts by its
+durability, and a master without them gets `NotEnoughSignsOfLord`), then the members of the registered guilds (1 minute, at most 20 a guild with the master), a minute of waiting, 30
 minutes of war, 10 minutes to leave; then everyone left on the maps goes to the safe zone. A guild with fewer members than
 `MinimumGuildMembers` (1) drops out before the war; with fewer guilds than `MinimumGuilds` (1) the war is cancelled. The
 guilds go in turn into the three spawn groups (two on Acheron, one on Deventer); the start moves every registered member
@@ -28,7 +30,10 @@ destroys it takes it for the guild (50 points). The holder can't hurt its own ob
 ## Fighting, points and rewards
 
 During the war, on the maps: members of one guild can't hurt each other (`FriendlyFire` off), members of other guilds fight
-without the player killer penalty, players outside the war can't fight the ones in it. Points (webzen): 5 a monster of the
+without the player killer penalty, players outside the war can't fight the ones in it. The damage between members of
+other guilds is reduced by `OppositeTeamDamageReduction` and, with friendly fire, within a guild by
+`SelfTeamDamageReduction` (percent, S21Emu `DamageReduction` has the keys but no values, so both are 0; the plugin
+point `IPlayerDamageFactorPlugIn` scales the hit). Points (webzen): 5 a monster of the
 groups, 10 a member of another guild, 50 an obelisk. A monster and the first kill of each enemy give the Trophies of Battle
 (13/147). The monster groups (592-596 twice on Acheron, 611-615 on Deventer) are filled up to ten every ten minutes, each
 monster at a random spot of its group.
@@ -39,12 +44,26 @@ also on members who come online later (`state/arca_war.json`): fire 179 +25 skil
 +5 % critical damage chance, wind 182 +30 damage, darkness 183 10 % damage reduction (values of `Effect.txt` by effect
 number, elements of `Define.lua`; the webzen guide pairs earth with damage and wind with the critical chance).
 
+## Acheron reward and trophies
+
+The members of a guild holding obelisks have, while they are on a map of `BonusMaps` (Acheron, 91; webzen: "only in
+Acheron"), the effect 187 (Arca Battle Reward 6) until their holding ends: `BonusExperiencePercent` 20 on
+`BonusExperienceRate` and `BonusDropPercent` 10 on `ItemDropRateBonus` (values 1 and 2 of `Effect.txt`; the Russian
+guide says 20 % drop). The drop bonus raises the chance of every chance based drop group of a kill
+(`DefaultDropGenerator`). It comes on entering the map (or at the end of the war, on login) and goes on leaving it.
+
+Sir Lesnar (584) stands in Lorencia, Devias and Noria (S21Emu `MonsterSetBase`) with the window `NpcDialog`, and
+exchanges 1 to 100 Trophies of Battle at once (`TrophiesOfBattleCrafting`, mix 53, only while the plugin is on): the
+rate is 50 % for the first trophy of each ten plus 5 % for each further one (`TrophiesOfBattleMixRate` 50,
+`TrophiesOfBattleMixRateAdd` 5 of `GameServerInfo - ChaosMix.dat`, read with the tiers of the guide), and a success
+gives one random item of the bag of the ten (bags 153-162, the result items whose `Reference` is the tier; counts as
+durability). A failure takes the trophies.
+
 ## Not ported
 
-The Sign of Lord fee of webzen (S21Emu has none), the damage reduction against the own and the opposite team
-(`DamageReduction` has no values in the data), the 20 % experience and drop in Acheron of the holders (effect 187), the
-exchange of the trophies at Sir Lesnar (the mix of `TrophiesOfBattleMixRate`, bags 153-162), and the registration of a
-Season 6 client, which has no packet for it: it gets the stages as golden messages.
+The ranking of the guilds by registered Signs of Lord of webzen (the war takes the first six which pay), the
+registration of a Season 6 client, which has no packet for it (it gets the stages as golden messages), and its dialog
+of Sir Lesnar.
 
 ## Babylon packets
 

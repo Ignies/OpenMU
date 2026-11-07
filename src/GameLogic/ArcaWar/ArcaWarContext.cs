@@ -10,6 +10,7 @@ using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Rewards;
+using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 
@@ -353,6 +354,70 @@ public sealed class ArcaWarContext : IEventStateProvider
            && attackerGuild != defenderGuild;
 
     /// <summary>
+    /// Gets the factor of the damage of a hit between two members of the war on its maps, while it plays: reduced by
+    /// <see cref="ArcaWarConfiguration.SelfTeamDamageReduction"/> within a guild and by
+    /// <see cref="ArcaWarConfiguration.OppositeTeamDamageReduction"/> between guilds.
+    /// </summary>
+    /// <param name="attacker">The attacker.</param>
+    /// <param name="defender">The defender.</param>
+    /// <returns>The factor, 1 for a hit outside of the war.</returns>
+    public double GetDamageFactor(Player attacker, Player defender)
+    {
+        if (this.Stage != ArcaWarStage.Playing
+            || !(this.IsOnWarMap(attacker) || this.IsOnWarMap(defender))
+            || this.GetGuild(attacker) is not { } attackerGuild
+            || this.GetGuild(defender) is not { } defenderGuild)
+        {
+            return 1;
+        }
+
+        var reduction = attackerGuild == defenderGuild ? this._configuration.SelfTeamDamageReduction : this._configuration.OppositeTeamDamageReduction;
+        return Math.Clamp(1 - (reduction / 100.0), 0, 1);
+    }
+
+    /// <summary>
+    /// Gives the bonus to a member of a guild holding obelisks which entered a map of the bonus, or takes it when it
+    /// left one.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="map">The map which the player entered or left.</param>
+    /// <param name="entered">If set to <c>true</c>, the player entered the map; otherwise, it left it.</param>
+    /// <returns>A task.</returns>
+    public async ValueTask UpdateBonusAsync(Player player, GameMap map, bool entered)
+    {
+        var configuration = this._configuration;
+        if (configuration.BonusEffectNumber == 0 || !configuration.BonusMaps.Contains(map.Definition.Number))
+        {
+            return;
+        }
+
+        if (!entered)
+        {
+            if (player.MagicEffectList.TryGetEffect(configuration.BonusEffectNumber, out var active))
+            {
+                await active.DisposeAsync().ConfigureAwait(false);
+            }
+
+            return;
+        }
+
+        if (player.Attributes is null
+            || player.MagicEffectList.ContainsEffect(configuration.BonusEffectNumber)
+            || this._gameContext.Configuration.MagicEffects.FirstOrDefault(e => e.Number == configuration.BonusEffectNumber) is not { } definition
+            || (await this.GetHoldingsAsync(player).ConfigureAwait(false)).MaxBy(h => h.ExpiresUtc) is not { } holding)
+        {
+            return;
+        }
+
+        var effect = new MagicEffect(
+            holding.ExpiresUtc - this._utcNow(),
+            definition,
+            new MagicEffect.ElementWithTarget(new ConstantElement(configuration.BonusExperiencePercent / 100f), Stats.BonusExperienceRate),
+            new MagicEffect.ElementWithTarget(new ConstantElement(configuration.BonusDropPercent / 100f), Stats.ItemDropRateBonus));
+        await player.MagicEffectList.AddEffectAsync(effect).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Opens the registration at the next tick, if the war is closed.
     /// </summary>
     internal void ForceStart()
@@ -386,25 +451,13 @@ public sealed class ArcaWarContext : IEventStateProvider
     /// <returns>A task.</returns>
     internal async ValueTask ApplyHoldingBuffsAsync(Player player)
     {
-        if (player.GuildStatus is not { } status || player.Attributes is null)
+        if (player.Attributes is null)
         {
             return;
         }
 
         var now = this._utcNow();
-        List<ArcaHolding> holdings;
-        lock (this._sync)
-        {
-            holdings = [.. this.State.Holdings.Where(h => h.ExpiresUtc > now)];
-        }
-
-        if (holdings.Count == 0)
-        {
-            return;
-        }
-
-        var persistentId = await this.GetPersistentGuildIdAsync(status.GuildId).ConfigureAwait(false);
-        foreach (var holding in holdings.Where(h => h.PersistentGuildId is { } id && persistentId is { } current ? id == current : h.GuildId == status.GuildId))
+        foreach (var holding in await this.GetHoldingsAsync(player).ConfigureAwait(false))
         {
             if (this._configuration.Buffs.FirstOrDefault(b => b.Element == holding.Element) is not { } buff
                 || player.MagicEffectList.ContainsEffect(buff.EffectNumber)
@@ -425,6 +478,11 @@ public sealed class ArcaWarContext : IEventStateProvider
             var effect = new MagicEffect(holding.ExpiresUtc - now, definition, new MagicEffect.ElementWithTarget(new ConstantElement(value), attribute));
             await player.MagicEffectList.AddEffectAsync(effect).ConfigureAwait(false);
         }
+
+        if (player.CurrentMap is { } map)
+        {
+            await this.UpdateBonusAsync(player, map, true).ConfigureAwait(false);
+        }
     }
 
     private static async ValueTask ForEachAsync(IEnumerable<Player> players, Func<Player, ValueTask> action)
@@ -440,6 +498,72 @@ public sealed class ArcaWarContext : IEventStateProvider
                 player.Logger.LogError(ex, "Arca War: couldn't update {player}.", player);
             }
         }
+    }
+
+    private static List<(Item Item, byte Count)>? GetFeeItems(Player player, RewardItem? fee)
+    {
+        if (fee is not { Count: > 0 })
+        {
+            return [];
+        }
+
+        var items = new List<(Item Item, byte Count)>();
+        var left = (int)fee.Count;
+        foreach (var item in player.Inventory?.Items ?? [])
+        {
+            if (left == 0)
+            {
+                break;
+            }
+
+            if (item.Definition is { } definition && definition.Group == fee.Group && definition.Number == fee.Number && item.Level == fee.Level)
+            {
+                var count = Math.Min(left, item.IsStackable() ? (int)item.Durability : 1);
+                items.Add((item, (byte)count));
+                left -= count;
+            }
+        }
+
+        return left == 0 ? items : null;
+    }
+
+    private static async ValueTask PayAsync(Player player, List<(Item Item, byte Count)> items)
+    {
+        foreach (var (item, count) in items)
+        {
+            if (item.IsStackable() && item.Durability > count)
+            {
+                item.Durability -= count;
+                await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(item, true)).ConfigureAwait(false);
+            }
+            else
+            {
+                await player.DestroyInventoryItemAsync(item).ConfigureAwait(false);
+            }
+        }
+    }
+
+    private async ValueTask<List<ArcaHolding>> GetHoldingsAsync(Player player)
+    {
+        if (player.GuildStatus is not { } status)
+        {
+            return [];
+        }
+
+        var now = this._utcNow();
+        List<ArcaHolding> holdings;
+        lock (this._sync)
+        {
+            holdings = [.. this.State.Holdings.Where(h => h.ExpiresUtc > now)];
+        }
+
+        if (holdings.Count == 0)
+        {
+            return holdings;
+        }
+
+        var persistentId = await this.GetPersistentGuildIdAsync(status.GuildId).ConfigureAwait(false);
+        return [.. holdings.Where(h => h.PersistentGuildId is { } id && persistentId is { } current ? id == current : h.GuildId == status.GuildId)];
     }
 
     private DateTime GetNextStart(DateTime localNow)
@@ -570,6 +694,7 @@ public sealed class ArcaWarContext : IEventStateProvider
         }
 
         var (name, persistentId) = await this.GetGuildInfoAsync(player, status.GuildId).ConfigureAwait(false);
+        var fee = GetFeeItems(player, this._configuration.RegistrationFee);
         lock (this._sync)
         {
             if (this._guilds.Any(g => g.Id == status.GuildId))
@@ -582,11 +707,18 @@ public sealed class ArcaWarContext : IEventStateProvider
                 return ArcaWarRequestResult.TooManyGuilds;
             }
 
+            if (fee is null)
+            {
+                return ArcaWarRequestResult.NotEnoughSignsOfLord;
+            }
+
             var guild = new ArcaGuild(status.GuildId, name, this.NextSpawnGroup()) { PersistentId = persistentId };
             guild.Members.Add(characterId);
             this._guilds.Add(guild);
-            return ArcaWarRequestResult.Success;
         }
+
+        await PayAsync(player, fee).ConfigureAwait(false);
+        return ArcaWarRequestResult.Success;
     }
 
     private ArcaWarRequestResult RegisterMember(Guid characterId, GuildMemberStatus? status)

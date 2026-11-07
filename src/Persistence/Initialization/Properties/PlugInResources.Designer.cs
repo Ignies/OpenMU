@@ -1643,7 +1643,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Adds the Arca War of S21Emu Event/ArcaBattle.xml: the Fire Tower (598) as the obelisk, the buffs and the death penalty of the war (effects 179-184), the schedule (daily 10:45), the three obelisks with their auras on Acheron and Deventer (maps 92 and 96), the monster groups and the spawns of the guilds, the points, experience and trophies of the webzen guide, and switches the plugin 'Arca War (Season 21)' on once. A second run keeps the operator's configuration and switch..
+        ///   Looks up a localized string similar to Adds the Arca War of S21Emu Event/ArcaBattle.xml: the Fire Tower (598) as the obelisk, the buffs and the death penalty of the war (effects 179-184), the schedule (daily 10:45), the three obelisks with their auras on Acheron and Deventer (maps 92 and 96), the monster groups and the spawns of the guilds, the points, experience and trophies of the webzen guide, and switches the plugin 'Arca War (Season 21)' on once. Version 2 adds the reward of Acheron (effect 187) and Sir Lesnar (584) in Lorencia, Devias and Noria with the exchange of the Trophies of Battle (bags 153-162). A second run keeps the operator's configuration and switch..
         /// </summary>
         public static string AddSeason21ArcaWarUpdatePlugIn_Description {
             get {

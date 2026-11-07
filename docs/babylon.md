@@ -90,7 +90,7 @@ Rules:
 | `labyrinth` | The Labyrinth of Dimensions of Season 21 (map 115): a solo instance of 41 floors with Ruud and boxes (same update; event type 10) |
 | `labyrinth_league` | The scores and weekly leagues of the labyrinth: floor points by the daily record, first play and fast finish, a Maze of Dimensions box per floor, groups of five per tier (Bronze, Silver, Gold, Legend), two up and the fifth down every week, the tier reward on the 29th (update "Add the leagues of the Labyrinth of Dimensions of Season 21", plugin "Labyrinth of Dimensions league (Season 21)", off by default; `C1 EE B5 LabyrinthLeague`) |
 | `labyrinth_rooms` | The 10 x 10 rooms of the labyrinth floors: 30 paths of rooms which show areas of 38 other maps, portals between them, mission rooms (kills, kills in time, damage, MU Helper time, no health or mana potion) which open their mission portals, the main mission which clears the floor, the goblin in newly opened rooms (update "Add the rooms of the Labyrinth of Dimensions of Season 21", plugin "Labyrinth of Dimensions rooms (Season 21)", off by default; only a Babylon client plays them; `C1 EE B6`-`B9`) |
-| `arca_war` | The Arca War of Season 21 (maps 92 and 96): guild masters register (1 minute), then members (1 minute), a 30-minute guild war over three obelisks (Fire Tower 598, 500,000 health, 300,000 once held, back after 20 s) whose shield drops for a guild standing on its three auras; 5 points a monster, 10 an enemy, 50 an obelisk, experience by points, Trophies of Battle, and a week's buff of the element for the guilds holding obelisks at the end (update "Add the Arca War of Season 21", plugin "Arca War (Season 21)", off by default; `C1 EE BA`-`BD`, `src/GameLogic/ArcaWar/Readme.md`) |
+| `arca_war` | The Arca War of Season 21 (maps 92 and 96): guild masters register (1 minute), then members (1 minute), a 30-minute guild war over three obelisks (Fire Tower 598, 500,000 health, 300,000 once held, back after 20 s) whose shield drops for a guild standing on its three auras; 5 points a monster, 10 an enemy, 50 an obelisk, experience by points, Trophies of Battle, a week's buff of the element and the reward of Acheron (effect 187, +20 % experience, +10 % item drops there) for the guilds holding obelisks at the end, a fee of 10 Signs of Lord, a team damage reduction setting and the trophy exchange at Sir Lesnar (update "Add the Arca War of Season 21" version 2, plugin "Arca War (Season 21)", off by default; `C1 EE BA`-`BD`, `src/GameLogic/ArcaWar/Readme.md`) |
 | `chaos_castle_survival` | The Chaos Castle Survival of the Fittest of Season 21 (map 97, gate 443): a Chaos Castle for up to 70 players from level 280 whose games are the try-outs (8th-10th), semi-finals (11th-12th) and final (13th, 1:25) of a monthly tournament; 1 point a monster, 2 a player, 3 the win; the best 20 and 10 go on; the Conqueror's Badge for the champion (update "Add the Chaos Castle Survival of Season 21", plugins "Chaos Castle Survival of the Fittest (Season 21)" and "Chaos Castle Survival start", off by default; event type 13 of the event packets, the castle itself shows the Chaos Castle states) |
 | `boss_battle` | The Boss Battle Together of Season 21 (map 139): one of five bosses for everybody, rewards for damage, top damage and the last hit (update "Add the Boss Battle Together of Season 21"; event type 11) |
 | `acheron_guardian` | The Protector of Acheron of Season 21 (maps 92 and 96): 30 waves of monsters, a bag reward for 100 points (update "Add the Protector of Acheron of Season 21"; event type 12) |
@@ -348,8 +348,8 @@ C1 05 EE BA  ArcaWarRequest (client; fork id arca_war)        C1 06 EE BB  ArcaW
              1 register as a member, 2 enter the war             5  u8      0 success, 1 not open, 2 no guild,
                                                                             3 not the master, 4 already registered,
 C1 10 EE BC  ArcaWarStageState (server)                                     5 too many guilds, 6 guild not registered,
-  4  u8      0 closed, 1 master registration, 2 member                      7 too many members, 8 not registered
-             registration, 3 waiting, 4 war, 5 closing
+  4  u8      0 closed, 1 master registration, 2 member                      7 too many members, 8 not registered,
+             registration, 3 waiting, 4 war, 5 closing                      9 not enough Signs of Lord
   5  u8      registered guilds, 6 bool registered
   8  u32 LE  seconds to the next stage, 12 u32 LE points
 
@@ -365,6 +365,13 @@ the Season 6 client gets the stage changes as golden messages and can't register
 destructible the client draws as the obelisk; its shield (`IsOpen`) is down only for the guild on all three auras.
 
 Item rewards go into the gremory case where Season 21 does (and the plugin is on), else into the inventory.
+
+Sir Lesnar (NPC 584 in Lorencia 114/132, Devias 240/53, Noria 183/126) has the window `NpcDialog`: the client draws
+its own dialog, with the requests of `EE BA` and the exchange of the Trophies of Battle (13/147), which is the standard
+mix: the client moves 1 to 100 trophies into the mix box (`C3 24` ItemMoveRequest) and sends `C1 05 86` with mix 53; the
+result is the standard `C1 86` answer. The rate is 50 % for the first trophy of each ten plus 5 % for each further one;
+the item comes from the bag of the ten (S21Emu bags 153-162). The registration fee takes 10 Signs of Lord (14/21
+level 3) from the master's inventory; a master without them gets result 9.
 
 ### Economy (ranges 30-3F, 60-7F)
 

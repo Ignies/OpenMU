@@ -53,4 +53,9 @@ public enum ArcaWarRequestResult
     /// The player isn't registered.
     /// </summary>
     NotRegistered,
+
+    /// <summary>
+    /// The guild master lacks the Signs of Lord of the registration fee.
+    /// </summary>
+    NotEnoughSignsOfLord,
 }

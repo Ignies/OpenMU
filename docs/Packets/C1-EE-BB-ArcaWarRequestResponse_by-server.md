@@ -17,4 +17,4 @@ The client tells the result.
 | 2 | 1 |    Byte   | 0xEE  | Packet header - packet type identifier |
 | 3 | 1 |    Byte   | 0xBB  | Packet header - sub packet type identifier |
 | 4 | 1 | Byte |  | Kind |
-| 5 | 1 | Byte |  | Result; 0 success, 1 not open, 2 no guild, 3 not the guild master, 4 already registered, 5 too many guilds, 6 guild not registered, 7 too many members, 8 not registered. |
+| 5 | 1 | Byte |  | Result; 0 success, 1 not open, 2 no guild, 3 not the guild master, 4 already registered, 5 too many guilds, 6 guild not registered, 7 too many members, 8 not registered, 9 not enough Signs of Lord. |

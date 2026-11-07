@@ -4,7 +4,10 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
+using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.ArcaWar;
+using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 using MUnique.OpenMU.GameLogic.Rewards;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
@@ -12,8 +15,10 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// Configures the <see cref="ArcaWarPlugIn"/> with S21Emu <c>Event/ArcaBattle.xml</c> (schedule, stages, obelisks, auras,
 /// monster groups and player spawns), <c>Monster/Monster.xml</c> (the Fire Tower, 598) and <c>Effect.txt</c> (the buffs
-/// 179-183 and the penalty 184, named by <c>Define.lua</c>), with the points, experience, trophies and penalty time of the
-/// webzen guide of the Arca War.
+/// 179-183, the penalty 184 and the reward 187 of Acheron, named by <c>Define.lua</c>), with the points, experience,
+/// trophies, penalty time and Sign of Lord fee of the webzen guide of the Arca War; places Sir Lesnar (584, S21Emu
+/// <c>MonsterSetBase</c>) with the exchange of the Trophies of Battle (<c>EventItemBag</c> 153-162, the rates of
+/// <c>GameServerInfo - ChaosMix.dat</c>).
 /// </summary>
 internal class Season21ArcaWarInitializer
 {
@@ -28,6 +33,29 @@ internal class Season21ArcaWarInitializer
     internal const short PenaltyEffectNumber = 184;
 
     /// <summary>
+    /// The magic effect of the reward of Acheron (Arca Battle Reward 6).
+    /// </summary>
+    internal const short BonusEffectNumber = 187;
+
+    /// <summary>
+    /// The number of Sir Lesnar.
+    /// </summary>
+    internal const short SirLesnarNumber = 584;
+
+    /// <summary>
+    /// The first number of the spawn areas of Sir Lesnar.
+    /// </summary>
+    private const short SirLesnarSpawnNumber = 5840;
+
+    /// <summary>
+    /// The rate of the first trophy of a tier and the addition of each further one (<c>TrophiesOfBattleMixRate</c>,
+    /// <c>TrophiesOfBattleMixRateAdd</c>).
+    /// </summary>
+    private const byte TrophyRate = 50;
+
+    private const byte TrophyRateAdd = 5;
+
+    /// <summary>
     /// The buffs: element (<c>Define.lua</c> <c>EFFECT_ARCA_*TOWER</c>), effect, group and the value of <c>Effect.txt</c>,
     /// read with the meanings of the webzen guide (skill damage, defense, critical chance, damage, damage reduction).
     /// </summary>
@@ -38,6 +66,31 @@ internal class Season21ArcaWarInitializer
         (ArcaElement.Earth, 181, 105, ArcaBuffKind.CriticalDamageChance, 5),
         (ArcaElement.Wind, 182, 106, ArcaBuffKind.Damage, 30),
         (ArcaElement.Darkness, 183, 107, ArcaBuffKind.DamageReduction, 10),
+    ];
+
+    private static readonly (byte Map, byte X, byte Y, byte Direction)[] SirLesnarSpawns =
+    [
+        (0, 114, 132, 3), // Lorencia
+        (2, 240, 53, 7), // Devias
+        (3, 183, 126, 2), // Noria
+    ];
+
+    /// <summary>
+    /// The items of the trophy bags (153-162, one for each tier): the count of the first bag and the addition of each
+    /// further one, at most 255.
+    /// </summary>
+    private static readonly (byte Group, short Number, byte First, byte Step)[] TrophyBagItems =
+    [
+        (12, 288, 3, 3), // Elemental Rune
+        (14, 467, 2, 2), // Guardian Enhanced Stone
+        (14, 468, 1, 1), // Elite Guardian Enhanced Stone
+        (13, 468, 3, 3), // Golden Sentence
+        (14, 224, 2, 2), // Bless of Light (Greater)
+        (0, 41, 25, 25), // Pandora Pick (Two-Handed)
+        (14, 342, 1, 1), // Steel of Heaven
+        (14, 469, 5, 5), // Guardian Elite Option Change Piece
+        (14, 448, 1, 0), // Ruud Box (3000)
+        (14, 341, 1, 0), // Sealed Stone Shard
     ];
 
     private static readonly (byte Index, short Map, byte X, byte Y, (byte X, byte Y)[] Auras)[] Obelisks =
@@ -140,6 +193,8 @@ internal class Season21ArcaWarInitializer
         }
 
         this.AddEffect(PenaltyEffectNumber, 108, true);
+        this.AddEffect(BonusEffectNumber, 255, false);
+        this.PlaceSirLesnar();
 
         var configuration = Season21PlugInConfigurations.GetOrCreate<ArcaWarConfiguration>(this._context, this._gameConfiguration, typeof(ArcaWarPlugIn).GUID, out var plugIn);
         if (configuration is null || configuration.Obelisks.Count > 0)
@@ -167,6 +222,69 @@ internal class Season21ArcaWarInitializer
         tower.ObjectKind = NpcObjectKind.Destructible;
         tower.NumberOfMaximumItemDrops = 0;
         this._gameConfiguration.Monsters.Add(tower);
+    }
+
+    private void PlaceSirLesnar()
+    {
+        var number = SirLesnarSpawnNumber;
+        foreach (var (map, x, y, direction) in SirLesnarSpawns)
+        {
+            Season21NpcSpawns.Place(this._context, this._gameConfiguration, number++, map, SirLesnarNumber, LocalizedString.FromResource(() => MonsterNames.SirLesnar), x, y, (Direction)direction);
+        }
+
+        if (this._gameConfiguration.Monsters.FirstOrDefault(m => m.Number == SirLesnarNumber) is not { } lesnar)
+        {
+            return;
+        }
+
+        if (lesnar.NpcWindow == NpcWindow.Undefined)
+        {
+            lesnar.NpcWindow = NpcWindow.NpcDialog;
+        }
+
+        if (lesnar.ItemCraftings.All(c => c.Number != TrophiesOfBattleCrafting.Number)
+            && this._gameConfiguration.Items.FirstOrDefault(i => i.Group == 13 && i.Number == 147) is { } trophy)
+        {
+            lesnar.ItemCraftings.Add(this.CreateTrophyExchange(trophy));
+        }
+    }
+
+    private ItemCrafting CreateTrophyExchange(ItemDefinition trophy)
+    {
+        var crafting = this._context.CreateNew<ItemCrafting>();
+        crafting.Name = LocalizedString.FromResource(() => CraftingNames.TrophiesOfBattleExchange);
+        crafting.Number = TrophiesOfBattleCrafting.Number;
+        crafting.ItemCraftingHandlerClassName = typeof(TrophiesOfBattleCrafting).FullName!;
+        var settings = this._context.CreateNew<SimpleCraftingSettings>();
+        crafting.SimpleCraftingSettings = settings;
+        settings.SuccessPercent = TrophyRate;
+        settings.MaximumSuccessPercent = 100;
+
+        var trophies = this._context.CreateNew<ItemCraftingRequiredItem>();
+        trophies.PossibleItems.Add(trophy);
+        trophies.MinimumAmount = 1;
+        trophies.MaximumAmount = TrophiesOfBattleCrafting.TierSize * 10;
+        trophies.AddPercentage = TrophyRateAdd;
+        settings.RequiredItems.Add(trophies);
+
+        for (byte tier = 1; tier <= 10; tier++)
+        {
+            foreach (var (group, number, first, step) in TrophyBagItems)
+            {
+                if (this._gameConfiguration.Items.FirstOrDefault(i => i.Group == group && i.Number == number) is not { } definition)
+                {
+                    continue;
+                }
+
+                var result = this._context.CreateNew<ItemCraftingResultItem>();
+                result.ItemDefinition = definition;
+                result.Reference = tier;
+                result.Durability = (byte)Math.Min(byte.MaxValue, first + (step * (tier - 1)));
+                settings.ResultItems.Add(result);
+            }
+        }
+
+        return crafting;
     }
 
     private void AddEffect(short number, byte group, bool stopByDeath)

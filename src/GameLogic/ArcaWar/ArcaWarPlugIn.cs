@@ -22,7 +22,8 @@ using MUnique.OpenMU.PlugIns;
 [Display(Name = nameof(PlugInResources.ArcaWarPlugIn_Name), Description = nameof(PlugInResources.ArcaWarPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("2F8D4A61-9C3B-4E7A-B5D2-71E0C4A8F936")]
 public sealed class ArcaWarPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISupportCustomConfiguration<ArcaWarConfiguration>, ISupportDefaultCustomConfiguration, IDisabledByDefault,
-    IAttackableGotKilledPlugIn, IPlayerStateChangedPlugIn, IPlayerAttackRestrictionPlugIn, IPlayerKillPenaltyExemptionPlugIn
+    IAttackableGotKilledPlugIn, IPlayerStateChangedPlugIn, IPlayerAttackRestrictionPlugIn, IPlayerKillPenaltyExemptionPlugIn,
+    IPlayerDamageFactorPlugIn, IObjectAddedToMapPlugIn, IObjectRemovedFromMapPlugIn
 {
     /// <summary>
     /// The fork feature id.
@@ -113,6 +114,27 @@ public sealed class ArcaWarPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
             eventArgs.IsExempted = true;
         }
     }
+
+    /// <inheritdoc />
+    public void ModifyDamageFactor(Player attacker, Player defender, PlayerDamageFactorArgs args)
+    {
+        if (this._contexts.TryGetValue(attacker.GameContext, out var context))
+        {
+            args.Factor *= context.GetDamageFactor(attacker, defender);
+        }
+    }
+
+    /// <inheritdoc />
+    public ValueTask ObjectAddedToMapAsync(GameMap map, ILocateable addedObject)
+        => addedObject is Player player && this._contexts.TryGetValue(player.GameContext, out var context)
+            ? context.UpdateBonusAsync(player, map, true)
+            : ValueTask.CompletedTask;
+
+    /// <inheritdoc />
+    public ValueTask ObjectRemovedFromMapAsync(GameMap map, ILocateable removedObject)
+        => removedObject is Player player && this._contexts.TryGetValue(player.GameContext, out var context)
+            ? context.UpdateBonusAsync(player, map, false)
+            : ValueTask.CompletedTask;
 
     /// <summary>
     /// Advances the war of a game context.

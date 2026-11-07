@@ -69,9 +69,26 @@ public class ArcaWarConfiguration
     public int MinimumGuilds { get; set; } = 1;
 
     /// <summary>
+    /// Gets or sets the items a guild master pays to register the guild (webzen: 10 Signs of Lord), or <c>null</c> for none.
+    /// </summary>
+    public RewardItem? RegistrationFee { get; set; } = new() { Group = 14, Number = 21, Level = 3, Count = 10 };
+
+    /// <summary>
     /// Gets or sets a value indicating whether the members of a guild can hurt each other (S21Emu <c>FriendlyFire</c>).
     /// </summary>
     public bool FriendlyFire { get; set; }
+
+    /// <summary>
+    /// Gets or sets the percentage by which the damage between members of different guilds is reduced during the war
+    /// (S21Emu <c>DamageReduction OppositeTeam</c>, no value in the data).
+    /// </summary>
+    public float OppositeTeamDamageReduction { get; set; }
+
+    /// <summary>
+    /// Gets or sets the percentage by which the damage between members of one guild is reduced during the war, when
+    /// <see cref="FriendlyFire"/> is on (S21Emu <c>DamageReduction SelfTeam</c>, no value in the data).
+    /// </summary>
+    public float SelfTeamDamageReduction { get; set; }
 
     /// <summary>
     /// Gets or sets the seconds a guild has to stand on all three auras of an obelisk before its shield drops for the
@@ -119,6 +136,26 @@ public class ArcaWarConfiguration
     /// Gets or sets the buffs by element.
     /// </summary>
     public List<ArcaBuff> Buffs { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the maps on which the members of the guilds holding obelisks have the bonus (webzen: Acheron, 91).
+    /// </summary>
+    public List<short> BonusMaps { get; set; } = [91];
+
+    /// <summary>
+    /// Gets or sets the number of the magic effect of the bonus (Arca Battle Reward 6), 0 for none.
+    /// </summary>
+    public short BonusEffectNumber { get; set; } = 187;
+
+    /// <summary>
+    /// Gets or sets the experience bonus in percent (S21Emu <c>Effect.txt</c> 187 value 1).
+    /// </summary>
+    public float BonusExperiencePercent { get; set; } = 20;
+
+    /// <summary>
+    /// Gets or sets the item drop bonus in percent (S21Emu <c>Effect.txt</c> 187 value 2).
+    /// </summary>
+    public float BonusDropPercent { get; set; } = 10;
 
     /// <summary>
     /// Gets or sets the number of the magic effect of the death penalty (Arca Battle Penalty), 0 for none.

@@ -135,4 +135,7 @@
   <data name="LuckyItemRefinery" xml:space="preserve">
     <value>Lucky Item Refinery</value>
   </data>
+  <data name="TrophiesOfBattleExchange" xml:space="preserve">
+    <value>Trophies of Battle Exchange</value>
+  </data>
 </root>

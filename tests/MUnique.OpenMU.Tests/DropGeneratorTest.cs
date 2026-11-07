@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using Moq;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -77,6 +78,29 @@ public class DropGeneratorTest
 
         Assert.That(item, Is.Not.Null);
         Assert.That(item!.Definition, Is.EqualTo(uncappedItem));
+    }
+
+    /// <summary>
+    /// Tests that the item drop rate bonus of the killer raises the chance of the chance based drop groups: a roll of
+    /// 0.52 misses a group of 0.5, but hits it with a bonus of 10 %.
+    /// </summary>
+    [Test]
+    public async ValueTask TestItemDropRateBonusRaisesTheChanceAsync()
+    {
+        var item = this.CreateItemDefinition(14, 14, 0);
+        var monster = this.GetMonster(1, 0);
+        var group = this.CreateDropItemGroup(item);
+        group.Chance = 0.5;
+        monster.DropItemGroups.Add(group);
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var generator = new DefaultDropGenerator(this.GetGameConfig(), this.GetRandomizer2(0, 0.52));
+
+        var (without, _) = await generator.GenerateItemDropsAsync(monster, 1, player).ConfigureAwait(false);
+        player.Attributes!.AddElement(new ConstantElement(0.1f), Stats.ItemDropRateBonus);
+        var (with, _) = await generator.GenerateItemDropsAsync(monster, 1, player).ConfigureAwait(false);
+
+        Assert.That(without, Is.Empty);
+        Assert.That(with.Select(i => i.Definition), Is.EqualTo(new[] { item }));
     }
 
     /// <summary>

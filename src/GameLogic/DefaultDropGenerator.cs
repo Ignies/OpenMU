@@ -60,6 +60,11 @@ public class DefaultDropGenerator : IDropGenerator
     private IReadOnlyList<int>? _gradeRates;
 
     /// <summary>
+    /// The factor of the chance of the chance based drop groups, by the <see cref="Stats.ItemDropRateBonus"/> of the killer.
+    /// </summary>
+    private double _dropRate = 1;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="DefaultDropGenerator" /> class.
     /// </summary>
     /// <param name="config">The configuration.</param>
@@ -95,6 +100,7 @@ public class DefaultDropGenerator : IDropGenerator
         this._dropLevel = ProgressionFeaturePlugIn.GetWorld(player.GameContext)?.GetDropLevel(monster);
         this._killerCarriesWideItems = player.CarriesWideItems();
         this._gradeRates = Season21ItemsFeaturePlugIn.GetConfiguration(player.GameContext)?.GradeRates;
+        this._dropRate = 1 + Math.Max(0, player.Attributes?[Stats.ItemDropRateBonus] ?? 0);
 
         if (monster.ObjectKind == NpcObjectKind.Destructible)
         {
@@ -120,6 +126,7 @@ public class DefaultDropGenerator : IDropGenerator
         this._dropLevel = null;
         this._killerCarriesWideItems = true;
         this._gradeRates = null;
+        this._dropRate = 1;
         return (droppedItems ?? Enumerable.Empty<Item>(), money > 0 ? money : null);
     }
 
@@ -348,7 +355,7 @@ public class DefaultDropGenerator : IDropGenerator
 
             for (int i = 0; i < remainingDrops; i++)
             {
-                var group = this.SelectRandomGroup(this._chanceDropGroups, totalChance);
+                var group = this.SelectRandomGroup(this._chanceDropGroups, totalChance, this._dropRate);
                 if (group is null)
                 {
                     continue;
@@ -601,9 +608,9 @@ public class DefaultDropGenerator : IDropGenerator
 
     private int GetMonsterLevel(MonsterDefinition monster) => this._dropLevel ?? (int)monster[Stats.Level];
 
-    private DropItemGroup? SelectRandomGroup(IEnumerable<DropItemGroup> groups, double totalChance)
+    private DropItemGroup? SelectRandomGroup(IEnumerable<DropItemGroup> groups, double totalChance, double rate = 1)
     {
-        var remainingThreshold = this._randomizer.NextDouble();
+        var remainingThreshold = this._randomizer.NextDouble() / rate;
         if (totalChance > 1.0)
         {
             remainingThreshold *= totalChance;
@@ -639,4 +646,4 @@ public class DefaultDropGenerator : IDropGenerator
                        && (it.MaximumSockets > 0) == isSocketItem
                  select it).ToList();
     }
-}
+}

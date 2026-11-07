@@ -9444,7 +9444,7 @@ public readonly ref struct ArcaWarRequestResponseRef
     }
 
     /// <summary>
-    /// Gets or sets 0 success, 1 not open, 2 no guild, 3 not the guild master, 4 already registered, 5 too many guilds, 6 guild not registered, 7 too many members, 8 not registered.
+    /// Gets or sets 0 success, 1 not open, 2 no guild, 3 not the guild master, 4 already registered, 5 too many guilds, 6 guild not registered, 7 too many members, 8 not registered, 9 not enough Signs of Lord.
     /// </summary>
     public byte Result
     {

@@ -335,5 +335,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("LuckyItemRefinery", resourceCulture);
             }
         }
+
+        /// <summary>Gets TrophiesOfBattleExchange from the configuration name resources.</summary>
+        public static string TrophiesOfBattleExchange {
+            get {
+                return ResourceManager.GetString("TrophiesOfBattleExchange", resourceCulture);
+            }
+        }
     }
 }

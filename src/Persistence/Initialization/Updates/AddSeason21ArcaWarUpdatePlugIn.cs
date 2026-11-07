@@ -12,7 +12,9 @@ using MUnique.OpenMU.PlugIns;
 /// Adds the Arca War of Season 21.
 /// </summary>
 /// <remarks>
-/// Optional. A second run keeps the configuration and the switch an operator has.
+/// Optional. A second run keeps the configuration and the switch an operator has. Version 2 adds the reward of Acheron
+/// (effect 187) and Sir Lesnar with the exchange of the Trophies of Battle; the new settings (Sign of Lord fee, team
+/// damage reduction, bonus) come with their defaults into an existing configuration.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(Properties.PlugInResources.AddSeason21ArcaWarUpdatePlugIn_Name), Description = nameof(Properties.PlugInResources.AddSeason21ArcaWarUpdatePlugIn_Description), ResourceType = typeof(Properties.PlugInResources))]
@@ -33,6 +35,9 @@ public class AddSeason21ArcaWarUpdatePlugIn : UpdatePlugInBase
 
     /// <inheritdoc />
     public override bool RunsOnNewDatabase => true;
+
+    /// <inheritdoc />
+    public override int Version => 2;
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 11, 07, 12, 0, 0, DateTimeKind.Utc);

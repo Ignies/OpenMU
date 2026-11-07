@@ -282,6 +282,28 @@ internal class Season21EventsDataTest
         Assert.That(war.SpawnGroups.Select(g => (g.MapNumber, g.Areas.Count)), Is.EqualTo(new[] { ((short)92, 5), ((short)92, 5), ((short)96, 5) }));
         Assert.That(war.Buffs.Select(b => b.EffectNumber), Is.EqualTo(new short[] { 179, 180, 181, 182, 183 }));
         Assert.That((war.Trophy?.Group, war.Trophy?.Number, war.DeathPenaltyEffectNumber), Is.EqualTo(((byte?)13, (short?)147, (short)184)));
+        Assert.That((war.RegistrationFee?.Group, war.RegistrationFee?.Number, war.RegistrationFee?.Level, war.RegistrationFee?.Count), Is.EqualTo(((byte?)14, (short?)21, (byte?)3, (byte?)10)));
+        Assert.That((war.BonusEffectNumber, war.BonusExperiencePercent, war.BonusDropPercent, war.BonusMaps.Single()), Is.EqualTo(((short)187, 20f, 10f, (short)91)));
+        Assert.That(this._gameConfiguration.MagicEffects.Select(e => e.Number), Does.Contain((short)187));
+    }
+
+    /// <summary>
+    /// Sir Lesnar (584) stands in Lorencia, Devias and Noria (S21Emu <c>MonsterSetBase</c>) and exchanges the Trophies of
+    /// Battle: one tier for each ten (bags 153-162), each with the items of its bag, at 50 % plus 5 % a trophy.
+    /// </summary>
+    [Test]
+    public void SirLesnarExchangesTheTrophiesOfBattle()
+    {
+        Assert.That(this._gameConfiguration.Monsters.Where(m => m.Number == 584), Has.Exactly(1).Items);
+        var lesnar = this._gameConfiguration.Monsters.Single(m => m.Number == 584);
+        Assert.That(lesnar.NpcWindow, Is.EqualTo(NpcWindow.NpcDialog));
+        var spawns = this._gameConfiguration.Maps.SelectMany(m => m.MonsterSpawns.Where(s => s.MonsterDefinition == lesnar).Select(s => (m.Number, s.X1, s.Y1)));
+        Assert.That(spawns, Is.EquivalentTo(new[] { ((short)0, (byte)114, (byte)132), ((short)2, (byte)240, (byte)53), ((short)3, (byte)183, (byte)126) }));
+        var settings = lesnar.ItemCraftings.Single().SimpleCraftingSettings!;
+        Assert.That((settings.SuccessPercent, settings.RequiredItems.Single().AddPercentage, settings.RequiredItems.Single().MaximumAmount), Is.EqualTo(((byte)50, (byte)5, (byte)100)));
+        Assert.That(settings.RequiredItems.Single().PossibleItems.Single(), Is.EqualTo(this._gameConfiguration.Items.Single(i => i.Group == 13 && i.Number == 147)));
+        Assert.That(settings.ResultItems.Select(r => r.Reference).Distinct(), Is.EqualTo(Enumerable.Range(1, 10).Select(r => (byte)r)));
+        Assert.That(settings.ResultItems.Where(r => r.Reference == 10 && r.ItemDefinition is { Group: 12, Number: 288 }).Select(r => r.Durability), Is.EqualTo(new byte?[] { 30 }), "Elemental Rune x30 in bag 162");
     }
 
     /// <summary>
