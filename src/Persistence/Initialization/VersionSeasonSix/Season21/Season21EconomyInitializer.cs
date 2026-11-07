@@ -26,6 +26,24 @@ internal class Season21EconomyInitializer
 
     private const short FirstSpawnNumber = 7250;
 
+    /// <summary>
+    /// The highest monster level which drops the jewels (S21Emu <c>Item/ItemDrop.xml</c>): above it, the Season 21 maps give
+    /// them from boxes, events and their drop lists only.
+    /// </summary>
+    private const byte JewelMaximumDropLevel = 150;
+
+    /// <summary>
+    /// The jewels of group 14 with their lowest monster level, S21Emu <c>Item/ItemDrop.xml</c>.
+    /// </summary>
+    private static readonly (short Number, byte DropLevel)[] JewelDropLevels =
+    [
+        (15, 12), // Jewel of Chaos
+        (13, 25), // Jewel of Bless
+        (14, 25), // Jewel of Soul
+        (16, 46), // Jewel of Life
+        (22, 46), // Jewel of Creation
+    ];
+
     private readonly IContext _context;
 
     private readonly GameConfiguration _gameConfiguration;
@@ -47,6 +65,7 @@ internal class Season21EconomyInitializer
     public void Initialize()
     {
         this.PlacePriestJames();
+        this.BoundJewelDrops();
 
         // The first application turns the features on; later ones leave the operator's switches and rows alone.
         if (this.ConfigureRuud())
@@ -77,6 +96,19 @@ internal class Season21EconomyInitializer
             MonsterRewards = data.RuudMonsters.Select(row => new RuudMonsterReward { MonsterNumber = row.Monster, Minimum = row.Minimum, Maximum = row.Maximum }).ToList(),
             BoxRewards = data.RuudBoxes.Select(row => new RuudBoxReward { Group = row.Group, Number = row.Number, Amount = row.Amount }).ToList(),
         };
+    }
+
+    private void BoundJewelDrops()
+    {
+        // A jewel with a maximum drop level was bounded already, by this update or the operator.
+        foreach (var (number, dropLevel) in JewelDropLevels)
+        {
+            if (this._gameConfiguration.Items.FirstOrDefault(i => i.Group == 14 && i.Number == number) is { MaximumDropLevel: null } jewel)
+            {
+                jewel.DropLevel = dropLevel;
+                jewel.MaximumDropLevel = JewelMaximumDropLevel;
+            }
+        }
     }
 
     private void PlacePriestJames()

@@ -53,6 +53,43 @@ internal class Season21EconomyDataTest
     }
 
     /// <summary>
+    /// The economy update stops the jewels at monster level 150, as S21Emu ItemDrop.xml (Chaos 12, Bless and Soul 25, Life
+    /// and Creation 46): the Season 21 maps give them from boxes, events and drop lists, not from every kill.
+    /// </summary>
+    /// <param name="number">The jewel's number in group 14.</param>
+    /// <param name="dropLevel">The expected lowest monster level.</param>
+    [TestCase(15, 12)]
+    [TestCase(13, 25)]
+    [TestCase(14, 25)]
+    [TestCase(16, 46)]
+    [TestCase(22, 46)]
+    public async Task EconomyUpdateBoundsTheJewelDropsAsync(int number, int dropLevel)
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+
+        await new AddSeason21EconomyUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var jewel = gameConfiguration.Items.Single(i => i.Group == 14 && i.Number == number);
+        Assert.That((jewel.DropLevel, jewel.MaximumDropLevel), Is.EqualTo(((byte)dropLevel, (byte?)150)));
+    }
+
+    /// <summary>
+    /// A jewel drop level the operator changed stays.
+    /// </summary>
+    [Test]
+    public async Task EconomyUpdateKeepsChangedJewelDropLevelsAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+        var bless = gameConfiguration.Items.Single(i => i.Group == 14 && i.Number == 13);
+        bless.DropLevel = 40;
+        bless.MaximumDropLevel = 200;
+
+        await new AddSeason21EconomyUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That((bless.DropLevel, bless.MaximumDropLevel), Is.EqualTo(((byte)40, (byte?)200)));
+    }
+
+    /// <summary>
     /// The shops update gives Hanzo five tabs; the first is his Season 6 store, filled with the first tab of Season 21.
     /// </summary>
     [Test]

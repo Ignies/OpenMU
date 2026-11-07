@@ -301,6 +301,11 @@ in `Item/Item.xml`.
   of items which the configuration doesn't have (or has inactive) are kept, but neither shown nor sold.
 * Ruud of monsters: the lowest minimum and the highest maximum of the Ruud ranges of a bag (64 monsters).
 * Priest James (725) stands where the data places him: Elbeland 32/239 and Loren Market 215/56.
+* Jewels (version 2): Chaos, Bless, Soul, Life and Creation drop from monsters of level 12, 25, 25, 46 and 46 up to 150
+  (`Item/ItemDrop.xml`); above 150 the Season 21 maps give them from boxes, events and their drop lists. A jewel which
+  has a maximum drop level already keeps both levels.
+* Zen: the data drops money by the kill experience on every map (`MapManager.txt` `ZenAmountRate` 100 on all 121 maps),
+  halved (`MoneyAmountDropRate` 50, the zen sinks plugin); there is no per-map table or cap to apply.
 * Level rewards (`Character/ItemCompensationLevel.xml`): the item index is group x 512 + number; the class columns map to the
   base class codes (KM is the light wizard, LM the lemuria mage), all 16 set means every class. The data's
   `SendToGremory`, `Duration` and dates aren't applied: every reward goes through the gremory case.

@@ -1229,7 +1229,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Places Priest James (Ruud shop) in Elbeland and Loren Market, fills the Ruud shop with the items of Season 21 and the Ruud of monsters and Ruud boxes, and switches on the gremory case, Ruud and the item expiry. Optional; a world without it stays Season 6..
+        ///   Looks up a localized string similar to Places Priest James (Ruud shop) in Elbeland and Loren Market, fills the Ruud shop with the items of Season 21 and the Ruud of monsters and Ruud boxes, and switches on the gremory case, Ruud and the item expiry. The jewels drop up to monster level 150 only (a jewel with a maximum drop level keeps it). Optional; a world without it stays Season 6..
         /// </summary>
         public static string AddSeason21EconomyUpdatePlugIn_Description {
             get {

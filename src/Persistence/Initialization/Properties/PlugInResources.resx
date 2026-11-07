@@ -496,7 +496,7 @@
     <value>Add the gremory case, Ruud and the Ruud shop of Season 21</value>
   </data>
   <data name="AddSeason21EconomyUpdatePlugIn_Description" xml:space="preserve">
-    <value>Places Priest James (Ruud shop) in Elbeland and Loren Market, fills the Ruud shop with the items of Season 21 and the Ruud of monsters and Ruud boxes, and switches on the gremory case, Ruud and the item expiry. Optional; a world without it stays Season 6.</value>
+    <value>Places Priest James (Ruud shop) in Elbeland and Loren Market, fills the Ruud shop with the items of Season 21 and the Ruud of monsters and Ruud boxes, and switches on the gremory case, Ruud and the item expiry. The jewels drop up to monster level 150 only (a jewel with a maximum drop level keeps it). Optional; a world without it stays Season 6.</value>
   </data>
   <data name="AddSeason21ShopsUpdatePlugIn_Name" xml:space="preserve">
     <value>Set the shops of Season 21</value>
