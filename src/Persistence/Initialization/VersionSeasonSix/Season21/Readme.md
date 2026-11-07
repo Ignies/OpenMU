@@ -368,6 +368,18 @@ in `Item/Item.xml`.
   The update "Add the level rewards and event contribution boxes of Season 21" (`Season21RewardsInitializer`) needs the
   economy update.
 
+## Lucky sets
+
+`AddSeason21LuckySetsUpdatePlugIn` (`Season21LuckySets`) gives the lucky armors their sets of `Item/SetItem - Settings`:
+`SetItemType.xml` names one set per lucky number (groups 7-11), `SetItemOption.xml` the options. 29 sets (Moros 62 ... Elio
+409; the pieces the configuration has, so the later ones need the item catalog). The sets always apply (no ancient
+discriminator), from two different pieces the first n - 1 options, all on the full set. Two option rows exist: the
+first sets 30 health, 25 skill damage, 20 defense, 10 % double damage, full 10 % critical and excellent chance and 10
+critical and excellent damage; the second sets 50 health, 40 defense, 15 % double damage, 15 % critical chance, full 15 %
+excellent chance, 20 critical and excellent damage and 5 % to ignore the defense (the four-piece Amis and Trite list the
+fourth as a full option, the same in the end). Left out: the luck, life option and level rolls of the ticket exchange
+(`LuckySystem.xml` `Option0`-`5` = 10 each, meaning not given).
+
 ## Elements, pentagrams and earrings
 
 `Generator/season21-elements.mjs --data <S21Emu Data>` writes `Resources/Season21/Elements.json` from Item.xml

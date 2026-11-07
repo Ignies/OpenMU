@@ -644,4 +644,10 @@
   <data name="AddSeason21AbilityCoreUpdatePlugIn_Description" xml:space="preserve">
     <value>Adds the Ability Enhancement Core of the fifth evolution: the options of the 45 ability cards (values by card level) and the slots, cards, level ups and reductions of the plugin "Ability Enhancement Core (Season 21)", which it turns on (S21Emu Skill/AbilityEnhancementCore), and the card craftings of the chaos goblin from Ability Crystals (Webzen guide). Existing card options, craftings and an existing core configuration are kept.</value>
   </data>
+  <data name="AddSeason21LuckySetsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the set options of the lucky items (Season 21)</value>
+  </data>
+  <data name="AddSeason21LuckySetsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Adds the 29 lucky sets of S21Emu SetItemType.xml and SetItemOption.xml (Moros, Dione, Hades ... Elio). They always apply: from two different pieces the first options by the count (health, skill damage or defense, double damage, critical damage chance), on the full set also the critical and excellent damage chance and damage (and 5 % to ignore the defense on the second sets). Sets which exist stay.</value>
+  </data>
 </root>
