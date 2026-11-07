@@ -56,6 +56,22 @@ public class LevelPenaltiesTest
     }
 
     /// <summary>
+    /// The Deep Dungeon renewal removed the hunting penalty there (Webzen Korea patch notes, muhelper.com Deep Dungeon
+    /// renewal): no damage penalty on its five floors (116-120), the setting can bring it back.
+    /// </summary>
+    /// <param name="map">The map.</param>
+    [TestCase((short)116)]
+    [TestCase((short)120)]
+    public void DeepDungeonHasNoDamagePenalty(short map)
+    {
+        Assert.That(this._configuration.PenaltyFreeMaps, Is.EqualTo(new short[] { 116, 117, 118, 119, 120 }));
+        Assert.That(this.Damage(map, ClassEvolution.Fourth, 400, 0), Is.Zero);
+
+        var withPenalty = new LevelPenaltyConfiguration { PenaltyFreeMaps = [] };
+        Assert.That(LevelPenalties.GetDamagePenaltyPercent(withPenalty, null, map, ClassEvolution.Fourth, 400, 0, 0, MonsterLevel), Is.EqualTo(70));
+    }
+
+    /// <summary>
     /// In the labyrinth, any evolution from total level 400 on gets the penalty; below 400 none.
     /// </summary>
     [Test]

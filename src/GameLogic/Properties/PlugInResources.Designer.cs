@@ -8744,6 +8744,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Maps without the damage penalty.
+        /// </summary>
+        public static string LevelPenaltyConfiguration_PenaltyFreeMaps_Name {
+            get {
+                return ResourceManager.GetString("LevelPenaltyConfiguration_PenaltyFreeMaps_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Labyrinth of Dimensions league (Season 21).
         /// </summary>
         public static string LabyrinthLeaguePlugIn_Name {

@@ -31,7 +31,7 @@ public static class LevelPenalties
     /// <returns>The percent.</returns>
     public static int GetDamagePenaltyPercent(LevelPenaltyConfiguration configuration, ProgressionConfiguration? progression, short mapNumber, ClassEvolution? evolution, int level, int masterLevel, int stars, int monsterLevel)
     {
-        if (!configuration.DamagePenaltyActive)
+        if (!configuration.DamagePenaltyActive || configuration.PenaltyFreeMaps.Contains(mapNumber))
         {
             return 0;
         }

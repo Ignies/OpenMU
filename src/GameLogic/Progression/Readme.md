@@ -90,6 +90,8 @@ S21Emu `DamagePenalty.lua` and `ExperienciePenalty.lua`: a character below the m
 damage per level to it and takes 10 % more from it, at most 7 levels (70 %). Outside the Labyrinth of Dimensions (map
 115) only a fourth or fifth evolution has it (`CheckEnhanceLevel`); in the labyrinth every evolution from total level
 400. Monsters of the Kardamahal Underground Temple (map 143) give 10 % less experience per level, at most 70 %.
+The five floors of the Deep Dungeon (maps 116-120, `PenaltyFreeMaps`) have no damage penalty: their renewal removed
+the hunting penalty (Webzen Korea patch notes, muhelper.com), which the Lua does not know.
 
 - The threshold and the 400 are Season 21 total levels and map through the mode with `EvolutionRules.GetLevelsMissing`,
   the helper of the evolution rules: the levels below count in the mode's unit (total, level + master level, power

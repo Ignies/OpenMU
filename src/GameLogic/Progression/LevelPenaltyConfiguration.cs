@@ -79,4 +79,11 @@ public class LevelPenaltyConfiguration
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.LevelPenaltyConfiguration_ExperienceMaps_Name))]
     public List<short> ExperienceMaps { get; set; } = [143];
+
+    /// <summary>
+    /// Gets or sets the maps without the damage penalty: the five floors of the Deep Dungeon, whose renewal removed the
+    /// hunting penalty (Webzen Korea patch notes; the S21Emu Lua has no map exception).
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.LevelPenaltyConfiguration_PenaltyFreeMaps_Name))]
+    public List<short> PenaltyFreeMaps { get; set; } = [116, 117, 118, 119, 120];
 }
