@@ -1123,6 +1123,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized FixZombieFighterHealthUpdatePlugIn_Description text.</summary>
         public static string FixZombieFighterHealthUpdatePlugIn_Description => ResourceManager.GetString("FixZombieFighterHealthUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized FixKundunUpdatePlugIn_Name text.</summary>
+        public static string FixKundunUpdatePlugIn_Name => ResourceManager.GetString("FixKundunUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized FixKundunUpdatePlugIn_Description text.</summary>
+        public static string FixKundunUpdatePlugIn_Description => ResourceManager.GetString("FixKundunUpdatePlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized AddProgressionUpdatePlugIn_Name text.</summary>
         public static string AddProgressionUpdatePlugIn_Name => ResourceManager.GetString("AddProgressionUpdatePlugIn_Name", resourceCulture)!;
 
