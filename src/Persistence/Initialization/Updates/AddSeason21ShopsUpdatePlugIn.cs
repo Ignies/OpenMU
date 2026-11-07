@@ -45,8 +45,15 @@ public class AddSeason21ShopsUpdatePlugIn : UpdatePlugInBase
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21ItemCatalogUpdatePlugIn).GUID];
 
     /// <inheritdoc />
-    protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
+    protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
     {
-        await new Season21ShopsInitializer(context, gameConfiguration).InitializeAsync().ConfigureAwait(false);
+        // A later version keeps the shops the first one set, and what the operator changed in them.
+        await new Season21ShopsInitializer(context, gameConfiguration).InitializeAsync(keepFilledTabs: installedVersion is not null).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
+    {
+        return this.ApplyAsync(context, gameConfiguration, null);
     }
 }

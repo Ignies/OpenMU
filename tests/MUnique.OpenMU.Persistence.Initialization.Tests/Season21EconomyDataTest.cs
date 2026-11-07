@@ -131,6 +131,30 @@ internal class Season21EconomyDataTest
     }
 
     /// <summary>
+    /// A later run of the shops update (a new version) keeps a shop item the operator changed, while a missing shop is
+    /// still added.
+    /// </summary>
+    [Test]
+    public async Task ShopsUpdateKeepsTheOperatorsShopItemsAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+        var shops = new AddSeason21ShopsUpdatePlugIn();
+        await shops.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var hanzo = gameConfiguration.Monsters.Single(m => m.Number == Hanzo);
+        var item = hanzo.MerchantStore!.Items.First();
+        item.Level = 9;
+        item.StorePrice = 12_345;
+        var gillard = gameConfiguration.Monsters.Single(m => m.Number == 891);
+        gillard.MerchantStore!.Items.Clear();
+
+        await shops.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(hanzo.MerchantStore.Items, Does.Contain(item));
+        Assert.That((item.Level, item.StorePrice), Is.EqualTo(((byte)9, (int?)12_345)));
+        Assert.That(gillard.MerchantStore.Items, Is.Not.Empty, "an empty shop is filled again");
+    }
+
+    /// <summary>
     /// Both updates applied twice change nothing, and keep a switch the operator turned off.
     /// </summary>
     [Test]

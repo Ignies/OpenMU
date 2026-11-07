@@ -49,8 +49,10 @@ internal class Season21ShopsInitializer
     /// Sets the shops of the merchants which the configuration has. A tab which already has the items of the data stays.
     /// Rows of items which the configuration doesn't have are left out.
     /// </summary>
+    /// <param name="keepFilledTabs"><c>true</c> on a later run of the update: a tab with items is the operator's and stays,
+    /// only an empty one is filled.</param>
     /// <returns>The task.</returns>
-    public async ValueTask InitializeAsync()
+    public async ValueTask InitializeAsync(bool keepFilledTabs = false)
     {
         this.PlaceWizardGillard();
         foreach (var merchantRows in Season21Economy.Data.Shops.GroupBy(row => row.Npc))
@@ -65,7 +67,7 @@ internal class Season21ShopsInitializer
                 var rows = tabRows.Select(row => (Row: row, Definition: this.FindDefinition(row))).Where(r => r.Definition is not null).ToList();
                 if (rows.Count > 0)
                 {
-                    await this.SetTabAsync(merchant, tabRows.Key, rows!).ConfigureAwait(false);
+                    await this.SetTabAsync(merchant, tabRows.Key, rows!, keepFilledTabs).ConfigureAwait(false);
                 }
             }
         }
@@ -126,7 +128,7 @@ internal class Season21ShopsInitializer
     private ItemDefinition? FindDefinition(Season21Economy.ShopRow row)
         => this._gameConfiguration.Items.FirstOrDefault(d => d.Group == row.Group && d.Number == row.Number);
 
-    private async ValueTask SetTabAsync(MonsterDefinition merchant, byte tab, IReadOnlyList<(Season21Economy.ShopRow Row, ItemDefinition Definition)> rows)
+    private async ValueTask SetTabAsync(MonsterDefinition merchant, byte tab, IReadOnlyList<(Season21Economy.ShopRow Row, ItemDefinition Definition)> rows, bool keepFilledTabs)
     {
         ItemStorage storage;
         if (tab == 0)
@@ -145,7 +147,7 @@ internal class Season21ShopsInitializer
             merchant.MerchantStoreTabs.Add(newTab);
         }
 
-        if (Matches(storage, rows))
+        if (Matches(storage, rows) || (keepFilledTabs && storage.Items.Count > 0))
         {
             return;
         }
