@@ -103,6 +103,13 @@ Devias (`Season21ClassicSpawns`, maps update version 5): the 280 monsters of `Mo
 spots and 47 single monsters: 40 Yeti, 82 Elite Yeti, 11 Ice Queens) replace the 560 of Season 6 (no Yeti, 235 Elite
 Yeti, 75 Ice Queens) while the roster is still the Season 6 one; the NPCs stay.
 
+Town NPCs (`Season21ClassicSpawns.TownNpcs`, maps update version 6) at their `MonsterSetBase` points: Captain Slough 580
+(the Acheron guide, passive; no shop or Spirit Map in the data), Maple Spirit 873 and Maple Tree 874 (passive; the maple
+leaf event has only its switch in `GameServerInfo - Event.dat`) in Noria; Apostle Devin 406, Moss 492, Lugard 540 and
+Jerint 522 also in Lorencia, where Season 21 gathered the event entrances. Wizard Gillard 891 is a merchant with the
+shop `Shop/027` (shops update version 2, Lorencia 119/111). The versions of the new NPCs aren't in any source: Season 7
+(Acheron) for Captain Slough, Season 21 for the others.
+
 ## What is applied
 
 * The monster level is the experience level of the data, as for the other maps.

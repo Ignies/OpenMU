@@ -23,7 +23,8 @@ internal static class Season21NpcSpawns
     /// <param name="x">The x coordinate.</param>
     /// <param name="y">The y coordinate.</param>
     /// <param name="direction">The direction.</param>
-    public static void Place(IContext context, GameConfiguration gameConfiguration, short spawnNumber, byte mapNumber, short npcNumber, LocalizedString name, byte x, byte y, Direction direction)
+    /// <param name="introducedIn">The version which introduced a new NPC; the map's version when not given.</param>
+    public static void Place(IContext context, GameConfiguration gameConfiguration, short spawnNumber, byte mapNumber, short npcNumber, LocalizedString name, byte x, byte y, Direction direction, GameVersion? introducedIn = null)
     {
         if (gameConfiguration.Maps.FirstOrDefault(m => m.Number == mapNumber && m.Discriminator == 0) is not { } map)
         {
@@ -32,7 +33,7 @@ internal static class Season21NpcSpawns
 
         if (gameConfiguration.Monsters.FirstOrDefault(m => m.Number == npcNumber) is not { } npc)
         {
-            npc = Season21MapsInitializer.CreateNpc(context, npcNumber, name, map.IntroducedIn);
+            npc = Season21MapsInitializer.CreateNpc(context, npcNumber, name, introducedIn ?? map.IntroducedIn);
             gameConfiguration.Monsters.Add(npc);
         }
 

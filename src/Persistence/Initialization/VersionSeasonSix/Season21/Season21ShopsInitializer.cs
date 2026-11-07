@@ -7,6 +7,8 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The NPC shops of Season 21 with up to five tabs: the first tab is the merchant store which every client shows,
@@ -23,6 +25,10 @@ internal class Season21ShopsInitializer
     /// The rows of a store tab, as the client shows it.
     /// </summary>
     internal const int Rows = 15;
+
+    private const short WizardGillardNumber = 891;
+
+    private const short WizardGillardSpawnNumber = 8910;
 
     private readonly IContext _context;
 
@@ -46,6 +52,7 @@ internal class Season21ShopsInitializer
     /// <returns>The task.</returns>
     public async ValueTask InitializeAsync()
     {
+        this.PlaceWizardGillard();
         foreach (var merchantRows in Season21Economy.Data.Shops.GroupBy(row => row.Npc))
         {
             if (this._gameConfiguration.Monsters.FirstOrDefault(m => m.Number == merchantRows.Key) is not { } merchant)
@@ -186,5 +193,17 @@ internal class Season21ShopsInitializer
         }
 
         return item;
+    }
+
+    /// <summary>
+    /// Places Wizard Gillard, whose shop the data has, where S21Emu <c>MonsterSetBase/000 - Lorencia.xml</c> places him.
+    /// </summary>
+    private void PlaceWizardGillard()
+    {
+        Season21NpcSpawns.Place(this._context, this._gameConfiguration, WizardGillardSpawnNumber, 0, WizardGillardNumber, LocalizedString.FromResource(() => MonsterNames.WizardGillard), 119, 111, Direction.SouthEast, GameVersion.Season21Episode1);
+        if (this._gameConfiguration.Monsters.FirstOrDefault(m => m.Number == WizardGillardNumber) is { NpcWindow: NpcWindow.Undefined } gillard)
+        {
+            gillard.NpcWindow = NpcWindow.Merchant;
+        }
     }
 }

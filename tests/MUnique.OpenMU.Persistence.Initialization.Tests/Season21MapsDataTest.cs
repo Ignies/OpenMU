@@ -431,6 +431,33 @@ internal class Season21MapsDataTest
         Assert.That(SpawnsOf(gameConfiguration, DeviasNumber).Values.Sum(), Is.EqualTo(290), "the operator's roster");
     }
 
+    /// <summary>
+    /// The town NPCs of S21Emu MonsterSetBase which Season 6 lacks stand in their towns: Captain Slough 580 and the maple
+    /// NPCs 873/874 in Noria, and the event NPCs which Season 21 placed in
+    /// Lorencia (Apostle Devin 406, Moss 492, Lugard 540, Jerint 522).
+    /// </summary>
+    /// <param name="mapNumber">The map number.</param>
+    /// <param name="npcNumber">The NPC number.</param>
+    /// <param name="x">The x coordinate.</param>
+    /// <param name="y">The y coordinate.</param>
+    [TestCase(3, 580, 196, 113)]
+    [TestCase(3, 873, 179, 126)]
+    [TestCase(3, 874, 179, 129)]
+    [TestCase(0, 406, 142, 135)]
+    [TestCase(0, 492, 141, 134)]
+    [TestCase(0, 540, 130, 128)]
+    [TestCase(0, 522, 130, 126)]
+    public async Task TownNpcStandsInItsTownAsync(byte mapNumber, short npcNumber, byte x, byte y)
+    {
+        var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
+
+        var npc = gameConfiguration.Monsters.Single(m => m.Number == npcNumber);
+        Assert.That(npc.ObjectKind, Is.EqualTo(NpcObjectKind.PassiveNpc));
+        Assert.That(npc.Designation.ValueInNeutralLanguage, Is.Not.Empty);
+        var map = gameConfiguration.Maps.Single(m => m.Number == mapNumber);
+        Assert.That(map.MonsterSpawns.Count(s => s.MonsterDefinition == npc && s.X1 == x && s.Y1 == y), Is.EqualTo(1));
+    }
+
     private static Dictionary<short, int> SpawnsOf(GameConfiguration gameConfiguration, byte mapNumber)
         => gameConfiguration.Maps.Single(m => m.Number == mapNumber).MonsterSpawns
             .Where(s => s.MonsterDefinition?.ObjectKind == NpcObjectKind.Monster)

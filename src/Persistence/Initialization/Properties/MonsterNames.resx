@@ -1103,4 +1103,16 @@
   <data name="DeathBone" xml:space="preserve">
     <value>Death Bone</value>
   </data>
+  <data name="CaptainSlough" xml:space="preserve">
+    <value>Captain Slough</value>
+  </data>
+  <data name="MapleSpirit" xml:space="preserve">
+    <value>Maple Spirit</value>
+  </data>
+  <data name="MapleTree" xml:space="preserve">
+    <value>Maple Tree</value>
+  </data>
+  <data name="WizardGillard" xml:space="preserve">
+    <value>Wizard Gillard</value>
+  </data>
 </root>

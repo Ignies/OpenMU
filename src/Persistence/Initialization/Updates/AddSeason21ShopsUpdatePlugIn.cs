@@ -35,6 +35,13 @@ public class AddSeason21ShopsUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 06, 17, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    /// <remarks>Version 2: Wizard Gillard (891), whose shop the data has, stands in Lorencia.</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 08, 13, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21ItemCatalogUpdatePlugIn).GUID];
 
     /// <inheritdoc />

@@ -114,6 +114,23 @@ internal class Season21EconomyDataTest
     }
 
     /// <summary>
+    /// The shops update adds Wizard Gillard (891), whose shop the data has, as a merchant in Lorencia (119/111).
+    /// </summary>
+    [Test]
+    public async Task ShopsUpdateAddsWizardGillardAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+
+        await new AddSeason21ShopsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var gillard = gameConfiguration.Monsters.Single(m => m.Number == 891);
+        Assert.That((gillard.ObjectKind, gillard.NpcWindow, gillard.IntroducedIn), Is.EqualTo((NpcObjectKind.PassiveNpc, NpcWindow.Merchant, GameVersion.Season21Episode1)));
+        Assert.That(gillard.MerchantStore?.Items, Is.Not.Empty);
+        var lorencia = gameConfiguration.Maps.Single(m => m.Number == 0);
+        Assert.That(lorencia.MonsterSpawns.Count(s => s.MonsterDefinition == gillard && s.X1 == 119 && s.Y1 == 111), Is.EqualTo(1));
+    }
+
+    /// <summary>
     /// Both updates applied twice change nothing, and keep a switch the operator turned off.
     /// </summary>
     [Test]

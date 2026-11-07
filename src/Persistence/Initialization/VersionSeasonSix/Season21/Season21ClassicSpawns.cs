@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Interfaces;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The monster rosters of Season 6 maps which the Season 21 server data changed, and the repair of a database which still
@@ -16,6 +17,25 @@ internal static class Season21ClassicSpawns
     private const byte DeviasNumber = 2;
 
     private const short FirstSpawnNumber = 3800;
+
+    private const short FirstTownNpcSpawnNumber = 3900;
+
+    /// <summary>
+    /// The town NPCs of S21Emu <c>MonsterSetBase</c> which the Season 6 towns lack: map, NPC, name, x, y, direction and the
+    /// version of an NPC which Season 6 doesn't have. Captain Slough (the Acheron guide) and the maple NPCs stand in Noria,
+    /// and Lorencia got the entrance NPCs of the events (Apostle Devin, Moss, Lugard, Jerint). Sent (764) is placed by the
+    /// evolution quests, Wizard Gillard (891) by the shops.
+    /// </summary>
+    private static readonly (byte Map, short Npc, LocalizedString Name, byte X, byte Y, byte Direction, GameVersion? IntroducedIn)[] TownNpcs =
+    [
+        (3, 580, LocalizedString.FromResource(() => MonsterNames.CaptainSlough), 196, 113, 2, GameVersion.Season7),
+        (3, 873, LocalizedString.FromResource(() => MonsterNames.MapleSpirit), 179, 126, 1, GameVersion.Season21Episode1),
+        (3, 874, LocalizedString.FromResource(() => MonsterNames.MapleTree), 179, 129, 3, GameVersion.Season21Episode1),
+        (0, 406, LocalizedString.FromResource(() => MonsterNames.PriestDevin), 142, 135, 2, null),
+        (0, 492, LocalizedString.FromResource(() => MonsterNames.MossTheMerchant), 141, 134, 3, null),
+        (0, 540, LocalizedString.FromResource(() => MonsterNames.Lugard), 130, 128, 3, null),
+        (0, 522, LocalizedString.FromResource(() => MonsterNames.AdviserJerinteu), 130, 126, 3, null),
+    ];
 
     /// <summary>
     /// The monster spawns of Devias of the Season 6 initialization: monster, x1, x2, y1, y2 and quantity (560 monsters).
@@ -97,6 +117,21 @@ internal static class Season21ClassicSpawns
         (24, 238, 238, 88, 88, 1),
         (24, 229, 229, 83, 83, 1),
     ];
+
+    /// <summary>
+    /// Places the town NPCs of the Season 21 data (<see cref="TownNpcs"/>); an NPC which already stands at its point stays
+    /// as it is.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    public static void PlaceTownNpcs(IContext context, GameConfiguration gameConfiguration)
+    {
+        var number = FirstTownNpcSpawnNumber;
+        foreach (var (map, npc, name, x, y, direction, introducedIn) in TownNpcs)
+        {
+            Season21NpcSpawns.Place(context, gameConfiguration, number++, map, npc, name, x, y, (Direction)direction, introducedIn);
+        }
+    }
 
     /// <summary>
     /// Replaces the monster spawns of Devias by the ones of the Season 21 data when they are still the Season 6 ones; a

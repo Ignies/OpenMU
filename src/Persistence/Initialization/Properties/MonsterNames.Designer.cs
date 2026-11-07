@@ -4711,6 +4711,34 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("SirLesnar", resourceCulture);
             }
         }
+
+        /// <summary>Gets Captain Slough from the configuration name resources.</summary>
+        public static string CaptainSlough {
+            get {
+                return ResourceManager.GetString("CaptainSlough", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets Maple Spirit from the configuration name resources.</summary>
+        public static string MapleSpirit {
+            get {
+                return ResourceManager.GetString("MapleSpirit", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets Maple Tree from the configuration name resources.</summary>
+        public static string MapleTree {
+            get {
+                return ResourceManager.GetString("MapleTree", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets Wizard Gillard from the configuration name resources.</summary>
+        public static string WizardGillard {
+            get {
+                return ResourceManager.GetString("WizardGillard", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Death King.
