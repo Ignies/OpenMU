@@ -307,6 +307,51 @@ internal class Season21MapsDataTest
         Assert.That(seasonSixGroups, Has.None.Matches<DropItemGroup>(g => g.Description.ValueInNeutralLanguage == Properties.DropGroupDescriptions.Season21MonsterDrops), "a Season 6 monster keeps its drops");
     }
 
+    /// <summary>
+    /// The placeholder rows of the data are replaced: Crimson Icarus by the rows of muonlinefanz.com (859-863; the
+    /// elites 864/865 by the same factors), Under Persona 905 by 1,060,000 health, the elites of Atlans Abyss 3 (839,
+    /// 840) and Tormenta (945-947) derived from their normals by the elite factors of the data.
+    /// </summary>
+    /// <param name="number">The monster number.</param>
+    /// <param name="health">The expected health.</param>
+    [TestCase(859, 2_422_700)]
+    [TestCase(863, 2_667_000)]
+    [TestCase(864, 2_719_000)]
+    [TestCase(905, 1_060_000)]
+    [TestCase(839, 2_445_000)]
+    [TestCase(947, 6_397_000)]
+    public async Task PlaceholderRowsAreReplacedAsync(int number, int health)
+    {
+        var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
+
+        Assert.That(ValueOf(gameConfiguration.Monsters.Single(m => m.Number == number), Stats.MaximumHealth), Is.EqualTo(health));
+    }
+
+    /// <summary>
+    /// The maps update repairs a database which has a placeholder row, and keeps a row the operator changed.
+    /// </summary>
+    [Test]
+    public async Task UpdateRepairsThePlaceholderRowsAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        await new AddSeason21LevelCapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var icarus = gameConfiguration.Monsters.Single(m => m.Number == 859);
+        var persona = gameConfiguration.Monsters.Single(m => m.Number == 905);
+        SetValue(icarus, Stats.MaximumHealth, 650000);
+        SetValue(icarus, Stats.MinimumPhysBaseDmg, 4900);
+        SetValue(icarus, Stats.MaximumPhysBaseDmg, 5050);
+        SetValue(icarus, Stats.DefenseBase, 3600);
+        SetValue(icarus, Stats.DefenseRatePvm, 2050);
+        SetValue(persona, Stats.MaximumHealth, 999000);
+
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(ValueOf(icarus, Stats.MaximumHealth), Is.EqualTo(2_422_700));
+        Assert.That(ValueOf(icarus, Stats.DefenseRatePvm), Is.EqualTo(3_357));
+        Assert.That(ValueOf(persona, Stats.MaximumHealth), Is.EqualTo(999_000), "the operator's value");
+    }
+
     private static Dictionary<short, int> SpawnsOf(GameConfiguration gameConfiguration, byte mapNumber)
         => gameConfiguration.Maps.Single(m => m.Number == mapNumber).MonsterSpawns
             .Where(s => s.MonsterDefinition?.ObjectKind == NpcObjectKind.Monster)
@@ -345,6 +390,9 @@ internal class Season21MapsDataTest
         argument.setArgumentValue(level);
         return (long)expression.calculate();
     }
+
+    private static void SetValue(MonsterDefinition monster, AttributeSystem.AttributeDefinition attribute, float value)
+        => monster.Attributes.Single(a => a.AttributeDefinition == attribute).Value = value;
 
     private static float ValueOf(MonsterDefinition monster, AttributeSystem.AttributeDefinition attribute)
         => monster.Attributes.Single(a => a.AttributeDefinition == attribute).Value;

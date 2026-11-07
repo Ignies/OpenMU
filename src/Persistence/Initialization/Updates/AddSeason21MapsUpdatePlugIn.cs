@@ -43,6 +43,13 @@ public class AddSeason21MapsUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 05, 1, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    /// <remarks>Version 2: the placeholder rows of the data replaced (Crimson Icarus, Under Persona, the elites of Atlans Abyss 3 and Tormenta).</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 07, 13, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21LevelCapsUpdatePlugIn).GUID];
 
     /// <inheritdoc />
@@ -50,5 +57,6 @@ public class AddSeason21MapsUpdatePlugIn : UpdatePlugInBase
     {
         var gameServers = (await context.GetAsync<GameServerConfiguration>().ConfigureAwait(false)).ToList();
         new Season21MapsInitializer(context, gameConfiguration, gameServers).Initialize();
+        Season21PlaceholderRows.Repair(gameConfiguration);
     }
 }

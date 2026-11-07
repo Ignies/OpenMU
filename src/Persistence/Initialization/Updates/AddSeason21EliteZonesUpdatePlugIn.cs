@@ -38,12 +38,20 @@ public class AddSeason21EliteZonesUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 06, 14, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    /// <remarks>Version 2: the elites of the Swamp of Doom (972-974) derived from its normals instead of the placeholder rows.</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 07, 13, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21MapsUpdatePlugIn).GUID];
 
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         new Season21EliteZonesInitializer(context, gameConfiguration).Initialize();
+        Season21PlaceholderRows.Repair(gameConfiguration);
         return ValueTask.CompletedTask;
     }
 }
