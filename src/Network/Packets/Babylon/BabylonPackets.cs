@@ -297,6 +297,46 @@ public readonly struct EnhanceTreeSkill
 
 
 /// <summary>
+/// A card in a slot of the Ability Enhancement Core..
+/// </summary>
+public readonly struct AbilityCoreCard
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AbilityCoreCard"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AbilityCoreCard(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 33;
+
+    /// <summary>
+    /// Gets or sets 0 the extra damage slot, 1-3 the skill slots, 4-18 the option slots (rows of five: blue, green, purple), 19-21 the elite slots.
+    /// </summary>
+    public byte Slot
+    {
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the card in the W32 item format: its level is the card level, its option the card option.
+    /// </summary>
+    public Span<byte> ItemData
+    {
+        get => this._data.Slice(1, 32).Span;
+    }
+}
+
+
+/// <summary>
 /// An elite zone of the map..
 /// </summary>
 public readonly struct EliteZone
@@ -2404,6 +2444,342 @@ public readonly struct EnhanceTreeAddPointResult
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(EnhanceTreeAddPointResult packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: When a fifth evolution enters a map while the Ability Enhancement Core is on, and after every successful core action.
+/// Causes reaction on client side: The client fills its Ability Enhancement Core window.
+/// </summary>
+public readonly struct AbilityCoreState
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AbilityCoreState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AbilityCoreState(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AbilityCoreState"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AbilityCoreState(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x43;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the open slots, bit n for the slot n.
+    /// </summary>
+    public uint OpenSlots
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[5..]);
+        set => WriteUInt32LittleEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the slots whose card takes effect, bit n for the slot n.
+    /// </summary>
+    public uint ActiveSlots
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[9..]);
+        set => WriteUInt32LittleEndian(this._data.Span[9..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the card count.
+    /// </summary>
+    public byte CardCount
+    {
+        get => this._data.Span[13];
+        set => this._data.Span[13] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="AbilityCoreCard"/> of the specified index.
+    /// </summary>
+        public AbilityCoreCard this[int index] => new (this._data.Slice(14 + index * AbilityCoreCard.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AbilityCoreState"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AbilityCoreState(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AbilityCoreState"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AbilityCoreState packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="AbilityCoreCard"/>.
+    /// </summary>
+    /// <param name="cardsCount">The count of <see cref="AbilityCoreCard"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int cardsCount) => cardsCount * AbilityCoreCard.Length + 14;
+}
+
+
+/// <summary>
+/// Is sent by the client when: The player puts a card into the core, takes one out, levels one up or reduces one into stones.
+/// Causes reaction on server side: The server checks and does it, and answers with AbilityCoreResponse; after a success also with AbilityCoreState and the inventory packets.
+/// </summary>
+public readonly struct AbilityCoreRequest
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AbilityCoreRequest"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AbilityCoreRequest(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AbilityCoreRequest"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AbilityCoreRequest(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x44;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 7;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets 0 insert (inventory slot into core slot), 1 remove (core slot into inventory slot, 0xFF the first free one), 2 level up (the card of the inventory slot, or of the core slot when it is 0xFF), 3 reduce (the card of the inventory slot).
+    /// </summary>
+    public byte Action
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the core slot.
+    /// </summary>
+    public byte CoreSlot
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the inventory slot.
+    /// </summary>
+    public byte InventorySlot
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AbilityCoreRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AbilityCoreRequest(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AbilityCoreRequest"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AbilityCoreRequest packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: After an AbilityCoreRequest.
+/// Causes reaction on client side: The client shows the result; on success the card (or the stones of a reduction) at its new place.
+/// </summary>
+public readonly struct AbilityCoreResponse
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AbilityCoreResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public AbilityCoreResponse(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AbilityCoreResponse"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private AbilityCoreResponse(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x45;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 40;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets 0 done, 1 off, 2 not a fifth evolution, 3 no item, 4 not a card (or no level up / reduction for it), 5 slot locked, 6 wrong slot (kind, row color or class), 7 slot occupied, 8 requirement missing (the fourth evolution skill, or the five option cards of the row), 9 inventory full, 10 highest level, 11 not enough cards, 12 not enough zen, 13 not enough stones, 14 elite level above the row.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the action.
+    /// </summary>
+    public byte Action
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the core slot.
+    /// </summary>
+    public byte CoreSlot
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the inventory slot.
+    /// </summary>
+    public byte InventorySlot
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the card after the action (the stones after a reduction) in the W32 item format; 0xFF when there is none.
+    /// </summary>
+    public Span<byte> ItemData
+    {
+        get => this._data.Slice(8, 32).Span;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="AbilityCoreResponse"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator AbilityCoreResponse(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="AbilityCoreResponse"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(AbilityCoreResponse packet) => packet._data; 
 }
 
 

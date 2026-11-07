@@ -195,6 +195,32 @@ internal partial class Character : MUnique.OpenMU.DataModel.Entities.Character, 
         }
     }
 
+    /// <summary>
+    /// Gets or sets the identifier of <see cref="AbilityCore"/>.
+    /// </summary>
+    public Guid? AbilityCoreId { get; set; }
+
+    /// <summary>
+    /// Gets the raw object of <see cref="AbilityCore" />.
+    /// </summary>
+    [ForeignKey(nameof(AbilityCoreId))]
+    public ItemStorage RawAbilityCore
+    {
+        get => base.AbilityCore as ItemStorage;
+        set => base.AbilityCore = value;
+    }
+
+    /// <inheritdoc/>
+    [NotMapped]
+    public override MUnique.OpenMU.DataModel.Entities.ItemStorage AbilityCore
+    {
+        get => base.AbilityCore;set
+        {
+            base.AbilityCore = value;
+            this.AbilityCoreId = this.RawAbilityCore?.Id;
+        }
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

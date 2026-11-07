@@ -21,7 +21,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForMiniGameR
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.Character",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character),
                 baseEntityType,
-                propertyCount: 29,
+                propertyCount: 30,
                 unnamedIndexCount: 1,
                 keyCount: 1);
 
@@ -35,6 +35,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForMiniGameR
                 valueGeneratorFactory: new MUnique.OpenMU.Persistence.EntityFramework.GuidV7ValueGeneratorFactory().Create,
                 sentinel: new Guid("00000000-0000-0000-0000-000000000000"));
             id.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var abilityCoreId = runtimeEntityType.AddProperty(
+                "AbilityCoreId",
+                typeof(Guid?),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character).GetProperty("AbilityCoreId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character).GetField("<AbilityCoreId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            abilityCoreId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var characterClassId = runtimeEntityType.AddProperty(
                 "CharacterClassId",

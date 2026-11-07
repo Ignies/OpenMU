@@ -285,6 +285,74 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="AbilityCoreRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="action">0 insert (inventory slot into core slot), 1 remove (core slot into inventory slot, 0xFF the first free one), 2 level up (the card of the inventory slot, or of the core slot when it is 0xFF), 3 reduce (the card of the inventory slot).</param>
+    /// <param name="coreSlot">The core slot.</param>
+    /// <param name="inventorySlot">The inventory slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player puts a card into the core, takes one out, levels one up or reduces one into stones.
+    /// Causes reaction on server side: The server checks and does it, and answers with AbilityCoreResponse; after a success also with AbilityCoreState and the inventory packets.
+    /// </remarks>
+    public static async ValueTask SendAbilityCoreRequestAsync(this IConnection? connection, byte @action, byte @coreSlot, byte @inventorySlot)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = AbilityCoreRequestRef.Length;
+            var packet = new AbilityCoreRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Action = @action;
+            packet.CoreSlot = @coreSlot;
+            packet.InventorySlot = @inventorySlot;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="AbilityCoreResponse" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">0 done, 1 off, 2 not a fifth evolution, 3 no item, 4 not a card (or no level up / reduction for it), 5 slot locked, 6 wrong slot (kind, row color or class), 7 slot occupied, 8 requirement missing (the fourth evolution skill, or the five option cards of the row), 9 inventory full, 10 highest level, 11 not enough cards, 12 not enough zen, 13 not enough stones, 14 elite level above the row.</param>
+    /// <param name="action">The action.</param>
+    /// <param name="coreSlot">The core slot.</param>
+    /// <param name="inventorySlot">The inventory slot.</param>
+    /// <param name="itemData">The card after the action (the stones after a reduction) in the W32 item format; 0xFF when there is none.</param>
+    /// <remarks>
+    /// Is sent by the server when: After an AbilityCoreRequest.
+    /// Causes reaction on client side: The client shows the result; on success the card (or the stones of a reduction) at its new place.
+    /// </remarks>
+    public static async ValueTask SendAbilityCoreResponseAsync(this IConnection? connection, byte @result, byte @action, byte @coreSlot, byte @inventorySlot, Memory<byte> @itemData)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = AbilityCoreResponseRef.Length;
+            var packet = new AbilityCoreResponseRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.Action = @action;
+            packet.CoreSlot = @coreSlot;
+            packet.InventorySlot = @inventorySlot;
+            @itemData.Span.CopyTo(packet.ItemData);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="ClassEvolved" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

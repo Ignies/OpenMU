@@ -107,6 +107,15 @@ public sealed class SkillList : ISkillList, IDisposable
     }
 
     /// <inheritdoc/>
+    public async ValueTask AddItemSkillAsync(Skill skill)
+    {
+        if (this.TryAddItemSkill(skill))
+        {
+            await this._player.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.AddSkillAsync(skill)).ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc/>
     public async ValueTask<bool> RemoveItemSkillAsync(ushort skillId)
     {
         // The entry is looked up in the item skills, not in the available skills: when the same skill
@@ -229,14 +238,6 @@ public sealed class SkillList : ISkillList, IDisposable
         }
 
         return availableSkills;
-    }
-
-    private async ValueTask AddItemSkillAsync(Skill skill)
-    {
-        if (this.TryAddItemSkill(skill))
-        {
-            await this._player.InvokeViewPlugInAsync<ISkillListViewPlugIn>(p => p.AddSkillAsync(skill)).ConfigureAwait(false);
-        }
     }
 
     /// <summary>

@@ -74,7 +74,13 @@ public static class Season21ItemOptionTypes
     public static ItemOptionType MuunEvolutionTarget { get; } = new() { Name = "Muun Evolution Target", Id = new Guid("{9D3F6B1E-5A27-4C80-B4E9-2F1A7C6D8E53}"), IsVisible = true };
 
     /// <summary>
+    /// Gets the ability card option type: the option an ability card of the Ability Enhancement Core carries (the number
+    /// is the option index of the S21Emu data, the value follows the card level).
+    /// </summary>
+    public static ItemOptionType AbilityCardOption { get; } = new() { Name = "Ability Card Option", Id = new Guid("{3C9A7E15-0B6D-4F42-A8E3-71D5C2B9F604}"), IsVisible = true };
+
+    /// <summary>
     /// Gets all types of this class.
     /// </summary>
-    public static IReadOnlyList<ItemOptionType> All { get; } = [Mastery, MasteryBonus, WingGrade, WideFormat, Element, ErrtelRank, EarringOption, PentagramOption, ErrtelSet, ErrtelSetBonus, MuunEvolutionTarget];
+    public static IReadOnlyList<ItemOptionType> All { get; } = [Mastery, MasteryBonus, WingGrade, WideFormat, Element, ErrtelRank, EarringOption, PentagramOption, ErrtelSet, ErrtelSetBonus, MuunEvolutionTarget, AbilityCardOption];
 }

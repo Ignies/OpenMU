@@ -89,6 +89,7 @@ public static class ForkInfo
         "chaos_castle_survival",
         "labyrinth_rooms",
         "arca_war",
+        "ability_core",
     ];
 
     /// <summary>

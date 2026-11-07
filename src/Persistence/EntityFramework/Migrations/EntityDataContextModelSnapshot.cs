@@ -1063,6 +1063,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("AbilityCoreId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("AccountId")
                         .HasColumnType("uuid");
 
@@ -1153,6 +1156,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AbilityCoreId")
+                        .IsUnique();
 
                     b.HasIndex("AccountId");
 
@@ -5082,6 +5088,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", b =>
                 {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage", "RawAbilityCore")
+                        .WithOne()
+                        .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", "AbilityCoreId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Account", null)
                         .WithMany("RawCharacters")
                         .HasForeignKey("AccountId")
@@ -5111,6 +5122,8 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .WithOne()
                         .HasForeignKey("MUnique.OpenMU.Persistence.EntityFramework.Model.Character", "MuunInventoryId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("RawAbilityCore");
 
                     b.Navigation("RawCharacterClass");
 

@@ -8929,5 +8929,41 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("ArcaWarRequestHandlerPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ability Enhancement Core view (Babylon).
+        /// </summary>
+        public static string AbilityCoreBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("AbilityCoreBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the Ability Enhancement Core to the Babylon client: the open and active slots with the cards (EE 43) and the results of the core actions (EE 45)..
+        /// </summary>
+        public static string AbilityCoreBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("AbilityCoreBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ability Enhancement Core request handler (Babylon).
+        /// </summary>
+        public static string AbilityCoreRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("AbilityCoreRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the actions of the Ability Enhancement Core window of the Babylon client (EE 44): insert, remove, level up and reduce a card..
+        /// </summary>
+        public static string AbilityCoreRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("AbilityCoreRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

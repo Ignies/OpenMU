@@ -156,6 +156,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Entity<Character>().HasOne(entity => entity.RawInventory).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Character>().HasOne(entity => entity.RawGremoryCase).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Character>().HasOne(entity => entity.RawMuunInventory).WithOne().OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<Character>().HasOne(entity => entity.RawAbilityCore).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Character>().HasMany(entity => entity.RawQuestStates).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<CharacterQuestState>().HasMany(entity => entity.RawRequirementStates).WithOne().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Item>().HasMany(entity => entity.RawItemOptions).WithOne().OnDelete(DeleteBehavior.Cascade);

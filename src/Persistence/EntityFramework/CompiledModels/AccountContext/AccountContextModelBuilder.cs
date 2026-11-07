@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
     public partial class AccountContextModel
     {
         private AccountContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("120535d2-39ca-4d19-8126-05be18958bd1"), entityTypeCount: 49)
+            : base(skipDetectChanges: false, modelId: new Guid("091a9634-77b0-4b0e-92e7-3e82b87a346c"), entityTypeCount: 49)
         {
         }
 
@@ -79,10 +79,11 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             CastleSiegeGuildEntityType.CreateForeignKey1(castleSiegeGuild, castleSiegeData);
             CastleSiegeNpcStateEntityType.CreateForeignKey1(castleSiegeNpcState, castleSiegeData);
             CastleSiegePendingRewardEntityType.CreateForeignKey1(castleSiegePendingReward, character);
-            CharacterEntityType.CreateForeignKey1(character, account);
-            CharacterEntityType.CreateForeignKey2(character, itemStorage);
+            CharacterEntityType.CreateForeignKey1(character, itemStorage);
+            CharacterEntityType.CreateForeignKey2(character, account);
             CharacterEntityType.CreateForeignKey3(character, itemStorage);
             CharacterEntityType.CreateForeignKey4(character, itemStorage);
+            CharacterEntityType.CreateForeignKey5(character, itemStorage);
             CharacterDropItemGroupEntityType.CreateForeignKey1(characterDropItemGroup, character);
             CharacterQuestStateEntityType.CreateForeignKey1(characterQuestState, character);
             GensAbuseEntityType.CreateForeignKey1(gensAbuse, character);

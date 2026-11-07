@@ -3081,4 +3081,109 @@
   <data name="ArcaWarPlugIn_Description" xml:space="preserve">
     <value>The guild war of Season 21 over three obelisks on Acheron and Deventer: guild masters register their guilds, then the members; during the war, a guild whose members stand on the three auras of an obelisk can destroy it and holds it; kills and obelisks give points for experience, and the guilds holding obelisks at the end get the buff of their elements and, in Acheron, more experience and item drops for a week (S21Emu Event/ArcaBattle.xml, webzen guide). A master pays 10 Signs of Lord to register; the damage between the guilds can be reduced; Sir Lesnar exchanges the Trophies of Battle. Only clients with the Arca War view (Babylon) can register.</value>
   </data>
+  <data name="AbilityCoreFeaturePlugIn_Name" xml:space="preserve">
+    <value>Ability Enhancement Core (Season 21)</value>
+  </data>
+  <data name="AbilityCoreFeaturePlugIn_Description" xml:space="preserve">
+    <value>The Ability Enhancement Core of the fifth evolution: skill, option, elite and extra damage cards in the slots of the core give their options and skills; the slots open with Season 21 total levels read through the progression mode. Cards level up with other cards, zen and stones, and reduce into stones. Only clients with the core view (Babylon) see the window.</value>
+  </data>
+  <data name="AbilityCoreConfiguration_SkillSlotLevels_Name" xml:space="preserve">
+    <value>Season 21 total level of each skill slot</value>
+  </data>
+  <data name="AbilityCoreConfiguration_OptionRowLevels_Name" xml:space="preserve">
+    <value>Season 21 total level of each option row</value>
+  </data>
+  <data name="AbilityCoreConfiguration_RowsMatchColor_Name" xml:space="preserve">
+    <value>A row takes only the cards of its color</value>
+  </data>
+  <data name="AbilityCoreConfiguration_MaximumCardLevel_Name" xml:space="preserve">
+    <value>Highest card level</value>
+  </data>
+  <data name="AbilityCoreConfiguration_Cards_Name" xml:space="preserve">
+    <value>Cards</value>
+  </data>
+  <data name="AbilityCoreConfiguration_LevelUps_Name" xml:space="preserve">
+    <value>Level ups</value>
+  </data>
+  <data name="AbilityCoreConfiguration_Reductions_Name" xml:space="preserve">
+    <value>Reductions</value>
+  </data>
+  <data name="AbilityCardDefinition_ItemGroup_Name" xml:space="preserve">
+    <value>Item group</value>
+  </data>
+  <data name="AbilityCardDefinition_ItemNumber_Name" xml:space="preserve">
+    <value>Item number</value>
+  </data>
+  <data name="AbilityCardDefinition_Kind_Name" xml:space="preserve">
+    <value>Kind</value>
+  </data>
+  <data name="AbilityCardDefinition_Color_Name" xml:space="preserve">
+    <value>Color</value>
+  </data>
+  <data name="AbilityCardDefinition_Type_Name" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="AbilityCardDefinition_BaseClasses_Name" xml:space="preserve">
+    <value>Base classes (bits)</value>
+  </data>
+  <data name="AbilityCardDefinition_Skill_Name" xml:space="preserve">
+    <value>Skill</value>
+  </data>
+  <data name="AbilityCardDefinition_RequiredSkill_Name" xml:space="preserve">
+    <value>Required skill</value>
+  </data>
+  <data name="AbilityCardDefinition_StaticOption_Name" xml:space="preserve">
+    <value>Static option</value>
+  </data>
+  <data name="AbilityCardDefinition_StaticValues_Name" xml:space="preserve">
+    <value>Static option values by level</value>
+  </data>
+  <data name="AbilityCardDefinition_Options_Name" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="AbilityCardOption_Number_Name" xml:space="preserve">
+    <value>Option number</value>
+  </data>
+  <data name="AbilityCardOption_BaseClasses_Name" xml:space="preserve">
+    <value>Base classes (bits)</value>
+  </data>
+  <data name="AbilityCardOption_Chance_Name" xml:space="preserve">
+    <value>Chance (millionths)</value>
+  </data>
+  <data name="AbilityCardLevelUp_Kind_Name" xml:space="preserve">
+    <value>Card kind</value>
+  </data>
+  <data name="AbilityCardLevelUp_Level_Name" xml:space="preserve">
+    <value>Card level</value>
+  </data>
+  <data name="AbilityCardLevelUp_Cards_Name" xml:space="preserve">
+    <value>Cards</value>
+  </data>
+  <data name="AbilityCardLevelUp_Money_Name" xml:space="preserve">
+    <value>Zen</value>
+  </data>
+  <data name="AbilityCardLevelUp_StoneGroup_Name" xml:space="preserve">
+    <value>Stone item group</value>
+  </data>
+  <data name="AbilityCardLevelUp_StoneNumber_Name" xml:space="preserve">
+    <value>Stone item number</value>
+  </data>
+  <data name="AbilityCardLevelUp_Stones_Name" xml:space="preserve">
+    <value>Stones</value>
+  </data>
+  <data name="AbilityCardReduction_Kind_Name" xml:space="preserve">
+    <value>Card kind</value>
+  </data>
+  <data name="AbilityCardReduction_Money_Name" xml:space="preserve">
+    <value>Zen</value>
+  </data>
+  <data name="AbilityCardReduction_StoneGroup_Name" xml:space="preserve">
+    <value>Stone item group</value>
+  </data>
+  <data name="AbilityCardReduction_StoneNumber_Name" xml:space="preserve">
+    <value>Stone item number</value>
+  </data>
+  <data name="AbilityCardReduction_Stones_Name" xml:space="preserve">
+    <value>Stones</value>
+  </data>
 </root>

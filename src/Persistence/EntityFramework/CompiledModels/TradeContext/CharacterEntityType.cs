@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.Character",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character),
                 baseEntityType,
-                propertyCount: 30,
+                propertyCount: 31,
                 navigationCount: 5,
                 foreignKeyCount: 1,
                 unnamedIndexCount: 2,
@@ -39,6 +39,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 valueGeneratorFactory: new MUnique.OpenMU.Persistence.EntityFramework.GuidV7ValueGeneratorFactory().Create,
                 sentinel: new Guid("00000000-0000-0000-0000-000000000000"));
             id.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var abilityCoreId = runtimeEntityType.AddProperty(
+                "AbilityCoreId",
+                typeof(Guid?),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character).GetProperty("AbilityCoreId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character).GetField("<AbilityCoreId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            abilityCoreId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var accountId = runtimeEntityType.AddProperty(
                 "AccountId",

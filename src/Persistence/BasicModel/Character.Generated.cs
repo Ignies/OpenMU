@@ -217,6 +217,24 @@ public partial class Character : MUnique.OpenMU.DataModel.Entities.Character, II
         set => base.MuunInventory = value;
     }
 
+    /// <summary>
+    /// Gets the raw object of <see cref="AbilityCore" />.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("abilityCore")]
+    public ItemStorage RawAbilityCore
+    {
+        get => base.AbilityCore as ItemStorage;
+        set => base.AbilityCore = value;
+    }
+
+    /// <inheritdoc/>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public override MUnique.OpenMU.DataModel.Entities.ItemStorage AbilityCore
+    {
+        get => base.AbilityCore;
+        set => base.AbilityCore = value;
+    }
+
 
     /// <inheritdoc/>
     public override bool Equals(object obj)

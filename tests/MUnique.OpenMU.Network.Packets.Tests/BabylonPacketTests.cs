@@ -173,6 +173,28 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the structure size calculation for AbilityCoreCard.
+    /// </summary>
+    [Test]
+    public void AbilityCoreCard_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 33;
+        var actualLength = AbilityCoreCard.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Slot' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Slot' exceeds structure boundary");
+        
+        // Validate field 'ItemData' boundary
+        Assert.That(1 + 32, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ItemData' exceeds structure boundary");
+    }
+
+    /// <summary>
     /// Tests the structure size calculation for EliteZone.
     /// </summary>
     [Test]
@@ -888,6 +910,88 @@ public class PacketStructureTests
         // Validate field 'FreePoints' boundary
         Assert.That(8 + 2, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'FreePoints' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for AbilityCoreState.
+    /// </summary>
+    [Test]
+    public void AbilityCoreState_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'OpenSlots' starts at index 5 with size 4
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'OpenSlots' has invalid negative index");
+        
+        // Field 'ActiveSlots' starts at index 9 with size 4
+        Assert.That(9, Is.GreaterThanOrEqualTo(0), 
+            "Field 'ActiveSlots' has invalid negative index");
+        
+        // Field 'CardCount' starts at index 13 with size 1
+        Assert.That(13, Is.GreaterThanOrEqualTo(0), 
+            "Field 'CardCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for AbilityCoreRequest.
+    /// </summary>
+    [Test]
+    public void AbilityCoreRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 7;
+        var actualLength = AbilityCoreRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Action' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Action' exceeds packet boundary");
+        
+        // Validate field 'CoreSlot' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'CoreSlot' exceeds packet boundary");
+        
+        // Validate field 'InventorySlot' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'InventorySlot' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for AbilityCoreResponse.
+    /// </summary>
+    [Test]
+    public void AbilityCoreResponse_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 40;
+        var actualLength = AbilityCoreResponseRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+        
+        // Validate field 'Action' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Action' exceeds packet boundary");
+        
+        // Validate field 'CoreSlot' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'CoreSlot' exceeds packet boundary");
+        
+        // Validate field 'InventorySlot' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'InventorySlot' exceeds packet boundary");
+        
+        // Validate field 'ItemData' boundary
+        Assert.That(8 + 32, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ItemData' exceeds packet boundary");
     }
 
     /// <summary>

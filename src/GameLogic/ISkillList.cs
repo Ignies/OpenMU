@@ -33,6 +33,13 @@ public interface ISkillList
     ValueTask AddLearnedSkillAsync(Skill skill);
 
     /// <summary>
+    /// Adds a skill which an item gives while it is worn or, like an ability card, placed; it is not learned.
+    /// </summary>
+    /// <param name="skill">The skill.</param>
+    /// <returns>The task.</returns>
+    ValueTask AddItemSkillAsync(Skill skill);
+
+    /// <summary>
     /// Removes the item skill.
     /// </summary>
     /// <param name="skillId">The skill identifier.</param>

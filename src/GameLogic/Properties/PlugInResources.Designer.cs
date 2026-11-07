@@ -8778,5 +8778,320 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ArcaWarPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ability Enhancement Core (Season 21).
+        /// </summary>
+        public static string AbilityCoreFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AbilityCoreFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Ability Enhancement Core of the fifth evolution: skill, option, elite and extra damage cards in the slots of the core give their options and skills; the slots open with Season 21 total levels read through the progression mode. Cards level up with other cards, zen and stones, and reduce into stones. Only clients with the core view (Babylon) see the window..
+        /// </summary>
+        public static string AbilityCoreFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AbilityCoreFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Season 21 total level of each skill slot.
+        /// </summary>
+        public static string AbilityCoreConfiguration_SkillSlotLevels_Name {
+            get {
+                return ResourceManager.GetString("AbilityCoreConfiguration_SkillSlotLevels_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Season 21 total level of each option row.
+        /// </summary>
+        public static string AbilityCoreConfiguration_OptionRowLevels_Name {
+            get {
+                return ResourceManager.GetString("AbilityCoreConfiguration_OptionRowLevels_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A row takes only the cards of its color.
+        /// </summary>
+        public static string AbilityCoreConfiguration_RowsMatchColor_Name {
+            get {
+                return ResourceManager.GetString("AbilityCoreConfiguration_RowsMatchColor_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Highest card level.
+        /// </summary>
+        public static string AbilityCoreConfiguration_MaximumCardLevel_Name {
+            get {
+                return ResourceManager.GetString("AbilityCoreConfiguration_MaximumCardLevel_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cards.
+        /// </summary>
+        public static string AbilityCoreConfiguration_Cards_Name {
+            get {
+                return ResourceManager.GetString("AbilityCoreConfiguration_Cards_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Level ups.
+        /// </summary>
+        public static string AbilityCoreConfiguration_LevelUps_Name {
+            get {
+                return ResourceManager.GetString("AbilityCoreConfiguration_LevelUps_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Reductions.
+        /// </summary>
+        public static string AbilityCoreConfiguration_Reductions_Name {
+            get {
+                return ResourceManager.GetString("AbilityCoreConfiguration_Reductions_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item group.
+        /// </summary>
+        public static string AbilityCardDefinition_ItemGroup_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardDefinition_ItemGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number.
+        /// </summary>
+        public static string AbilityCardDefinition_ItemNumber_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardDefinition_ItemNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kind.
+        /// </summary>
+        public static string AbilityCardDefinition_Kind_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardDefinition_Kind_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Color.
+        /// </summary>
+        public static string AbilityCardDefinition_Color_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardDefinition_Color_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Type.
+        /// </summary>
+        public static string AbilityCardDefinition_Type_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardDefinition_Type_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Base classes (bits).
+        /// </summary>
+        public static string AbilityCardDefinition_BaseClasses_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardDefinition_BaseClasses_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skill.
+        /// </summary>
+        public static string AbilityCardDefinition_Skill_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardDefinition_Skill_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required skill.
+        /// </summary>
+        public static string AbilityCardDefinition_RequiredSkill_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardDefinition_RequiredSkill_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Static option.
+        /// </summary>
+        public static string AbilityCardDefinition_StaticOption_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardDefinition_StaticOption_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Static option values by level.
+        /// </summary>
+        public static string AbilityCardDefinition_StaticValues_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardDefinition_StaticValues_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Options.
+        /// </summary>
+        public static string AbilityCardDefinition_Options_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardDefinition_Options_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Option number.
+        /// </summary>
+        public static string AbilityCardOption_Number_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardOption_Number_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Base classes (bits).
+        /// </summary>
+        public static string AbilityCardOption_BaseClasses_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardOption_BaseClasses_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Chance (millionths).
+        /// </summary>
+        public static string AbilityCardOption_Chance_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardOption_Chance_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Card kind.
+        /// </summary>
+        public static string AbilityCardLevelUp_Kind_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardLevelUp_Kind_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Card level.
+        /// </summary>
+        public static string AbilityCardLevelUp_Level_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardLevelUp_Level_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cards.
+        /// </summary>
+        public static string AbilityCardLevelUp_Cards_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardLevelUp_Cards_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zen.
+        /// </summary>
+        public static string AbilityCardLevelUp_Money_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardLevelUp_Money_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stone item group.
+        /// </summary>
+        public static string AbilityCardLevelUp_StoneGroup_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardLevelUp_StoneGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stone item number.
+        /// </summary>
+        public static string AbilityCardLevelUp_StoneNumber_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardLevelUp_StoneNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stones.
+        /// </summary>
+        public static string AbilityCardLevelUp_Stones_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardLevelUp_Stones_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Card kind.
+        /// </summary>
+        public static string AbilityCardReduction_Kind_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardReduction_Kind_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Zen.
+        /// </summary>
+        public static string AbilityCardReduction_Money_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardReduction_Money_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stone item group.
+        /// </summary>
+        public static string AbilityCardReduction_StoneGroup_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardReduction_StoneGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stone item number.
+        /// </summary>
+        public static string AbilityCardReduction_StoneNumber_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardReduction_StoneNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Stones.
+        /// </summary>
+        public static string AbilityCardReduction_Stones_Name {
+            get {
+                return ResourceManager.GetString("AbilityCardReduction_Stones_Name", resourceCulture);
+            }
+        }
     }
 }

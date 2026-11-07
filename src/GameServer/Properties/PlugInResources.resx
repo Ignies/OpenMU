@@ -3119,4 +3119,16 @@
   <data name="ArcaWarRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the requests of the Babylon client to the Arca War: register the guild, register as a member, enter the war (C1 EE BA).</value>
   </data>
+  <data name="AbilityCoreBabylonPlugIn_Name" xml:space="preserve">
+    <value>Ability Enhancement Core view (Babylon)</value>
+  </data>
+  <data name="AbilityCoreBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the Ability Enhancement Core to the Babylon client: the open and active slots with the cards (EE 43) and the results of the core actions (EE 45).</value>
+  </data>
+  <data name="AbilityCoreRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Ability Enhancement Core request handler (Babylon)</value>
+  </data>
+  <data name="AbilityCoreRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the actions of the Ability Enhancement Core window of the Babylon client (EE 44): insert, remove, level up and reduce a card.</value>
+  </data>
 </root>

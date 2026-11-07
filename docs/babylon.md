@@ -100,6 +100,7 @@ Rules:
 | `stats_specialize` | The stat specialization of Season 21: a stat of a class raises an option by the percent of its section (S21Emu `Character/StatsSpecialize.txt`; plugin "Stat specialization (Season 21)", off by default, `src/GameLogic/Classes`). No packet: the raised values reach the client through the Season 6 stat packets |
 | `creatable_classes` | `C1 EE 14 CreatableClasses` after the class codes of the list: every class the creation offers with the state of the server's creation rule (`GameLogic/Classes/ClassCreationRule.cs`) and its creation level |
 | `level_penalties` | The damage and experience penalties of Season 21 below a monster's level + 600 (S21Emu `DamagePenalty.lua`, `ExperienciePenalty.lua`; plugin "Level penalties (Season 21)", off by default, levels mapped through the progression mode, `src/GameLogic/Progression`). No packet |
+| `ability_core` | The Ability Enhancement Core of the fifth evolution: 45 skill, option, elite and extra damage cards in 22 slots (`Character.AbilityCore`, migration `AddSeason21AbilityCore`), their options as item options by card level, the fifth evolution skills of the skill cards, level up and reduction (update "Add the Ability Enhancement Core of Season 21", plugin "Ability Enhancement Core (Season 21)", off by default; slot levels mapped through the progression mode; `src/GameLogic/AbilityCore`; `EE 43`-`45`) |
 
 ## Balance
 
@@ -189,8 +190,23 @@ carry the skill number in 16 bits and stay as they are for both clients.
 - `C2 EE 48 SkillListWide` (server): count (u16 LE) at 5, then per skill its list index (u16 LE), number (u16 LE) and
   level (u8). Replaces the Season 6 list, whose byte count in a C1 packet holds at most 62 skills. Single skills are
   added and removed with the Season 6 packets.
-- 43-45 are kept for the Ability Enhancement Core, 47 for an effect status with a 16-bit effect number (the Season 6
-  status has a byte; no effect above 255 is applied yet).
+- `C2 EE 43 AbilityCoreState` (server): open slots (u32 LE, bit n the slot n) at 5, active slots (u32 LE, the slots whose
+  card takes effect) at 9, count at 13, then per card its slot (u8) and 32 bytes of item data (W32; the item level is the
+  card level, its option the card option). Sent on every map join of a world with the core and after every successful
+  core action. Slots: 0 extra damage, 1-3 skill, 4-18 option (three rows of five: blue, green, purple), 19-21 elite.
+- `C1 EE 44 AbilityCoreRequest` (client, 7): action at 4 (0 insert: inventory slot into core slot; 1 remove: core slot
+  into the inventory slot, 0xFF the first free one; 2 level up: the card of the inventory slot, or of the core slot when
+  the inventory slot is 0xFF; 3 reduce: the card of the inventory slot), core slot at 5, inventory slot at 6.
+- `C1 EE 45 AbilityCoreResponse` (server, 40): result at 4 (0 done, 1 off, 2 not a fifth evolution, 3 no item, 4 not a
+  card or no level up / reduction for it, 5 slot locked, 6 wrong slot: kind, row color or class, 7 slot occupied,
+  8 requirement missing: the fourth evolution skill of a skill card or the five option cards of an elite's row,
+  9 inventory full, 10 highest level, 11 not enough cards, 12 not enough zen, 13 not enough stones, 14 elite level above
+  the lowest option card of its row), action at 5, core slot at 6, inventory slot at 7, the card after the action (the
+  stones after a reduction) at 8 (W32, 0xFF none). The inventory side gets the Season 6 item removed / added / upgraded
+  packets. A card option of the item is the item option type "Ability Card Option" (number = the S21Emu option index,
+  the names of the client table ParticleOptionText).
+- 47 is kept for an effect status with a 16-bit effect number (the Season 6 status has a byte; no effect above 255 is
+  applied yet).
 
 ### Quests (range C0-CF)
 

@@ -23,10 +23,10 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.Character",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character),
                 baseEntityType,
-                propertyCount: 30,
-                navigationCount: 8,
-                foreignKeyCount: 4,
-                unnamedIndexCount: 5,
+                propertyCount: 31,
+                navigationCount: 9,
+                foreignKeyCount: 5,
+                unnamedIndexCount: 6,
                 keyCount: 1);
 
             var id = runtimeEntityType.AddProperty(
@@ -39,6 +39,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
                 valueGeneratorFactory: new MUnique.OpenMU.Persistence.EntityFramework.GuidV7ValueGeneratorFactory().Create,
                 sentinel: new Guid("00000000-0000-0000-0000-000000000000"));
             id.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var abilityCoreId = runtimeEntityType.AddProperty(
+                "AbilityCoreId",
+                typeof(Guid?),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character).GetProperty("AbilityCoreId", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character).GetField("<AbilityCoreId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            abilityCoreId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var accountId = runtimeEntityType.AddProperty(
                 "AccountId",
@@ -274,21 +282,25 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             runtimeEntityType.SetPrimaryKey(key);
 
             var index = runtimeEntityType.AddIndex(
-                new[] { accountId });
+                new[] { abilityCoreId },
+                unique: true);
 
             var index0 = runtimeEntityType.AddIndex(
+                new[] { accountId });
+
+            var index1 = runtimeEntityType.AddIndex(
                 new[] { gremoryCaseId },
                 unique: true);
 
-            var index1 = runtimeEntityType.AddIndex(
+            var index2 = runtimeEntityType.AddIndex(
                 new[] { inventoryId },
                 unique: true);
 
-            var index2 = runtimeEntityType.AddIndex(
+            var index3 = runtimeEntityType.AddIndex(
                 new[] { muunInventoryId },
                 unique: true);
 
-            var index3 = runtimeEntityType.AddIndex(
+            var index4 = runtimeEntityType.AddIndex(
                 new[] { name },
                 unique: true);
 
@@ -296,6 +308,23 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
         }
 
         public static RuntimeForeignKey CreateForeignKey1(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        {
+            var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("AbilityCoreId") },
+                principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
+                principalEntityType,
+                deleteBehavior: DeleteBehavior.Cascade,
+                unique: true);
+
+            var rawAbilityCore = declaringEntityType.AddNavigation("RawAbilityCore",
+                runtimeForeignKey,
+                onDependent: true,
+                typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemStorage),
+                propertyInfo: typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character).GetProperty("RawAbilityCore", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly));
+
+            return runtimeForeignKey;
+        }
+
+        public static RuntimeForeignKey CreateForeignKey2(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
         {
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("AccountId") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
@@ -312,7 +341,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             return runtimeForeignKey;
         }
 
-        public static RuntimeForeignKey CreateForeignKey2(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        public static RuntimeForeignKey CreateForeignKey3(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
         {
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("GremoryCaseId") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
@@ -329,7 +358,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             return runtimeForeignKey;
         }
 
-        public static RuntimeForeignKey CreateForeignKey3(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        public static RuntimeForeignKey CreateForeignKey4(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
         {
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("InventoryId") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),
@@ -346,7 +375,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             return runtimeForeignKey;
         }
 
-        public static RuntimeForeignKey CreateForeignKey4(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
+        public static RuntimeForeignKey CreateForeignKey5(RuntimeEntityType declaringEntityType, RuntimeEntityType principalEntityType)
         {
             var runtimeForeignKey = declaringEntityType.AddForeignKey(new[] { declaringEntityType.FindProperty("MuunInventoryId") },
                 principalEntityType.FindKey(new[] { principalEntityType.FindProperty("Id") }),

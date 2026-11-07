@@ -857,6 +857,7 @@ internal sealed class BasicModelConverter
         target.Inventory = (MUnique.OpenMU.DataModel.Entities.ItemStorage)this.ConvertObject(source.Inventory)!;
         target.GremoryCase = (MUnique.OpenMU.DataModel.Entities.ItemStorage)this.ConvertObject(source.GremoryCase)!;
         target.MuunInventory = (MUnique.OpenMU.DataModel.Entities.ItemStorage)this.ConvertObject(source.MuunInventory)!;
+        target.AbilityCore = (MUnique.OpenMU.DataModel.Entities.ItemStorage)this.ConvertObject(source.AbilityCore)!;
         if (source.DropItemGroups is { } dropItemGroupsItems)
         {
             foreach (var item in dropItemGroupsItems)

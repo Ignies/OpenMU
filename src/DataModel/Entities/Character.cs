@@ -276,6 +276,12 @@ public class Character
     public virtual ItemStorage? MuunInventory { get; set; }
 
     /// <summary>
+    /// Gets or sets the Ability Enhancement Core of the character (Season 21): the ability cards in its slots.
+    /// </summary>
+    [MemberOfAggregate]
+    public virtual ItemStorage? AbilityCore { get; set; }
+
+    /// <summary>
     /// Gets or sets the drop item groups.
     /// </summary>
     public virtual ICollection<DropItemGroup> DropItemGroups { get; protected set; } = null!;
