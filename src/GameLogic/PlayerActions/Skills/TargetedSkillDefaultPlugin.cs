@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.EnhanceTree;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
@@ -264,14 +265,17 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             {
                 if (!target.IsAtSafezone() && !player.IsAtSafezone() && target != player)
                 {
-                    var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo, 1, skill.NumberOfHitsPerAttack > 1 ? false : null).ConfigureAwait(false);
+                    var hits = skill.NumberOfHitsPerAttack + EnhanceTreeEffects.GetExtraHits(player, skill);
+                    var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo, 1, hits > 1 ? false : null).ConfigureAwait(false);
                     player.LastAttackedTarget.SetTarget(target);
                     success = await target.TryApplyElementalEffectsAsync(player, skillEntry, hitInfo).ConfigureAwait(false) || success;
 
-                    for (int hit = 2; hit <= skill.NumberOfHitsPerAttack; hit++)
+                    for (int hit = 2; hit <= hits; hit++)
                     {
-                        await target.AttackByAsync(player, skillEntry, isCombo, 1, hit == skill.NumberOfHitsPerAttack).ConfigureAwait(false);
+                        await target.AttackByAsync(player, skillEntry, isCombo, 1, hit == hits).ConfigureAwait(false);
                     }
+
+                    await EnhanceTreeEffects.ApplySplashAsync(player, target, skillEntry).ConfigureAwait(false);
 
                     if (hitInfo is { SkillEntry.Skill: not null } && skillEntry != hitInfo.Value.SkillEntry)
                     {

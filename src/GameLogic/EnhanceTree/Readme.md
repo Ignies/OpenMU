@@ -22,7 +22,14 @@ turns it on.
   the damage of the skill which the extension node of its sheet (index 0, e.g. Meteor Strike Extended 1075 for Meteor
   Strike 724) improves, while that extension is learned (`AttackableExtensions.GetDamage`). The node is one skill in
   every sheet of a class, so its level counts for each learned extension. The lookups are indexed per configuration and
-  the formula values cached. Left: extra damage rate, damage count, range, splash, speed, targets, the debuff nodes.
+  the formula values cached. The same rule gives the other options of a sheet:
+  - Damage count 1002-1004 (formulas 15, 30, 45 / level, learned at 15): 1, 2 or 3 hits more of the skill
+    (`AreaSkillAttackAction`, `TargetedSkillDefaultPlugin`).
+  - Splash 1010 (10 / level at 10): one hit on each monster within a tile of the target; Splash Count 1154 one hit more,
+    Splash Radio 1153 one tile more (muonlinefanz.com tree tool: "one DMG Counter to monsters within 1 tile").
+  - Left as data: extra damage rate 1007 ("chance to deal Mastery DMG", no amount in any source), weapon damage
+    1020/1021/1156 (a weapon rise percentage per used skill, which the attribute system has no place for), range 1011,
+    radius 1009, targets 1012, speed 1008 (client animation), cooldown 1019, the explosions 1125-1135 and 1196-1201.
 
 ## Points (`EnhanceTreePoints`)
 

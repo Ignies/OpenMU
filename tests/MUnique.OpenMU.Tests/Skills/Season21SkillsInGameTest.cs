@@ -201,6 +201,26 @@ public class Season21SkillsInGameTest
     }
 
     /// <summary>
+    /// "Add Ext Skill Damage Count 1" (1002, learned at 15) of the Dark Wizard's first sheet gives Meteor Strike (724) one
+    /// hit more, once its extension (1075) is learned; the sheet has no splash node.
+    /// </summary>
+    [Test]
+    public async ValueTask DamageCountAddsAHitToTheImprovedSkillAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.DarkWizard, ClassEvolution.Fourth).ConfigureAwait(false);
+        var meteorStrike = this._gameConfiguration.Skills.Single(s => s.Number == 724);
+        await player.SkillList!.AddLearnedSkillAsync(meteorStrike).ConfigureAwait(false);
+        await player.SkillList.AddLearnedSkillAsync(this._gameConfiguration.Skills.Single(s => s.Number == EnhanceTreeEffects.DamageCount1)).ConfigureAwait(false);
+        player.SelectedCharacter!.LearnedSkills.Single(s => s.Skill!.Number == EnhanceTreeEffects.DamageCount1).Level = 15;
+        Assert.That(EnhanceTreeEffects.GetExtraHits(player, meteorStrike), Is.Zero, "the extension isn't learned");
+
+        await player.SkillList.AddLearnedSkillAsync(this._gameConfiguration.Skills.Single(s => s.Number == 1075)).ConfigureAwait(false);
+
+        Assert.That(EnhanceTreeEffects.GetExtraHits(player, meteorStrike), Is.EqualTo(1));
+        Assert.That(EnhanceTreeEffects.GetSplash(player, meteorStrike), Is.EqualTo((0, 0)));
+    }
+
+    /// <summary>
     /// A tree passive is no master tree skill: master points can't be spent on it.
     /// </summary>
     [Test]

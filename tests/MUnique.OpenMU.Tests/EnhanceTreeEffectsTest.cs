@@ -1,4 +1,4 @@
-// <copyright file="EnhanceTreeEffectsTest.cs" company="MUnique">
+﻿// <copyright file="EnhanceTreeEffectsTest.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -41,5 +41,67 @@ public class EnhanceTreeEffectsTest
 
         levels.Remove(MeteorStrikeExtended);
         Assert.That(EnhanceTreeEffects.GetExtraSkillDamage(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf), Is.Zero, "the extension isn't learned");
+    }
+
+    /// <summary>
+    /// The damage count nodes (1002-1004, formulas 45-47 = 15, 30, 45 / level, learned at 15) add 1, 2 or 3 hits to the
+    /// skill of their sheet; a sheet holds one of them.
+    /// </summary>
+    [Test]
+    public void DamageCountNodesAddHitsToTheImprovedSkill()
+    {
+        var configuration = CreateSheet(new EnhanceTreeNode { Index = 1, Skill = EnhanceTreeEffects.DamageCount2, FormulaId = 46 });
+        configuration.Formulas[46] = "30/level";
+        var levels = new Dictionary<short, int> { [MeteorStrikeExtended] = 1, [EnhanceTreeEffects.DamageCount2] = 15 };
+        int? LevelOf(short skill) => levels.TryGetValue(skill, out var level) ? level : null;
+
+        Assert.That(EnhanceTreeEffects.GetExtraHits(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf), Is.EqualTo(2));
+        Assert.That(EnhanceTreeEffects.GetExtraHits(configuration, BaseClassCode.DarkWizard, 9, LevelOf), Is.Zero, "another skill");
+
+        levels.Remove(MeteorStrikeExtended);
+        Assert.That(EnhanceTreeEffects.GetExtraHits(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf), Is.Zero, "the extension isn't learned");
+    }
+
+    /// <summary>
+    /// "Add Ext Skill Splash Damage" (1010, formula 61 = 10 / level, learned at 10) deals one hit to the monsters within one
+    /// tile of the target; "Splash Count" (1154) adds a hit, "Splash Radio" (1153) a tile (muonlinefanz.com tree tool).
+    /// </summary>
+    [Test]
+    public void SplashNodesGiveHitsAndRadius()
+    {
+        var configuration = CreateSheet(
+            new EnhanceTreeNode { Index = 2, Skill = EnhanceTreeEffects.SplashDamage, FormulaId = 61 },
+            new EnhanceTreeNode { Index = 3, Skill = EnhanceTreeEffects.SplashRadius, FormulaId = 168 },
+            new EnhanceTreeNode { Index = 4, Skill = EnhanceTreeEffects.SplashCount, FormulaId = 169 });
+        configuration.Formulas[61] = "10/level";
+        configuration.Formulas[168] = "10/level";
+        configuration.Formulas[169] = "10/level";
+        var levels = new Dictionary<short, int> { [MeteorStrikeExtended] = 1, [EnhanceTreeEffects.SplashDamage] = 10 };
+        int? LevelOf(short skill) => levels.TryGetValue(skill, out var level) ? level : null;
+
+        Assert.That(EnhanceTreeEffects.GetSplash(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf), Is.EqualTo((1, 1)));
+
+        levels[EnhanceTreeEffects.SplashRadius] = 10;
+        levels[EnhanceTreeEffects.SplashCount] = 10;
+        Assert.That(EnhanceTreeEffects.GetSplash(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf), Is.EqualTo((2, 2)));
+
+        levels.Remove(EnhanceTreeEffects.SplashDamage);
+        Assert.That(EnhanceTreeEffects.GetSplash(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf).Hits, Is.Zero, "no splash without its node");
+    }
+
+    private static EnhanceTreeConfiguration CreateSheet(params EnhanceTreeNode[] nodes)
+    {
+        var configuration = new EnhanceTreeConfiguration
+        {
+            Nodes = [new() { BaseClass = (byte)BaseClassCode.DarkWizard, Group = 0, Index = 0, Skill = MeteorStrikeExtended, RelatedSkill = MeteorStrike, FormulaId = 115 }],
+            Formulas = { [115] = "((((((18+level)^2)/10)*5)/7)*4)" },
+        };
+        foreach (var node in nodes)
+        {
+            node.BaseClass = (byte)BaseClassCode.DarkWizard;
+            configuration.Nodes.Add(node);
+        }
+
+        return configuration;
     }
 }
