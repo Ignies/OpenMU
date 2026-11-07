@@ -322,6 +322,8 @@ internal class Season21MapsDataTest
     [TestCase(905, 1_060_000)]
     [TestCase(839, 2_445_000)]
     [TestCase(947, 6_397_000)]
+    [TestCase(834, 1_815_000)]
+    [TestCase(836, 2_015_000)]
     public async Task PlaceholderRowsAreReplacedAsync(int number, int health)
     {
         var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
@@ -352,6 +354,34 @@ internal class Season21MapsDataTest
         Assert.That(ValueOf(icarus, Stats.MaximumHealth), Is.EqualTo(2_422_700));
         Assert.That(ValueOf(icarus, Stats.DefenseRatePvm), Is.EqualTo(3_357));
         Assert.That(ValueOf(persona, Stats.MaximumHealth), Is.EqualTo(999_000), "the operator's value");
+    }
+
+    /// <summary>
+    /// Atlans Abyss 2 and 3 take the muonlinefanz.com rows (Large Bahamut 834, Great Bahamut 836: health, damage, defense);
+    /// of the Season 6 rows, the Phoenix of Darkness 77 gets the 75,000 health and the Death Spirit 410 the level 118 of
+    /// S21Emu; a value the operator changed stays.
+    /// </summary>
+    [Test]
+    public async Task AbyssAndClassicRowsTakeTheirSourceAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        await new AddSeason21LevelCapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var phoenix = gameConfiguration.Monsters.Single(m => m.Number == 77);
+        var deathSpirit = gameConfiguration.Monsters.Single(m => m.Number == 410);
+        var darkElf = gameConfiguration.Monsters.Single(m => m.Number == 412);
+        Assert.That(ValueOf(phoenix, Stats.MaximumHealth), Is.EqualTo(95_000));
+
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var bahamut = gameConfiguration.Monsters.Single(m => m.Number == 834);
+        Assert.That((ValueOf(bahamut, Stats.MinimumPhysBaseDmg), ValueOf(bahamut, Stats.MaximumPhysBaseDmg), ValueOf(bahamut, Stats.DefenseBase)), Is.EqualTo((7300f, 8100f, 5450f)));
+        Assert.That(ValueOf(phoenix, Stats.MaximumHealth), Is.EqualTo(75_000));
+        Assert.That(ValueOf(deathSpirit, Stats.Level), Is.EqualTo(118));
+        Assert.That(ValueOf(darkElf, Stats.MaximumHealth), Is.EqualTo(1_500_000), "S21Emu and muonlinefanz.com disagree");
+
+        SetValue(phoenix, Stats.MaximumHealth, 80_000);
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.That(ValueOf(phoenix, Stats.MaximumHealth), Is.EqualTo(80_000), "the operator's value");
     }
 
     /// <summary>

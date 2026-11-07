@@ -19,6 +19,8 @@ internal static class Season21PlaceholderRows
     /// </summary>
     public static IReadOnlyList<(short Number, int Level, int Health, int MinimumDamage, int MaximumDamage, int Defense, int AttackRate, int DefenseRate)> Rows { get; } =
     [
+        (834, 970, 1515000, 4900, 5040, 5000, 4400, 2050),
+        (836, 1085, 1930000, 5300, 5400, 6150, 4670, 1700),
         (839, 1160, 800000, 5600, 5780, 3800, 5000, 2450),
         (840, 1195, 850000, 5800, 6000, 3950, 5200, 2600),
         (859, 1230, 650000, 4900, 5050, 3600, 4800, 2050),
@@ -38,12 +40,31 @@ internal static class Season21PlaceholderRows
     ];
 
     /// <summary>
-    /// Replaces the numbers of each monster which still has its placeholder row by the ones of the data; a monster with
-    /// any other number, e.g. one the operator changed, stays.
+    /// Gets the values of Season 6 monsters which S21Emu <c>Monster.xml</c> changed: number, attribute, the Season 6 value,
+    /// the Season 21 value (Phoenix of Darkness 75,000 health, Death Spirit level 118).
+    /// </summary>
+    public static IReadOnlyList<(short Number, AttributeDefinition Attribute, float Season6, float Season21)> ClassicRows { get; } =
+    [
+        (77, Stats.MaximumHealth, 95000, 75000),
+        (410, Stats.Level, 119, 118),
+    ];
+
+    /// <summary>
+    /// Replaces the numbers of each monster which still has its placeholder row by the ones of the data, and the Season 6
+    /// values of <see cref="ClassicRows"/>; a monster with any other number, e.g. one the operator changed, stays.
     /// </summary>
     /// <param name="gameConfiguration">The game configuration.</param>
     public static void Repair(GameConfiguration gameConfiguration)
     {
+        foreach (var (number, attribute, season6, season21) in ClassicRows)
+        {
+            if (gameConfiguration.Monsters.FirstOrDefault(m => m.Number == number)?.Attributes.FirstOrDefault(a => a.AttributeDefinition == attribute) is { } stored
+                && stored.Value == season6)
+            {
+                stored.Value = season21;
+            }
+        }
+
         var current = Season21MapData.All.SelectMany(set => set.Monsters)
             .Concat(Season21EliteZoneData.Monsters.Select(m => m.Row))
             .GroupBy(row => row.Number)

@@ -6129,7 +6129,7 @@ internal static class Season21MapData
         ],
         Monsters:
         [
-            new(834, LocalizedString.FromResource(() => MonsterNames.MediumBahamutOfAbyss), Level: 970, Health: 1515000, MinimumDamage: 4900, MaximumDamage: 5040, Defense: 5000, AttackRate: 4400, DefenseRate: 2050, MoveRange: 2, AttackRange: 1, ViewRange: 4, MoveDelay: 400, AttackDelay: 1600, RespawnDelay: 8, Attribute: 2, Resistances: [0, 1, 1, 0, 1, 1, 0]),
+            new(834, LocalizedString.FromResource(() => MonsterNames.MediumBahamutOfAbyss), Level: 970, Health: 1815000, MinimumDamage: 7300, MaximumDamage: 8100, Defense: 5450, AttackRate: 4400, DefenseRate: 2050, MoveRange: 2, AttackRange: 1, ViewRange: 4, MoveDelay: 400, AttackDelay: 1600, RespawnDelay: 8, Attribute: 2, Resistances: [0, 1, 1, 0, 1, 1, 0]),
             new(835, LocalizedString.FromResource(() => MonsterNames.SilverValkyrieOfAbyss), Level: 995, Health: 1675000, MinimumDamage: 7600, MaximumDamage: 7900, Defense: 5650, AttackRate: 4550, DefenseRate: 1695, MoveRange: 3, AttackRange: 4, ViewRange: 7, MoveDelay: 400, AttackDelay: 1600, RespawnDelay: 15, Attribute: 2, Resistances: [0, 7, 7, 0, 7, 7, 0]),
         ],
         Spawns:
@@ -6451,7 +6451,7 @@ internal static class Season21MapData
         ],
         Monsters:
         [
-            new(836, LocalizedString.FromResource(() => MonsterNames.GreatBahamutOfAbyss), Level: 1085, Health: 1930000, MinimumDamage: 5300, MaximumDamage: 5400, Defense: 6150, AttackRate: 4670, DefenseRate: 1700, MoveRange: 3, AttackRange: 2, ViewRange: 7, MoveDelay: 400, AttackDelay: 1600, RespawnDelay: 15, Attribute: 2, Resistances: [0, 6, 6, 0, 6, 6, 0]),
+            new(836, LocalizedString.FromResource(() => MonsterNames.GreatBahamutOfAbyss), Level: 1085, Health: 2015000, MinimumDamage: 7500, MaximumDamage: 8200, Defense: 5750, AttackRate: 4670, DefenseRate: 1700, MoveRange: 3, AttackRange: 2, ViewRange: 7, MoveDelay: 400, AttackDelay: 1600, RespawnDelay: 15, Attribute: 2, Resistances: [0, 6, 6, 0, 6, 6, 0]),
             new(837, LocalizedString.FromResource(() => MonsterNames.LizardKingOfAbyss), Level: 1125, Health: 1830000, MinimumDamage: 7800, MaximumDamage: 8100, Defense: 6150, AttackRate: 4800, DefenseRate: 1700, MoveRange: 3, AttackRange: 3, ViewRange: 7, MoveDelay: 400, AttackDelay: 1600, RespawnDelay: 15, Attribute: 2, Resistances: [0, 7, 7, 0, 7, 7, 0]),
             new(839, LocalizedString.FromResource(() => MonsterNames.EliteGreatBahamutOfAbyss), Level: 1160, Health: 2445000, MinimumDamage: 5820, MaximumDamage: 5950, Defense: 6515, AttackRate: 5000, DefenseRate: 2450, MoveRange: 3, AttackRange: 3, ViewRange: 7, MoveDelay: 400, AttackDelay: 1600, RespawnDelay: 15, Attribute: 2, Resistances: [0, 7, 7, 0, 7, 7, 0]),
             new(840, LocalizedString.FromResource(() => MonsterNames.EliteLizardKingOfAbyss), Level: 1195, Health: 2318000, MinimumDamage: 8565, MaximumDamage: 8920, Defense: 6515, AttackRate: 5200, DefenseRate: 2600, MoveRange: 3, AttackRange: 3, ViewRange: 7, MoveDelay: 400, AttackDelay: 1600, RespawnDelay: 15, Attribute: 2, Resistances: [0, 7, 7, 0, 7, 7, 0]),

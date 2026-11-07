@@ -46,11 +46,12 @@ public class AddSeason21MapsUpdatePlugIn : UpdatePlugInBase
     /// <remarks>
     /// Version 2: the placeholder rows of the data replaced (Crimson Icarus, Under Persona, the elites of Atlans Abyss 3 and Tormenta).
     /// Version 3: Nars asks 400 instead of the 300 of Acheron.
+    /// Version 4: Atlans Abyss 834/836 take the muonlinefanz.com rows; Phoenix of Darkness 77 and Death Spirit 410 the S21Emu values.
     /// </remarks>
-    public override int Version => 3;
+    public override int Version => 4;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 07, 23, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 07, 23, 30, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21LevelCapsUpdatePlugIn).GUID];

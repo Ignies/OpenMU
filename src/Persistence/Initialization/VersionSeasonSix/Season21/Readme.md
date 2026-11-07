@@ -89,6 +89,10 @@ maps and elite zones updates, version 2, repair a database which still has them,
   muonlinefanz.com (Crimson Flame's Icarus, 2,422,700 to 2,667,000 health); the attack rate and the level stay. Its
   elites 864/865 get the median factor by which the normals changed (health 3.9, damage 1.6, defense 1.7).
 * Under Persona 905: 1,060,000 health instead of 106,000 (its siblings have 1.12-1.15 million, its elite 1.4 million).
+* Atlans Abyss 2/3 Medium (Large) Bahamut 834 and Great Bahamut 836 (below the fan table): health, damage and defense of
+  muonlinefanz.com (1,815,000 / 2,015,000 health); level, attack and defense rate stay (version 4).
+* Season 6 rows S21Emu changed: Phoenix of Darkness 77 75,000 health (95,000), Death Spirit 410 level 118 (119)
+  (`ClassicRows`, version 4). The Dark Elf 412 keeps 1,500,000: S21Emu has 1,000,000, muonlinefanz.com 1.5 million.
 * Elites equal to or weaker than their normals (Atlans Abyss 3 839/840, Tormenta 945-947, Swamp of Doom 972-974): the
   normal's row times the median elite factor of the data's real elite pairs (health 1.267, damage 1.1, defense 1.059,
   defense rate 1.037, attack rate 1), never below the data's own value; the level stays. No source gives these rows.
