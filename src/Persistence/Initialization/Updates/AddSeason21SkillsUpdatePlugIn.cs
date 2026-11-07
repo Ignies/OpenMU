@@ -20,7 +20,8 @@ using MUnique.OpenMU.PlugIns;
 /// Existing skills keep every value of the operator; they only get the classes of Season 21 the data names. An existing
 /// configuration of the skill enhancement tree is kept. Version 2 adds the damage rates of single skills
 /// (<see cref="Season21SkillRates"/>) to the skills which have no final multiplier. Version 3 adds the skill requirements of
-/// the books of <c>SkillRequire.txt</c> to the plugin "Learnables" (<see cref="Season21SkillsInitializer.AddBookRequirements"/>). Fork feature ids <c>s21_skills</c> and <c>enhance_tree</c>.
+/// the books of <c>SkillRequire.txt</c> to the plugin "Learnables" (<see cref="Season21SkillsInitializer.AddBookRequirements"/>). Version 4 gives the enhance tree
+/// passives with an attribute their power-up (<see cref="Season21SkillsInitializer.AddTreePassivePowerUps"/>). Fork feature ids <c>s21_skills</c> and <c>enhance_tree</c>.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(Properties.PlugInResources.AddSeason21SkillsUpdatePlugIn_Name), Description = nameof(Properties.PlugInResources.AddSeason21SkillsUpdatePlugIn_Description), ResourceType = typeof(Properties.PlugInResources))]
@@ -46,10 +47,10 @@ public class AddSeason21SkillsUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 06, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    public override int Version => 3;
+    public override int Version => 4;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 07, 15, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 07, 20, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21ClassesUpdatePlugIn).GUID, typeof(AddSeason21ItemCatalogUpdatePlugIn).GUID];
@@ -59,10 +60,16 @@ public class AddSeason21SkillsUpdatePlugIn : UpdatePlugInBase
     {
         var initializer = new Season21SkillsInitializer(context, gameConfiguration);
         initializer.Initialize();
+        if (installedVersion is null or < 4)
+        {
+            initializer.AddTreePassivePowerUps();
+        }
+
         if (installedVersion is null or < 3)
         {
             initializer.AddBookRequirements();
         }
+
         if (installedVersion is null or < 2)
         {
             foreach (var skill in gameConfiguration.Skills)

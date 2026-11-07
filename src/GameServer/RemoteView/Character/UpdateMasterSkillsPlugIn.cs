@@ -36,7 +36,7 @@ public class UpdateMasterSkillsPlugIn : IUpdateMasterSkillsPlugIn
             return;
         }
 
-        var masterSkills = this._player.SkillList?.Skills.Where(s => s.Skill?.MasterDefinition != null).ToList();
+        var masterSkills = this._player.SkillList?.Skills.Where(s => s.Skill?.MasterDefinition?.Root is not null).ToList();
         if (masterSkills is null || this._player.SelectedCharacter?.CharacterClass is null)
         {
             return;

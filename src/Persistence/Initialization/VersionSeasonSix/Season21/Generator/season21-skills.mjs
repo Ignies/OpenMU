@@ -67,6 +67,7 @@ const enhance = classBlocks(read('Skill/EnhanceSkillTree/EnhanceSkillTree.xml'),
 const passives = classBlocks(read('Skill/EnhanceSkillTree/EnhanceSkillTreePassive.xml'), 'Skill').map(({ cls, row }) => ({
   cls, group: int(row, 'Group'), index: int(row, 'Index'), skill: int(row, 'Skill'),
   stages: [0, 1, 2].map(i => [int(row, `PointCondition${i}`), int(row, `NeedPoint${i}`), int(row, `MaxPoint${i}`), int(row, `FormulaID${i}`)]),
+  values: [0, 1].filter(i => row[`FormulaID${i}`] !== undefined).map(i => [int(row, `EndPoint${i}`), int(row, `FormulaID${i}`)]),
 }));
 const fieldText = read('Skill/EnhanceSkillTree/EnhanceSkillTreeMagicField.xml');
 const fields = [...fieldText.matchAll(/<Field ([^>]*)\/>/g)].map(m => attrs(m[1])).map(r => ({

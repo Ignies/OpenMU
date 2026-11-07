@@ -40,7 +40,7 @@ public class AddMasterPointAction
             return;
         }
 
-        if (skill.MasterDefinition is null)
+        if (skill.MasterDefinition?.Root is null)
         {
             player.Logger.LogWarning("Not a master skill, skillId: {0}, player {1}", skill.Number, player);
             return;

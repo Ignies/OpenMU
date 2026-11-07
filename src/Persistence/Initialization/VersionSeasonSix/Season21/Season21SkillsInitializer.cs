@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.EnhanceTree;
 using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
@@ -40,6 +41,20 @@ internal sealed class Season21SkillsInitializer : SkillsInitializerBase
     private const int LastSeason6Base = (int)BaseClassCode.RageFighter;
 
     private static readonly HashSet<int> PassiveUses = [3, 7, 9, 10, 11];
+
+    /// <summary>
+    /// The attributes of the enhance tree passives (S21Emu Skill.xml names). The stat points, the impenetrable defense and
+    /// the 4th wing passives have no attribute of their own and stay data.
+    /// </summary>
+    private static readonly Dictionary<short, AttributeDefinition[]> TreePassiveTargets = new()
+    {
+        { 1137, [Stats.MaximumHealth] },
+        { 1141, [Stats.PhysicalBaseDmg] },
+        { 1142, [Stats.WizardryBaseDmg] },
+        { 1144, [Stats.SkillDamageBonus] },
+        { 1146, [Stats.PhysicalBaseDmg, Stats.WizardryBaseDmg] },
+        { 1157, [Stats.CurseBaseDmg] },
+    };
 
     private readonly Season21SkillData _data = Season21SkillCatalog.Data;
 
@@ -86,6 +101,37 @@ internal sealed class Season21SkillsInitializer : SkillsInitializerBase
             MagicFields = data.MagicFields.Select(f => new EnhanceTreeMagicField { Type = f.Type, Skill = f.Skill, Seconds = f.Seconds, CooldownSeconds = f.Cooldown }).ToList(),
             Formulas = new Dictionary<short, string>(data.Formulas),
         };
+    }
+
+    /// <summary>
+    /// Gives the passives of the enhance tree whose effect is an attribute a passive power-up: a definition without a
+    /// master tree root (so no master points go into it) whose value is the S21Emu formula of its level. A passive which
+    /// already has a definition (the operator's) stays.
+    /// </summary>
+    public void AddTreePassivePowerUps()
+    {
+        foreach (var passive in this._data.EnhancePassives.DistinctBy(p => p.Skill))
+        {
+            if (!TreePassiveTargets.TryGetValue(passive.Skill, out var targets)
+                || this.GameConfiguration.Skills.FirstOrDefault(s => s.Number == passive.Skill) is not { MasterDefinition: null } skill)
+            {
+                continue;
+            }
+
+            var definition = this.Context.CreateNew<MasterSkillDefinition>();
+            definition.MinimumLevel = 1;
+            definition.MaximumLevel = (byte)passive.Stages.Max(s => s[2]);
+            definition.ValueFormula = this.GetPassiveFormula(passive);
+            definition.DisplayValueFormula = definition.ValueFormula;
+            definition.Aggregation = AggregateType.AddRaw;
+            definition.TargetAttribute = targets[0].GetPersistent(this.GameConfiguration);
+            foreach (var target in targets)
+            {
+                definition.PassivePowerUps.Add(MasterSkillPassivePowerUps.CreatePowerUp(this.Context, this.GameConfiguration, target, AggregateType.AddRaw, Stats.MasterSkillValue, 1));
+            }
+
+            skill.MasterDefinition = definition;
+        }
     }
 
     /// <summary>
@@ -297,6 +343,26 @@ internal sealed class Season21SkillsInitializer : SkillsInitializerBase
                 definition.RequiredMasterSkills.Add(requiredSkill);
             }
         }
+    }
+
+    private string GetPassiveFormula(Season21EnhancePassiveRow passive)
+    {
+        var values = passive.Values.OrderBy(v => v[0]).ToList();
+        if (values.Count == 0)
+        {
+            return "0";
+        }
+
+        var formula = this._data.Formulas.GetValueOrDefault(values[^1][1], "0");
+        for (var i = values.Count - 2; i >= 0; i--)
+        {
+            if (values[i][1] != values[i + 1][1])
+            {
+                formula = $"if(level<={values[i][0]},{this._data.Formulas.GetValueOrDefault(values[i][1], "0")},{formula})";
+            }
+        }
+
+        return formula;
     }
 
     private MasterSkillRoot GetRoot(byte group)

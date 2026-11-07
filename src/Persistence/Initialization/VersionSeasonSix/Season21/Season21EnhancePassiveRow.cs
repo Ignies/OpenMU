@@ -33,4 +33,9 @@ internal sealed class Season21EnhancePassiveRow
     /// Gets the stages: point condition, points per level, maximum level, formula id.
     /// </summary>
     public short[][] Stages { get; init; } = [];
+
+    /// <summary>
+    /// Gets the value formulas by level: the highest level of the range, formula id.
+    /// </summary>
+    public short[][] Values { get; init; } = [];
 }

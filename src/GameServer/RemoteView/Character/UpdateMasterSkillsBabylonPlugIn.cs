@@ -40,7 +40,7 @@ public class UpdateMasterSkillsBabylonPlugIn : IUpdateMasterSkillsPlugIn
             return;
         }
 
-        var masterSkills = skillList.Skills.Where(s => s.Skill?.MasterDefinition is not null).ToList();
+        var masterSkills = skillList.Skills.Where(s => s.Skill?.MasterDefinition?.Root is not null).ToList();
 
         int Write()
         {

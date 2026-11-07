@@ -11,9 +11,13 @@ turns it on.
   require skills with points (`-1`: the skill is learned or available, e.g. the main skill of its book).
 - **Passives**: unlocked in up to three stages by the points spent in the class's tree; each stage has its point
   cost per level and its highest level.
-- **Debuff fields** and **formulas** (the value of a node by its level, `level` as variable): data only, the server
-  doesn't simulate the tree's effects yet. A learned node is a learned skill with its level, so its passive or
-  extended skill is there for the effect code when it comes.
+- **Debuff fields** and **formulas** (the value of a node by its level, `level` as variable). A learned node is a
+  learned skill with its level.
+- **Passive effects**: the passives which raise an attribute (Add Max HP 1137, physical 1141, magic 1142, curse 1157,
+  both 1146, skill damage 1144) carry a `MasterSkillDefinition` without a root: its value formula is the S21Emu formula
+  of the level (one formula up to 30 points, the second above) and its passive power-up adds it, like a passive master
+  skill. No root means no master points go into it and the master skill list leaves it out. The stat point, impenetrable
+  defense and 4th wing passives, the node effects and the debuff fields stay data.
 
 ## Points (`EnhanceTreePoints`)
 

@@ -156,6 +156,47 @@ public class Season21SkillsInGameTest
     }
 
     /// <summary>
+    /// The passives of the tree raise their attribute by the S21Emu formula of their level (Formula.txt section SkillTree:
+    /// Add Max HP 152 "70*level" up to 30 points, 222 "2100+((level-30)*42)" above).
+    /// </summary>
+    [Test]
+    public async ValueTask TreePassivesRaiseTheirAttributeAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.DarkWizard, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(player).ConfigureAwait(false);
+        var health = player.Attributes![Stats.MaximumHealth];
+        var damage = player.Attributes[Stats.WizardryBaseDmg];
+        await player.SkillList!.AddLearnedSkillAsync(this._gameConfiguration.Skills.Single(s => s.Number == 1137)).ConfigureAwait(false);
+        await player.SkillList.AddLearnedSkillAsync(this._gameConfiguration.Skills.Single(s => s.Number == 1142)).ConfigureAwait(false);
+        var maxHp = player.SelectedCharacter!.LearnedSkills.Single(s => s.Skill!.Number == 1137);
+        var magic = player.SelectedCharacter.LearnedSkills.Single(s => s.Skill!.Number == 1142);
+
+        maxHp.Level = 10;
+        magic.Level = 35;
+
+        Assert.That(player.Attributes[Stats.MaximumHealth], Is.EqualTo(health + 700).Within(0.01));
+        Assert.That(player.Attributes[Stats.WizardryBaseDmg], Is.EqualTo(damage + 390 + (5 * 8)).Within(0.01));
+
+        maxHp.Level = 40;
+        Assert.That(player.Attributes[Stats.MaximumHealth], Is.EqualTo(health + 2100 + (10 * 42)).Within(0.01));
+    }
+
+    /// <summary>
+    /// A tree passive is no master tree skill: master points can't be spent on it.
+    /// </summary>
+    [Test]
+    public async ValueTask TreePassivesTakeNoMasterPointsAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.DarkWizard, ClassEvolution.Fourth).ConfigureAwait(false);
+        player.SelectedCharacter!.MasterLevelUpPoints = 10;
+
+        await new AddMasterPointAction().AddMasterPointAsync(player, 1137).ConfigureAwait(false);
+
+        Assert.That(player.SelectedCharacter.LearnedSkills.Any(s => s.Skill!.Number == 1137), Is.False);
+        Assert.That(player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(10));
+    }
+
+    /// <summary>
     /// A third evolution has no tree.
     /// </summary>
     [Test]

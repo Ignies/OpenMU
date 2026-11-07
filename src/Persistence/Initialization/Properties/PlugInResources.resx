@@ -468,7 +468,7 @@
     <value>Add the skills of Season 21 (Season 21 data)</value>
   </data>
   <data name="AddSeason21SkillsUpdatePlugIn_Description" xml:space="preserve">
-    <value>Adds the skills of the nine classes of Season 21 and the fourth and fifth evolution skills of the Season 6 classes, as the Season 21 server data defines them (damage, mana, AG, range, requirements, classes), the master tree nodes Season 21 adds, the books which teach them and the skill enhancement tree of the fourth evolution. Skills whose effects the server can't simulate yet are kept as data. Skills with a damage rate of their own in the Season 21 calculation get it (version 2). Existing skills keep their values; they only get the new classes. Requires the classes and the items of Season 21.</value>
+    <value>Adds the skills of the nine classes of Season 21 and the fourth and fifth evolution skills of the Season 6 classes, as the Season 21 server data defines them (damage, mana, AG, range, requirements, classes), the master tree nodes Season 21 adds, the books which teach them and the skill enhancement tree of the fourth evolution. Skills whose effects the server can't simulate yet are kept as data. Skills with a damage rate of their own in the Season 21 calculation get it (version 2). The passives of the tree which raise an attribute (maximum health, physical, wizardry and curse damage, skill damage) apply it by their level (version 4). Existing skills keep their values; they only get the new classes. Requires the classes and the items of Season 21.</value>
   </data>
   <data name="AddSeason21InitialSkillsPlugIn_Name" xml:space="preserve">
     <value>Add the first skills of the Season 21 classes</value>

@@ -73,7 +73,17 @@ internal static class MasterSkillPassivePowerUps
         }
     }
 
-    private static PowerUpDefinition CreatePowerUp(IContext context, GameConfiguration gameConfiguration, AttributeDefinition targetAttribute, AggregateType aggregateType, AttributeDefinition inputAttribute, float inputOperand)
+    /// <summary>
+    /// Creates a power-up which adds <paramref name="inputAttribute"/> times <paramref name="inputOperand"/> to <paramref name="targetAttribute"/>.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    /// <param name="targetAttribute">The target attribute.</param>
+    /// <param name="aggregateType">The aggregate type.</param>
+    /// <param name="inputAttribute">The input attribute.</param>
+    /// <param name="inputOperand">The input operand.</param>
+    /// <returns>The power-up.</returns>
+    internal static PowerUpDefinition CreatePowerUp(IContext context, GameConfiguration gameConfiguration, AttributeDefinition targetAttribute, AggregateType aggregateType, AttributeDefinition inputAttribute, float inputOperand)
     {
         var powerUp = context.CreateNew<PowerUpDefinition>();
         powerUp.TargetAttribute = targetAttribute.GetPersistent(gameConfiguration);
