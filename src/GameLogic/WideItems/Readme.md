@@ -20,7 +20,8 @@ Season 6 client gets instead are listed in `docs/babylon.md`, "Wide items".
 Fork feature `s21_mixes`. Its configuration holds the grade rates of the wings (`WingGrades` rolls the grade options on
 drops and on the fourth wings combination) and the mastery item mixes (`MasteryMixRecipe`), which
 `PlayerActions/Craftings/MasteryItemMixCrafting` finds by the items in the chaos machine. `FourthWingCrafting` gives the
-wings of the player's class. Data, numbers and sources: `docs/babylon.md`, "Options (W32 only)" and "Mixes".
+wings of the player's class. `LuckyTicketRolls` rolls the level and the option of the item of David's lucky ticket exchange
+(S21Emu `ItemOptionRate.txt` rows "(Lucky)"; Season 6 gives +0 without option). Data, numbers and sources: `docs/babylon.md`, "Options (W32 only)" and "Mixes".
 
 ## Jewel of Harmony on ancient items
 

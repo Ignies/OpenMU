@@ -389,8 +389,15 @@ discriminator), from two different pieces the first n - 1 options, all on the fu
 first sets 30 health, 25 skill damage, 20 defense, 10 % double damage, full 10 % critical and excellent chance and 10
 critical and excellent damage; the second sets 50 health, 40 defense, 15 % double damage, 15 % critical chance, full 15 %
 excellent chance, 20 critical and excellent damage and 5 % to ignore the defense (the four-piece Amis and Trite list the
-fourth as a full option, the same in the end). Left out: the luck, life option and level rolls of the ticket exchange
-(`LuckySystem.xml` `Option0`-`5` = 10 each, meaning not given).
+fourth as a full option, the same in the end).
+
+Ticket exchange rolls: `LuckySystem.xml` `Option0`-`5` = 10 are the rows "(Lucky)" (index 10) of `Item/ItemOptionRate.txt`:
+level +0..+15 weighted 1000, 2000, 1700, 1400, 1200, 900, 700, 500, 300, 100, 70, 50, 35, 20, 15, 10; option (Jewel of
+Life) +0..+3 weighted 4000, 3000, 2000, 1000; skill, luck, excellent and socket none; set option level 1 70 %, 2 30 %.
+`GameLogic/WideItems/LuckyTicketRolls` (in the configuration of `Season21ItemsFeaturePlugIn`) rolls level and option when
+the item rules of Season 21 are on. Version 2 of the update gives the pieces the defense option and the defense by
+level of the armors (maximum level 0 stays, the jewels stay off). The set option level stays data: the sets apply
+without an ancient bonus, and no source names its stat.
 
 ## Elements, pentagrams and earrings
 

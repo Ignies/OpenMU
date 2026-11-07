@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
+using System.Globalization;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Attributes;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -11,6 +12,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Items;
+using MUnique.OpenMU.Persistence.Initialization.Properties;
 
 /// <summary>
 /// The set options of the lucky items of S21Emu <c>Item/SetItem - Settings</c>: <c>SetItemType.xml</c> gives each lucky
@@ -143,6 +145,32 @@ internal static class Season21LuckySets
 
             gameConfiguration.ItemOptions.Add(options);
             gameConfiguration.ItemSetGroups.Add(set);
+        }
+    }
+
+    /// <summary>
+    /// Gives the pieces of the lucky sets what the rolls of the ticket exchange (<c>LuckyTicketRolls</c>) need: the
+    /// defense option and the defense increase by level of the armors. Their maximum level stays, which keeps the
+    /// jewels off them.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    public static void AddRollTargets(GameConfiguration gameConfiguration)
+    {
+        var defenseOption = gameConfiguration.GetDefenseOption();
+        var levelTable = gameConfiguration.ItemLevelBonusTables.FirstOrDefault(t => t.Name.ValueInNeutralLanguage == LevelBonusNames.ResourceManager.GetString(nameof(LevelBonusNames.DefenseIncreaseArmors), CultureInfo.InvariantCulture));
+        var pieces = gameConfiguration.ItemSetGroups.Where(g => g.AlwaysApplies && Sets.Any(set => set.Name == g.Name.ValueInNeutralLanguage))
+            .SelectMany(g => g.Items).Select(i => i.ItemDefinition).OfType<ItemDefinition>().Distinct();
+        foreach (var piece in pieces)
+        {
+            if (!piece.PossibleItemOptions.Contains(defenseOption))
+            {
+                piece.PossibleItemOptions.Add(defenseOption);
+            }
+
+            if (levelTable is not null && piece.BasePowerUpAttributes.FirstOrDefault(p => p.TargetAttribute == Stats.DefenseBase) is { BonusPerLevelTable: null } defense)
+            {
+                defense.BonusPerLevelTable = levelTable;
+            }
         }
     }
 }

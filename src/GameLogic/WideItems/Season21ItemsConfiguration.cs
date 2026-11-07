@@ -26,4 +26,9 @@ public class Season21ItemsConfiguration
     /// <c>SetItemAcceptHarmonySwitch</c> 1; Webzen allows it since Season 16 Part 1-3). Season 6 refuses them.
     /// </summary>
     public bool HarmonyOnAncientItems { get; set; } = true;
+
+    /// <summary>
+    /// Gets or sets the rolls of the lucky item ticket exchange.
+    /// </summary>
+    public LuckyTicketRolls LuckyTicketRolls { get; set; } = new();
 }

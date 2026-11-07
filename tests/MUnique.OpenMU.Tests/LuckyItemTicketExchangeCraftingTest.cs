@@ -8,10 +8,13 @@ using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 using MUnique.OpenMU.GameLogic.Views.NPC;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -29,6 +32,8 @@ public class LuckyItemTicketExchangeCraftingTest
 
     private IGameContext _gameContext = null!;
 
+    private InMemoryPersistenceContextProvider _contextProvider = null!;
+
     private SimpleCraftingSettings _settings = null!;
 
     /// <summary>
@@ -37,15 +42,10 @@ public class LuckyItemTicketExchangeCraftingTest
     [OneTimeSetUp]
     public async ValueTask SetupAsync()
     {
-        var contextProvider = new InMemoryPersistenceContextProvider();
-        await new DataInitialization(contextProvider, new NullLoggerFactory()).CreateInitialDataAsync(0, false).ConfigureAwait(false);
-        this._gameConfiguration = (await contextProvider.CreateNewConfigurationContext().GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
-
-        var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
-        var gameContext = new GameContext(this._gameConfiguration, contextProvider, mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
-        mapInitializer.PlugInManager = gameContext.PlugInManager;
-        mapInitializer.PathFinderPool = gameContext.PathFinderPool;
-        this._gameContext = gameContext;
+        this._contextProvider = new InMemoryPersistenceContextProvider();
+        await new DataInitialization(this._contextProvider, new NullLoggerFactory()).CreateInitialDataAsync(0, false).ConfigureAwait(false);
+        this._gameConfiguration = (await this._contextProvider.CreateNewConfigurationContext().GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
+        this._gameContext = this.CreateGameContext();
 
         var david = this._gameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.CombineLuckyItem);
         this._settings = david.ItemCraftings.Single(c => c.Number == 51).SimpleCraftingSettings!;
@@ -157,9 +157,64 @@ public class LuckyItemTicketExchangeCraftingTest
         Assert.That(player.TemporaryStorage!.Items, Is.EquivalentTo(new[] { ticket }));
     }
 
-    private async ValueTask<Player> CreatePlayerAsync(CharacterClassNumber characterClass)
+    /// <summary>
+    /// Tests that with the item rules of Season 21 the exchange rolls the level and the option of the lucky armor by the
+    /// weights of <see cref="LuckyTicketRolls"/>; the durability stays the lucky item's.
+    /// </summary>
+    [Test]
+    public async ValueTask TicketRollsLevelAndOptionWithTheSeason21RulesAsync()
     {
-        var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        var rolls = new LuckyTicketRolls
+        {
+            LevelWeights = [0, 0, 0, 0, 0, 0, 0, 0, 0, 10000],
+            OptionWeights = [0, 0, 0, 10000],
+        };
+        var armor = this._gameConfiguration.Items.Single(i => i.Group == 8 && i.Number == 62);
+        var defenseOption = this._gameConfiguration.ItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Option && p.PowerUpDefinition?.TargetAttribute == Stats.DefenseBase));
+        if (!armor.PossibleItemOptions.Contains(defenseOption))
+        {
+            // The lucky sets update gives the pieces this option on a Season 21 world.
+            armor.PossibleItemOptions.Add(defenseOption);
+        }
+
+        var gameContext = this.CreateGameContext();
+        gameContext.FeaturePlugIns.AddPlugIn(new Season21ItemsFeaturePlugIn { Configuration = new Season21ItemsConfiguration { LuckyTicketRolls = rolls } }, true);
+        var player = await this.CreatePlayerAsync(CharacterClassNumber.DarkKnight, gameContext).ConfigureAwait(false);
+        await this.AddTicketAsync(player, 135).ConfigureAwait(false);
+
+        var (result, item) = await new LuckyItemTicketExchangeCrafting(this._settings).DoMixAsync(player, 0).ConfigureAwait(false);
+
+        Assert.That(result, Is.EqualTo(CraftingResult.Success));
+        Assert.That(item!.Level, Is.EqualTo(9));
+        Assert.That(item.ItemOptions.Single(o => o.ItemOption?.OptionType == ItemOptionTypes.Option).Level, Is.EqualTo(3));
+        Assert.That(item.Durability, Is.EqualTo(byte.MaxValue));
+    }
+
+    /// <summary>
+    /// Tests that the default rolls are the rows "(Lucky)" of S21Emu <c>ItemOptionRate.txt</c>, which <c>LuckySystem.xml</c>
+    /// names with Option0-5 = 10: level +0 to +15 and option +0 to +3.
+    /// </summary>
+    [Test]
+    public void DefaultRollsAreTheLuckyRowsOfS21Emu()
+    {
+        var rolls = new LuckyTicketRolls();
+
+        Assert.That(rolls.LevelWeights, Is.EqualTo(new[] { 1000, 2000, 1700, 1400, 1200, 900, 700, 500, 300, 100, 70, 50, 35, 20, 15, 10 }));
+        Assert.That(rolls.OptionWeights, Is.EqualTo(new[] { 4000, 3000, 2000, 1000 }));
+    }
+
+    private GameContext CreateGameContext()
+    {
+        var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
+        var gameContext = new GameContext(this._gameConfiguration, this._contextProvider, mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
+        mapInitializer.PlugInManager = gameContext.PlugInManager;
+        mapInitializer.PathFinderPool = gameContext.PathFinderPool;
+        return gameContext;
+    }
+
+    private async ValueTask<Player> CreatePlayerAsync(CharacterClassNumber characterClass, IGameContext? gameContext = null)
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync(gameContext ?? this._gameContext).ConfigureAwait(false);
         player.SelectedCharacter!.CharacterClass = this._gameConfiguration.CharacterClasses.Single(c => c.Number == (byte)characterClass);
         return player;
     }

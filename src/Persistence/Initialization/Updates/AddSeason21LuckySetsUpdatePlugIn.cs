@@ -39,6 +39,13 @@ public class AddSeason21LuckySetsUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 08, 15, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    /// <remarks>Version 2 gives the pieces the defense option and the defense by level, which the ticket exchange rolls.</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 08, 18, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     /// <remarks>The later lucky items are of the item catalog.</remarks>
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddLuckyItemsUpdatePlugIn).GUID, typeof(AddSeason21ItemCatalogUpdatePlugIn).GUID];
 
@@ -46,6 +53,7 @@ public class AddSeason21LuckySetsUpdatePlugIn : UpdatePlugInBase
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         Season21LuckySets.Add(context, gameConfiguration);
+        Season21LuckySets.AddRollTargets(gameConfiguration);
         return ValueTask.CompletedTask;
     }
 }

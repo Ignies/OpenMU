@@ -1,4 +1,4 @@
-// <copyright file="Season21LuckySetsDataTest.cs" company="MUnique">
+﻿// <copyright file="Season21LuckySetsDataTest.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -56,6 +57,25 @@ internal class Season21LuckySetsDataTest
         Assert.That(gameConfiguration.ItemSetGroups.Count - before, Is.EqualTo(29));
         var amis = gameConfiguration.ItemSetGroups.Single(g => g.Name.ValueInNeutralLanguage == "Amis");
         Assert.That((amis.Items.Count, amis.Options!.PossibleOptions.Count), Is.EqualTo((4, 8)));
+    }
+
+    /// <summary>
+    /// Version 2 gives the lucky pieces what the rolls of the ticket exchange need: the defense option (the Jewel of Life
+    /// option) and the defense increase by level of the armors. The maximum level stays, so the jewels stay off them.
+    /// </summary>
+    [Test]
+    public async Task LuckyPiecesTakeTheRolledLevelAndOptionAsync()
+    {
+        var gameConfiguration = await CreateAsync().ConfigureAwait(false);
+
+        foreach (var piece in gameConfiguration.ItemSetGroups.Where(g => g.AlwaysApplies && g.Options?.Name.ValueInNeutralLanguage.EndsWith(" Lucky Set", StringComparison.Ordinal) is true).SelectMany(g => g.Items).Select(i => i.ItemDefinition!))
+        {
+            Assert.That(piece.PossibleItemOptions.SelectMany(o => o.PossibleOptions).Count(o => o.OptionType == ItemOptionTypes.Option), Is.EqualTo(1), piece.Name.ValueInNeutralLanguage);
+            Assert.That(piece.BasePowerUpAttributes.Single(p => p.TargetAttribute == Stats.DefenseBase).BonusPerLevelTable, Is.Not.Null, piece.Name.ValueInNeutralLanguage);
+            Assert.That(piece.MaximumItemLevel, Is.EqualTo(0));
+        }
+
+        Assert.That(new AddSeason21LuckySetsUpdatePlugIn().Version, Is.EqualTo(2));
     }
 
     private static async Task<GameConfiguration> CreateAsync()

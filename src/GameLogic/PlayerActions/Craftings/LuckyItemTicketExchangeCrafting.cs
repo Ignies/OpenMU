@@ -8,6 +8,7 @@ using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.PlayerActions.Items;
 using MUnique.OpenMU.GameLogic.Views.NPC;
+using MUnique.OpenMU.GameLogic.WideItems;
 
 /// <summary>
 /// Crafting which exchanges a lucky item ticket for a lucky item which fits the character class of the player.
@@ -17,7 +18,8 @@ using MUnique.OpenMU.GameLogic.Views.NPC;
 /// The result items with the same reference are the items for which the ticket can be exchanged. Of these, the player
 /// gets the one which the character class of the player can wear. When more than one fits, the one for the fewest
 /// character classes is taken, e.g. the set which is made for the class, and then the one with the lowest item number.
-/// Exactly one ticket is accepted per exchange, and only when the item fits into the inventory.
+/// Exactly one ticket is accepted per exchange, and only when the item fits into the inventory. With the item rules of
+/// Season 21 (<see cref="Season21ItemsFeaturePlugIn"/>) the item gets the rolls of <see cref="LuckyTicketRolls"/>.
 /// </remarks>
 public class LuckyItemTicketExchangeCrafting : SimpleItemCraftingHandler
 {
@@ -72,6 +74,7 @@ public class LuckyItemTicketExchangeCrafting : SimpleItemCraftingHandler
 
         var item = player.PersistenceContext.CreateNew<Item>();
         item.Definition = definition;
+        Season21ItemsFeaturePlugIn.GetConfiguration(player.GameContext)?.LuckyTicketRolls?.Apply(item, () => player.PersistenceContext.CreateNew<ItemOptionLink>(), Rand.GetRandomizer());
         item.Durability = item.GetMaximumDurabilityOfOnePiece();
         await player.TemporaryStorage!.AddItemAsync(item).ConfigureAwait(false);
         return [item];
