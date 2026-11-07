@@ -146,7 +146,7 @@ public class BuyRequestAction
             item.SetStorePrice(null);
             await player.Inventory!.AddItemAsync(item).ConfigureAwait(false);
             requestedPlayer.PersistenceContext.Detach(item);
-            foreach (var (paymentItem, _) in purchase.PaymentItems)
+            foreach (var (paymentItem, _) in purchase.PaymentItems.Concat(purchase.TaxItems))
             {
                 player.PersistenceContext.Detach(paymentItem);
             }

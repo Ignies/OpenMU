@@ -44,6 +44,22 @@ public class ZenSinksFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISuppor
     }
 
     /// <summary>
+    /// Gets the tax in pieces of a price paid in items (jewels) in a personal store, rounded down.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <param name="price">The price in pieces.</param>
+    /// <returns>The tax; 0 without this plugin.</returns>
+    public static int GetJewelTax(IGameContext gameContext, int price)
+    {
+        if (Get(gameContext) is not { } configuration || price <= 0)
+        {
+            return 0;
+        }
+
+        return (int)((long)price * Math.Clamp(configuration.PersonalStoreJewelTaxPercent, 0, Percent) / Percent);
+    }
+
+    /// <summary>
     /// Scales the money which a killed monster drops.
     /// </summary>
     /// <param name="gameContext">The game context.</param>

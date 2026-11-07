@@ -2244,6 +2244,9 @@
   <data name="ZenSinksConfiguration_PersonalStoreTaxPercent_Name" xml:space="preserve">
     <value>Personal store tax (%)</value>
   </data>
+  <data name="ZenSinksConfiguration_PersonalStoreJewelTaxPercent_Name" xml:space="preserve">
+    <value>Jewel tax of personal stores (%)</value>
+  </data>
   <data name="ZenSinksConfiguration_MoneyDropPercent_Name" xml:space="preserve">
     <value>Money drop of monsters (%)</value>
   </data>

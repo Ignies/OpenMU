@@ -148,6 +148,36 @@ public class PlayerShopCurrenciesTest
     }
 
     /// <summary>
+    /// Tests the jewel tax of the zen sinks (S21Emu <c>PersonalShopJewelCommisionRate</c> 3): of a price of 40 jewels the
+    /// buyer pays 40, the seller gets 39 and one jewel is gone.
+    /// </summary>
+    [Test]
+    public async ValueTask BuyWithJewelsTakesTheJewelTaxAsync()
+    {
+        var (seller, buyer) = await this.CreatePlayersAsync().ConfigureAwait(false);
+        if (seller.GameContext.FeaturePlugIns.GetPlugIn<GameLogic.ZenSinks.ZenSinksFeaturePlugIn>() is not { } zenSinks)
+        {
+            zenSinks = new GameLogic.ZenSinks.ZenSinksFeaturePlugIn();
+            seller.GameContext.FeaturePlugIns.AddPlugIn(zenSinks, true);
+        }
+
+        zenSinks.Configuration = new() { PersonalStoreJewelTaxPercent = 3 };
+        await this.AddStoreItemAsync(seller, new ShopPrice(40, this._jewelOfBless)).ConfigureAwait(false);
+        seller.ShopStorage!.StoreOpen = true;
+        await this.AddInventoryItemAsync(buyer, 12, this._jewelOfBlessBundle, 2).ConfigureAwait(false);
+        for (byte slot = 13; slot < 23; slot++)
+        {
+            await this.AddInventoryItemAsync(buyer, slot, this._jewelOfBless).ConfigureAwait(false);
+        }
+
+        await new BuyRequestAction().BuyItemAsync(buyer, seller, StoreSlot).ConfigureAwait(false);
+
+        Assert.That(buyer.Inventory!.Items.Count(i => i.Definition == this._jewelOfBless || i.Definition == this._jewelOfBlessBundle), Is.Zero);
+        Assert.That(seller.Inventory!.Items.Count(i => i.Definition == this._jewelOfBlessBundle), Is.EqualTo(1));
+        Assert.That(seller.Inventory.Items.Count(i => i.Definition == this._jewelOfBless), Is.EqualTo(9));
+    }
+
+    /// <summary>
     /// Tests that nothing is moved, when the jewels of the buyer can't pay the price exactly, because bundles are not split.
     /// </summary>
     [Test]

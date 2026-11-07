@@ -6269,6 +6269,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Jewel tax of personal stores (%).
+        /// </summary>
+        public static string ZenSinksConfiguration_PersonalStoreJewelTaxPercent_Name {
+            get {
+                return ResourceManager.GetString("ZenSinksConfiguration_PersonalStoreJewelTaxPercent_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Money drop of monsters (%).
         /// </summary>
         public static string ZenSinksConfiguration_MoneyDropPercent_Name {

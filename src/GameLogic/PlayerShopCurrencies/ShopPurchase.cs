@@ -23,4 +23,10 @@ public sealed record ShopPurchase(Player Buyer, Player Seller, ShopPrice Price, 
     /// They are already moved into the inventory of the seller and attached to the <see cref="TradeContext"/>.
     /// </summary>
     public IList<(Item Item, byte BuyerSlot)> PaymentItems { get; } = new List<(Item Item, byte BuyerSlot)>();
+
+    /// <summary>
+    /// Gets the items which the buyer paid as the tax of the price, together with their previous slots in the inventory of
+    /// the buyer. They are removed from it and deleted in the <see cref="TradeContext"/>.
+    /// </summary>
+    public IList<(Item Item, byte BuyerSlot)> TaxItems { get; } = new List<(Item Item, byte BuyerSlot)>();
 }

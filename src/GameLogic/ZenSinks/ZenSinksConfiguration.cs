@@ -17,6 +17,15 @@ public class ZenSinksConfiguration
     public int PersonalStoreTaxPercent { get; set; } = 1;
 
     /// <summary>
+    /// Gets or sets the part in percent of the jewels of an item sold for jewels in a personal store, which the seller
+    /// doesn't get (S21Emu <c>PersonalShopJewelCommisionRate</c> 3); rounded down to whole pieces which the paid items can
+    /// make up, as bundles aren't split.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ZenSinksConfiguration_PersonalStoreJewelTaxPercent_Name))]
+    [Range(0, 100)]
+    public int PersonalStoreJewelTaxPercent { get; set; } = 3;
+
+    /// <summary>
     /// Gets or sets the part in percent of the money a killed monster drops, compared to the amount without this plugin.
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ZenSinksConfiguration_MoneyDropPercent_Name))]

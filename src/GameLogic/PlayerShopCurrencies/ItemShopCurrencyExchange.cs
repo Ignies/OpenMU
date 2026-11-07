@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerShopCurrencies;
 
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
+using MUnique.OpenMU.GameLogic.ZenSinks;
 
 /// <summary>
 /// Pays prices in items, e.g. jewels, by moving them from the inventory of the buyer to the one of the seller.
@@ -59,6 +60,9 @@ public sealed class ItemShopCurrencyExchange : IShopCurrencyExchange
             return ShopPaymentResult.Failed;
         }
 
+        var taxRows = SelectTaxRows(selectedRows, ZenSinksFeaturePlugIn.GetJewelTax(purchase.Buyer.GameContext, purchase.Price.Amount));
+        selectedRows = selectedRows.Where(row => !taxRows.Any(tax => ReferenceEquals(tax.Item, row.Item))).ToList();
+
         // The price items and bundles take one slot each.
         var sellerSlots = sellerInventory.FreeSlots.Take(selectedRows.Count).ToList();
         if (sellerSlots.Count < selectedRows.Count)
@@ -87,6 +91,15 @@ public sealed class ItemShopCurrencyExchange : IShopCurrencyExchange
             purchase.PaymentItems.Add((item, buyerSlot));
         }
 
+        foreach (var (item, _) in taxRows)
+        {
+            var buyerSlot = item.ItemSlot;
+            purchase.TradeContext.Attach(item);
+            await buyerInventory.RemoveItemAsync(item).ConfigureAwait(false);
+            await purchase.TradeContext.DeleteAsync(item).ConfigureAwait(false);
+            purchase.TaxItems.Add((item, buyerSlot));
+        }
+
         return ShopPaymentResult.Success;
     }
 
@@ -102,10 +115,29 @@ public sealed class ItemShopCurrencyExchange : IShopCurrencyExchange
     /// <inheritdoc />
     public async ValueTask NotifyBuyerAsync(ShopPurchase purchase)
     {
-        foreach (var (_, buyerSlot) in purchase.PaymentItems)
+        foreach (var (_, buyerSlot) in purchase.PaymentItems.Concat(purchase.TaxItems))
         {
             await purchase.Buyer.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(buyerSlot)).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Selects the paid rows which make up the tax: the most pieces up to the tax which some of them sum up to exactly.
+    /// </summary>
+    /// <param name="paidRows">The rows which pay the price.</param>
+    /// <param name="tax">The tax in pieces.</param>
+    /// <returns>The rows of the tax; empty without a tax.</returns>
+    internal static IReadOnlyList<(Item Item, int Pieces)> SelectTaxRows(IReadOnlyList<(Item Item, int Pieces)> paidRows, int tax)
+    {
+        for (var pieces = Math.Min(tax, paidRows.Sum(r => r.Pieces)); pieces > 0; pieces--)
+        {
+            if (SelectRows(paidRows, pieces) is { } rows)
+            {
+                return rows;
+            }
+        }
+
+        return [];
     }
 
     /// <summary>

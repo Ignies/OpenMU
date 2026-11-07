@@ -10,5 +10,9 @@ Kubera Mine; `S21_Parity.md` PAR-023, PAR-024, PAR-117).
     The data keeps the pile on the kill experience on every map (`MapManager.txt` `ZenAmountRate` 100 everywhere), so
     the halving is the whole Season 21 rule; a lower percentage is the operator's balance choice.
 
-Not built: the 3 % jewel tax of personal stores (a price in jewels moves whole stacks), the zen costs of the later
+  - `PersonalStoreJewelTaxPercent` 3: of a price in jewels the seller gets 3 % less (`PersonalShopJewelCommisionRate`,
+    `ItemShopCurrencyExchange`); the buyer pays the whole price and the tax pieces are deleted. Bundles aren't split, so
+    the tax is the most pieces up to 3 % (rounded down) which some of the paid items make up exactly.
+
+Not built: the zen costs of the later
 crafting (imperial, 5th wings, earrings, legendary: with their mixes).
