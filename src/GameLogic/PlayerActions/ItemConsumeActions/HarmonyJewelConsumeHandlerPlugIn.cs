@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -28,14 +29,18 @@ public class HarmonyJewelConsumeHandlerPlugIn : ItemUpgradeConsumeHandlerPlugIn
     public override ItemIdentifier Key => ItemConstants.JewelOfHarmony;
 
     /// <inheritdoc />
-    protected override bool ItemCanHaveOption(Item item)
+    /// <remarks>
+    /// Until Season 16 Part 1-3 ancient items couldn't have harmony options (https://muonline.webzen.com/en/gameinfo/guide/detail/117);
+    /// the item rules of Season 21 allow them (<see cref="Season21ItemsConfiguration.HarmonyOnAncientItems"/>).
+    /// </remarks>
+    public override ValueTask<bool> ConsumeItemAsync(Player player, Item item, Item? targetItem, FruitUsage fruitUsage)
     {
-        if (item.IsAncient())
+        if (targetItem?.IsAncient() is true
+            && Season21ItemsFeaturePlugIn.GetConfiguration(player.GameContext) is not { HarmonyOnAncientItems: true })
         {
-            // Until S16E2 ancient and socket items couldn't have harmony options: https://muonline.webzen.com/en/gameinfo/guide/detail/117
-            return false;
+            return ValueTask.FromResult(false);
         }
 
-        return base.ItemCanHaveOption(item);
+        return base.ConsumeItemAsync(player, item, targetItem, fruitUsage);
     }
 }

@@ -21,3 +21,9 @@ Fork feature `s21_mixes`. Its configuration holds the grade rates of the wings (
 drops and on the fourth wings combination) and the mastery item mixes (`MasteryMixRecipe`), which
 `PlayerActions/Craftings/MasteryItemMixCrafting` finds by the items in the chaos machine. `FourthWingCrafting` gives the
 wings of the player's class. Data, numbers and sources: `docs/babylon.md`, "Options (W32 only)" and "Mixes".
+
+## Jewel of Harmony on ancient items
+
+With these item rules on, the Jewel of Harmony takes ancient (set) items too (`HarmonyOnAncientItems`, on: S21Emu
+`SetItemAcceptHarmonySwitch` 1, Webzen since Season 16 Part 1-3); without them the Season 6 rule refuses them
+(`HarmonyJewelConsumeHandlerPlugIn`).

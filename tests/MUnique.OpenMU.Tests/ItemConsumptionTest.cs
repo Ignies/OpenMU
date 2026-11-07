@@ -269,6 +269,35 @@ public class ItemConsumptionTest
     }
 
     /// <summary>
+    /// Tests that the Jewel of Harmony takes an ancient item only with the item rules of Season 21 (S21Emu
+    /// <c>SetItemAcceptHarmonySwitch</c> 1); Season 6 refuses it.
+    /// </summary>
+    /// <param name="season21">Whether the item rules of Season 21 are on.</param>
+    [TestCase(false)]
+    [TestCase(true)]
+    public async ValueTask JewelOfHarmonyOnAncientItemAsync(bool season21)
+    {
+        var consumeHandler = new HarmonyJewelConsumeHandlerPlugIn();
+        consumeHandler.Configuration.SuccessChance = 0;
+        var player = await this.GetPlayerAsync().ConfigureAwait(false);
+        if (season21)
+        {
+            player.GameContext.FeaturePlugIns.AddPlugIn(new GameLogic.WideItems.Season21ItemsFeaturePlugIn { Configuration = new() }, true);
+        }
+
+        var ancientItem = this.GetItemWithPossibleOption();
+        ancientItem.Definition!.PossibleItemOptions.Single().PossibleOptions.Single().OptionType = ItemOptionTypes.HarmonyOption;
+        ancientItem.ItemSetGroups.Add(new ItemOfItemSet { AncientSetDiscriminator = 1 });
+        await player.Inventory!.AddItemAsync((byte)(ItemSlot + 1), ancientItem).ConfigureAwait(false);
+        var jewel = this.GetItem();
+        await player.Inventory.AddItemAsync(ItemSlot, jewel).ConfigureAwait(false);
+
+        var jewelConsumed = await consumeHandler.ConsumeItemAsync(player, jewel, ancientItem, FruitUsage.Undefined).ConfigureAwait(false);
+
+        Assert.That(jewelConsumed, Is.EqualTo(season21));
+    }
+
+    /// <summary>
     /// Tests the jewel of harmony consume.
     /// </summary>
     public void JewelOfHarmony()

@@ -20,4 +20,10 @@ public class Season21ItemsConfiguration
     /// Gets or sets the mastery item mixes (S21Emu Mastery - Settings/MasteryItemMix.xml).
     /// </summary>
     public List<MasteryMixRecipe> MasteryMixes { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the Jewel of Harmony takes ancient (set) items (S21Emu <c>Common.dat</c>
+    /// <c>SetItemAcceptHarmonySwitch</c> 1; Webzen allows it since Season 16 Part 1-3). Season 6 refuses them.
+    /// </summary>
+    public bool HarmonyOnAncientItems { get; set; } = true;
 }
