@@ -60,6 +60,9 @@ were corrected:
 * where the data contradicts itself, the gates (`Gate.xml`) win over the move
   list (`Move.txt`): Deep Dungeon 1-5 ask 730, 750, 770, 780 and 780, Atlans
   Abyss 2 asks 925 (`Season21Map.EntryLevel` overrides the level of a set),
+* Nars asks 400 (Khdoop, muonlinefanz.com), not the 300 of Acheron which `Gate.xml`
+  487 repeats; version 3 of the maps update moves an existing database
+  (`Season21MapsInitializer.RepairEntryLevels`, levels an operator chose stay),
 * Old Kethotum spawns only its Lv195 monsters: the 16 elite spots of its file are
   the Old Crimson Minos which the file of Blaze Kethotum holds on the same
   points, and these points of Blaze Kethotum hold its own Crimson Minos,

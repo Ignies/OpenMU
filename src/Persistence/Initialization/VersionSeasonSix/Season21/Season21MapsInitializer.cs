@@ -48,6 +48,44 @@ internal class Season21MapsInitializer
     public static int GetNormalLevel(int totalLevel, short maximumLevel) => maximumLevel > 0 ? Math.Min(totalLevel, maximumLevel) : totalLevel;
 
     /// <summary>
+    /// Gives each map with an entry level of its own (e.g. Nars, the Deep Dungeon floors) that level where a database
+    /// still has the one of its set: the map requirement and the gates and warps into the map. Other levels, e.g. the
+    /// ones an operator chose, stay.
+    /// </summary>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    public static void RepairEntryLevels(GameConfiguration gameConfiguration)
+    {
+        foreach (var set in Season21MapData.All)
+        {
+            foreach (var row in set.Maps.Where(m => m.EntryLevel is { } level && level != set.EntryLevel))
+            {
+                if (gameConfiguration.Maps.FirstOrDefault(m => m.Number == row.Number && m.Discriminator == 0) is not { } map)
+                {
+                    continue;
+                }
+
+                if (map.MapRequirements.FirstOrDefault(r => r.Attribute == Stats.TotalLevel) is { } requirement
+                    && (int)requirement.MinimumValue == set.EntryLevel)
+                {
+                    requirement.MinimumValue = row.EntryLevel!.Value;
+                }
+
+                var setLevel = GetNormalLevel(set.EntryLevel, gameConfiguration.MaximumLevel);
+                var mapLevel = (short)GetNormalLevel(row.EntryLevel!.Value, gameConfiguration.MaximumLevel);
+                foreach (var gate in gameConfiguration.Maps.SelectMany(m => m.EnterGates).Where(g => g.TargetGate?.Map == map && g.LevelRequirement == setLevel))
+                {
+                    gate.LevelRequirement = mapLevel;
+                }
+
+                foreach (var warp in gameConfiguration.WarpList.Where(w => w.Gate?.Map == map && w.LevelRequirement == setLevel))
+                {
+                    warp.LevelRequirement = mapLevel;
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// Adds the sets which the game configuration doesn't contain yet.
     /// </summary>
     public void Initialize()

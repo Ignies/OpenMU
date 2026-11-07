@@ -195,7 +195,8 @@ internal class Season21MapsDataTest
 
     /// <summary>
     /// The floors of Deep Dungeon ask the levels of their gates (Gate.xml 541-565: 730, 750, 770, 780, 780), not the
-    /// 770 of Move.txt; Atlans Abyss 2 asks 925 (Gate.xml 618, Webzen), not 935.
+    /// 770 of Move.txt; Atlans Abyss 2 asks 925 (Gate.xml 618, Webzen), not 935; Nars asks 400 (Khdoop, muonlinefanz.com),
+    /// not the 300 of Acheron which the data repeats (Gate.xml 487).
     /// </summary>
     /// <param name="mapNumber">The map number.</param>
     /// <param name="level">The expected total level.</param>
@@ -205,6 +206,7 @@ internal class Season21MapsDataTest
     [TestCase(119, 780)]
     [TestCase(120, 780)]
     [TestCase(129, 925)]
+    [TestCase(110, 400)]
     public async Task MapAsksTheLevelOfItsGateAsync(byte mapNumber, int level)
     {
         var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
@@ -350,6 +352,30 @@ internal class Season21MapsDataTest
         Assert.That(ValueOf(icarus, Stats.MaximumHealth), Is.EqualTo(2_422_700));
         Assert.That(ValueOf(icarus, Stats.DefenseRatePvm), Is.EqualTo(3_357));
         Assert.That(ValueOf(persona, Stats.MaximumHealth), Is.EqualTo(999_000), "the operator's value");
+    }
+
+    /// <summary>
+    /// The maps update moves Nars, and the gates and warps into it, from the 300 of Acheron to 400; an operator's level stays.
+    /// </summary>
+    [Test]
+    public async Task UpdateRepairsTheLevelOfNarsAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        await new AddSeason21LevelCapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var nars = gameConfiguration.Maps.Single(m => m.Number == 110);
+        var requirement = nars.MapRequirements.Single(r => r.Attribute == Stats.TotalLevel);
+        var gates = gameConfiguration.Maps.SelectMany(m => m.EnterGates).Where(g => g.TargetGate?.Map == nars).ToList();
+        Assert.That(gates, Is.Not.Empty);
+        requirement.MinimumValue = 300;
+        gates.ForEach(g => g.LevelRequirement = 300);
+        gates[0].LevelRequirement = 350;
+
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(requirement.MinimumValue, Is.EqualTo(400));
+        Assert.That(gates.Skip(1).Select(g => (int)g.LevelRequirement), Is.All.EqualTo(400));
+        Assert.That(gates[0].LevelRequirement, Is.EqualTo(350), "the operator's level");
     }
 
     private static Dictionary<short, int> SpawnsOf(GameConfiguration gameConfiguration, byte mapNumber)

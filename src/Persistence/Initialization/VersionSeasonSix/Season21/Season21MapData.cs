@@ -1099,7 +1099,7 @@ internal static class Season21MapData
             new(91, LocalizedString.FromResource(() => MapNames.Acheron), 2, 92),
             new(95, LocalizedString.FromResource(() => MapNames.Deventer), 2, 96, GameVersion.Season8Episode1),
             new(100, LocalizedString.FromResource(() => MapNames.UrkMountain), 2, 101, GameVersion.Season9Episode1),
-            new(110, LocalizedString.FromResource(() => MapNames.Nars), 2, 111, GameVersion.Season10Episode2),
+            new(110, LocalizedString.FromResource(() => MapNames.Nars), 2, 111, GameVersion.Season10Episode2, EntryLevel: 400),
         ],
         Monsters:
         [
