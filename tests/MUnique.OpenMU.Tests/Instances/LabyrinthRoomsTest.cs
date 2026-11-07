@@ -151,7 +151,9 @@ public class LabyrinthRoomsTest
             var view = Mock.Get(player.ViewPlugIns.GetPlugIn<ILabyrinthRoomsViewPlugIn>()!);
             var move = new LabyrinthMoveAction();
 
-            await Season21EventWorld.WaitUntilAsync(() => run.Rooms?.Room == 0 && IsIn(player, 78, 226, 93, 237)).ConfigureAwait(false);
+            // The room is entered before its board is sent: wait for the board, not only for the room.
+            await Season21EventWorld.WaitUntilAsync(() => run.Rooms?.Room == 0 && IsIn(player, 78, 226, 93, 237)
+                && view.Invocations.Any(i => i.Method.Name == nameof(ILabyrinthRoomsViewPlugIn.ShowBoardAsync))).ConfigureAwait(false);
             Assert.That(Monsters(run, 85, 231), Is.Empty, "the entrance has no monsters");
             view.Verify(v => v.ShowBoardAsync(It.Is<LabyrinthBoard>(b => b.Room == 0 && b.Area.Number == 0 && b.Discovered[0] && !b.Discovered[1])), Times.AtLeastOnce);
 
