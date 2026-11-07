@@ -13,14 +13,49 @@ using MUnique.OpenMU.GameLogic.WideItems;
 /// </summary>
 internal static class Season21MixData
 {
+    /// <summary>
+    /// The id of the first archangel mix, above the ids of the data.
+    /// </summary>
+    public const int FirstArchangelMixId = 9001;
+
     private const string ResourceName = "MUnique.OpenMU.Persistence.Initialization.Resources.Season21.MasteryMixes.json";
 
     private static readonly Lazy<IReadOnlyList<MasteryMixRecipe>> LazyMixes = new(Load);
 
     /// <summary>
+    /// The divine archangel weapons and their blessed ones of <c>ArchangelUpgradeMix.xml</c> (item index group * 512 + number).
+    /// </summary>
+    private static readonly (int Divine, int Result, string Name)[] ArchangelUpgrades =
+    [
+        (19, 51, "Sword"),
+        (60, 61, "Absolute Claw"),
+        (76, 77, "Short Sword"),
+        (113, 114, "Absolute Blade"),
+        (1037, 1049, "Scepter"),
+        (1058, 1059, "Mace"),
+        (1082, 1083, "Absolute Hammer"),
+        (1562, 1563, "Lance"),
+        (2066, 2078, "Crossbow"),
+        (2094, 2095, "Absolute Magic Gun"),
+        (2570, 2609, "Staff"),
+        (2596, 2610, "Stick"),
+        (2653, 2654, "Absolute Orb"),
+        (2684, 2685, "Absolute Wand"),
+    ];
+
+    /// <summary>
     /// Gets the mixes.
     /// </summary>
     public static IReadOnlyList<MasteryMixRecipe> MasteryMixes => LazyMixes.Value;
+
+    /// <summary>
+    /// Gets the archangel upgrade (S21Emu <c>Item/ArchangelUpgrade - Setting/ArchangelUpgradeMix.xml</c>, rate 100 of
+    /// <c>AbsoluteArchangelMixRate</c>): the Archangel's Hammer of 10 Steel of Heaven, 10 Bless, 10 Soul, a Chaos, a
+    /// Creation and a Guardian; and each Divine archangel weapon +15 with the +16 option, the hammer and 30 Bless, Soul,
+    /// Life and Chaos (one bundle of 30 each) to its Blessed weapon +0, which keeps the excellent options and the luck.
+    /// The recipe is of the Webzen guides (muonline.ai, muonline-guides.com); the data has no Zen cost.
+    /// </summary>
+    public static IReadOnlyList<MasteryMixRecipe> ArchangelMixes { get; } = CreateArchangelMixes();
 
     private static IReadOnlyList<MasteryMixRecipe> Load()
     {
@@ -49,6 +84,36 @@ internal static class Season21MixData
                 CountMax = m[7],
             }).ToList(),
         }).ToList();
+    }
+
+    private static IReadOnlyList<MasteryMixRecipe> CreateArchangelMixes()
+    {
+        const int hammer = (14 * 512) + 343;
+        static MasteryMixMaterial Material(int index, int count = 1, int level = 0, int option = 0)
+            => new() { IndexMin = index, IndexMax = index, LevelMin = level, OptionMin = option, CountMin = count, CountMax = count };
+        static MasteryMixMaterial Bundle(int number) => Material((12 * 512) + number, level: 2);
+
+        var mixes = new List<MasteryMixRecipe>
+        {
+            new()
+            {
+                Id = FirstArchangelMixId,
+                Name = "Archangel's Hammer",
+                SuccessRate = 100,
+                ResultIndex = hammer,
+                Materials = [Material((14 * 512) + 342, 10), Material((12 * 512) + 30), Material((12 * 512) + 31), Material((12 * 512) + 15), Material((14 * 512) + 22), Material((14 * 512) + 31)],
+            },
+        };
+        mixes.AddRange(ArchangelUpgrades.Select((upgrade, i) => new MasteryMixRecipe
+        {
+            Id = FirstArchangelMixId + 1 + i,
+            Name = $"Blessed Archangel {upgrade.Name}",
+            SuccessRate = 100,
+            Keep = MasteryMixKeep.Excellent | MasteryMixKeep.Luck,
+            ResultIndex = upgrade.Result,
+            Materials = [Material(upgrade.Divine, level: 15, option: 16), Material(hammer), Bundle(30), Bundle(31), Bundle(136), Bundle(141)],
+        }));
+        return mixes;
     }
 
     private sealed record Row(int Id, string Name, int SuccessRate, int Money, int Keep, int[][] Materials, int ResultIndex, int ResultLevel);

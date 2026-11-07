@@ -229,6 +229,67 @@ public class Season21ItemOptionsInGameTest
     }
 
     /// <summary>
+    /// A Divine Sword of Archangel +15 with the +16 option, the Archangel's Hammer and a bundle of 30 Bless, Soul, Life and
+    /// Chaos give the Blessed Divine Sword of Archangel +0 without the option, with the excellent options of the sword
+    /// (S21Emu ArchangelUpgradeMix.xml 0019 to 0051, rate 100).
+    /// </summary>
+    [Test]
+    public async ValueTask ArchangelUpgradeBlessesTheWeaponAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        var sword = await this.AddAsync(player, this.Item(0, 19), 15).ConfigureAwait(false);
+        AddOption(sword, ItemOptionTypes.Option, 0, 4);
+        var excellent = sword.Definition!.PossibleItemOptions.SelectMany(o => o.PossibleOptions).First(o => o.OptionType == ItemOptionTypes.Excellent);
+        AddOption(sword, ItemOptionTypes.Excellent, excellent.Number, 0);
+        await this.AddAsync(player, this.Item(14, 343), 0).ConfigureAwait(false);
+        foreach (var bundle in new short[] { 30, 31, 136, 141 })
+        {
+            await this.AddAsync(player, this.Item(12, bundle), 2).ConfigureAwait(false);
+        }
+
+        var (result, item) = await new MasteryItemMixCrafting().DoMixAsync(player, 0).ConfigureAwait(false);
+
+        Assert.That(result, Is.EqualTo(CraftingResult.Success));
+        Assert.That(item!.Definition, Is.EqualTo(this.Item(0, 51)));
+        Assert.That(item.Level, Is.Zero);
+        Assert.That(Options(item).Select(o => o.Type), Is.EqualTo(new[] { ItemOptionTypes.Excellent.Id }));
+        Assert.That(player.TemporaryStorage!.Items, Is.EquivalentTo(new[] { item }), "the materials are used up");
+    }
+
+    /// <summary>
+    /// The weapon must be +15 with the +16 option; the hammer itself is mixed from 10 Steel of Heaven, 10 Bless, 10 Soul,
+    /// a Chaos, a Creation and a Guardian.
+    /// </summary>
+    [Test]
+    public async ValueTask ArchangelHammerAndLevelRuleAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        var sword = await this.AddAsync(player, this.Item(0, 19), 14).ConfigureAwait(false);
+        AddOption(sword, ItemOptionTypes.Option, 0, 4);
+        await this.AddAsync(player, this.Item(14, 343), 0).ConfigureAwait(false);
+        foreach (var bundle in new short[] { 30, 31, 136, 141 })
+        {
+            await this.AddAsync(player, this.Item(12, bundle), 2).ConfigureAwait(false);
+        }
+
+        Assert.That(new MasteryItemMixCrafting().TryGetRequiredItems(player, out _, out _), Is.EqualTo(CraftingResult.IncorrectMixItems));
+
+        var hammerPlayer = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        var steel = await this.AddAsync(hammerPlayer, this.Item(14, 342), 0).ConfigureAwait(false);
+        steel.Durability = 10;
+        await this.AddAsync(hammerPlayer, this.Item(12, 30), 0).ConfigureAwait(false);
+        await this.AddAsync(hammerPlayer, this.Item(12, 31), 0).ConfigureAwait(false);
+        await this.AddAsync(hammerPlayer, this.Item(12, 15), 0).ConfigureAwait(false);
+        await this.AddAsync(hammerPlayer, this.Item(14, 22), 0).ConfigureAwait(false);
+        await this.AddAsync(hammerPlayer, this.Item(14, 31), 0).ConfigureAwait(false);
+
+        var (result, item) = await new MasteryItemMixCrafting().DoMixAsync(hammerPlayer, 0).ConfigureAwait(false);
+
+        Assert.That(result, Is.EqualTo(CraftingResult.Success));
+        Assert.That(item!.Definition, Is.EqualTo(this.Item(14, 343)));
+    }
+
+    /// <summary>
     /// Items which form no mix are refused.
     /// </summary>
     [Test]

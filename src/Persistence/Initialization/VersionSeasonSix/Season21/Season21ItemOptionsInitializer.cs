@@ -335,8 +335,13 @@ internal class Season21ItemOptionsInitializer
 
         if (existing is not { MasteryMixes.Count: > 0 })
         {
-            plugIn.SetConfiguration(new Season21ItemsConfiguration { MasteryMixes = Season21MixData.MasteryMixes.ToList() }, null);
+            plugIn.SetConfiguration(new Season21ItemsConfiguration { MasteryMixes = Season21MixData.MasteryMixes.Concat(Season21MixData.ArchangelMixes).ToList() }, null);
             plugIn.IsActive = true;
+        }
+        else if (existing.MasteryMixes.All(m => m.Id != Season21MixData.FirstArchangelMixId) && existing.MasteryMixes.Any(m => m.Id > 0))
+        {
+            existing.MasteryMixes.AddRange(Season21MixData.ArchangelMixes);
+            plugIn.SetConfiguration(existing, null);
         }
 
         foreach (var goblin in this._gameConfiguration.Monsters.Where(m => m.NpcWindow == NpcWindow.ChaosMachine).ToList())
