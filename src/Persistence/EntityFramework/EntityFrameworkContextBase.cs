@@ -661,9 +661,11 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
             }
 
             var trackedEntriesById = this.GetTrackedEntriesById();
+            var parents = new List<object?>(changedEntries.Count);
             foreach (var entry in changedEntries)
             {
                 var (parent, parentCollectionNavigation) = this.GetParentInformation(entry, trackedEntriesById);
+                parents.Add(parent);
 
                 switch (entry.State)
                 {
@@ -680,11 +682,12 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
                         // no change publishing required.
                         break;
                 }
+            }
 
-                if (parent is not null && parent is not GameConfiguration && parent is not Guid)
-                {
-                    await this._changeListener.ConfigurationChangedAsync(parent.GetType(), parent.GetId(), parent, null).ConfigureAwait(false);
-                }
+            // once per parent: each announcement copies the whole parent into the running game's cache
+            foreach (var parent in ChangedParents.ToAnnounce(parents))
+            {
+                await this._changeListener.ConfigurationChangedAsync(parent.GetType(), parent.GetId(), parent, null).ConfigureAwait(false);
             }
         }
         catch (Exception ex)
