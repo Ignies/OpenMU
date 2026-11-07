@@ -106,6 +106,29 @@ internal class Season21GearDataTest
         Assert.That(Item(gameConfiguration, 8, 54).IntroducedIn, Is.EqualTo(GameVersion.Season7Episode2)); // Lazy Wind Armor
         Assert.That(Item(gameConfiguration, 13, 173).IntroducedIn, Is.EqualTo(GameVersion.Season8Episode2)); // Ring of Ultimatum
         Assert.That(Item(gameConfiguration, 12, 268).IntroducedIn, Is.EqualTo(GameVersion.Season21Episode1)); // Wings of Conqueror
+        Assert.That(Item(gameConfiguration, 0, 60).IntroducedIn, Is.EqualTo(GameVersion.Season13Episode2)); // Divine Claw of Archangel
+        Assert.That(Item(gameConfiguration, 0, 61).IntroducedIn, Is.EqualTo(GameVersion.Season13Episode2)); // Blessed Divine Claw
+    }
+
+    /// <summary>
+    /// Version 2 moves the archangel claws of the Rage Fighter to Season 13 Part 2 (Khdoop mu-online-history, Season 13
+    /// Part 2-2), where a database still has their old tags; another tag, e.g. the operator's, stays.
+    /// </summary>
+    [Test]
+    public async Task VersionTwoRetagsTheArchangelClawsAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        await new AddSeason21GearUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var claw = Item(gameConfiguration, 0, 60);
+        var blessedClaw = Item(gameConfiguration, 0, 61);
+        claw.IntroducedIn = GameVersion.Season21Episode1;
+        blessedClaw.IntroducedIn = GameVersion.Season14Episode1;
+
+        await new AddSeason21GearUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(new AddSeason21GearUpdatePlugIn().Version, Is.EqualTo(2));
+        Assert.That(claw.IntroducedIn, Is.EqualTo(GameVersion.Season13Episode2));
+        Assert.That(blessedClaw.IntroducedIn, Is.EqualTo(GameVersion.Season14Episode1), "the operator's tag");
     }
 
     /// <summary>

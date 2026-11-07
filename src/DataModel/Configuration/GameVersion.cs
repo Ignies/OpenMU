@@ -272,6 +272,11 @@ public enum GameVersion
     Season13Episode1 = 1301000,
 
     /// <summary>
+    /// The Season 13 Part 2, e.g. the archangel claws of the Rage Fighter.
+    /// </summary>
+    Season13Episode2 = 1302000,
+
+    /// <summary>
     /// The Season 14 Part 1, e.g. Kubera Mine.
     /// </summary>
     Season14Episode1 = 1401000,
