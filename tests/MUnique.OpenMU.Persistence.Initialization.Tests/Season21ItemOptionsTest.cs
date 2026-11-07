@@ -265,6 +265,25 @@ public class Season21ItemOptionsTest
         plus15.SuccessPercent = 40;
     }
 
+    /// <summary>
+    /// The third wings combination (39) costs 15,000,000 zen at any rate (S21Emu GoblinCombination.xml mix 39) in place
+    /// of 200,000 per percent; a price the operator changed stays.
+    /// </summary>
+    [Test]
+    public async Task ThirdWingsCombinationPriceOfSeason21Async()
+    {
+        var goblin = this._gameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ChaosMachine);
+        var settings = goblin.ItemCraftings.Single(c => c.Number == 39).SimpleCraftingSettings!;
+        Assert.That((settings.Money, settings.MoneyPerFinalSuccessPercentage), Is.EqualTo((15_000_000, 0)));
+
+        settings.Money = 0;
+        settings.MoneyPerFinalSuccessPercentage = 100_000;
+        await new AddSeason21ItemMixesUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
+        Assert.That((settings.Money, settings.MoneyPerFinalSuccessPercentage), Is.EqualTo((0, 100_000)));
+        settings.Money = 15_000_000;
+        settings.MoneyPerFinalSuccessPercentage = 0;
+    }
+
     private IEnumerable<ItemDefinition> Waiting()
         => Season21ItemCatalog.Items.Where(r => r.WaitsFor is not null).Select(r => this.Item(r.Group, r.Number));
 

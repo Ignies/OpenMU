@@ -63,6 +63,18 @@ internal class Season21ItemOptionsInitializer
     private const byte PackedThirtyLevel = 2;
 
     /// <summary>
+    /// The crafting number of the third wings combination of the chaos goblin.
+    /// </summary>
+    private const byte ThirdWingsCraftingNumber = 39;
+
+    private const int Season6ThirdWingsMoneyPerPercent = 200_000;
+
+    /// <summary>
+    /// The price of the third wings combination at any rate (S21Emu <c>GoblinCombination.xml</c> mix 39).
+    /// </summary>
+    private const int Season21ThirdWingsMoney = 15_000_000;
+
+    /// <summary>
     /// The chaos machine's +10 to +15 combinations (crafting number), with the Season 6 rate of the initialization and the
     /// Season 21 rate (S21Emu <c>GameServerInfo - ChaosMix.dat</c> <c>PlusItemLevelMixRate1</c>-<c>6</c>).
     /// </summary>
@@ -351,6 +363,17 @@ internal class Season21ItemOptionsInitializer
             this.AddFourthWingCraftings(goblin);
             this.AddWingCoreCraftings(goblin);
             SetPlusItemCombinationRates(goblin);
+            SetThirdWingsCombinationPrice(goblin);
+        }
+    }
+
+    private static void SetThirdWingsCombinationPrice(MonsterDefinition goblin)
+    {
+        // A price the operator changed (not the Season 6 one) stays.
+        if (goblin.ItemCraftings.FirstOrDefault(c => c.Number == ThirdWingsCraftingNumber)?.SimpleCraftingSettings is { Money: 0, MoneyPerFinalSuccessPercentage: Season6ThirdWingsMoneyPerPercent } settings)
+        {
+            settings.Money = Season21ThirdWingsMoney;
+            settings.MoneyPerFinalSuccessPercentage = 0;
         }
     }
 
