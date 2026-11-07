@@ -72,6 +72,23 @@ public class LevelPenaltiesTest
     }
 
     /// <summary>
+    /// A map with its own penalty level (the Webzen guide value, e.g. Tormenta 1450) counts the levels missing to it instead
+    /// of the monster level plus the offset; none are set by default (the S21Emu Lua).
+    /// </summary>
+    [Test]
+    public void MapPenaltyLevelReplacesTheMonsterLevel()
+    {
+        Assert.That(this._configuration.MapPenaltyLevels, Is.Empty);
+        var configuration = new LevelPenaltyConfiguration { MapPenaltyLevels = new() { { 141, 1450 } } };
+
+        Assert.That(LevelPenalties.GetDamagePenaltyPercent(configuration, null, 141, ClassEvolution.Fourth, 400, 1047, 0, MonsterLevel), Is.EqualTo(30));
+        Assert.That(LevelPenalties.GetDamagePenaltyPercent(configuration, null, 141, ClassEvolution.Fourth, 400, 1050, 0, MonsterLevel), Is.Zero);
+        Assert.That(LevelPenalties.GetDamagePenaltyPercent(configuration, null, 0, ClassEvolution.Fourth, 400, 345, 0, MonsterLevel), Is.EqualTo(50));
+        configuration.ExperienceMaps.Add(141);
+        Assert.That(LevelPenalties.GetExperiencePenaltyPercent(configuration, null, 141, 400, 1048, 0, MonsterLevel), Is.EqualTo(20));
+    }
+
+    /// <summary>
     /// In the labyrinth, any evolution from total level 400 on gets the penalty; below 400 none.
     /// </summary>
     [Test]

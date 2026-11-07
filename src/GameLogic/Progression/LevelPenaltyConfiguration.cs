@@ -86,4 +86,13 @@ public class LevelPenaltyConfiguration
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.LevelPenaltyConfiguration_PenaltyFreeMaps_Name))]
     public List<short> PenaltyFreeMaps { get; set; } = [116, 117, 118, 119, 120];
+
+    /// <summary>
+    /// Gets or sets the hunting penalty level of single maps (map number, total level): on such a map the penalty counts
+    /// the levels missing to it instead of to the monster level plus <see cref="MonsterLevelOffset"/>. The Webzen guides
+    /// name one per Season 21 map (entry level plus 50, e.g. Tormenta 1450, Kardamahal 1550); the S21Emu Lua has none,
+    /// so it's empty by default.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.LevelPenaltyConfiguration_MapPenaltyLevels_Name))]
+    public Dictionary<short, int> MapPenaltyLevels { get; set; } = [];
 }

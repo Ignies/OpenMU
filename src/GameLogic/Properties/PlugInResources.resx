@@ -3072,6 +3072,9 @@
   <data name="LevelPenaltyConfiguration_PenaltyFreeMaps_Name" xml:space="preserve">
     <value>Maps without the damage penalty</value>
   </data>
+  <data name="LevelPenaltyConfiguration_MapPenaltyLevels_Name" xml:space="preserve">
+    <value>Hunting penalty level per map</value>
+  </data>
   <data name="LabyrinthLeaguePlugIn_Name" xml:space="preserve">
     <value>Labyrinth of Dimensions league (Season 21)</value>
   </data>

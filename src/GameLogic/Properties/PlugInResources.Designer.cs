@@ -8753,6 +8753,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Hunting penalty level per map.
+        /// </summary>
+        public static string LevelPenaltyConfiguration_MapPenaltyLevels_Name {
+            get {
+                return ResourceManager.GetString("LevelPenaltyConfiguration_MapPenaltyLevels_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Labyrinth of Dimensions league (Season 21).
         /// </summary>
         public static string LabyrinthLeaguePlugIn_Name {

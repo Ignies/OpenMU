@@ -92,6 +92,8 @@ damage per level to it and takes 10 % more from it, at most 7 levels (70 %). Out
 400. Monsters of the Kardamahal Underground Temple (map 143) give 10 % less experience per level, at most 70 %.
 The five floors of the Deep Dungeon (maps 116-120, `PenaltyFreeMaps`) have no damage penalty: their renewal removed
 the hunting penalty (Webzen Korea patch notes, muhelper.com), which the Lua does not know.
+`MapPenaltyLevels` (map, total level) gives a map the fixed hunting penalty level of the Webzen guides (entry + 50,
+e.g. Tormenta 141: 1450, Kardamahal 143: 1550) in place of the monster level + 600; empty by default, as in the Lua.
 
 - The threshold and the 400 are Season 21 total levels and map through the mode with `EvolutionRules.GetLevelsMissing`,
   the helper of the evolution rules: the levels below count in the mode's unit (total, level + master level, power

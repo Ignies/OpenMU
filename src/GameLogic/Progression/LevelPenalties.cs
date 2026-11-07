@@ -39,7 +39,7 @@ public static class LevelPenalties
         var applies = configuration.DamageLevelMaps.Contains(mapNumber)
             ? EvolutionRules.IsMet(configuration.DamageLevelMapMinimumLevel, level, masterLevel, stars, progression)
             : evolution >= configuration.DamageMinimumEvolution;
-        return applies ? GetPercent(configuration, progression, level, masterLevel, stars, monsterLevel) : 0;
+        return applies ? GetPercent(configuration, progression, mapNumber, level, masterLevel, stars, monsterLevel) : 0;
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ public static class LevelPenalties
     public static int GetExperiencePenaltyPercent(LevelPenaltyConfiguration configuration, ProgressionConfiguration? progression, short monsterMapNumber, int level, int masterLevel, int stars, int monsterLevel)
     {
         return configuration.ExperiencePenaltyActive && configuration.ExperienceMaps.Contains(monsterMapNumber)
-            ? GetPercent(configuration, progression, level, masterLevel, stars, monsterLevel)
+            ? GetPercent(configuration, progression, monsterMapNumber, level, masterLevel, stars, monsterLevel)
             : 0;
     }
 
@@ -78,9 +78,10 @@ public static class LevelPenalties
         return decrease ? damage - (int)((change + 99) / 100) : damage + (int)(change / 100);
     }
 
-    private static int GetPercent(LevelPenaltyConfiguration configuration, ProgressionConfiguration? progression, int level, int masterLevel, int stars, int monsterLevel)
+    private static int GetPercent(LevelPenaltyConfiguration configuration, ProgressionConfiguration? progression, short mapNumber, int level, int masterLevel, int stars, int monsterLevel)
     {
-        var below = EvolutionRules.GetLevelsMissing(monsterLevel + configuration.MonsterLevelOffset, level, masterLevel, stars, progression);
+        var penaltyLevel = configuration.MapPenaltyLevels.TryGetValue(mapNumber, out var mapLevel) ? mapLevel : monsterLevel + configuration.MonsterLevelOffset;
+        var below = EvolutionRules.GetLevelsMissing(penaltyLevel, level, masterLevel, stars, progression);
         var levels = Math.Clamp(below, 0, Math.Max(0, configuration.MaximumLevels));
         return Math.Clamp(levels * configuration.PercentPerLevel, 0, 100);
     }
