@@ -144,6 +144,22 @@ internal class Season21EvolutionQuestsDataTest
     }
 
     /// <summary>
+    /// The second quest of the third evolution (Infiltration of Barracks, 20 Soram) gives 20 points as in S21Emu
+    /// QuestReward.xml (RequireIndex 5), not the 10 of Season 6: +20, +20, +30.
+    /// </summary>
+    [Test]
+    public void BarracksQuestGivesTwentyPoints()
+    {
+        var points = this._gameConfiguration.Monsters.SelectMany(m => m.Quests)
+            .Where(q => q.Group == 0 && q.Number is 4 or 5 or 6)
+            .GroupBy(q => q.Number)
+            .OrderBy(g => g.Key)
+            .Select(g => g.First().Rewards.Where(r => r.RewardType == QuestRewardType.LevelUpPoints).Sum(r => r.Value));
+
+        Assert.That(points, Is.EqualTo(new[] { 20, 20, 30 }));
+    }
+
+    /// <summary>
     /// A second run adds nothing.
     /// </summary>
     [Test]

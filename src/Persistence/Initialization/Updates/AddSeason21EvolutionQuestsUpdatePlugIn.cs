@@ -36,6 +36,13 @@ public class AddSeason21EvolutionQuestsUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 06, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    /// <remarks>Version 2: the Barracks quest of the third evolution gives 20 points instead of 10.</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 08, 0, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn =>
     [
         typeof(AddSeason21MapsUpdatePlugIn).GUID,

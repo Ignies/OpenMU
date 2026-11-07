@@ -20,6 +20,21 @@ internal class Season21EvolutionQuestsInitializer
     /// </summary>
     private const short FirstTownNpcSpawnNumber = 900;
 
+    /// <summary>
+    /// The number of the quest "Infiltration of Barracks" (third evolution, second step) in the Season 6 quest group.
+    /// </summary>
+    private const short BarracksQuestNumber = 5;
+
+    /// <summary>
+    /// The level up points of the Barracks quest in Season 6.
+    /// </summary>
+    private const int Season6BarracksPoints = 10;
+
+    /// <summary>
+    /// The level up points of the Barracks quest in Season 21.
+    /// </summary>
+    private const int Season21BarracksPoints = 20;
+
     private readonly IContext _context;
 
     private readonly GameConfiguration _gameConfiguration;
@@ -47,12 +62,29 @@ internal class Season21EvolutionQuestsInitializer
         new Season21MapsInitializer(this._context, this._gameConfiguration, this._gameServers).Initialize(Season21EvolutionQuestData.TrialArea);
         this.SetNpcWindows();
         this.PlaceTownNpcs();
+        this.RaiseBarracksQuestPoints();
         foreach (var quest in Season21EvolutionQuestData.Quests)
         {
             foreach (var characterClass in this._gameConfiguration.CharacterClasses.Where(c => c.NextGenerationClass?.GetEvolution() == quest.Evolution).ToList())
             {
                 this.CreateQuest(quest, characterClass);
             }
+        }
+    }
+
+    /// <summary>
+    /// The second quest of the third evolution (Infiltration of Barracks) gives 20 points (S21Emu QuestReward.xml,
+    /// RequireIndex 5), not the 10 of Season 6; a value of the operator stays.
+    /// </summary>
+    private void RaiseBarracksQuestPoints()
+    {
+        var rewards = this._gameConfiguration.Monsters.SelectMany(m => m.Quests)
+            .Where(q => q is { Group: 0, Number: BarracksQuestNumber })
+            .SelectMany(q => q.Rewards)
+            .Where(r => r is { RewardType: QuestRewardType.LevelUpPoints, Value: Season6BarracksPoints });
+        foreach (var reward in rewards)
+        {
+            reward.Value = Season21BarracksPoints;
         }
     }
 

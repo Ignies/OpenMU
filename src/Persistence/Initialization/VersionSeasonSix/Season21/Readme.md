@@ -163,7 +163,8 @@ Two more optional updates, both after the maps:
 The Trial Area (121, `Terrain122.att`) with Sent and Eunice, their town NPCs in Lorencia and Devias and the fourth and
 fifth class quests come with the optional update "Add the evolution quests of Season 21"
 (`Season21EvolutionQuestData`, `Season21EvolutionQuestsInitializer`); the rules and the trial are in
-`GameLogic/EvolutionQuests` (see its readme).
+`GameLogic/EvolutionQuests` (see its readme). Version 2 of the update gives the third evolution quest "Infiltration of Barracks" 20 level up
+points (S21Emu `QuestReward.xml` RequireIndex 5; Season 6: 10), so the three steps give 20, 20 and 30.
 
 ## Gear
 
