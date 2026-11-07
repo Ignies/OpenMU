@@ -951,7 +951,7 @@
   <data name="UnderDreadfearElite" xml:space="preserve"><value>Under Dreadfear (Elite)</value></data>
   <data name="MagmaGladiator" xml:space="preserve"><value>Magma Gladiator</value></data>
   <data name="MagmaHook" xml:space="preserve"><value>Magma Hook</value></data>
-  <data name="MagmaShaman" xml:space="preserve"><value>Magma Shaman</value></data>
+  <data name="MagmaShaman" xml:space="preserve"><value>Magma Sorcerer</value></data>
   <data name="GoreMutant" xml:space="preserve"><value>Gore Mutant</value></data>
   <data name="GoreBloodWolf" xml:space="preserve"><value>Gore Blood Wolf</value></data>
   <data name="GoreBeamKnight" xml:space="preserve"><value>Gore Beam Knight</value></data>
@@ -1015,7 +1015,7 @@
   <data name="GodOfDarkness" xml:space="preserve"><value>God of Darkness</value></data>
   <data name="EliteMagmaGladiator" xml:space="preserve"><value>(Elite) Magma Gladiator</value></data>
   <data name="EliteMagmaHook" xml:space="preserve"><value>(Elite) Magma Hook</value></data>
-  <data name="EliteMagmaShaman" xml:space="preserve"><value>(Elite) Magma Shaman</value></data>
+  <data name="EliteMagmaShaman" xml:space="preserve"><value>(Elite) Magma Sorcerer</value></data>
   <data name="EliteDevilSword" xml:space="preserve"><value>(Elite) Devil Sword</value></data>
   <data name="EliteDevilScythe" xml:space="preserve"><value>(Elite) Devil Scythe</value></data>
   <data name="EliteDevilSorcerer" xml:space="preserve"><value>(Elite) Devil Sorcerer</value></data>

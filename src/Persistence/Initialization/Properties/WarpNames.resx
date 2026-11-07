@@ -144,17 +144,17 @@
   <data name="DeepDungeon4" xml:space="preserve"><value>Deep Dungeon 4</value></data>
   <data name="DeepDungeon5" xml:space="preserve"><value>Deep Dungeon 5</value></data>
   <data name="CrimsonIcarus" xml:space="preserve"><value>Crimson Icarus</value></data>
-  <data name="ArenilTemple" xml:space="preserve"><value>Arenil Temple</value></data>
-  <data name="AshenAida" xml:space="preserve"><value>Ashen Aida</value></data>
+  <data name="ArenilTemple" xml:space="preserve"><value>Temple of Arnil</value></data>
+  <data name="AshenAida" xml:space="preserve"><value>Gray Aida</value></data>
   <data name="OldKethotum" xml:space="preserve"><value>Old Kethotum</value></data>
-  <data name="BlazeKethotum" xml:space="preserve"><value>Blaze Kethotum</value></data>
+  <data name="BlazeKethotum" xml:space="preserve"><value>Burning Kethotum</value></data>
   <data name="KanturuUnderground" xml:space="preserve"><value>Kanturu Underground</value></data>
   <data name="IgnisVulcanus" xml:space="preserve"><value>Ignis Vulcanus</value></data>
-  <data name="BloodTarkan" xml:space="preserve"><value>Blood Tarkan</value></data>
+  <data name="BloodTarkan" xml:space="preserve"><value>Gore Tarkan</value></data>
   <data name="TormentaIsland" xml:space="preserve"><value>Tormenta Island</value></data>
-  <data name="TwistedKarutan" xml:space="preserve"><value>Twisted Karutan</value></data>
+  <data name="TwistedKarutan" xml:space="preserve"><value>Distorted Karutan</value></data>
   <data name="KardamahalUndergroundTemple" xml:space="preserve"><value>Kardamahal Underground Temple</value></data>
-  <data name="SwampOfDoom" xml:space="preserve"><value>Swamp of Doom</value></data>
+  <data name="SwampOfDoom" xml:space="preserve"><value>Swamp of Destruction</value></data>
   <data name="AtlansAbyss1" xml:space="preserve"><value>Atlans Abyss 1</value></data>
   <data name="AtlansAbyss2" xml:space="preserve"><value>Atlans Abyss 2</value></data>
   <data name="AtlansAbyss3" xml:space="preserve"><value>Atlans Abyss 3</value></data>

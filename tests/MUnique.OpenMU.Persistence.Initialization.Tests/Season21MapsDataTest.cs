@@ -458,6 +458,25 @@ internal class Season21MapsDataTest
         Assert.That(map.MonsterSpawns.Count(s => s.MonsterDefinition == npc && s.X1 == x && s.Y1 == y), Is.EqualTo(1));
     }
 
+    /// <summary>
+    /// The later maps and the Magma Sorcerer carry the names of Webzen's global guides (guide 333).
+    /// </summary>
+    /// <param name="mapNumber">The map number.</param>
+    /// <param name="name">The global name.</param>
+    [TestCase(133, "Temple of Arnil")]
+    [TestCase(134, "Gray Aida")]
+    [TestCase(136, "Burning Kethotum")]
+    [TestCase(140, "Gore Tarkan")]
+    [TestCase(142, "Distorted Karutan")]
+    [TestCase(144, "Swamp of Destruction")]
+    public async Task MapHasItsGlobalNameAsync(byte mapNumber, string name)
+    {
+        var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
+
+        Assert.That(gameConfiguration.Maps.Single(m => m.Number == mapNumber).Name.ValueInNeutralLanguage, Is.EqualTo(name));
+        Assert.That(gameConfiguration.Monsters.Single(m => m.Number == 913).Designation.ValueInNeutralLanguage, Is.EqualTo("Magma Sorcerer"));
+    }
+
     private static Dictionary<short, int> SpawnsOf(GameConfiguration gameConfiguration, byte mapNumber)
         => gameConfiguration.Maps.Single(m => m.Number == mapNumber).MonsterSpawns
             .Where(s => s.MonsterDefinition?.ObjectKind == NpcObjectKind.Monster)

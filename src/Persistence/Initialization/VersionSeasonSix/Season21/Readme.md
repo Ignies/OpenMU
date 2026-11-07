@@ -80,6 +80,10 @@ were corrected:
 The versions (`IntroducedIn`) are the ones in which the maps were added
 according to the [MU Online history](https://github.com/Khdoop/mu-online-history).
 
+Names: the maps, warps and the Magma Sorcerer 913/(elite) carry the names of Webzen's global guide 333 (Temple of Arnil,
+Gray Aida, Burning Kethotum, Gore Tarkan, Distorted Karutan, Swamp of Destruction) in place of the client texts of the
+data; the resource keys stay, so a database takes them with the caption refresh of its unchanged names.
+
 ## Placeholder rows
 
 Some rows of the data are placeholders; they are replaced (`Season21PlaceholderRows` keeps the data's numbers, and the
