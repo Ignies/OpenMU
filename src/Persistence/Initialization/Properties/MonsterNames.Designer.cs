@@ -4711,5 +4711,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("SirLesnar", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Death King.
+        /// </summary>
+        public static string DeathKing {
+            get {
+                return ResourceManager.GetString("DeathKing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Death Bone.
+        /// </summary>
+        public static string DeathBone {
+            get {
+                return ResourceManager.GetString("DeathBone", resourceCulture);
+            }
+        }
     }
 }

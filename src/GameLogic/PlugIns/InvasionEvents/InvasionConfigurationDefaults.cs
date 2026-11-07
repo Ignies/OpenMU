@@ -69,4 +69,41 @@ internal static class InvasionConfigurationDefaults
             new(InvasionMonsters.DestructiveOgreArcher, 10, [], SpawnMapStrategy.RandomMap),
         ],
     };
+
+    /// <summary>
+    /// Gets the default configuration for the Underworld invasion (S21Emu <c>InvasionManager.xml</c> 0): the Death King
+    /// with 110 Death Bones on Lorencia or Noria, every four hours from 00:05, for 10 minutes.
+    /// </summary>
+    public static PeriodicInvasionConfiguration Underworld => new()
+    {
+        TaskDuration = TimeSpan.FromMinutes(10),
+        PreStartMessageDelay = TimeSpan.FromSeconds(3),
+        StartMessage = "[{mapName}] The Death King leads the Underworld invasion!",
+        EndMessage = "[{mapName}] The Underworld invasion has ended.",
+        ForceSingleMap = true,
+        Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromHours(4), new TimeOnly(0, 5)).ToList(),
+        Mobs =
+        [
+            new(InvasionMonsters.DeathKing, 1, [InvasionMaps.Lorencia, InvasionMaps.Noria], SpawnMapStrategy.RandomMap, announceDeath: true),
+            new(InvasionMonsters.DeathBone, 110, [], SpawnMapStrategy.RandomMap),
+        ],
+    };
+
+    /// <summary>
+    /// Gets the default configuration for the Summon invasion (S21Emu <c>InvasionManager.xml</c> 9): Golden Goblins on one
+    /// of six maps, every four hours from 01:25, for 10 minutes. The data has 5 on the Karutan maps and 10 elsewhere; one
+    /// count per monster, so 10.
+    /// </summary>
+    public static PeriodicInvasionConfiguration Summon => new()
+    {
+        TaskDuration = TimeSpan.FromMinutes(10),
+        PreStartMessageDelay = TimeSpan.FromSeconds(3),
+        StartMessage = "[{mapName}] Golden Goblins were summoned!",
+        EndMessage = "[{mapName}] The summoned Golden Goblins are gone.",
+        Timetable = PeriodicTaskConfiguration.GenerateTimeSequence(TimeSpan.FromHours(4), new TimeOnly(1, 25)).ToList(),
+        Mobs =
+        [
+            new(InvasionMonsters.SummonedGoldenGoblin, 10, [InvasionMaps.Tarkan, InvasionMaps.Aida, InvasionMaps.Kanturu, InvasionMaps.Karutan1, InvasionMaps.Karutan2, InvasionMaps.Acheron], SpawnMapStrategy.RandomMap),
+        ],
+    };
 }

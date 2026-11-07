@@ -84,6 +84,16 @@ internal class Season21GoldenInvasionInitializer
     internal static TimeSpan Duration { get; } = TimeSpan.FromSeconds(600);
 
     /// <summary>
+    /// Gets the monsters of the Underworld and Summon invasions (S21Emu <c>Monster.xml</c>), which Season 6 doesn't define.
+    /// </summary>
+    internal static IReadOnlyList<Season21Monster> InvasionMonsterRows { get; } =
+    [
+        new(55, LocalizedString.FromResource(() => MonsterNames.DeathKing), Level: 88, Health: 30000, MinimumDamage: 430, MaximumDamage: 500, Defense: 120, AttackRate: 150, DefenseRate: 37, MoveRange: 2, AttackRange: 2, ViewRange: 6, MoveDelay: 400, AttackDelay: 1800, RespawnDelay: 86400, Attribute: 2, Resistances: [2, 2, 2, 2, 0, 0, 0]),
+        new(56, LocalizedString.FromResource(() => MonsterNames.DeathBone), Level: 24, Health: 700, MinimumDamage: 85, MaximumDamage: 90, Defense: 29, AttackRate: 120, DefenseRate: 29, MoveRange: 3, AttackRange: 1, ViewRange: 5, MoveDelay: 400, AttackDelay: 1600, RespawnDelay: 20, Attribute: 2, Resistances: [1, 1, 1, 1, 0, 0, 0]),
+        new(652, LocalizedString.FromResource(() => MonsterNames.GoldenGoblin), Level: 100, Health: 120000, MinimumDamage: 100, MaximumDamage: 200, Defense: 200, AttackRate: 500, DefenseRate: 300, MoveRange: 3, AttackRange: 1, ViewRange: 7, MoveDelay: 400, AttackDelay: 1400, RespawnDelay: 3600, Attribute: 2, Resistances: [0, 0, 0, 0, 0, 0, 0]),
+    ];
+
+    /// <summary>
     /// Applies the invasion.
     /// </summary>
     public void Initialize()
@@ -98,6 +108,21 @@ internal class Season21GoldenInvasionInitializer
         this.Configure();
     }
 
+    /// <summary>
+    /// Adds the monsters of the Underworld and Summon invasions and switches both on, with the roster of the data
+    /// unless the operator configured one.
+    /// </summary>
+    public void AddUnderworldAndSummon()
+    {
+        foreach (var row in InvasionMonsterRows.Where(r => this._gameConfiguration.Monsters.All(d => d.Number != r.Number)))
+        {
+            this._gameConfiguration.Monsters.Add(Season21MapsInitializer.CreateMonster(this._context, this._gameConfiguration, row, GameVersion.Season5Episode1));
+        }
+
+        this.SwitchOn(new UnderworldInvasionPlugIn());
+        this.SwitchOn(new SummonInvasionPlugIn());
+    }
+
     private static bool IsSeason6Default(PeriodicInvasionConfiguration configuration)
     {
         var standard = (PeriodicInvasionConfiguration)new GoldenInvasionPlugIn().CreateDefaultConfig();
@@ -108,6 +133,17 @@ internal class Season21GoldenInvasionInitializer
                                                && s.Count == mob.Count
                                                && s.MapIds.SequenceEqual(mob.MapIds)
                                                && s.MapStrategy == mob.MapStrategy);
+    }
+
+    private void SwitchOn(SimpleInvasionPlugIn invasion)
+    {
+        var configuration = Season21PlugInConfigurations.GetOrCreate<PeriodicInvasionConfiguration>(this._context, this._gameConfiguration, invasion.GetType().GUID, out var plugIn);
+        if (configuration is not { Mobs.Count: > 0 })
+        {
+            plugIn.SetConfiguration((PeriodicInvasionConfiguration)invasion.CreateDefaultConfig(), null);
+        }
+
+        plugIn.IsActive = true;
     }
 
     private void AddBoxOfKundun(MonsterDefinition monster, byte level)

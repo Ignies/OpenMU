@@ -3228,4 +3228,16 @@
   <data name="SkillBookRequirement_RequiredMasterSkillLevel_Name" xml:space="preserve">
     <value>Points of the master skill</value>
   </data>
+  <data name="UnderworldInvasionPlugIn_Name" xml:space="preserve">
+    <value>Underworld Invasion (Season 21)</value>
+  </data>
+  <data name="UnderworldInvasionPlugIn_Description" xml:space="preserve">
+    <value>The Death King and 110 Death Bones invade Lorencia or Noria.</value>
+  </data>
+  <data name="SummonInvasionPlugIn_Name" xml:space="preserve">
+    <value>Summon Invasion (Season 21)</value>
+  </data>
+  <data name="SummonInvasionPlugIn_Description" xml:space="preserve">
+    <value>Golden Goblins are summoned on Tarkan, Aida, Kanturu, Karutan or Acheron.</value>
+  </data>
 </root>

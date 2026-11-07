@@ -127,6 +127,37 @@ internal class Season21WorldSystemsDataTest
     }
 
     /// <summary>
+    /// The update also adds the Underworld (Death King with 110 Death Bones on Lorencia or Noria, from 00:05) and the
+    /// Summon invasion (Golden Goblin 652 on one of six maps, from 01:25) of S21Emu <c>InvasionManager.xml</c>.
+    /// </summary>
+    [Test]
+    public async Task UnderworldAndSummonInvasionsAreAddedAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+
+        await new AddSeason21GoldenInvasionUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(gameConfiguration.Monsters.Select(m => m.Number), Is.SupersetOf(new short[] { 55, 56, 652 }));
+        var deathKing = gameConfiguration.Monsters.Single(m => m.Number == 55);
+        Assert.That(deathKing.Attributes.Single(a => a.AttributeDefinition == Stats.MaximumHealth).Value, Is.EqualTo(30000));
+        Assert.That(gameConfiguration.Monsters.Single(m => m.Number == 56).Attributes.Single(a => a.AttributeDefinition == Stats.Level).Value, Is.EqualTo(24));
+        Assert.That(gameConfiguration.Monsters.Single(m => m.Number == 652).Attributes.Single(a => a.AttributeDefinition == Stats.MaximumHealth).Value, Is.EqualTo(120000));
+
+        var underworld = GetConfiguration<PeriodicInvasionConfiguration>(gameConfiguration, typeof(UnderworldInvasionPlugIn).GUID, out var underworldPlugIn);
+        Assert.That(underworldPlugIn.IsActive, Is.True);
+        Assert.That(underworld.ForceSingleMap, Is.True);
+        Assert.That(underworld.Mobs.Select(m => (m.MonsterId, m.Count)), Is.EqualTo(new (ushort, ushort)[] { (55, 1), (56, 110) }));
+        Assert.That(underworld.Mobs[0].MapIds, Is.EqualTo(new ushort[] { 0, 3 }));
+        Assert.That(underworld.Timetable[0], Is.EqualTo(new TimeOnly(0, 5)));
+        Assert.That(underworld.TaskDuration, Is.EqualTo(TimeSpan.FromMinutes(10)));
+
+        var summon = GetConfiguration<PeriodicInvasionConfiguration>(gameConfiguration, typeof(SummonInvasionPlugIn).GUID, out var summonPlugIn);
+        Assert.That(summonPlugIn.IsActive, Is.True);
+        Assert.That(summon.Mobs.Single().MapIds, Is.EqualTo(new ushort[] { 8, 33, 37, 80, 81, 91 }));
+        Assert.That(summon.Timetable[0], Is.EqualTo(new TimeOnly(1, 25)));
+    }
+
+    /// <summary>
     /// The hunting record update sets the 59 maps and the 64 excluded monsters of <c>HuntingRecord.txt</c> and switches the hunting record on.
     /// </summary>
     [Test]

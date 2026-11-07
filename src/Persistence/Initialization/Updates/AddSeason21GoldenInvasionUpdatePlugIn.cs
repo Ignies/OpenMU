@@ -13,7 +13,8 @@ using MUnique.OpenMU.PlugIns;
 /// </summary>
 /// <remarks>
 /// Optional. A golden invasion which still has the Season 6 roster becomes the one of the data; one an operator changed keeps
-/// its numbers and gets the missing monsters and maps only. A second run changes nothing.
+/// its numbers and gets the missing monsters and maps only. A second run changes nothing. Version 2 adds the Underworld and
+/// Summon invasions of <c>InvasionManager.xml</c> (<see cref="Season21GoldenInvasionInitializer.AddUnderworldAndSummon"/>).
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(Properties.PlugInResources.AddSeason21GoldenInvasionUpdatePlugIn_Name), Description = nameof(Properties.PlugInResources.AddSeason21GoldenInvasionUpdatePlugIn_Description), ResourceType = typeof(Properties.PlugInResources))]
@@ -39,9 +40,31 @@ public class AddSeason21GoldenInvasionUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 06, 23, 30, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 07, 21, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
+    protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
+    {
+        var initializer = new Season21GoldenInvasionInitializer(context, gameConfiguration);
+        if (installedVersion is null)
+        {
+            initializer.Initialize();
+        }
+
+        if (installedVersion is null or < 2)
+        {
+            initializer.AddUnderworldAndSummon();
+        }
+
+        return ValueTask.CompletedTask;
+    }
+
+    /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        new Season21GoldenInvasionInitializer(context, gameConfiguration).Initialize();
-        return ValueTask.CompletedTask;
+        return this.ApplyAsync(context, gameConfiguration, null);
     }
 }

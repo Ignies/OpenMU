@@ -73,4 +73,19 @@ internal static class InvasionMonsters
     /// The Destructive Ogre Archer monster.
     /// </summary>
     public const ushort DestructiveOgreArcher = 137;
+
+    /// <summary>
+    /// The Death King monster, the boss of the Underworld invasion.
+    /// </summary>
+    public const ushort DeathKing = 55;
+
+    /// <summary>
+    /// The Death Bone monster of the Underworld invasion.
+    /// </summary>
+    public const ushort DeathBone = 56;
+
+    /// <summary>
+    /// The Golden Goblin of the Summon invasion (Season 21, not the golden invasion's 78).
+    /// </summary>
+    public const ushort SummonedGoldenGoblin = 652;
 }

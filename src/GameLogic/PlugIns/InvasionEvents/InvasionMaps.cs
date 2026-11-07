@@ -33,4 +33,29 @@ internal static class InvasionMaps
     /// The Tarkan map.
     /// </summary>
     public const ushort Tarkan = 8;
+
+    /// <summary>
+    /// The Aida map.
+    /// </summary>
+    public const ushort Aida = 33;
+
+    /// <summary>
+    /// The Kanturu ruins map.
+    /// </summary>
+    public const ushort Kanturu = 37;
+
+    /// <summary>
+    /// The first Karutan map.
+    /// </summary>
+    public const ushort Karutan1 = 80;
+
+    /// <summary>
+    /// The second Karutan map.
+    /// </summary>
+    public const ushort Karutan2 = 81;
+
+    /// <summary>
+    /// The Acheron map.
+    /// </summary>
+    public const ushort Acheron = 91;
 }

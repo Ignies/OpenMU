@@ -1097,4 +1097,10 @@
   <data name="SirLesnar" xml:space="preserve">
     <value>Sir Lesnar</value>
   </data>
+  <data name="DeathKing" xml:space="preserve">
+    <value>Death King</value>
+  </data>
+  <data name="DeathBone" xml:space="preserve">
+    <value>Death Bone</value>
+  </data>
 </root>

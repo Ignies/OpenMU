@@ -9219,5 +9219,41 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("SkillBookRequirement_RequiredMasterSkillLevel_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Underworld Invasion (Season 21).
+        /// </summary>
+        public static string UnderworldInvasionPlugIn_Name {
+            get {
+                return ResourceManager.GetString("UnderworldInvasionPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Death King and 110 Death Bones invade Lorencia or Noria..
+        /// </summary>
+        public static string UnderworldInvasionPlugIn_Description {
+            get {
+                return ResourceManager.GetString("UnderworldInvasionPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Summon Invasion (Season 21).
+        /// </summary>
+        public static string SummonInvasionPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SummonInvasionPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Golden Goblins are summoned on Tarkan, Aida, Kanturu, Karutan or Acheron..
+        /// </summary>
+        public static string SummonInvasionPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SummonInvasionPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

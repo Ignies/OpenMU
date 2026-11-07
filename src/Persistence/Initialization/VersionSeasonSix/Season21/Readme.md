@@ -21,6 +21,10 @@ them, as optional updates of a Season 6 database:
   in Elbeland, every four hours from 00:25, 10 minutes); one the operator changed keeps its numbers and timetable and gets
   only the missing kinds and maps. The spawn areas of the data (e.g. the west of Dungeon) are not kept: invaders spawn
   anywhere walkable, as the plugin does. The version of the monsters (Season 5) is our assumption.
+  Version 2 adds the Underworld invasion (`UnderworldInvasionPlugIn`, ID 0: the Death King 55 and 110 Death Bones 56 on
+  Lorencia or Noria from 00:05) and the Summon invasion (`SummonInvasionPlugIn`, ID 9: the Golden Goblin 652 on Tarkan, Aida,
+  Kanturu, Karutan 1/2 or Acheron from 01:25), both every four hours for 10 minutes, with their monster rows, and switches
+  them on; one count per monster, so 10 Goblins also on Karutan (data: 5).
 * `AddSeason21HuntingRecordUpdatePlugIn` sets the 59 maps and the 64 excluded event monsters of `HuntingRecord.txt` and turns
   the hunting record and the ranking on (`Season21HuntingRecordInitializer`, data `Resources/Season21/WorldSystems.json`
   written by `Generator/season21-world.mjs`). See `GameLogic/HuntingRecord/Readme.md`.
