@@ -353,7 +353,7 @@ internal sealed class PlayerMapTransitions
             return;
         }
 
-        var landingPoint = gate.GetRandomPoint();
+        var landingPoint = gate.GetRandomWalkablePoint(await this.GetTerrainAsync(gate.Map).ConfigureAwait(false));
         character.PositionX = landingPoint.X;
         character.PositionY = landingPoint.Y;
         character.CurrentMap = gate.Map;
@@ -362,6 +362,27 @@ internal sealed class PlayerMapTransitions
         await this._movement.ResetMovementStateAsync().ConfigureAwait(false);
 
         this._summon.PlaceAtGate(gate);
+    }
+
+    /// <summary>
+    /// Gets the terrain of a map which already runs on this game server, without creating it.
+    /// </summary>
+    /// <param name="mapDefinition">The definition of the map.</param>
+    /// <returns>The terrain; or <c>null</c>, if the map doesn't run here yet.</returns>
+    private async ValueTask<GameMapTerrain?> GetTerrainAsync(GameMapDefinition? mapDefinition)
+    {
+        if (mapDefinition is null)
+        {
+            return null;
+        }
+
+        if (this._player.CurrentMiniGame?.Map is { } miniGameMap && miniGameMap.Definition == mapDefinition)
+        {
+            return miniGameMap.Terrain;
+        }
+
+        var map = await this._player.GameContext.GetMapAsync(mapDefinition.Number.ToUnsigned(), false).ConfigureAwait(false);
+        return map?.Terrain;
     }
 
     /// <summary>
@@ -456,7 +477,7 @@ internal sealed class PlayerMapTransitions
     /// client the re-entry arrives later and on a fresh stack, with its F3 12 packet - but a
     /// connection-less player (an <see cref="Offline.OfflinePlayer"/>, i.e. a bot) gets it inline
     /// from <see cref="Offline.OfflineMapChangePlugIn"/>. Since <see cref="PlaceAtGateAsync"/>
-    /// rolls the position within the gate only once and never retries, a safezone spawn gate
+    /// lands on a blocked tile when the gate has no walkable one (or its map isn't loaded yet), a safezone spawn gate
     /// without a single walkable tile recursed until the stack overflowed - taking the whole game
     /// server process down with it. The recovery therefore warps at most once per such re-entry: a
     /// nested attempt places the player on a walkable tile of the map it already stands on instead.

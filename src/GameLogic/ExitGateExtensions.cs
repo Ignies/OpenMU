@@ -30,6 +30,29 @@ public static class ExitGateExtensions
     }
 
     /// <summary>
+    /// Gets a random walkable point at the exit gate, like the original gate move, which rolls until the tile is free.
+    /// A gate without a walkable tile, or without a known terrain, keeps <see cref="GetRandomPoint"/>.
+    /// </summary>
+    /// <param name="gate">The gate.</param>
+    /// <param name="terrain">The terrain of the gate's map, if known.</param>
+    /// <returns>The random point.</returns>
+    public static Point GetRandomWalkablePoint(this ExitGate gate, GameMapTerrain? terrain)
+    {
+        if (terrain is null)
+        {
+            return gate.GetRandomPoint();
+        }
+
+        var walkable = gate.GetPossibleLandingPoints().Count(p => terrain.WalkMap[p.X, p.Y]);
+        if (walkable == 0)
+        {
+            return gate.GetRandomPoint();
+        }
+
+        return gate.GetPossibleLandingPoints().Where(p => terrain.WalkMap[p.X, p.Y]).ElementAt(Rand.NextInt(0, walkable));
+    }
+
+    /// <summary>
     /// Gets every coordinate which <see cref="GetRandomPoint"/> can select for the specified gate.
     /// </summary>
     /// <param name="gate">The gate.</param>
