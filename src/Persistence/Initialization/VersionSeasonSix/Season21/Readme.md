@@ -7,7 +7,7 @@ them, as optional updates of a Season 6 database:
 * `AddSeason21LevelCapsUpdatePlugIn` sets the level caps of Season 21, which the
   maps depend on: their entry levels and monsters keep the numbers of Season 21,
 * `AddSeason21GearUpdatePlugIn` adds the gear of Season 21 (`Season21GearInitializer`),
-* `AddSeason21ItemCatalogUpdatePlugIn` defines every other item of the data (`Season21ItemCatalogInitializer`).
+* `AddSeason21ItemCatalogUpdatePlugIn` defines every other item of the data (`Season21ItemCatalogInitializer`).
 * `AddSeason21SkillsUpdatePlugIn` adds the skills, master tree nodes, books and the skill enhancement tree
   (`Season21SkillsInitializer`); it needs the classes and the item catalog.
 * `AddSeason21EconomyUpdatePlugIn` adds Priest James and the Ruud shop and switches on the gremory case, Ruud and the
@@ -306,7 +306,11 @@ damage reduction table, the Ability Enhancement Core (track T, later).
 * "Add the item mixes of Season 21" (`AddSeason21ItemMixesUpdatePlugIn`): the configuration of the plugin "Item rules
   of Season 21" (grade rates, the mastery mixes of `Season21MixData`, `Resources/Season21/MasteryMixes.json` from
   `Generator/season21-mixes.mjs --data <S21Emu Data/Item>`), and at the chaos goblin the mastery combination, the fourth
-  wings combinations and the wing core enhancement.
+  wings combinations and the wing core enhancement. Version 3 adds the archangel upgrade as recipes of the same mix
+  (`ArchangelMixes`, ids from 9001): the Archangel's Hammer, and the 14 Divine weapons of `ArchangelUpgradeMix.xml` +15
+  with the +16 option, the hammer and a bundle of 30 Bless, Soul, Life and Chaos to the Blessed weapon +0 (excellent
+  options and luck kept, 100 %). The ingredients are of the Webzen guides; an operator's configuration keeps its recipes
+  and gets these appended once.
 * "Add the sphere levels 6 to 10" (`AddSeason21SphereLevelsUpdatePlugIn`): socket option levels 6-10, the seed spheres
   12/311-340 with their element's options and mounting, and the seed sphere enhancement (crafting numbers 100-104 at
   the seed researcher).
