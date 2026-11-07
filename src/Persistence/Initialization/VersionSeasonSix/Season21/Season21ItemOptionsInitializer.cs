@@ -335,12 +335,13 @@ internal class Season21ItemOptionsInitializer
 
         if (existing is not { MasteryMixes.Count: > 0 })
         {
-            plugIn.SetConfiguration(new Season21ItemsConfiguration { MasteryMixes = Season21MixData.MasteryMixes.Concat(Season21MixData.ArchangelMixes).ToList() }, null);
+            plugIn.SetConfiguration(new Season21ItemsConfiguration { MasteryMixes = Season21MixData.MasteryMixes.Concat(Season21MixData.CodeMixes).ToList() }, null);
             plugIn.IsActive = true;
         }
-        else if (existing.MasteryMixes.All(m => m.Id != Season21MixData.FirstArchangelMixId) && existing.MasteryMixes.Any(m => m.Id > 0))
+        else if (existing.MasteryMixes.Any(m => m.Id > 0)
+                 && Season21MixData.CodeMixes.Where(m => existing.MasteryMixes.All(e => e.Id != m.Id)).ToList() is { Count: > 0 } missing)
         {
-            existing.MasteryMixes.AddRange(Season21MixData.ArchangelMixes);
+            existing.MasteryMixes.AddRange(missing);
             plugIn.SetConfiguration(existing, null);
         }
 

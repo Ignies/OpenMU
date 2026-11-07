@@ -18,6 +18,11 @@ internal static class Season21MixData
     /// </summary>
     public const int FirstArchangelMixId = 9001;
 
+    /// <summary>
+    /// The id of the first monster wing mix.
+    /// </summary>
+    public const int FirstMonsterWingMixId = 9101;
+
     private const string ResourceName = "MUnique.OpenMU.Persistence.Initialization.Resources.Season21.MasteryMixes.json";
 
     private static readonly Lazy<IReadOnlyList<MasteryMixRecipe>> LazyMixes = new(Load);
@@ -56,6 +61,19 @@ internal static class Season21MixData
     /// The recipe is of the Webzen guides (muonline.ai, muonline-guides.com); the data has no Zen cost.
     /// </summary>
     public static IReadOnlyList<MasteryMixRecipe> ArchangelMixes { get; } = CreateArchangelMixes();
+
+    /// <summary>
+    /// Gets the monster wings (2.5) of S21Emu <c>GoblinCombination.xml</c> mix 56: a second wing +9 with the +4 option, a
+    /// part of a Kundun boss (14/176-179), a Creation and a Chaos, 60 %, 100,000 Zen. The data picks the result in code;
+    /// here each second wing gives the monster wing of its class (Wings of Chaos, Magic, Life or the Cloak of Death,
+    /// <c>Item.xml</c> classes; the Magic Gladiator's Wings of Darkness give the Wings of Chaos).
+    /// </summary>
+    public static IReadOnlyList<MasteryMixRecipe> MonsterWingMixes { get; } = CreateMonsterWingMixes();
+
+    /// <summary>
+    /// Gets the mixes of this class which aren't part of the generated data.
+    /// </summary>
+    public static IEnumerable<MasteryMixRecipe> CodeMixes => ArchangelMixes.Concat(MonsterWingMixes);
 
     private static IReadOnlyList<MasteryMixRecipe> Load()
     {
@@ -114,6 +132,36 @@ internal static class Season21MixData
             Materials = [Material(upgrade.Divine, level: 15, option: 16), Material(hammer), Bundle(30), Bundle(31), Bundle(136), Bundle(141)],
         }));
         return mixes;
+    }
+
+    private static IReadOnlyList<MasteryMixRecipe> CreateMonsterWingMixes()
+    {
+        const int wings = 12 * 512;
+        const int cloakOfDeath = wings + 262;
+        const int chaos = wings + 263;
+        const int magic = wings + 264;
+        const int life = wings + 265;
+        (int Wing, int Result)[] upgrades =
+        [
+            (wings + 3, life), (wings + 4, magic), (wings + 5, chaos), (wings + 6, chaos), (wings + 42, magic),
+            (wings + 49, cloakOfDeath), ((13 * 512) + 30, cloakOfDeath), (wings + 269, cloakOfDeath), (wings + 156, magic),
+            (wings + 174, chaos),
+        ];
+        return upgrades.Select((upgrade, i) => new MasteryMixRecipe
+        {
+            Id = FirstMonsterWingMixId + i,
+            Name = "Monster Wings",
+            SuccessRate = 60,
+            Money = 100_000,
+            ResultIndex = upgrade.Result,
+            Materials =
+            [
+                new() { IndexMin = upgrade.Wing, IndexMax = upgrade.Wing, LevelMin = 9, OptionMin = 4 },
+                new() { IndexMin = (14 * 512) + 176, IndexMax = (14 * 512) + 179 },
+                new() { IndexMin = (14 * 512) + 22, IndexMax = (14 * 512) + 22 },
+                new() { IndexMin = (12 * 512) + 15, IndexMax = (12 * 512) + 15 },
+            ],
+        }).ToList();
     }
 
     private sealed record Row(int Id, string Name, int SuccessRate, int Money, int Keep, int[][] Materials, int ResultIndex, int ResultLevel);

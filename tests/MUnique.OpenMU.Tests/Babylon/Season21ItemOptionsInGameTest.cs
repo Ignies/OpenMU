@@ -290,6 +290,31 @@ public class Season21ItemOptionsInGameTest
     }
 
     /// <summary>
+    /// The monster wings (2.5) of S21Emu GoblinCombination.xml mix 56: a second wing +9 with the +4 option, a part of a
+    /// Kundun boss, a Creation and a Chaos, 60 %, 100,000 Zen; the Wings of Dragon give the Wings of Chaos, the Wings of
+    /// Spirits the Wings of Life. A wing below +9 is refused.
+    /// </summary>
+    [Test]
+    public async ValueTask MonsterWingsMixFromTheSecondWingsAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync(this._gameContext).ConfigureAwait(false);
+        var wings = await this.AddAsync(player, this.Item(12, 5), 9).ConfigureAwait(false);
+        AddOption(wings, ItemOptionTypes.Option, 0, 1);
+        await this.AddAsync(player, this.Item(14, 176), 0).ConfigureAwait(false);
+        await this.AddAsync(player, this.Item(14, 22), 0).ConfigureAwait(false);
+        await this.AddAsync(player, this.Item(12, 15), 0).ConfigureAwait(false);
+
+        Assert.That(new MasteryItemMixCrafting().TryGetRequiredItems(player, out _, out var rate), Is.Null);
+        Assert.That(rate, Is.EqualTo(60));
+        var recipes = this._items.Configuration!.MasteryMixes;
+        Assert.That(recipes.Single(r => r.Materials[0].IndexMin == (12 * 512) + 5 && r.Materials[0].LevelMin == 9).ResultIndex, Is.EqualTo((12 * 512) + 263));
+        Assert.That(recipes.Single(r => r.Materials[0].IndexMin == (12 * 512) + 3 && r.Materials[0].LevelMin == 9).ResultIndex, Is.EqualTo((12 * 512) + 265));
+
+        wings.Level = 8;
+        Assert.That(new MasteryItemMixCrafting().TryGetRequiredItems(player, out _, out _), Is.EqualTo(CraftingResult.IncorrectMixItems));
+    }
+
+    /// <summary>
     /// Items which form no mix are refused.
     /// </summary>
     [Test]

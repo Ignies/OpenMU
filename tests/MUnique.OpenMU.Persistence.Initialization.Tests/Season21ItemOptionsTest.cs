@@ -160,7 +160,7 @@ public class Season21ItemOptionsTest
         var plugIn = this._gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(Season21ItemsFeaturePlugIn).GUID);
         Assert.That(plugIn.IsActive, Is.True);
         var configuration = plugIn.GetConfiguration<Season21ItemsConfiguration>(null)!;
-        Assert.That(configuration.MasteryMixes, Has.Count.EqualTo(2476));
+        Assert.That(configuration.MasteryMixes, Has.Count.EqualTo(2476 + 15 + 10), "the data, the archangel upgrade and the monster wings");
         Assert.That(configuration.GradeRates, Is.EqualTo(new[] { 947500, 30000, 15000, 7500 }));
 
         var goblin = this._gameConfiguration.Monsters.First(m => m.NpcWindow == NpcWindow.ChaosMachine);

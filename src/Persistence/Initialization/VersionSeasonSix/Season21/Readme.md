@@ -310,7 +310,10 @@ damage reduction table, the Ability Enhancement Core (track T, later).
   (`ArchangelMixes`, ids from 9001): the Archangel's Hammer, and the 14 Divine weapons of `ArchangelUpgradeMix.xml` +15
   with the +16 option, the hammer and a bundle of 30 Bless, Soul, Life and Chaos to the Blessed weapon +0 (excellent
   options and luck kept, 100 %). The ingredients are of the Webzen guides; an operator's configuration keeps its recipes
-  and gets these appended once.
+  and gets these appended once. Version 4 adds the monster wings (2.5) of `GoblinCombination.xml` mix 56 the same way
+  (`MonsterWingMixes`, ids from 9101): a second wing +9 with the +4 option, a Kundun boss part (14/176-179), a Creation
+  and a Chaos, 60 %, 100,000 Zen. The data picks the result in code; each second wing gives the monster wing of its
+  class (`Item.xml` classes; the Magic Gladiator's Wings of Darkness the Wings of Chaos).
 * "Add the sphere levels 6 to 10" (`AddSeason21SphereLevelsUpdatePlugIn`): socket option levels 6-10, the seed spheres
   12/311-340 with their element's options and mounting, and the seed sphere enhancement (crafting numbers 100-104 at
   the seed researcher).
