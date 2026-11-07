@@ -157,9 +157,36 @@ internal class Season21AbilityCoreDataTest
 
         await new AddSeason21AbilityCoreUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
-        Assert.That(new AddSeason21AbilityCoreUpdatePlugIn().Version, Is.EqualTo(2));
+        Assert.That(new AddSeason21AbilityCoreUpdatePlugIn().Version, Is.GreaterThanOrEqualTo(2));
         Assert.That(goblin.ItemCraftings, Has.Count.EqualTo(count + 1));
         Assert.That(goblin.ItemCraftings.Single(c => c.Number == 180).SimpleCraftingSettings!.Money, Is.EqualTo(1234));
+    }
+
+    /// <summary>
+    /// The extra defense, the pentagram defense and the pentagram attack options carry the attribute OpenMU has for them;
+    /// version 3 gives them to an existing database whose options had none, and keeps the edited ones.
+    /// </summary>
+    [Test]
+    public async Task VersionThreeMapsTheExtraDefenseAndPentagramOptionsAsync()
+    {
+        var (context, gameConfiguration) = await CreateWithCoreAsync().ConfigureAwait(false);
+        var extraDefense = Options(gameConfiguration, 213).Single(o => o.Number == 3);
+        Assert.That(extraDefense.PowerUpDefinition?.TargetAttribute, Is.EqualTo(Stats.DefenseBase));
+        Assert.That(extraDefense.LevelDependentOptions.Single(l => l.Level == 5).PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(175));
+        Assert.That(Options(gameConfiguration, 216).Single(o => o.Number == 10).PowerUpDefinition!.TargetAttribute, Is.EqualTo(Stats.ElementDefense));
+        Assert.That(Options(gameConfiguration, 215).Single(o => o.Number == 47).PowerUpDefinition!.TargetAttribute, Is.EqualTo(Stats.ElementDamageBonus));
+
+        var pentagramAttack = Options(gameConfiguration, 220).Single(o => o.Number == 47);
+        pentagramAttack.PowerUpDefinition = null;
+        pentagramAttack.LevelDependentOptions.Clear();
+        extraDefense.LevelDependentOptions.Single(l => l.Level == 5).PowerUpDefinition!.Boost!.ConstantValue.Value = 99;
+
+        await new AddSeason21AbilityCoreUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(new AddSeason21AbilityCoreUpdatePlugIn().Version, Is.EqualTo(3));
+        Assert.That(pentagramAttack.PowerUpDefinition!.TargetAttribute, Is.EqualTo(Stats.ElementDamageBonus));
+        Assert.That(pentagramAttack.LevelDependentOptions.Single(l => l.Level == 5).PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(162));
+        Assert.That(extraDefense.LevelDependentOptions.Single(l => l.Level == 5).PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(99));
     }
 
     private static List<IncreasableItemOption> Options(GameConfiguration gameConfiguration, short number)

@@ -51,18 +51,22 @@ internal class Season21AbilityCoreInitializer
 
     /// <summary>
     /// The attribute of each option which has one in OpenMU, by the static option index; the other options (the
-    /// nuke, bolt and wide skill options, the fifth wings, mastery, bleeding and poison) are data without effect.
+    /// nuke, bolt and wide skill options, the fifth wings, mastery, bleeding and poison, triple damage, skill slots, AG
+    /// recovery, shock defense) are data without effect. The extra defense adds to the defense, the pentagram defense
+    /// and attack to the elemental defense and damage.
     /// </summary>
     private static readonly Dictionary<short, (AttributeDefinition Attribute, bool PerTwentyLevels)> Effects = new()
     {
         { 0, (Stats.DefenseBase, false) },
         { 1, (Stats.DefenseShield, false) },
+        { 3, (Stats.DefenseBase, false) },
         { 4, (Stats.ElementDefense, false) },
         { 5, (Stats.ElementDefenseAgainstFire, false) },
         { 6, (Stats.ElementDefenseAgainstWater, false) },
         { 7, (Stats.ElementDefenseAgainstEarth, false) },
         { 8, (Stats.ElementDefenseAgainstWind, false) },
         { 9, (Stats.ElementDefenseAgainstDarkness, false) },
+        { 10, (Stats.ElementDefense, false) },
         { 11, (Stats.AttackRatePvm, false) },
         { 12, (Stats.DefenseRatePvm, false) },
         { 13, (Stats.ElementAttackRate, false) },
@@ -86,6 +90,7 @@ internal class Season21AbilityCoreInitializer
         { 44, (Stats.ElementDamageAgainstEarth, false) },
         { 45, (Stats.ElementDamageAgainstWind, false) },
         { 46, (Stats.ElementDamageAgainstDarkness, false) },
+        { 47, (Stats.ElementDamageBonus, false) },
         { 48, (Stats.ElementDamageBonus, false) },
         { 49, (Stats.CriticalDamageChance, false) },
         { 50, (Stats.CriticalDamageChance, false) },
@@ -273,6 +278,14 @@ internal class Season21AbilityCoreInitializer
         var id = GuidHelper.CreateGuid<ItemOptionDefinition>(number);
         if (this._gameConfiguration.ItemOptions.FirstOrDefault(o => o.GetId() == id) is { } existing)
         {
+            foreach (var optionRow in row.Options)
+            {
+                if (existing.PossibleOptions.FirstOrDefault(o => o.Number == optionRow.Number && o.OptionType == optionType) is { PowerUpDefinition: null, LevelDependentOptions.Count: 0 } option)
+                {
+                    this.AddEffect(option, optionRow);
+                }
+            }
+
             return existing;
         }
 
@@ -299,9 +312,15 @@ internal class Season21AbilityCoreInitializer
         option.Number = row.Number;
         option.LevelType = LevelType.ItemLevel;
         option.Weight = row.Chance > 0 ? (byte)Math.Clamp(row.Chance / ChanceToWeight, 1, byte.MaxValue) : (byte)1;
+        this.AddEffect(option, row);
+        return option;
+    }
+
+    private void AddEffect(IncreasableItemOption option, Season21AbilityCoreData.OptionRow row)
+    {
         if (!Effects.TryGetValue(row.Number, out var effect))
         {
-            return option;
+            return;
         }
 
         var values = row.Values.Select(v => row.IsRate ? v * Percent : v).ToArray();
@@ -314,7 +333,6 @@ internal class Season21AbilityCoreInitializer
         }
 
         option.PowerUpDefinition = this.CreatePowerUp(effect.Attribute, values.FirstOrDefault(), effect.PerTwentyLevels);
-        return option;
     }
 
     private PowerUpDefinition CreatePowerUp(AttributeDefinition attribute, float value, bool perTwentyLevels)

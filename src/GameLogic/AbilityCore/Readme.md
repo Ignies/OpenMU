@@ -32,8 +32,10 @@ A card carries one option as an item option of the type "Ability Card Option" (n
 by the card level = the item level). `AbilityCoreService.RefreshAsync` applies the power-ups of the options of the active
 cards (an option takes effect for the classes of `AbilityCardOption.BaseClasses`), and gives the fifth evolution skill of a
 skill card as an item skill (`ISkillList.AddItemSkillAsync`), taken away with the card. It runs on every map join and
-after every successful action. Options without an OpenMU attribute (nuke, bolt and wide skill options, the fifth wings,
-mastery, bleeding, poison, splash, and the static skill card options) are data without effect.
+after every successful action. The extra defense adds to the defense, the pentagram defense and attack to the elemental
+defense and damage (version 3 of the update). Options without an OpenMU attribute (nuke, bolt and wide skill options, the
+fifth wings, mastery, bleeding, poison, triple damage, skill slots, AG recovery, shock defense, splash, and the static
+skill card options) are data without effect.
 
 ## Actions (`AbilityCoreService.RequestAsync`)
 
