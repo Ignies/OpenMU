@@ -727,10 +727,7 @@ internal class EntityFrameworkContextBase : IContext, IConfigurationEditContext
         if (trackedEntriesById.TryGetValue(parentId.Value, out var parentEntry) && propertyToParent is not null)
         {
             parent = parentEntry.Entity;
-            var parentCollection = parentEntry.Collections
-                .FirstOrDefault(c => c.Metadata.IsCollection
-                                     && (c.Metadata as INavigation)?.ForeignKey == propertyToParent.Metadata.GetContainingForeignKeys().FirstOrDefault());
-            parentCollectionNavigation = parentCollection?.Metadata;
+            parentCollectionNavigation = ParentCollections.Of(parentEntry.Metadata, propertyToParent.Metadata.GetContainingForeignKeys().FirstOrDefault());
         }
 
         if (parentCollectionNavigation is null && propertyToParent is not null)
