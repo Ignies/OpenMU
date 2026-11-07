@@ -231,6 +231,27 @@ public class ProgressionWorldTest
     }
 
     /// <summary>
+    /// Two game servers share one game configuration: the second one does not take the caps of the first as the
+    /// stored ones, the caps stay lowered while one server still runs the progression, and the last one off puts the
+    /// stored caps back.
+    /// </summary>
+    [Test]
+    public void TwoServersOnOneConfigurationRestoreTheStoredCaps()
+    {
+        var first = new ProgressionFeaturePlugIn { Configuration = new ProgressionConfiguration { Mode = ProgressionMode.Stars } };
+        var second = new ProgressionFeaturePlugIn { Configuration = new ProgressionConfiguration { Mode = ProgressionMode.Stars } };
+        first.GetWorld(this._configuration);
+        second.GetWorld(this._configuration);
+
+        first.OnDeactivated();
+        Assert.That(this._configuration.MaximumMasterLevel, Is.Zero, "the second server still runs the stars");
+
+        second.OnDeactivated();
+        Assert.That(this._configuration.MaximumMasterLevel, Is.EqualTo(1350));
+        Assert.That(this._configuration.MaximumLevel, Is.EqualTo(400));
+    }
+
+    /// <summary>
     /// The stars give 1 % more damage against monsters and 1 % less damage from them per star, capped at 10 %, and
     /// nothing against players by default; it goes away with the map or the plugin.
     /// </summary>

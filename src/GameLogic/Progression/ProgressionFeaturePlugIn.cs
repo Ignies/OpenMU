@@ -37,7 +37,12 @@ public class ProgressionFeaturePlugIn : IDeactivationAwareFeaturePlugIn, ISuppor
 
     private static readonly ProgressionConfiguration Unconfigured = new() { Mode = ProgressionMode.Original };
 
-    private readonly ConditionalWeakTable<GameConfiguration, StoredCaps> _storedCaps = [];
+    /// <summary>
+    /// The stored caps per game configuration, shared by the game servers of one process.
+    /// </summary>
+    private static readonly ConditionalWeakTable<GameConfiguration, StoredCaps> StoredCapsPerConfiguration = [];
+
+    private readonly HashSet<GameConfiguration> _cappedConfigurations = [];
 
     private readonly ConcurrentDictionary<MonsterDefinition, SimpleElement[]> _shapes = new();
 
@@ -129,13 +134,12 @@ public class ProgressionFeaturePlugIn : IDeactivationAwareFeaturePlugIn, ISuppor
     {
         lock (this._lock)
         {
-            foreach (var (gameConfiguration, stored) in this._storedCaps)
+            foreach (var gameConfiguration in this._cappedConfigurations)
             {
-                gameConfiguration.MaximumLevel = stored.MaximumLevel;
-                gameConfiguration.MaximumMasterLevel = stored.MaximumMasterLevel;
+                this.ReleaseCaps(gameConfiguration);
             }
 
-            this._storedCaps.Clear();
+            this._cappedConfigurations.Clear();
 
             foreach (var (definition, elements) in this._shapes)
             {
@@ -322,7 +326,14 @@ public class ProgressionFeaturePlugIn : IDeactivationAwareFeaturePlugIn, ISuppor
 
     private void ApplyCaps(GameConfiguration gameConfiguration, ProgressionConfiguration configuration)
     {
-        var stored = this._storedCaps.GetValue(gameConfiguration, c => new StoredCaps(c.MaximumLevel, c.MaximumMasterLevel));
+        StoredCaps stored;
+        lock (StoredCapsPerConfiguration)
+        {
+            stored = StoredCapsPerConfiguration.GetValue(gameConfiguration, c => new StoredCaps(c.MaximumLevel, c.MaximumMasterLevel));
+            stored.Holders.Add(this);
+            this._cappedConfigurations.Add(gameConfiguration);
+        }
+
         var masterLevelCap = configuration.Mode == ProgressionMode.Original && configuration.MasterLevelCap is null
             ? stored.MaximumMasterLevel
             : ProgressionMapping.GetMasterLevelCap(configuration);
@@ -330,11 +341,32 @@ public class ProgressionFeaturePlugIn : IDeactivationAwareFeaturePlugIn, ISuppor
         gameConfiguration.MaximumMasterLevel = (short)Math.Min(masterLevelCap, stored.MaximumMasterLevel);
     }
 
+    private void ReleaseCaps(GameConfiguration gameConfiguration)
+    {
+        lock (StoredCapsPerConfiguration)
+        {
+            if (!StoredCapsPerConfiguration.TryGetValue(gameConfiguration, out var stored)
+                || !stored.Holders.Remove(this)
+                || stored.Holders.Count > 0)
+            {
+                return;
+            }
+
+            gameConfiguration.MaximumLevel = stored.MaximumLevel;
+            gameConfiguration.MaximumMasterLevel = stored.MaximumMasterLevel;
+            StoredCapsPerConfiguration.Remove(gameConfiguration);
+        }
+    }
+
     /// <summary>
-    /// The caps which the game configuration had before the progression changed them. The experience tables are built
-    /// for them, so the progression only lowers a cap.
+    /// The caps which the game configuration had before the progression changed them, and the plugins (one per game
+    /// server) which apply their caps to it. The experience tables are built for these caps, so the progression only
+    /// lowers a cap; the last holder which is turned off puts them back.
     /// </summary>
-    private sealed record StoredCaps(short MaximumLevel, short MaximumMasterLevel);
+    private sealed record StoredCaps(short MaximumLevel, short MaximumMasterLevel)
+    {
+        public HashSet<ProgressionFeaturePlugIn> Holders { get; } = [];
+    }
 
     /// <summary>
     /// The world built for a game configuration.

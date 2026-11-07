@@ -64,7 +64,8 @@ every number:
   normalized level T(R) (`ProgressionMoveExtensions`). A warp or gate the tables don't hold keeps its stored level.
 - **Drops** roll with the normalized level, capped (`DefaultDropGenerator`).
 - **Level caps** are set on the running game configuration (400 and master 200 or 0); Original puts the stored ones
-  back. The experience tables are built for the stored caps, so the progression only lowers a cap.
+  back. The experience tables are built for the stored caps, so the progression only lowers a cap. The stored caps are shared per game configuration, so
+  several game servers on one configuration keep the first stored ones; the last one turned off puts them back.
 - **Events**: a Season 6 grade checks level plus master level (Normalized) or the power level E (Stars), capped at 400;
   a Season 21 grade (above the level cap) checks the Season 21 total the key stands for (the inverse of T). In Stars a
   master class grade needs a star.
