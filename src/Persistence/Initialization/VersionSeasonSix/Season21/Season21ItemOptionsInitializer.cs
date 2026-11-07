@@ -63,6 +63,15 @@ internal class Season21ItemOptionsInitializer
     private const byte PackedThirtyLevel = 2;
 
     /// <summary>
+    /// The chaos machine's +10 to +15 combinations (crafting number), with the Season 6 rate of the initialization and the
+    /// Season 21 rate (S21Emu <c>GameServerInfo - ChaosMix.dat</c> <c>PlusItemLevelMixRate1</c>-<c>6</c>).
+    /// </summary>
+    private static readonly (byte Number, byte Season6Rate, byte Season21Rate)[] PlusItemCombinationRates =
+    [
+        (3, 60, 60), (4, 60, 60), (22, 55, 50), (23, 55, 50), (49, 50, 40), (50, 50, 40),
+    ];
+
+    /// <summary>
     /// The mastery options of the weapons by tier (0 Bloodangel to 8 Apocalypse): damage per 20 levels and damage
     /// (Webzen guides "1st" to "9th Mastery Weapons", muonlinefanz.com "Mastery Weapons").
     /// </summary>
@@ -335,6 +344,20 @@ internal class Season21ItemOptionsInitializer
             this.AddCrafting(goblin, MasteryMixCraftingNumber, "Mastery Item Combination", typeof(MasteryItemMixCrafting), null);
             this.AddFourthWingCraftings(goblin);
             this.AddWingCoreCraftings(goblin);
+            SetPlusItemCombinationRates(goblin);
+        }
+    }
+
+    private static void SetPlusItemCombinationRates(MonsterDefinition goblin)
+    {
+        // A rate the operator changed (not the Season 6 one) stays.
+        foreach (var (number, season6Rate, season21Rate) in PlusItemCombinationRates)
+        {
+            if (goblin.ItemCraftings.FirstOrDefault(c => c.Number == number)?.SimpleCraftingSettings is { } settings
+                && settings.SuccessPercent == season6Rate)
+            {
+                settings.SuccessPercent = season21Rate;
+            }
         }
     }
 

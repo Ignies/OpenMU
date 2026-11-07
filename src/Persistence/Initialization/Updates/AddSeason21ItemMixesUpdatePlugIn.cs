@@ -40,6 +40,13 @@ public class AddSeason21ItemMixesUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 06, 18, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    /// <remarks>Version 2: the +10 to +15 combinations at 60, 60, 50, 50, 40 and 40 % (S21Emu ChaosMix.dat).</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 07, 12, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     /// <remarks>The mixes give mastery items and graded wings.</remarks>
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21MasteryOptionsUpdatePlugIn).GUID, typeof(AddSeason21WingGradesUpdatePlugIn).GUID];
 

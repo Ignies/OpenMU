@@ -300,6 +300,8 @@ in `Item/Item.xml`.
 * Ruud shop: section 1 is for every class, sections 2-17 for the base classes 0-15 (the class code order); 200 rows. Rows
   of items which the configuration doesn't have (or has inactive) are kept, but neither shown nor sold.
 * Ruud of monsters: the lowest minimum and the highest maximum of the Ruud ranges of a bag (64 monsters).
+* Chaos machine (`AddSeason21ItemMixesUpdatePlugIn` version 2): the +10 to +15 combinations succeed at 60, 60, 50, 50,
+  40 and 40 % (`GameServerInfo - ChaosMix.dat` `PlusItemLevelMixRate1`-`6`); a rate which isn't the Season 6 one stays.
 * Priest James (725) stands where the data places him: Elbeland 32/239 and Loren Market 215/56.
 * Jewels (version 2): Chaos, Bless, Soul, Life and Creation drop from monsters of level 12, 25, 25, 46 and 46 up to 150
   (`Item/ItemDrop.xml`); above 150 the Season 21 maps give them from boxes, events and their drop lists. A jewel which

@@ -246,6 +246,25 @@ public class Season21ItemOptionsTest
         Assert.That(enhancements[0].ItemCraftingHandlerClassName, Is.EqualTo(typeof(SeedSphereEnhanceCrafting).FullName));
     }
 
+    /// <summary>
+    /// The chaos machine's +10 to +15 combinations succeed at 60, 60, 50, 50, 40 and 40 % (S21Emu ChaosMix.dat
+    /// PlusItemLevelMixRate1-6); a rate the operator changed stays.
+    /// </summary>
+    [Test]
+    public async Task PlusItemCombinationRatesOfSeason21Async()
+    {
+        var goblin = this._gameConfiguration.Monsters.Single(m => m.NpcWindow == NpcWindow.ChaosMachine);
+        byte[] numbers = [3, 4, 22, 23, 49, 50];
+        var rates = numbers.Select(n => goblin.ItemCraftings.Single(c => c.Number == n).SimpleCraftingSettings!.SuccessPercent);
+        Assert.That(rates, Is.EqualTo(new byte[] { 60, 60, 50, 50, 40, 40 }));
+
+        var plus15 = goblin.ItemCraftings.Single(c => c.Number == 50).SimpleCraftingSettings!;
+        plus15.SuccessPercent = 33;
+        await new AddSeason21ItemMixesUpdatePlugIn().ApplyUpdateAsync(this._context, this._gameConfiguration).ConfigureAwait(false);
+        Assert.That(plus15.SuccessPercent, Is.EqualTo(33));
+        plus15.SuccessPercent = 40;
+    }
+
     private IEnumerable<ItemDefinition> Waiting()
         => Season21ItemCatalog.Items.Where(r => r.WaitsFor is not null).Select(r => this.Item(r.Group, r.Number));
 
