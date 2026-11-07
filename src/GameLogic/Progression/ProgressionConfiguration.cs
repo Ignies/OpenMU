@@ -276,6 +276,15 @@ public class ProgressionConfiguration
     public int MasterTreePointsCap { get; set; } = 400;
 
     /// <summary>
+    /// Gets or sets the lowest monster level which gives master experience from a total level (level plus master level)
+    /// of 800; 0 is off.
+    /// </summary>
+    /// <remarks>S21Emu <c>GameServerInfo - Common.dat</c> <c>MinMasterExperienceExtMonsterLevel</c> 160 ("Enhanced 800+").</remarks>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ProgressionConfiguration_EnhancedMinimumMonsterLevel_Name))]
+    [Range(0, 1000)]
+    public int EnhancedMinimumMonsterLevel { get; set; } = 160;
+
+    /// <summary>
     /// Gets or sets the damage and defense percentage a star adds against monsters.
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ProgressionConfiguration_StarPowerPercent_Name))]

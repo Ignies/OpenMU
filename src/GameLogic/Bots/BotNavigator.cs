@@ -2309,7 +2309,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <summary>
     /// The lowest monster level that still earns this bot anything: a master-class character at the
     /// game's maximum level gains master experience only from monsters of at least
-    /// <c>GameConfiguration.MinimumMonsterLevelForMasterExperience</c> (the experience path grants it
+    /// <see cref="MasterExperienceRules.GetMinimumMonsterLevel(Player)"/> (the experience path grants it
     /// nothing at all below that) and no regular experience either, because it is at the maximum level
     /// already. Hunting below that floor is therefore
     /// not the safe choice for a mastered bot, it is a dead end - so the map and hunting ground choice
@@ -2324,7 +2324,7 @@ internal sealed class BotNavigator : AsyncDisposable
             return 0;
         }
 
-        return configuration.MinimumMonsterLevelForMasterExperience;
+        return MasterExperienceRules.GetMinimumMonsterLevel(this._player);
     }
 
     /// <summary>

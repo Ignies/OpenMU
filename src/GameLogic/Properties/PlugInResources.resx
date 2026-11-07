@@ -1977,6 +1977,9 @@
   <data name="ProgressionConfiguration_MasterTreePointsCap_Name" xml:space="preserve">
     <value>Master tree points cap (0 = none)</value>
   </data>
+  <data name="ProgressionConfiguration_EnhancedMinimumMonsterLevel_Name" xml:space="preserve">
+    <value>Lowest monster level for master experience from the total level 800 (0 = off)</value>
+  </data>
   <data name="ProgressionConfiguration_StarPowerPercent_Name" xml:space="preserve">
     <value>Power against monsters per star (%)</value>
   </data>

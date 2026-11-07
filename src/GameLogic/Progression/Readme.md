@@ -43,7 +43,9 @@ A reset which resets the stats keeps the level-up points of the finished quests 
 Season 21 gives master tree points up to master level 400; the later levels (a total level above 800) feed the skill
 enhancement tree (`EnhanceTreePoints`). `MasterTreePointsCap` (400, 0 = no cap) stops the points of the master levels
 in every mode, and the stars' points at the same number, so a master level 1350 character fills about a third of the
-Season 6 tree instead of all of it.
+Season 6 tree instead of all of it. From the total level 800 a monster gives master experience only from level 160
+(`EnhancedMinimumMonsterLevel`, S21Emu `MinMasterExperienceExtMonsterLevel`; `MasterExperienceRules`, also used by the
+bots and the offline helper).
 
 ## In the running world
 

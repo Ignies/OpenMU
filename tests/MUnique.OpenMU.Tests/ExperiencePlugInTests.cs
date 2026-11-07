@@ -137,6 +137,31 @@ public class ExperiencePlugInTests
         Assert.That(player.SelectedCharacter.MasterLevelUpPoints, Is.EqualTo(1));
     }
 
+    /// <summary>
+    /// Tests that from a total level of 800 a monster below level 160 gives no master experience in the original
+    /// progression (Season 21).
+    /// </summary>
+    [Test]
+    public async ValueTask EnhancedTotalLevelNeedsMonsterLevel160Async()
+    {
+        var player = await this.CreatePlayerAsync(maximumLevel: 400, isMasterClass: true, level: 400, maximumMasterLevel: 1350).ConfigureAwait(false);
+        if (player.GameContext.FeaturePlugIns.GetPlugIn<ProgressionFeaturePlugIn>() is not { } progression)
+        {
+            progression = new ProgressionFeaturePlugIn();
+            player.GameContext.FeaturePlugIns.AddPlugIn(progression, true);
+        }
+
+        progression.Configuration = new() { Mode = ProgressionMode.Original };
+        player.Attributes![Stats.MasterLevel] = 400;
+        player.SelectedCharacter!.MasterExperience = player.GameContext.MasterExperienceTable[400];
+
+        await player.AddMasterExperienceAsync(1000, CreateKilledObject(level: 150)).ConfigureAwait(false);
+        Assert.That(player.SelectedCharacter.MasterExperience, Is.EqualTo(player.GameContext.MasterExperienceTable[400]));
+
+        await player.AddMasterExperienceAsync(1000, CreateKilledObject(level: 160)).ConfigureAwait(false);
+        Assert.That(player.SelectedCharacter.MasterExperience, Is.GreaterThan(player.GameContext.MasterExperienceTable[400]));
+    }
+
     private static Mock<IAttackable> CreateKilledObjectMock(float level)
     {
         var attributes = new Mock<IAttributeSystem>();

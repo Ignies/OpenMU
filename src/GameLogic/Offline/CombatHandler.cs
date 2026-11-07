@@ -12,6 +12,7 @@ using MUnique.OpenMU.GameLogic.MuHelper;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Progression;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
 
@@ -447,7 +448,7 @@ public sealed class CombatHandler
         var isMastered = player.SelectedCharacter?.CharacterClass?.IsMasterClass == true
                          && (player.Attributes?[Stats.Level] ?? 0) >= configuration.MaximumLevel;
 
-        return isMastered && monsterLevel >= configuration.MinimumMonsterLevelForMasterExperience
+        return isMastered && monsterLevel >= MasterExperienceRules.GetMinimumMonsterLevel(player)
             ? MaxHitsToKill * MasterHitBudgetFactor
             : MaxHitsToKill;
     }
