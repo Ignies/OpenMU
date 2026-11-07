@@ -14,9 +14,10 @@ using MUnique.OpenMU.PlugIns;
 /// <remarks>
 /// Season 21 has 400 levels, 400 master levels and 950 enhanced levels. The enhanced levels count on the master level,
 /// and every level field of the protocol has 16 bits, so they are a higher <see cref="GameConfiguration.MaximumMasterLevel"/>.
-/// An enhanced level costs twice as much experience as the master level step of Season 6 at the same level, because
-/// Season 21 gives half of the master experience for them; as there is one master experience rate, this is part of the
-/// formula.
+/// An enhanced level costs twice as much experience as the master level step of Season 6 at the same level. This curve is
+/// a design choice, not Season 21 data: Webzen's guide only says that a new experience system applies after total level
+/// 800, and S21Emu has no table or rate for it (Common.dat has only AddMasterExperienceRate). It is the master experience
+/// formula of the game configuration, so an operator can change it.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(Properties.PlugInResources.AddSeason21LevelCapsUpdatePlugIn_Name), Description = nameof(Properties.PlugInResources.AddSeason21LevelCapsUpdatePlugIn_Description), ResourceType = typeof(Properties.PlugInResources))]
