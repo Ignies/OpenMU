@@ -255,8 +255,9 @@ the elemental and legendary columns and the buy prices.
   (the client tree has 3 roots of 4 x 9 slots), the minimum and maximum level, the formula of `Formula.txt` (variable
   `level`), the skill it replaces and the skills it requires. The Season 6 nodes are kept as they are, so the Season 6
   client's tree stays right; the Season 21 nodes of the Season 6 skills only add the new classes.
-* A book of the item catalog which teaches no skill yet gets its skill. The master skill which
-  `SkillRequire.txt` asks for is not checked: a book only checks its own requirements.
+* A book of the item catalog which teaches no skill yet gets its skill. Version 3 of the update adds the skills which
+  `SkillRequire.txt` asks for to the configuration of the plugin "Learnables" (`SkillBookRequirement`: the skill the
+  character has, the master skill and its points, 10 for every row); such a book teaches only when they are met.
 * The skill enhancement tree is stored as the configuration of `EnhanceTreeFeaturePlugIn` (GameLogic `EnhanceTree`),
   which the update turns on.
 

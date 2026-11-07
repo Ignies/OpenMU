@@ -3186,4 +3186,22 @@
   <data name="AbilityCardReduction_Stones_Name" xml:space="preserve">
     <value>Stones</value>
   </data>
+  <data name="LearnablesConsumeHandlerConfiguration_Requirements_Name" xml:space="preserve">
+    <value>Skill requirements of books</value>
+  </data>
+  <data name="SkillBookRequirement_ItemGroup_Name" xml:space="preserve">
+    <value>Item group of the book</value>
+  </data>
+  <data name="SkillBookRequirement_ItemNumber_Name" xml:space="preserve">
+    <value>Item number of the book</value>
+  </data>
+  <data name="SkillBookRequirement_RequiredSkill_Name" xml:space="preserve">
+    <value>Required skill</value>
+  </data>
+  <data name="SkillBookRequirement_RequiredMasterSkill_Name" xml:space="preserve">
+    <value>Required master skill</value>
+  </data>
+  <data name="SkillBookRequirement_RequiredMasterSkillLevel_Name" xml:space="preserve">
+    <value>Points of the master skill</value>
+  </data>
 </root>

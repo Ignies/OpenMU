@@ -7,9 +7,11 @@ namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.EnhanceTree;
+using MUnique.OpenMU.GameLogic.PlayerActions.ItemConsumeActions;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Skills;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Adds the skills of Season 21 (<see cref="Season21SkillCatalog"/>): every skill the configuration doesn't have, the
@@ -84,6 +86,38 @@ internal sealed class Season21SkillsInitializer : SkillsInitializerBase
             MagicFields = data.MagicFields.Select(f => new EnhanceTreeMagicField { Type = f.Type, Skill = f.Skill, Seconds = f.Seconds, CooldownSeconds = f.Cooldown }).ToList(),
             Formulas = new Dictionary<short, string>(data.Formulas),
         };
+    }
+
+    /// <summary>
+    /// Adds the skill requirements of the books of <c>SkillRequire.txt</c> to the configuration of the
+    /// <see cref="LearnablesConsumeHandlerPlugIn"/>: a book of the configuration without a requirement gets its row,
+    /// the operator's rows stay.
+    /// </summary>
+    public void AddBookRequirements()
+    {
+        var configuration = Season21PlugInConfigurations.GetOrCreate<LearnablesConsumeHandlerConfiguration>(this.Context, this.GameConfiguration, typeof(LearnablesConsumeHandlerPlugIn).GUID, out var plugIn);
+        if (configuration is null)
+        {
+            return;
+        }
+
+        foreach (var book in this._data.Books.Where(b => b.RequiredSkill > 0 || b.RequiredMasterSkill > 0))
+        {
+            if (this.GameConfiguration.Items.Any(i => i.Group == book.Group && i.Number == book.Number)
+                && !configuration.Requirements.Any(r => r.ItemGroup == book.Group && r.ItemNumber == book.Number))
+            {
+                configuration.Requirements.Add(new SkillBookRequirement
+                {
+                    ItemGroup = book.Group,
+                    ItemNumber = book.Number,
+                    RequiredSkill = book.RequiredSkill,
+                    RequiredMasterSkill = book.RequiredMasterSkill,
+                    RequiredMasterSkillLevel = (byte)Math.Clamp((int)book.RequiredPoints, 0, byte.MaxValue),
+                });
+            }
+        }
+
+        plugIn.SetConfiguration(configuration, null);
     }
 
     /// <inheritdoc />

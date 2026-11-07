@@ -13,8 +13,13 @@ using MUnique.OpenMU.PlugIns;
 [Guid("FD86947E-0B94-4490-8158-63B11A61565F")]
 [PlugIn]
 [Display(Name = nameof(PlugInResources.LearnablesConsumeHandlerPlugIn_Name), Description = nameof(PlugInResources.LearnablesConsumeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
-public class LearnablesConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
+public class LearnablesConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn, ISupportCustomConfiguration<LearnablesConsumeHandlerConfiguration>, ISupportDefaultCustomConfiguration
 {
+    /// <summary>
+    /// Gets or sets the configuration.
+    /// </summary>
+    public LearnablesConsumeHandlerConfiguration? Configuration { get; set; }
+
     /// <inheritdoc />
     public override ItemIdentifier Key => ItemConstants.AllScrolls;
 
@@ -38,8 +43,12 @@ public class LearnablesConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
     }
 
     /// <inheritdoc />
+    public object CreateDefaultConfig() => new LearnablesConsumeHandlerConfiguration();
+
+    /// <inheritdoc />
     /// <remarks>
-    /// Besides the requirements of the item, the player has to comply with the requirements of the skill.
+    /// Besides the requirements of the item, the player has to comply with the requirements of the skill, and with the
+    /// skills which the configuration names for the book (<see cref="SkillBookRequirement"/>).
     /// Otherwise, the player could learn a skill which it can't use, and the item would be lost.
     /// E.g. the Orb of Summoning has no energy requirement itself, but the skills of its levels have.
     /// </remarks>
@@ -47,7 +56,8 @@ public class LearnablesConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
     {
         return base.CheckPreconditions(player, item)
                && player.CompliesRequirements(item)
-               && (this.GetLearnableSkill(item, player.GameContext.Configuration) is not { } skill || player.CompliesRequirements(skill));
+               && (this.GetLearnableSkill(item, player.GameContext.Configuration) is not { } skill || player.CompliesRequirements(skill))
+               && this.MeetsBookRequirement(player, item);
     }
 
     /// <summary>
@@ -59,5 +69,25 @@ public class LearnablesConsumeHandlerPlugIn : BaseConsumeHandlerPlugIn
     protected virtual Skill? GetLearnableSkill(Item item, GameConfiguration gameConfiguration)
     {
         return item.Definition?.Skill;
+    }
+
+    private bool MeetsBookRequirement(Player player, Item item)
+    {
+        if (item.Definition is not { } definition
+            || this.Configuration?.Requirements.FirstOrDefault(r => r.ItemGroup == definition.Group && r.ItemNumber == definition.Number) is not { } requirement)
+        {
+            return true;
+        }
+
+        var skills = player.SkillList;
+        if (requirement.RequiredMasterSkill > 0
+            && (skills?.GetSkill(requirement.RequiredMasterSkill.ToUnsigned())?.Level ?? 0) < requirement.RequiredMasterSkillLevel)
+        {
+            return false;
+        }
+
+        return requirement.RequiredSkill <= 0
+               || skills?.ContainsSkill(requirement.RequiredSkill.ToUnsigned()) == true
+               || (requirement.RequiredMasterSkill > 0 && skills?.ContainsSkill(requirement.RequiredMasterSkill.ToUnsigned()) == true);
     }
 }

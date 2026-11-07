@@ -9093,5 +9093,59 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("AbilityCardReduction_Stones_Name", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skill requirements of books.
+        /// </summary>
+        public static string LearnablesConsumeHandlerConfiguration_Requirements_Name {
+            get {
+                return ResourceManager.GetString("LearnablesConsumeHandlerConfiguration_Requirements_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item group of the book.
+        /// </summary>
+        public static string SkillBookRequirement_ItemGroup_Name {
+            get {
+                return ResourceManager.GetString("SkillBookRequirement_ItemGroup_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item number of the book.
+        /// </summary>
+        public static string SkillBookRequirement_ItemNumber_Name {
+            get {
+                return ResourceManager.GetString("SkillBookRequirement_ItemNumber_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required skill.
+        /// </summary>
+        public static string SkillBookRequirement_RequiredSkill_Name {
+            get {
+                return ResourceManager.GetString("SkillBookRequirement_RequiredSkill_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required master skill.
+        /// </summary>
+        public static string SkillBookRequirement_RequiredMasterSkill_Name {
+            get {
+                return ResourceManager.GetString("SkillBookRequirement_RequiredMasterSkill_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points of the master skill.
+        /// </summary>
+        public static string SkillBookRequirement_RequiredMasterSkillLevel_Name {
+            get {
+                return ResourceManager.GetString("SkillBookRequirement_RequiredMasterSkillLevel_Name", resourceCulture);
+            }
+        }
     }
 }
