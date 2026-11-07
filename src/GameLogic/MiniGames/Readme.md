@@ -191,8 +191,10 @@ meaning given).
 `Season21EventsConfiguration.DailyEntryLimits` caps how often a character enters an event a day (UTC); the event rules
 update sets the numbers of S21Emu `Event/EventEntryLimit.dat`: 15 for Blood Castle, Chaos Castle, Devil Square,
 Doppelganger, Imperial Guardian, Illusion Temple and the Boss Battle, 10 for the Labyrinth. `EnterMiniGameAction` refuses
-an entry above the limit and counts a successful one (`EventEntryCounter`). The counts are kept by the game server, not
-stored: a restart clears them and another game server of the world counts on its own.
+an entry above the limit and counts a successful one (`EventEntryCounter`). The counts are kept per character and day in
+`Season21EventsConfiguration.EntryLimitStateFile` (default `state/event_entries.json`, the state folder the installer
+mounts), shared by every game server of the process, so a restart keeps them; a new day starts the counts of a
+character again. Game servers in separate processes need the same state folder.
 
 ### Not ported (no data)
 

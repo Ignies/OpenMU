@@ -4,7 +4,9 @@
 
 namespace MUnique.OpenMU.Tests.Instances;
 
+using System.IO;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 
 /// <summary>
@@ -51,5 +53,55 @@ public class EventEntryLimitTest
 
         Assert.That(counter.IsLimitReached(character, MiniGameType.ChaosCastle, limits, Today.AddDays(1)), Is.True);
         Assert.That(counter.IsLimitReached(character, MiniGameType.ChaosCastle, limits, Today.AddDays(2)), Is.False);
+    }
+
+    /// <summary>
+    /// The counts are kept in the state file (<see cref="Season21EventsConfiguration.EntryLimitStateFile"/>): a restart keeps
+    /// them, and every game server of the process counts into the same store.
+    /// </summary>
+    [Test]
+    public void CountsAreKeptInTheStateFile()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"openmu-entries-{Guid.NewGuid():N}.json");
+        var limits = new List<EventEntryLimit> { new() { Type = MiniGameType.BloodCastle, Limit = 2 } };
+        var character = Guid.NewGuid();
+        try
+        {
+            var server1 = new EventEntryCounter(path);
+            var server2 = new EventEntryCounter(path);
+            server1.Count(character, MiniGameType.BloodCastle, Today);
+            server2.Count(character, MiniGameType.BloodCastle, Today);
+
+            Assert.That(server1.IsLimitReached(character, MiniGameType.BloodCastle, limits, Today), Is.True, "both servers count");
+            var stored = new WorldStateFile(path).Load<Dictionary<Guid, CharacterEventEntries>>();
+            Assert.That(stored?[character].Day, Is.EqualTo(Today));
+            Assert.That(stored?[character].Counts[MiniGameType.BloodCastle], Is.EqualTo(2));
+        }
+        finally
+        {
+            File.Delete(path);
+        }
+    }
+
+    /// <summary>
+    /// The plugin keeps its counts in the state file of its configuration; existing configurations get the default file.
+    /// </summary>
+    [Test]
+    public void PlugInUsesTheStateFileOfItsConfiguration()
+    {
+        Assert.That(new Season21EventsConfiguration().EntryLimitStateFile, Is.EqualTo("state/event_entries.json"));
+        var path = Path.Combine(Path.GetTempPath(), $"openmu-entries-{Guid.NewGuid():N}.json");
+        var character = Guid.NewGuid();
+        try
+        {
+            var plugIn = new Season21EventsFeaturePlugIn { Configuration = new Season21EventsConfiguration { EntryLimitStateFile = path } };
+            plugIn.Entries.Count(character, MiniGameType.ChaosCastle, Today);
+
+            Assert.That(new WorldStateFile(path).Load<Dictionary<Guid, CharacterEventEntries>>()?[character].Counts[MiniGameType.ChaosCastle], Is.EqualTo(1));
+        }
+        finally
+        {
+            File.Delete(path);
+        }
     }
 }

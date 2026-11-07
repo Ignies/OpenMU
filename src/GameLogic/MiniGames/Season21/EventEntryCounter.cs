@@ -4,18 +4,24 @@
 
 namespace MUnique.OpenMU.GameLogic.MiniGames.Season21;
 
-using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging.Abstractions;
 
 /// <summary>
-/// Counts the event entries of the characters per day, against the <see cref="EventEntryLimit"/>s.
+/// Counts the event entries of the characters a day, for <see cref="Season21EventsConfiguration.DailyEntryLimits"/>. The
+/// counts are kept in a state file shared by every game server of the process, so a restart keeps them.
 /// </summary>
-/// <remarks>
-/// The counts live in the game server which runs the plugin, and a restart clears them: the limit isn't shared between
-/// the game servers of a world (that needs a stored field of the character).
-/// </remarks>
 public sealed class EventEntryCounter
 {
-    private readonly ConcurrentDictionary<(Guid Character, MiniGameType Type), (DateOnly Day, int Count)> _entries = new();
+    private readonly CharacterStateStore<CharacterEventEntries> _store;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EventEntryCounter"/> class.
+    /// </summary>
+    /// <param name="stateFile">The state file; none keeps the counts in memory.</param>
+    public EventEntryCounter(string? stateFile = null)
+    {
+        this._store = CharacterStateStore<CharacterEventEntries>.Get(stateFile);
+    }
 
     /// <summary>
     /// Gets a value indicating whether a character entered an event as often as its limit allows on a day.
@@ -32,17 +38,35 @@ public sealed class EventEntryCounter
             return false;
         }
 
-        return this._entries.TryGetValue((character, type), out var entries) && entries.Day == day && entries.Count >= limit.Limit;
+        lock (this._store.SyncRoot)
+        {
+            return this._store.Find(character) is { } entries
+                   && entries.Day == day
+                   && entries.Counts.GetValueOrDefault(type) >= limit.Limit;
+        }
     }
 
     /// <summary>
-    /// Counts an entry of a character.
+    /// Counts an entry of a character and writes the state file.
     /// </summary>
     /// <param name="character">The id of the character.</param>
     /// <param name="type">The event.</param>
     /// <param name="day">The day.</param>
-    public void Count(Guid character, MiniGameType type, DateOnly day)
+    /// <param name="logger">The logger for a failed write.</param>
+    public void Count(Guid character, MiniGameType type, DateOnly day, ILogger? logger = null)
     {
-        this._entries.AddOrUpdate((character, type), (day, 1), (_, entries) => entries.Day == day ? (day, entries.Count + 1) : (day, 1));
+        lock (this._store.SyncRoot)
+        {
+            var entries = this._store.GetOrCreate(character);
+            if (entries.Day != day)
+            {
+                entries.Day = day;
+                entries.Counts.Clear();
+            }
+
+            entries.Counts[type] = entries.Counts.GetValueOrDefault(type) + 1;
+        }
+
+        this._store.Save(TimeSpan.Zero, logger ?? NullLogger.Instance);
     }
 }

@@ -42,6 +42,12 @@ public class Season21EventsConfiguration
     public List<EventEntryLimit> DailyEntryLimits { get; set; } = [];
 
     /// <summary>
+    /// Gets or sets the state file of the daily entry counts, relative to the server directory; an empty path keeps them
+    /// in memory.
+    /// </summary>
+    public string EntryLimitStateFile { get; set; } = "state/event_entries.json";
+
+    /// <summary>
     /// Gets the definition of a rounds event.
     /// </summary>
     /// <param name="type">The type.</param>

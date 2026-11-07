@@ -25,13 +25,23 @@ public class Season21EventsFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigu
     /// </summary>
     private const byte NoTicket = 0xFF;
 
+    private Season21EventsConfiguration? _configuration;
+
     /// <inheritdoc />
-    public Season21EventsConfiguration? Configuration { get; set; }
+    public Season21EventsConfiguration? Configuration
+    {
+        get => this._configuration;
+        set
+        {
+            this._configuration = value;
+            this.Entries = new EventEntryCounter(value?.EntryLimitStateFile);
+        }
+    }
 
     /// <summary>
-    /// Gets the counts of the event entries of today.
+    /// Gets the counts of the event entries, kept in <see cref="Season21EventsConfiguration.EntryLimitStateFile"/>.
     /// </summary>
-    public EventEntryCounter Entries { get; } = new();
+    public EventEntryCounter Entries { get; private set; } = new();
 
     private static DateOnly Today => DateOnly.FromDateTime(DateTime.UtcNow);
 
@@ -66,7 +76,7 @@ public class Season21EventsFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigu
         if (player.GameContext.FeaturePlugIns.GetPlugIn<Season21EventsFeaturePlugIn>() is { Configuration.DailyEntryLimits.Count: > 0 } plugIn
             && player.SelectedCharacter is { } character)
         {
-            plugIn.Entries.Count(character.Id, type, Today);
+            plugIn.Entries.Count(character.Id, type, Today, player.Logger);
         }
     }
 
