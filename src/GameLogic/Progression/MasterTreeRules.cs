@@ -15,14 +15,6 @@ namespace MUnique.OpenMU.GameLogic.Progression;
 public static class MasterTreeRules
 {
     /// <summary>
-    /// Gets the progression configuration of a game context, also in the original mode.
-    /// </summary>
-    /// <param name="gameContext">The game context.</param>
-    /// <returns>The configuration, or <c>null</c> when the progression is off.</returns>
-    public static ProgressionConfiguration? GetConfiguration(IGameContext gameContext)
-        => gameContext.FeaturePlugIns.GetPlugIn<ProgressionFeaturePlugIn>()?.Configuration;
-
-    /// <summary>
     /// Caps the master tree points earned in total.
     /// </summary>
     /// <param name="points">The uncapped points.</param>

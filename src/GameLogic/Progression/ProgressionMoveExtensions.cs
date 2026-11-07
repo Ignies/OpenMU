@@ -19,7 +19,7 @@ public static class ProgressionMoveExtensions
     /// <returns>The level requirement.</returns>
     public static int GetLevelRequirement(this WarpInfo warp, IGameContext gameContext)
     {
-        return ProgressionFeaturePlugIn.GetWorld(gameContext)?.GetMoveLevelRequirement(warp.Gate?.Map, warp.LevelRequirement) ?? warp.LevelRequirement;
+        return GetLevelRequirement(gameContext, warp.Gate?.Map, warp.LevelRequirement, c => c.Season21ClassicWarpLevels, warp.Index);
     }
 
     /// <summary>
@@ -41,7 +41,7 @@ public static class ProgressionMoveExtensions
     /// <returns>The level requirement.</returns>
     public static int GetLevelRequirement(this EnterGate gate, IGameContext gameContext)
     {
-        return ProgressionFeaturePlugIn.GetWorld(gameContext)?.GetMoveLevelRequirement(gate.TargetGate?.Map, gate.LevelRequirement) ?? gate.LevelRequirement;
+        return GetLevelRequirement(gameContext, gate.TargetGate?.Map, gate.LevelRequirement, c => c.Season21ClassicGateLevels, gate.Number);
     }
 
     /// <summary>
@@ -61,5 +61,27 @@ public static class ProgressionMoveExtensions
         return key == ProgressionLevelKey.Level
             ? null
             : StarRules.GetRequirementLevel(key, (int)attributes[Stats.Level], (int)attributes[Stats.MasterLevel], (int)attributes[Stats.Resets], world.Configuration);
+    }
+
+    /// <summary>
+    /// Gets the level a move to a map requires: a Season 21 map's from the world, a classic map's by
+    /// <see cref="ProgressionConfiguration.ClassicMapEntryLevels"/> when the Season 21 table holds it, else the stored one.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <param name="map">The target map.</param>
+    /// <param name="storedRequirement">The stored level requirement.</param>
+    /// <param name="table">The Season 21 table of the move kind.</param>
+    /// <param name="key">The warp index or gate number.</param>
+    /// <returns>The level requirement.</returns>
+    private static int GetLevelRequirement(IGameContext gameContext, GameMapDefinition? map, int storedRequirement, Func<ProgressionConfiguration, Dictionary<int, int>> table, int key)
+    {
+        if (ProgressionFeaturePlugIn.GetWorld(gameContext) is { } world && world.TryGetRequirement(map, out var requirement))
+        {
+            return requirement.Level;
+        }
+
+        return ProgressionFeaturePlugIn.GetConfiguration(gameContext) is { } configuration && table(configuration).TryGetValue(key, out var season21Level)
+            ? ProgressionMapping.GetClassicEntryLevel(storedRequirement, season21Level, configuration)
+            : storedRequirement;
     }
 }

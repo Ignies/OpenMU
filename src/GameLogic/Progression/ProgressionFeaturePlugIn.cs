@@ -77,6 +77,16 @@ public class ProgressionFeaturePlugIn : IDeactivationAwareFeaturePlugIn, ISuppor
         return gameContext.FeaturePlugIns.GetPlugIn<ProgressionFeaturePlugIn>()?.GetWorld(gameContext.Configuration);
     }
 
+    /// <summary>
+    /// Gets the progression configuration of a game context, also in the original mode.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    /// <returns>The configuration, or <c>null</c> when the feature is off or not configured.</returns>
+    public static ProgressionConfiguration? GetConfiguration(IGameContext gameContext)
+    {
+        return gameContext.FeaturePlugIns.GetPlugIn<ProgressionFeaturePlugIn>()?.Configuration;
+    }
+
     /// <inheritdoc />
     public object CreateDefaultConfig() => new ProgressionConfiguration();
 

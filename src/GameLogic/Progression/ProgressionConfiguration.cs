@@ -86,6 +86,20 @@ public class ProgressionConfiguration
     public ClassicMapEntryLevels ClassicMapEntryLevels { get; set; } = ClassicMapEntryLevels.Season6;
 
     /// <summary>
+    /// Gets or sets the Season 21 levels of the warp list entries to the classic maps, by warp index (S21Emu <c>Move.txt</c>).
+    /// </summary>
+    /// <remarks>The progression update fills it; an entry which it doesn't hold keeps its stored level.</remarks>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ProgressionConfiguration_Season21ClassicWarpLevels_Name))]
+    public Dictionary<int, int> Season21ClassicWarpLevels { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the Season 21 levels of the gates to the classic maps, by gate number (S21Emu <c>Gate.xml</c>).
+    /// </summary>
+    /// <remarks>The progression update fills it; a gate which it doesn't hold keeps its stored level.</remarks>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ProgressionConfiguration_Season21ClassicGateLevels_Name))]
+    public Dictionary<int, int> Season21ClassicGateLevels { get; set; } = [];
+
+    /// <summary>
     /// Gets or sets the warp zen per normalized entry level.
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.ProgressionConfiguration_EntryZenPerLevel_Name))]

@@ -5225,6 +5225,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Season 21 levels of the classic warps (warp index, level).
+        /// </summary>
+        public static string ProgressionConfiguration_Season21ClassicWarpLevels_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_Season21ClassicWarpLevels_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Season 21 levels of the classic gates (gate number, level).
+        /// </summary>
+        public static string ProgressionConfiguration_Season21ClassicGateLevels_Name {
+            get {
+                return ResourceManager.GetString("ProgressionConfiguration_Season21ClassicGateLevels_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Warp zen per entry level.
         /// </summary>
         public static string ProgressionConfiguration_EntryZenPerLevel_Name {

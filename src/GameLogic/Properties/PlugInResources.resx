@@ -1896,6 +1896,12 @@
   <data name="ProgressionConfiguration_ClassicMapEntryLevels_Name" xml:space="preserve">
     <value>Classic map entry levels</value>
   </data>
+  <data name="ProgressionConfiguration_Season21ClassicWarpLevels_Name" xml:space="preserve">
+    <value>Season 21 levels of the classic warps (warp index, level)</value>
+  </data>
+  <data name="ProgressionConfiguration_Season21ClassicGateLevels_Name" xml:space="preserve">
+    <value>Season 21 levels of the classic gates (gate number, level)</value>
+  </data>
   <data name="ProgressionConfiguration_EntryZenPerLevel_Name" xml:space="preserve">
     <value>Warp zen per entry level</value>
   </data>

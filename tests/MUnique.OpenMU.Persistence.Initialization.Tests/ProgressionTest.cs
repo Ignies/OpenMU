@@ -69,7 +69,7 @@ internal class ProgressionTest
 
         var progression = gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(ProgressionFeaturePlugIn).GUID);
         Assert.That(progression.IsActive, Is.True);
-        Assert.That(progression.GetConfiguration<ProgressionConfiguration>(null)!.Mode, Is.EqualTo(ProgressionMode.Stars));
+        Assert.That(progression.GetConfiguration<ProgressionConfiguration>(new IdIgnoringReferenceHandler())!.Mode, Is.EqualTo(ProgressionMode.Stars));
         var reset = gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(ResetFeaturePlugIn).GUID);
         Assert.That(reset.IsActive, Is.True);
         var (money, limit, tiers) = ReadReset(gameConfiguration);
@@ -91,14 +91,39 @@ internal class ProgressionTest
         var (context, gameConfiguration) = await CreateSeason21Async().ConfigureAwait(false);
         var row = gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(ProgressionFeaturePlugIn).GUID);
         Assert.That(row.IsActive, Is.False);
-        Assert.That(row.GetConfiguration<ProgressionConfiguration>(null)!.Mode, Is.EqualTo(ProgressionMode.Stars));
+        Assert.That(row.GetConfiguration<ProgressionConfiguration>(new IdIgnoringReferenceHandler())!.Mode, Is.EqualTo(ProgressionMode.Stars));
 
         gameConfiguration.PlugInConfigurations.Remove(row);
         await new AddProgressionUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         var added = gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(ProgressionFeaturePlugIn).GUID);
         Assert.That(added.IsActive, Is.True);
-        Assert.That(added.GetConfiguration<ProgressionConfiguration>(null)!.Mode, Is.EqualTo(ProgressionMode.Stars));
+        Assert.That(added.GetConfiguration<ProgressionConfiguration>(new IdIgnoringReferenceHandler())!.Mode, Is.EqualTo(ProgressionMode.Stars));
+    }
+
+    /// <summary>
+    /// The update fills the Season 21 levels of the classic warps and gates (S21Emu Move.txt and Gate.xml) and keeps a
+    /// table the operator filled.
+    /// </summary>
+    [Test]
+    public async Task UpdateFillsTheClassicEntryLevelsAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason21Async().ConfigureAwait(false);
+
+        await new AddProgressionUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var row = gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(ProgressionFeaturePlugIn).GUID);
+        var configuration = row.GetConfiguration<ProgressionConfiguration>(new IdIgnoringReferenceHandler())!;
+        Assert.That(configuration.Season21ClassicWarpLevels[34], Is.EqualTo(380), "Raklion");
+        Assert.That(configuration.Season21ClassicWarpLevels[2], Is.EqualTo(1), "Lorencia");
+        Assert.That(configuration.Season21ClassicWarpLevels.ContainsKey(48), Is.False, "La Cleon is the Event Square in the data");
+        Assert.That(configuration.Season21ClassicGateLevels[274], Is.EqualTo(380), "Swamp of Calmness");
+        Assert.That(configuration.Season21ClassicGateLevels[129], Is.EqualTo(300), "Kanturu Relics");
+
+        configuration.Season21ClassicWarpLevels = new() { [34] = 300 };
+        row.SetConfiguration(configuration, null);
+        await new AddProgressionUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.That(row.GetConfiguration<ProgressionConfiguration>(new IdIgnoringReferenceHandler())!.Season21ClassicWarpLevels, Is.EquivalentTo(new Dictionary<int, int> { [34] = 300 }));
     }
 
     /// <summary>

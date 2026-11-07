@@ -56,6 +56,10 @@ every number:
 - **Monsters** which spawn only on Season 21 maps are normalized per set (maps sharing monsters, or with the same
   safezone map and requirement), at the median requirement of the set's maps. Spawned monsters get multipliers on
   their attributes, shared per definition, so a mode change reaches the living ones too.
+- **Classic maps**: their warps and gates take the Season 21 levels of `Season21ClassicWarpLevels` and
+  `Season21ClassicGateLevels` (S21Emu `Move.txt`, `Gate.xml`; the progression update fills them) in the original mode;
+  the normalized modes keep the Season 6 levels unless `ClassicMapEntryLevels` asks for the Season 21 ones or their
+  normalized level T(R) (`ProgressionMoveExtensions`). A warp or gate the tables don't hold keeps its stored level.
 - **Drops** roll with the normalized level, capped (`DefaultDropGenerator`).
 - **Level caps** are set on the running game configuration (400 and master 200 or 0); Original puts the stored ones
   back. The experience tables are built for the stored caps, so the progression only lowers a cap.

@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Progression;
 using MUnique.OpenMU.GameLogic.Resets;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -55,6 +56,13 @@ public class AddProgressionUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 05, 18, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    /// <remarks>Version 2: the Season 21 levels of the classic warps and gates (S21Emu Move.txt, Gate.xml).</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 07, 11, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21MapsUpdatePlugIn).GUID];
 
     /// <inheritdoc />
@@ -63,9 +71,20 @@ public class AddProgressionUpdatePlugIn : UpdatePlugInBase
         var referenceHandler = new ItemReferenceHandler(gameConfiguration);
         var progression = GetOrCreate(context, gameConfiguration, typeof(ProgressionFeaturePlugIn).GUID);
         progression.IsActive = true;
-        if (progression.GetConfiguration<ProgressionConfiguration>(null) is not { } configuration)
+        ProgressionConfiguration? configuration;
+        try
         {
-            configuration = new ProgressionConfiguration();
+            configuration = progression.GetConfiguration<ProgressionConfiguration>(new IdIgnoringReferenceHandler());
+        }
+        catch (JsonException)
+        {
+            // A configuration which can't be read is the operator's; it stays.
+            return ValueTask.CompletedTask;
+        }
+
+        configuration ??= new ProgressionConfiguration();
+        if (FillClassicEntryLevels(configuration) || string.IsNullOrWhiteSpace(progression.CustomConfiguration))
+        {
             progression.SetConfiguration(configuration, null);
         }
 
@@ -91,6 +110,19 @@ public class AddProgressionUpdatePlugIn : UpdatePlugInBase
         reset.SetConfiguration(resetConfiguration, referenceHandler);
         reset.IsActive = true;
         return ValueTask.CompletedTask;
+    }
+
+    private static bool FillClassicEntryLevels(ProgressionConfiguration configuration)
+    {
+        // A table the operator filled stays.
+        if (configuration.Season21ClassicWarpLevels.Count > 0 || configuration.Season21ClassicGateLevels.Count > 0)
+        {
+            return false;
+        }
+
+        configuration.Season21ClassicWarpLevels = Season21ClassicEntryLevels.Warps.ToDictionary(w => w.Index, w => w.Level);
+        configuration.Season21ClassicGateLevels = Season21ClassicEntryLevels.Gates.ToDictionary(g => g.Number, g => g.Level);
+        return true;
     }
 
     private static PlugInConfiguration GetOrCreate(IContext context, GameConfiguration gameConfiguration, Guid typeId)

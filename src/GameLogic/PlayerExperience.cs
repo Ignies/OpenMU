@@ -184,7 +184,7 @@ internal sealed class PlayerExperience
             player.SelectedCharacter.MasterLevelUpPoints += MasterTreeRules.GetPointsForMasterLevel(
                 (int)player.Attributes[Stats.MasterLevel],
                 (int)player.Attributes[Stats.MasterPointsPerLevelUp],
-                MasterTreeRules.GetConfiguration(player.GameContext));
+                ProgressionFeaturePlugIn.GetConfiguration(player.GameContext));
             player.SetReclaimableAttributesToMaximum();
             player.Logger.LogDebug("Character {0} leveled up to master level {1}", player.SelectedCharacter.Name, player.Attributes[Stats.MasterLevel]);
 
