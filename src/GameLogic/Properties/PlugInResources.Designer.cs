@@ -5655,6 +5655,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("EnhanceTreeConfiguration_Formulas_Name", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Debuffs.
+        /// </summary>
+        public static string EnhanceTreeConfiguration_Debuffs_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeConfiguration_Debuffs_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Debuff circle targets.
+        /// </summary>
+        public static string EnhanceTreeConfiguration_DebuffCircleTargets_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeConfiguration_DebuffCircleTargets_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Debuff circle range.
+        /// </summary>
+        public static string EnhanceTreeConfiguration_DebuffCircleRange_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeConfiguration_DebuffCircleRange_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Debuff rate scale.
+        /// </summary>
+        public static string EnhanceTreeConfiguration_DebuffRateScale_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeConfiguration_DebuffRateScale_Name", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Evolution quests (4th and 5th class).

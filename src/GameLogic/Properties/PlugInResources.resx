@@ -2040,6 +2040,18 @@
   <data name="EnhanceTreeConfiguration_Formulas_Name" xml:space="preserve">
     <value>Value formulas</value>
   </data>
+  <data name="EnhanceTreeConfiguration_Debuffs_Name" xml:space="preserve">
+    <value>Debuffs</value>
+  </data>
+  <data name="EnhanceTreeConfiguration_DebuffCircleTargets_Name" xml:space="preserve">
+    <value>Debuff circle targets</value>
+  </data>
+  <data name="EnhanceTreeConfiguration_DebuffCircleRange_Name" xml:space="preserve">
+    <value>Debuff circle range</value>
+  </data>
+  <data name="EnhanceTreeConfiguration_DebuffRateScale_Name" xml:space="preserve">
+    <value>Debuff rate scale</value>
+  </data>
   <data name="EvolutionQuestFeaturePlugIn_Name" xml:space="preserve">
     <value>Evolution quests (4th and 5th class)</value>
   </data>

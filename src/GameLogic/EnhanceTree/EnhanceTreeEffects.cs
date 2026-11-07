@@ -176,19 +176,34 @@ public static class EnhanceTreeEffects
         }
     }
 
-    private static float GetValue(Player player, Skill skill, short[] nodes)
-        => player.SkillList is { } skills
-           && player.SelectedCharacter?.CharacterClass is { } characterClass
-           && ClassCodes.GetBaseClass(characterClass.Number) is { } baseClass
-           && EnhanceTreeFeaturePlugIn.GetConfiguration(player.GameContext) is { } configuration
-            ? GetValue(configuration, baseClass, (short)skill.Number, skills, LevelInList, nodes)
-            : 0;
+    /// <summary>
+    /// Gets the level of a learned tree skill of a skill list.
+    /// </summary>
+    /// <param name="list">The skill list.</param>
+    /// <param name="number">The skill number.</param>
+    /// <returns>The level, <c>null</c> when it isn't learned.</returns>
+    internal static int? LevelInList(ISkillList list, short number) => list.GetSkill((ushort)number)?.Level;
 
-    private static int? LevelInList(ISkillList list, short number) => list.GetSkill((ushort)number)?.Level;
+    /// <summary>
+    /// Gets the level of a learned tree skill by a lookup.
+    /// </summary>
+    /// <param name="lookup">The lookup.</param>
+    /// <param name="number">The skill number.</param>
+    /// <returns>The level, <c>null</c> when it isn't learned.</returns>
+    internal static int? LevelOfLookup(Func<short, int?> lookup, short number) => lookup(number);
 
-    private static int? LevelOfLookup(Func<short, int?> lookup, short number) => lookup(number);
-
-    private static float GetValue<TState>(EnhanceTreeConfiguration configuration, BaseClassCode baseClass, short skill, TState state, Func<TState, short, int?> levelOf, short[] nodes)
+    /// <summary>
+    /// Gets the summed values of nodes of the sheets whose extension improves a skill, for the learned extensions.
+    /// </summary>
+    /// <typeparam name="TState">The type of the state of <paramref name="levelOf"/>.</typeparam>
+    /// <param name="configuration">The configuration of the tree.</param>
+    /// <param name="baseClass">The base class of the character.</param>
+    /// <param name="skill">The number of the used skill.</param>
+    /// <param name="state">The state of <paramref name="levelOf"/>.</param>
+    /// <param name="levelOf">The level of a learned tree skill, <c>null</c> when it isn't learned.</param>
+    /// <param name="nodes">The node skills to sum.</param>
+    /// <returns>The value.</returns>
+    internal static float GetValue<TState>(EnhanceTreeConfiguration configuration, BaseClassCode baseClass, short skill, TState state, Func<TState, short, int?> levelOf, short[] nodes)
     {
         if (!Indexes.GetValue(configuration, CreateIndex).TryGetValue(((byte)baseClass, skill), out var sheets))
         {
@@ -214,6 +229,14 @@ public static class EnhanceTreeEffects
 
         return total;
     }
+
+    private static float GetValue(Player player, Skill skill, short[] nodes)
+        => player.SkillList is { } skills
+           && player.SelectedCharacter?.CharacterClass is { } characterClass
+           && ClassCodes.GetBaseClass(characterClass.Number) is { } baseClass
+           && EnhanceTreeFeaturePlugIn.GetConfiguration(player.GameContext) is { } configuration
+            ? GetValue(configuration, baseClass, (short)skill.Number, skills, LevelInList, nodes)
+            : 0;
 
     private static Dictionary<(byte BaseClass, short Skill), Sheet[]> CreateIndex(EnhanceTreeConfiguration configuration)
         => configuration.Nodes

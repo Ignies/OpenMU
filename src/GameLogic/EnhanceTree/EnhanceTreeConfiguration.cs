@@ -48,6 +48,34 @@ public class EnhanceTreeConfiguration
     public List<EnhanceTreeMagicField> MagicFields { get; set; } = [];
 
     /// <summary>
+    /// Gets or sets the debuffs which the circles place (S21Emu <c>EnhanceSkillTreeMagicField.xml</c>, MagicFieldBuffInfo).
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EnhanceTreeConfiguration_Debuffs_Name))]
+    public List<EnhanceTreeDebuff> Debuffs { get; set; } = EnhanceTreeDebuffs.CreateDefaultDebuffs();
+
+    /// <summary>
+    /// Gets or sets the targets a debuff circle takes before the target nodes add to them (no source: one).
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EnhanceTreeConfiguration_DebuffCircleTargets_Name))]
+    [Range(0, 100)]
+    public int DebuffCircleTargets { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the radius in tiles of a debuff circle before the range nodes add to it (no source: one).
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EnhanceTreeConfiguration_DebuffCircleRange_Name))]
+    [Range(0, 20)]
+    public int DebuffCircleRange { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the scale of the debuff success rates (<see cref="EnhanceTreeDebuff.SuccessRate"/> and the chance
+    /// nodes): a rate of this value always succeeds (no source: per mille, so the base 200 is 20 %).
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EnhanceTreeConfiguration_DebuffRateScale_Name))]
+    [Range(1, 1000000)]
+    public int DebuffRateScale { get; set; } = 1000;
+
+    /// <summary>
     /// Gets or sets the value formulas by their id (S21Emu <c>Formula.txt</c>, section SkillTree), in the syntax of
     /// <see cref="MasterSkillDefinition.ValueFormula"/>.
     /// </summary>

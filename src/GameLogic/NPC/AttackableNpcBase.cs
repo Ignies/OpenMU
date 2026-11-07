@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.EnhanceTree;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.GameLogic.ZenSinks;
@@ -144,6 +145,8 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
                 {
                     await player.ApplyMaceMasteryStunEffectAsync(this).ConfigureAwait(false);
                 }
+
+                await EnhanceTreeDebuffs.ApplyAfterHitAsync(player, this, skill, hitInfo).ConfigureAwait(false);
             }
 
             if (attacker as IPlayerSurrogate is { } playerSurrogate)

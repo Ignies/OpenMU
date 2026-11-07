@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Threading;
 using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.EnhanceTree;
 using MUnique.OpenMU.GameLogic.GuildWar;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.MuHelper;
@@ -875,6 +876,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             {
                 await attackerPlayer.ApplyMaceMasteryStunEffectAsync(this).ConfigureAwait(false);
             }
+
+            await EnhanceTreeDebuffs.ApplyAfterHitAsync(attackerPlayer, this, skill, hitInfo).ConfigureAwait(false);
         }
 
         return hitInfo;

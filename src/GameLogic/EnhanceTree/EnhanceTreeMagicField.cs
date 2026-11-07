@@ -6,7 +6,7 @@ namespace MUnique.OpenMU.GameLogic.EnhanceTree;
 
 /// <summary>
 /// A debuff field of the skill enhancement tree (poison, chilling, bleeding), as S21Emu
-/// <c>Skill/EnhanceSkillTree/EnhanceSkillTreeMagicField.xml</c> defines it. Data only: no skill places it yet.
+/// <c>Skill/EnhanceSkillTree/EnhanceSkillTreeMagicField.xml</c> defines it: the circle of <see cref="EnhanceTreeDebuffs"/>.
 /// </summary>
 public class EnhanceTreeMagicField
 {
@@ -16,7 +16,7 @@ public class EnhanceTreeMagicField
     public byte Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the number of the skill which places the field.
+    /// Gets or sets the S21Emu <c>Class</c> of the field (data only).
     /// </summary>
     public short Skill { get; set; }
 
