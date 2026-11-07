@@ -8,8 +8,10 @@ using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Tests the optional updates which add the maps of the later seasons to a Season 6 database, as the Season 21 server
@@ -475,6 +477,26 @@ internal class Season21MapsDataTest
 
         Assert.That(gameConfiguration.Maps.Single(m => m.Number == mapNumber).Name.ValueInNeutralLanguage, Is.EqualTo(name));
         Assert.That(gameConfiguration.Monsters.Single(m => m.Number == 913).Designation.ValueInNeutralLanguage, Is.EqualTo("Magma Sorcerer"));
+    }
+
+    /// <summary>
+    /// The maps update turns on the respawn in the own safe zone of Kanturu Underground (Webzen guide 405); a list of maps
+    /// the operator configured stays.
+    /// </summary>
+    [Test]
+    public async Task KanturuUndergroundRespawnsInItsSafeZoneAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        await new AddSeason21LevelCapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var plugIn = gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(OwnMapRespawnPlugIn).GUID);
+        Assert.That(plugIn.IsActive, Is.True);
+        Assert.That(plugIn.GetConfiguration<OwnMapRespawnConfiguration>(new IdIgnoringReferenceHandler())?.Maps, Is.EqualTo(new short[] { 137 }));
+
+        plugIn.SetConfiguration(new OwnMapRespawnConfiguration { Maps = [137, 123] }, null);
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.That(plugIn.GetConfiguration<OwnMapRespawnConfiguration>(new IdIgnoringReferenceHandler())?.Maps, Is.EqualTo(new short[] { 137, 123 }), "the operator's maps");
     }
 
     private static Dictionary<short, int> SpawnsOf(GameConfiguration gameConfiguration, byte mapNumber)

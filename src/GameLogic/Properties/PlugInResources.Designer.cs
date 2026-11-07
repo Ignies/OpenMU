@@ -6260,6 +6260,33 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Respawn in the map's own safe zone.
+        /// </summary>
+        public static string OwnMapRespawnPlugIn_Name {
+            get {
+                return ResourceManager.GetString("OwnMapRespawnPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to A character which dies on one of the listed maps respawns at the map's own spawn gate.
+        /// </summary>
+        public static string OwnMapRespawnPlugIn_Description {
+            get {
+                return ResourceManager.GetString("OwnMapRespawnPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Maps.
+        /// </summary>
+        public static string OwnMapRespawnConfiguration_Maps_Name {
+            get {
+                return ResourceManager.GetString("OwnMapRespawnConfiguration_Maps_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Against the zen inflation of the later maps: a tax on the zen sales of personal stores and less money from monsters, with the numbers of Season 21 as defaults..
         /// </summary>
         public static string ZenSinksFeaturePlugIn_Description {

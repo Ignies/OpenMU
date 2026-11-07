@@ -3240,4 +3240,13 @@
   <data name="SummonInvasionPlugIn_Description" xml:space="preserve">
     <value>Golden Goblins are summoned on Tarkan, Aida, Kanturu, Karutan or Acheron.</value>
   </data>
+  <data name="OwnMapRespawnPlugIn_Name" xml:space="preserve">
+    <value>Respawn in the map's own safe zone</value>
+  </data>
+  <data name="OwnMapRespawnPlugIn_Description" xml:space="preserve">
+    <value>A character which dies on one of the listed maps respawns at the map's own spawn gate (the safe zone inside the hunting ground of Season 21) instead of its safezone map. Default: Kanturu Underground.</value>
+  </data>
+  <data name="OwnMapRespawnConfiguration_Maps_Name" xml:space="preserve">
+    <value>Maps</value>
+  </data>
 </root>

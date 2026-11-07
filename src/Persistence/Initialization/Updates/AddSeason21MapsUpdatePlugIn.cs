@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 using MUnique.OpenMU.PlugIns;
 
@@ -49,11 +50,12 @@ public class AddSeason21MapsUpdatePlugIn : UpdatePlugInBase
     /// Version 4: Atlans Abyss 834/836 take the muonlinefanz.com rows; Phoenix of Darkness 77 and Death Spirit 410 the S21Emu values.
     /// Version 5: Devias takes the 280 monsters of the Season 21 data in place of the 560 of Season 6.
     /// Version 6: the town NPCs of the Season 21 data which Season 6 lacks stand in Noria and Lorencia.
+    /// Version 7: Kanturu Underground respawns in its own safe zone (<see cref="OwnMapRespawnPlugIn"/>).
     /// </remarks>
-    public override int Version => 6;
+    public override int Version => 7;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 08, 13, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 08, 16, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21LevelCapsUpdatePlugIn).GUID];
@@ -67,5 +69,18 @@ public class AddSeason21MapsUpdatePlugIn : UpdatePlugInBase
         Season21MapsInitializer.RepairEntryLevels(gameConfiguration);
         Season21ClassicSpawns.Repair(context, gameConfiguration);
         Season21ClassicSpawns.PlaceTownNpcs(context, gameConfiguration);
+        EnableOwnMapRespawn(context, gameConfiguration);
+    }
+
+    private static void EnableOwnMapRespawn(IContext context, GameConfiguration gameConfiguration)
+    {
+        // A list of maps the operator configured stays.
+        var configuration = Season21PlugInConfigurations.GetOrCreate<OwnMapRespawnConfiguration>(context, gameConfiguration, typeof(OwnMapRespawnPlugIn).GUID, out var plugIn);
+        if (configuration is null)
+        {
+            plugIn.SetConfiguration(new OwnMapRespawnConfiguration(), null);
+        }
+
+        plugIn.IsActive = true;
     }
 }

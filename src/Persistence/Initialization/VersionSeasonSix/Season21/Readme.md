@@ -84,6 +84,10 @@ Names: the maps, warps and the Magma Sorcerer 913/(elite) carry the names of Web
 Gray Aida, Burning Kethotum, Gore Tarkan, Distorted Karutan, Swamp of Destruction) in place of the client texts of the
 data; the resource keys stay, so a database takes them with the caption refresh of its unchanged names.
 
+Respawn (maps update version 7): `OwnMapRespawnPlugIn` lets a character which dies on Kanturu Underground (137) respawn
+at the map's own spawn gate, its safe zone (Webzen guide 405); the safezone maps stay, so the town portal still leads
+to town. No source gives the rule for the other later maps; the operator lists them in the plugin.
+
 ## Placeholder rows
 
 Some rows of the data are placeholders; they are replaced (`Season21PlaceholderRows` keeps the data's numbers, and the
