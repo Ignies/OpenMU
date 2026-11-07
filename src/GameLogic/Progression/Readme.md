@@ -66,6 +66,9 @@ every number:
 - **Level caps** are set on the running game configuration (400 and master 200 or 0); Original puts the stored ones
   back. The experience tables are built for the stored caps, so the progression only lowers a cap. The stored caps are shared per game configuration, so
   several game servers on one configuration keep the first stored ones; the last one turned off puts them back.
+- **Attack speed**: `AttackSpeedLimit` replaces the maximum of the attack and magic speed the same way (empty keeps
+  the database's 200, 0 is none as S21Emu `DisableAttackSpeedLimit = 1`). The extended stats packet still names 200
+  as the maximum when there is none.
 - **Events**: a Season 6 grade checks level plus master level (Normalized) or the power level E (Stars), capped at 400;
   a Season 21 grade (above the level cap) checks the Season 21 total the key stands for (the inverse of T). In Stars a
   master class grade needs a star.
