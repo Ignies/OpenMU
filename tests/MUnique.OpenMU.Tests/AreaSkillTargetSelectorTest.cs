@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.EnhanceTree;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.Pathfinding;
 
@@ -105,6 +106,27 @@ internal class AreaSkillTargetSelectorTest
             Assert.That(AreaSkillTargetSelector.ConvertAngleToRotation(1f), Is.EqualTo(1), "truncation would give 0");
             Assert.That(AreaSkillTargetSelector.ConvertAngleToRotation(90f), Is.EqualTo(64), "63.75 rounds up, truncation gives 63");
             Assert.That(AreaSkillTargetSelector.ConvertAngleToRotation(359.9f), Is.EqualTo(255));
+        });
+    }
+
+    /// <summary>
+    /// Tests that the range and radius nodes of the skill enhancement tree widen the query: around the caster both, around
+    /// the aimed point of an effect range the radius only; the target area grows by the radius.
+    /// </summary>
+    [Test]
+    public void EnhanceTreeReachWidensTheQuery()
+    {
+        var reach = new EnhanceTreeReach(Range: 2, Radius: 1, Targets: 0);
+        var unshaped = new Skill { Range = 2, AreaSkillSettings = new AreaSkillSettings() };
+        var effectRange = new Skill { Range = 6, AreaSkillSettings = new AreaSkillSettings { EffectRange = 3 } };
+        var targetArea = new Skill { Range = 7, AreaSkillSettings = new AreaSkillSettings { UseTargetAreaFilter = true, TargetAreaDiameter = 2f } };
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(AreaSkillTargetSelector.GetQueryCenterAndRange(new Point(10, 10), new Point(14, 12), unshaped, reach).Range, Is.EqualTo(5));
+            Assert.That(AreaSkillTargetSelector.GetQueryCenterAndRange(new Point(10, 10), new Point(14, 12), effectRange, reach).Range, Is.EqualTo(4));
+            Assert.That(AreaSkillTargetSelector.GetTargetAreaRadius(targetArea, reach), Is.EqualTo(2f));
+            Assert.That(AreaSkillTargetSelector.GetQueryCenterAndRange(new Point(10, 10), new Point(14, 12), unshaped).Range, Is.EqualTo(2), "no tree");
         });
     }
 }

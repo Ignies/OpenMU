@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using System.Diagnostics.CodeAnalysis;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.EnhanceTree;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Pathfinding;
@@ -35,6 +36,7 @@ public sealed class DeferredHitScheduler
     private readonly SkillCasterOrigin _origin;
     private readonly FrustumBasedTargetFilter? _laneFilter;
     private readonly int _extraProjectiles;
+    private readonly EnhanceTreeReach _reach;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DeferredHitScheduler"/> class.
@@ -61,6 +63,7 @@ public sealed class DeferredHitScheduler
         this._applyHitAsync = applyHitAsync;
         this._origin = new SkillCasterOrigin(player.Position, player.CurrentMap);
         this._laneFilter = settings is { UseFrustumFilter: true } ? AreaSkillTargetSelector.GetLaneFilter(settings) : null;
+        this._reach = EnhanceTreeEffects.GetReach(player, skill);
     }
 
     /// <summary>
@@ -133,7 +136,7 @@ public sealed class DeferredHitScheduler
 
     private List<WavefrontTick> CollectWavefrontTicks(HashSet<ushort> excludedIds, int attackRound, int remainingAttacks, TimeSpan roundDelay)
     {
-        var reach = AreaSkillTargetSelector.GetQueryCenterAndRange(this._origin.Position, this._targetAreaCenter, this._skill).Range;
+        var reach = AreaSkillTargetSelector.GetQueryCenterAndRange(this._origin.Position, this._targetAreaCenter, this._skill, this._reach).Range;
         var perDistance = this._settings.DelayPerOneDistance;
         var steps = perDistance > TimeSpan.Zero ? Math.Max(reach, 1) : 1;
         var state = new SweepState();
@@ -230,7 +233,7 @@ public sealed class DeferredHitScheduler
             return false;
         }
 
-        var range = this._settings.EffectRange > 0 ? this._settings.EffectRange : skill.Range;
+        var range = this._settings.EffectRange > 0 ? this._settings.EffectRange + this._reach.Radius : skill.Range + this._reach.Range;
         if (target.Id == this._extraTargetId)
         {
             // Like the check at cast time (Chebyshev metric), plus landing slack.
@@ -243,7 +246,7 @@ public sealed class DeferredHitScheduler
         else if (this._settings.UseTargetAreaFilter)
         {
             // Mirrors the check at cast time: strictly inside the target area.
-            if (target.GetDistanceTo(this._targetAreaCenter) >= this._settings.TargetAreaDiameter * 0.5f)
+            if (target.GetDistanceTo(this._targetAreaCenter) >= (this._settings.TargetAreaDiameter * 0.5f) + this._reach.Radius)
             {
                 this.LogDrop(skill, target, "left target area");
                 return false;
@@ -312,7 +315,7 @@ public sealed class DeferredHitScheduler
 
         // Same query center and radius as at cast time. The guard above ensures
         // the player is still on the cast map.
-        var (queryCenter, queryRange) = AreaSkillTargetSelector.GetQueryCenterAndRange(this._origin.Position, this._targetAreaCenter, skill);
+        var (queryCenter, queryRange) = AreaSkillTargetSelector.GetQueryCenterAndRange(this._origin.Position, this._targetAreaCenter, skill, this._reach);
         if (this._origin.CurrentMap is not { } map)
         {
             return;

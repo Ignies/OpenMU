@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.Tests;
 
+using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.EnhanceTree;
+using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
 /// <summary>
 /// Tests the node effects of the skill enhancement tree (<see cref="EnhanceTreeEffects"/>).
@@ -87,6 +89,46 @@ public class EnhanceTreeEffectsTest
 
         levels.Remove(EnhanceTreeEffects.SplashDamage);
         Assert.That(EnhanceTreeEffects.GetSplash(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf).Hits, Is.Zero, "no splash without its node");
+    }
+
+    /// <summary>
+    /// "Add Ext Skill Range" (1011), "Radio" (1009) and "Target Number" (1012) (formulas 60-63 = 10 / level, learned at 10)
+    /// add a tile of range, a tile of area and a target (muonlinefanz.com tree tool: "ATK Range Increase", "+1 AOE Range",
+    /// "+1 Max Targets").
+    /// </summary>
+    [Test]
+    public void ReachNodesWidenTheSkill()
+    {
+        var configuration = CreateSheet(
+            new EnhanceTreeNode { Index = 2, Skill = EnhanceTreeEffects.SkillRange, FormulaId = 62 },
+            new EnhanceTreeNode { Index = 3, Skill = EnhanceTreeEffects.SkillRadius, FormulaId = 60 },
+            new EnhanceTreeNode { Index = 4, Skill = EnhanceTreeEffects.TargetNumber, FormulaId = 63 });
+        configuration.Formulas[60] = "10/level";
+        configuration.Formulas[62] = "10/level";
+        configuration.Formulas[63] = "10/level";
+        var levels = new Dictionary<short, int>
+        {
+            [MeteorStrikeExtended] = 1,
+            [EnhanceTreeEffects.SkillRange] = 10,
+            [EnhanceTreeEffects.SkillRadius] = 10,
+            [EnhanceTreeEffects.TargetNumber] = 10,
+        };
+        int? LevelOf(short skill) => levels.TryGetValue(skill, out var level) ? level : null;
+
+        Assert.That(EnhanceTreeEffects.GetReach(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf), Is.EqualTo(new EnhanceTreeReach(1, 1, 1)));
+        Assert.That(EnhanceTreeEffects.GetReach(configuration, BaseClassCode.DarkWizard, 9, LevelOf), Is.EqualTo(default(EnhanceTreeReach)), "another skill");
+    }
+
+    /// <summary>
+    /// The target nodes raise the limit of an area skill which hits a limited number of targets; an unlimited one stays so.
+    /// </summary>
+    [Test]
+    public void TargetNodesRaiseTheLimitOfAnAreaSkill()
+    {
+        var limited = new AreaSkillSettings { MaximumNumberOfHitsPerAttack = 5, MinimumNumberOfHitsPerAttack = 3 };
+
+        Assert.That(AreaSkillAttackAction.GetAttackLimits(limited, 2), Is.EqualTo((7, 5)));
+        Assert.That(AreaSkillAttackAction.GetAttackLimits(new AreaSkillSettings(), 2), Is.EqualTo((int.MaxValue, int.MaxValue)));
     }
 
     private static EnhanceTreeConfiguration CreateSheet(params EnhanceTreeNode[] nodes)

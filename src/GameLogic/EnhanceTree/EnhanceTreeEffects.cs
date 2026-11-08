@@ -52,6 +52,21 @@ public static class EnhanceTreeEffects
     /// </summary>
     public const short SplashCount = 1154;
 
+    /// <summary>
+    /// The skill number of "Add Ext Skill Radio": tiles more of the skill's area.
+    /// </summary>
+    public const short SkillRadius = 1009;
+
+    /// <summary>
+    /// The skill number of "Add Ext Skill Range": tiles more of the skill's range.
+    /// </summary>
+    public const short SkillRange = 1011;
+
+    /// <summary>
+    /// The skill number of "Add Ext Skill Target Number": targets more of a skill which hits a limited number of them.
+    /// </summary>
+    public const short TargetNumber = 1012;
+
     private const byte ExtensionNodeIndex = 0;
 
     private const int BaseSplashRadius = 1;
@@ -65,6 +80,12 @@ public static class EnhanceTreeEffects
     private static readonly short[] SplashCountNodes = [SplashDamage, SplashCount];
 
     private static readonly short[] SplashRadiusNodes = [SplashRadius];
+
+    private static readonly short[] RangeNodes = [SkillRange];
+
+    private static readonly short[] RadiusNodes = [SkillRadius];
+
+    private static readonly short[] TargetNodes = [TargetNumber];
 
     private static readonly ConcurrentDictionary<(string Formula, int Level), float> Values = new();
 
@@ -145,6 +166,31 @@ public static class EnhanceTreeEffects
             ? default
             : ((int)GetValue(configuration, baseClass, skill, levelOf, LevelOfLookup, SplashCountNodes),
                 BaseSplashRadius + (int)GetValue(configuration, baseClass, skill, levelOf, LevelOfLookup, SplashRadiusNodes));
+
+    /// <summary>
+    /// Gets what the learned nodes of a player add to the shape of a skill, when the tree is on.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="skill">The used skill.</param>
+    /// <returns>The added range, radius and targets.</returns>
+    public static EnhanceTreeReach GetReach(Player player, Skill skill)
+        => player.SkillList is { } skills
+           && player.SelectedCharacter?.CharacterClass is { } characterClass
+           && ClassCodes.GetBaseClass(characterClass.Number) is { } baseClass
+           && EnhanceTreeFeaturePlugIn.GetConfiguration(player.GameContext) is { } configuration
+            ? GetReach(configuration, baseClass, (short)skill.Number, skills, LevelInList)
+            : default;
+
+    /// <summary>
+    /// Gets what the learned nodes add to the shape of a skill.
+    /// </summary>
+    /// <param name="configuration">The configuration of the tree.</param>
+    /// <param name="baseClass">The base class of the character.</param>
+    /// <param name="skill">The number of the used skill.</param>
+    /// <param name="levelOf">The level of a learned tree skill, <c>null</c> when it isn't learned.</param>
+    /// <returns>The added range, radius and targets.</returns>
+    public static EnhanceTreeReach GetReach(EnhanceTreeConfiguration configuration, BaseClassCode baseClass, short skill, Func<short, int?> levelOf)
+        => GetReach(configuration, baseClass, skill, levelOf, LevelOfLookup);
 
     /// <summary>
     /// Hits the monsters around the target of a skill with the splash of the player's tree.
@@ -237,6 +283,12 @@ public static class EnhanceTreeEffects
            && EnhanceTreeFeaturePlugIn.GetConfiguration(player.GameContext) is { } configuration
             ? GetValue(configuration, baseClass, (short)skill.Number, skills, LevelInList, nodes)
             : 0;
+
+    private static EnhanceTreeReach GetReach<TState>(EnhanceTreeConfiguration configuration, BaseClassCode baseClass, short skill, TState state, Func<TState, short, int?> levelOf)
+        => new(
+            (int)GetValue(configuration, baseClass, skill, state, levelOf, RangeNodes),
+            (int)GetValue(configuration, baseClass, skill, state, levelOf, RadiusNodes),
+            (int)GetValue(configuration, baseClass, skill, state, levelOf, TargetNodes));
 
     private static Dictionary<(byte BaseClass, short Skill), Sheet[]> CreateIndex(EnhanceTreeConfiguration configuration)
         => configuration.Nodes

@@ -49,7 +49,7 @@ public class AreaSkillAttackAction
 
         if (skill.SkillType is SkillType.AreaSkillExplicitHits)
         {
-            player.SkillHitValidator.RegisterArea((ushort)skill.Number, skill, player.Position, targetAreaCenter);
+            player.SkillHitValidator.RegisterArea((ushort)skill.Number, skill, player.Position, targetAreaCenter, EnhanceTreeEffects.GetReach(player, skill));
         }
 
         await player.ForEachWorldObserverAsync<IShowAreaSkillAnimationPlugIn>(p => p.ShowAreaSkillAnimationAsync(player, skill, targetAreaCenter, rotation), true).ConfigureAwait(false);
@@ -60,6 +60,19 @@ public class AreaSkillAttackAction
             // todo: delayed automatic hits, like evil spirit, flame, triple shot... when hitImplicitlyForExplicitSkill = true.
             await this.PerformAutomaticHitsAsync(player, extraTargetId, targetAreaCenter, skillEntry, skill, rotation).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>
+    /// Gets the most attacks of an area skill and the attacks after which its hit chance drops.
+    /// </summary>
+    /// <param name="settings">The area skill settings.</param>
+    /// <param name="extraTargets">The targets the skill enhancement tree adds to a skill which hits a limited number.</param>
+    /// <returns>The limits; <see cref="int.MaxValue"/> for an unlimited skill.</returns>
+    internal static (int Maximum, int Minimum) GetAttackLimits(AreaSkillSettings settings, int extraTargets)
+    {
+        var maximum = settings.MaximumNumberOfHitsPerAttack == 0 ? int.MaxValue : settings.MaximumNumberOfHitsPerAttack + extraTargets;
+        var minimum = settings.MinimumNumberOfHitsPerAttack == 0 ? maximum : settings.MinimumNumberOfHitsPerAttack + extraTargets;
+        return (maximum, minimum);
     }
 
     private static bool AreaSkillSettingsAreDefault([NotNullWhen(true)] AreaSkillSettings? settings)
@@ -196,8 +209,7 @@ public class AreaSkillAttackAction
         var skill = skillEntry.Skill!;
         IAttackable? extraTarget = null;
         var attackCount = 0;
-        var maxAttacks = areaSkillSettings.MaximumNumberOfHitsPerAttack == 0 ? int.MaxValue : areaSkillSettings.MaximumNumberOfHitsPerAttack;
-        var minAttacks = areaSkillSettings.MinimumNumberOfHitsPerAttack == 0 ? maxAttacks : areaSkillSettings.MinimumNumberOfHitsPerAttack;
+        var (maxAttacks, minAttacks) = GetAttackLimits(areaSkillSettings, EnhanceTreeEffects.GetReach(player, skill).Targets);
         var currentDelay = TimeSpan.Zero;
 
         var orderedTargets = targets.ToList();

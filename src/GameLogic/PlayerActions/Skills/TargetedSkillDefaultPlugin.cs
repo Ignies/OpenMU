@@ -85,7 +85,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             return;
         }
 
-        if (!player.IsInRange(target.Position, skill.Range + 2))
+        if (!player.IsInRange(target.Position, skill.Range + EnhanceTreeEffects.GetReach(player, skill).Range + 2))
         {
             // target position might be out of sync so we send the current coordinates to the client again.
             if (!(target is ISupportWalk { IsWalking: true }))
@@ -205,7 +205,8 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             }
             else if (skill.ImplicitTargetRange > 0)
             {
-                var targetsOfTarget = targetedTarget.CurrentMap?.GetAttackablesInRange(targetedTarget.Position, skill.ImplicitTargetRange) ?? Enumerable.Empty<IAttackable>();
+                var radius = skill.ImplicitTargetRange + EnhanceTreeEffects.GetReach(player, skill).Radius;
+                var targetsOfTarget = targetedTarget.CurrentMap?.GetAttackablesInRange(targetedTarget.Position, radius) ?? Enumerable.Empty<IAttackable>();
                 if (!player.GameContext.Configuration.AreaSkillHitsPlayer && targetedTarget is Monster)
                 {
                     return targetsOfTarget.OfType<Monster>();
@@ -221,7 +222,7 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             return targetedTarget.GetAsEnumerable();
         }
 
-        var targets = player.CurrentMap?.GetAttackablesInRange(player.Position, skill.ImplicitTargetRange) ?? Enumerable.Empty<IAttackable>();
+        var targets = player.CurrentMap?.GetAttackablesInRange(player.Position, skill.ImplicitTargetRange + EnhanceTreeEffects.GetReach(player, skill).Radius) ?? Enumerable.Empty<IAttackable>();
 
         if (skill.Target == SkillTarget.ImplicitAllInRange)
         {

@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 
 using System.Collections.Concurrent;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.EnhanceTree;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Pathfinding;
@@ -41,6 +42,7 @@ public static class AreaSkillTargetSelector
     {
         var isExtraTargetDefined = extraTargetId != UndefinedTarget;
         var extraTarget = isExtraTargetDefined ? player.GetObject(extraTargetId) as IAttackable : null;
+        var reach = EnhanceTreeEffects.GetReach(player, skill);
 
         player.Logger.LogDebug(
             "GetTargets: skill={Skill}, extraTargetId={ExtraTargetId}, extraTarget={ExtraTarget}", skill.Name, extraTargetId, extraTarget?.ToString() ?? "null");
@@ -48,7 +50,7 @@ public static class AreaSkillTargetSelector
         if (skill.SkillType == SkillType.AreaSkillExplicitTarget)
         {
             if (extraTarget?.CheckSkillTargetRestrictions(player, skill) is true
-                && player.IsInRange(extraTarget.Position, skill.Range)
+                && player.IsInRange(extraTarget.Position, skill.Range + reach.Range)
                 && !extraTarget.IsAtSafezone())
             {
                 yield return extraTarget;
@@ -62,13 +64,13 @@ public static class AreaSkillTargetSelector
         // slack is added here, unlike for the client-aimed point.
         if (extraTarget is not null
             && extraTarget.CheckSkillTargetRestrictions(player, skill)
-            && player.IsInRange(extraTarget.Position, skill.Range)
+            && player.IsInRange(extraTarget.Position, skill.Range + reach.Range)
             && !extraTarget.IsAtSafezone())
         {
             yield return extraTarget;
         }
 
-        foreach (var target in GetTargetsInRange(player, targetAreaCenter, skill, rotation))
+        foreach (var target in GetTargetsInRange(player, targetAreaCenter, skill, rotation, reach))
         {
             // Skip the extra target if we already yielded it
             if (target.Id == extraTargetId)
@@ -133,6 +135,7 @@ public static class AreaSkillTargetSelector
     /// <param name="casterPosition">The position of the caster when the attack started.</param>
     /// <param name="targetAreaCenter">The client-aimed point.</param>
     /// <param name="skill">The skill.</param>
+    /// <param name="reach">What the skill enhancement tree adds to the skill's shape.</param>
     /// <returns>The query center and radius.</returns>
     /// <remarks>
     /// Only skills which shape their area around the aimed point (target area
@@ -141,9 +144,11 @@ public static class AreaSkillTargetSelector
     /// skill must not extend its reach beyond the skill range, and the client
     /// position can lag the server-side one. Verified in-game.
     /// </remarks>
-    internal static (Point Center, int Range) GetQueryCenterAndRange(Point casterPosition, Point targetAreaCenter, Skill skill)
+    internal static (Point Center, int Range) GetQueryCenterAndRange(Point casterPosition, Point targetAreaCenter, Skill skill, EnhanceTreeReach reach = default)
     {
-        var range = skill.AreaSkillSettings?.EffectRange > 0 ? skill.AreaSkillSettings.EffectRange : skill.Range;
+        var range = skill.AreaSkillSettings?.EffectRange > 0
+            ? skill.AreaSkillSettings.EffectRange + reach.Radius
+            : skill.Range + reach.Range + reach.Radius;
         if (skill.AreaSkillSettings is { UseFrustumFilter: true } frustumSettings)
         {
             return (casterPosition, Math.Max(range, (int)Math.Ceiling(frustumSettings.FrustumDistance)));
@@ -161,11 +166,12 @@ public static class AreaSkillTargetSelector
     /// Gets the radius in which a target-area skill can hit targets around its aimed center.
     /// </summary>
     /// <param name="skill">The skill.</param>
+    /// <param name="reach">What the skill enhancement tree adds to the skill's shape.</param>
     /// <returns>The target-area radius, or <c>null</c> if the skill doesn't use a target-area filter.</returns>
-    internal static float? GetTargetAreaRadius(Skill skill)
+    internal static float? GetTargetAreaRadius(Skill skill, EnhanceTreeReach reach = default)
     {
         return skill.AreaSkillSettings is { UseTargetAreaFilter: true } settings
-            ? settings.TargetAreaDiameter * 0.5f
+            ? (settings.TargetAreaDiameter * 0.5f) + reach.Radius
             : null;
     }
 
@@ -189,9 +195,9 @@ public static class AreaSkillTargetSelector
             .Where(a => player.GameContext.Configuration.AreaSkillHitsPlayer || a is not Player);
     }
 
-    private static IEnumerable<IAttackable> GetTargetsInRange(Player player, Point targetAreaCenter, Skill skill, byte rotation)
+    private static IEnumerable<IAttackable> GetTargetsInRange(Player player, Point targetAreaCenter, Skill skill, byte rotation, EnhanceTreeReach reach)
     {
-        var (queryCenter, queryRange) = GetQueryCenterAndRange(player.Position, targetAreaCenter, skill);
+        var (queryCenter, queryRange) = GetQueryCenterAndRange(player.Position, targetAreaCenter, skill, reach);
 
         IEnumerable<IAttackable> targetsInRange = player.CurrentMap?
                     .GetAttackablesInRange(queryCenter, queryRange)
@@ -204,7 +210,7 @@ public static class AreaSkillTargetSelector
             targetsInRange = targetsInRange.Where(a => filter.IsTargetWithinBounds(player, a, rotation));
         }
 
-        if (GetTargetAreaRadius(skill) is { } targetAreaRadius)
+        if (GetTargetAreaRadius(skill, reach) is { } targetAreaRadius)
         {
             targetsInRange = targetsInRange.Where(a => a.GetDistanceTo(targetAreaCenter) < targetAreaRadius);
         }

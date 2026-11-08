@@ -27,9 +27,15 @@ turns it on.
     (`AreaSkillAttackAction`, `TargetedSkillDefaultPlugin`).
   - Splash 1010 (10 / level at 10): one hit on each monster within a tile of the target; Splash Count 1154 one hit more,
     Splash Radio 1153 one tile more (muonlinefanz.com tree tool: "one DMG Counter to monsters within 1 tile").
+  - Range 1011, radius 1009, targets 1012 (formulas 10 / level and alike, learned at 10; tree tool "ATK Range
+    Increase", "+1 AOE Range", "+1 Max Targets"): `GetReach`. The range adds to the distance a skill reaches its target
+    (`TargetedSkillDefaultPlugin`, the extra target of `AreaSkillTargetSelector`) and to an area around the caster; the
+    radius to the effect range, the target area, the area around the caster and the implicit targets of a targeted
+    skill; the targets to an area skill with a limit (`AreaSkillSettings.MaximumNumberOfHitsPerAttack`), an unlimited one
+    hits every target already. `SkillHitValidator` and `DeferredHitScheduler` check the same widened area.
   - Left as data: extra damage rate 1007 ("chance to deal Mastery DMG", no amount in any source), weapon damage
-    1020/1021/1156 (a weapon rise percentage per used skill, which the attribute system has no place for), range 1011,
-    radius 1009, targets 1012, speed 1008 (client animation), cooldown 1019, the explosions 1125-1135 and 1196-1201.
+    1020/1021/1156 (a weapon rise percentage per used skill, which the attribute system has no place for), speed 1008
+    (client animation), cooldown 1019, the explosions 1125-1135 and 1196-1201.
 
 ## Debuffs (`EnhanceTreeDebuffs`)
 

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.EnhanceTree;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.PlugIns.AnimationCounters;
@@ -226,11 +227,12 @@ public class SkillHitValidator
     /// <param name="skill">The skill.</param>
     /// <param name="casterPosition">The position of the caster when the attack started.</param>
     /// <param name="targetAreaCenter">The target area center requested by the client.</param>
-    public void RegisterArea(ushort skillId, Skill skill, Point casterPosition, Point targetAreaCenter)
+    /// <param name="reach">What the skill enhancement tree adds to the skill's shape.</param>
+    public void RegisterArea(ushort skillId, Skill skill, Point casterPosition, Point targetAreaCenter, EnhanceTreeReach reach = default)
     {
-        var (center, range) = AreaSkillTargetSelector.GetQueryCenterAndRange(casterPosition, targetAreaCenter, skill);
+        var (center, range) = AreaSkillTargetSelector.GetQueryCenterAndRange(casterPosition, targetAreaCenter, skill, reach);
         var timestamp = this._timeProvider.GetTimestamp();
-        var maxDistance = AreaSkillTargetSelector.GetTargetAreaRadius(skill) is { } targetAreaRadius
+        var maxDistance = AreaSkillTargetSelector.GetTargetAreaRadius(skill, reach) is { } targetAreaRadius
             ? targetAreaRadius
             : range;
         var animationCounter = this._lastAnimationCounters.GetValueOrDefault(skillId);
