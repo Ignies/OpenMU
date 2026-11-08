@@ -8,6 +8,7 @@ using System.Reflection;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.MessageHandler;
+using MUnique.OpenMU.Network.Packets.ClientToServer;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
@@ -41,6 +42,33 @@ public class BabylonClientTest
         Span<byte> versionBytes = [(byte)'1', (byte)'0', (byte)'4', (byte)'0', (byte)'4'];
 
         Assert.That(ClientVersionResolver.Resolve(versionBytes), Is.EqualTo(ClientVersionResolver.DefaultVersion));
+    }
+
+    /// <summary>
+    /// The login with the short password (50 bytes with the serial, as the Babylon client sends it) is read as such:
+    /// read as the long one, its version bytes came from the wrong place and the server always took Season 6.
+    /// </summary>
+    [Test]
+    public void ReadsTheVersionOfTheShortPasswordLogin()
+    {
+        var packet = new byte[LoginShortPassword.Length];
+        _ = new LoginShortPassword(packet);
+        BabylonClient.VersionBytes.CopyTo(new LoginShortPassword(packet).ClientVersion);
+
+        Assert.That(MUnique.OpenMU.GameServer.MessageHandler.Login.LogInHandlerPlugIn.VersionOf(packet), Is.EqualTo(BabylonClient.Version));
+    }
+
+    /// <summary>
+    /// The login with the long password keeps its version.
+    /// </summary>
+    [Test]
+    public void ReadsTheVersionOfTheLongPasswordLogin()
+    {
+        var packet = new byte[LoginLongPassword.Length];
+        _ = new LoginLongPassword(packet);
+        BabylonClient.VersionBytes.CopyTo(new LoginLongPassword(packet).ClientVersion);
+
+        Assert.That(MUnique.OpenMU.GameServer.MessageHandler.Login.LogInHandlerPlugIn.VersionOf(packet), Is.EqualTo(BabylonClient.Version));
     }
 
     /// <summary>
