@@ -34,7 +34,7 @@ public static class GameMapDefinitionExtensions
         var hasProgression = ProgressionFeaturePlugIn.GetWorld(player.GameContext)?.TryGetRequirement(gameMapDefinition, out progressionRequirement) is true;
         if (hasProgression && GetMissingAttribute(player, progressionRequirement) is { } missing)
         {
-            errorMessage = player.GetLocalizedMessage(PlayerMessage.MissingMapRequirement, missing.Description);
+            errorMessage = player.GetLocalizedMessage(nameof(PlayerMessage.MissingMapRequirement), $"{missing.Attribute.Designation} {missing.Value}");
             return true;
         }
 
@@ -50,9 +50,12 @@ public static class GameMapDefinitionExtensions
                 continue;
             }
 
-            if (player.Attributes is null || player.Attributes[requirement.Attribute] < requirement.MinimumValue)
+            var minimum = requirement.Attribute == Stats.TotalLevel
+                ? player.GameContext.Configuration.GetReachableTotalLevel((int)requirement.MinimumValue)
+                : requirement.MinimumValue;
+            if (player.Attributes is null || player.Attributes[requirement.Attribute] < minimum)
             {
-                errorMessage = player.GetLocalizedMessage(PlayerMessage.MissingMapRequirement, requirement.Attribute?.Description);
+                errorMessage = player.GetLocalizedMessage(nameof(PlayerMessage.MissingMapRequirement), $"{requirement.Attribute?.Designation} {minimum}");
                 return true;
             }
         }
@@ -95,20 +98,20 @@ public static class GameMapDefinitionExtensions
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="requirement">The requirement.</param>
-    /// <returns>The missing attribute, or <c>null</c> when the player meets the requirement.</returns>
-    internal static AttributeSystem.AttributeDefinition? GetMissingAttribute(Player player, MapRequirement requirement)
+    /// <returns>The missing attribute and the value it needs, or <c>null</c> when the player meets the requirement.</returns>
+    internal static (AttributeSystem.AttributeDefinition Attribute, int Value)? GetMissingAttribute(Player player, MapRequirement requirement)
     {
         var attributes = player.Attributes;
         if ((attributes?[Stats.Level] ?? 0) < requirement.Level)
         {
-            return Stats.Level;
+            return (Stats.Level, requirement.Level);
         }
 
         if ((attributes?[Stats.MasterLevel] ?? 0) < requirement.MasterLevel)
         {
-            return Stats.MasterLevel;
+            return (Stats.MasterLevel, requirement.MasterLevel);
         }
 
-        return (attributes?[Stats.Resets] ?? 0) < requirement.Stars ? Stats.Resets : null;
+        return (attributes?[Stats.Resets] ?? 0) < requirement.Stars ? (Stats.Resets, requirement.Stars) : null;
     }
 }

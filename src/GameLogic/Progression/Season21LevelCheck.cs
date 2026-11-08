@@ -26,6 +26,6 @@ public static class Season21LevelCheck
         }
 
         var attributes = player.Attributes;
-        return (attributes?[Stats.Level] ?? 0) + (attributes?[Stats.MasterLevel] ?? 0) >= season21Level;
+        return (attributes?[Stats.Level] ?? 0) + (attributes?[Stats.MasterLevel] ?? 0) >= player.GameContext.Configuration.GetReachableTotalLevel(season21Level);
     }
 }

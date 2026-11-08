@@ -62,6 +62,10 @@ every number:
   `Season21ClassicGateLevels` (S21Emu `Move.txt`, `Gate.xml`; the progression update fills them) in the original mode;
   the normalized modes keep the Season 6 levels unless `ClassicMapEntryLevels` asks for the Season 21 ones or their
   normalized level T(R) (`ProgressionMoveExtensions`). A warp or gate the tables don't hold keeps its stored level.
+- **Capped worlds**: a world never compares a raw Season 21 total with caps below it. Without a mapping mode (Original,
+  or the feature off) a total above level cap plus master level cap is the caps (`GetReachableTotalLevel`: the map
+  check, the evolution trials, `Season21LevelCheck`), and a warp or gate level is at most the level cap. A refused map
+  entry names what is missing and how much ("Missing requirement to enter the map: Resets 4").
 - **Drops** roll with the normalized level, capped (`DefaultDropGenerator`).
 - **Level caps** are set on the running game configuration (400 and master 200 or 0); Original puts the stored ones
   back. The experience tables are built for the stored caps, so the progression only lowers a cap. The stored caps are shared per game configuration, so

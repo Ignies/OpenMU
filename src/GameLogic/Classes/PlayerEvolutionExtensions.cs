@@ -30,13 +30,14 @@ public static class PlayerEvolutionExtensions
     /// <returns><c>true</c>, if the character meets it.</returns>
     public static bool MeetsSeason21Level(this Player player, int requirement)
     {
+        var configuration = ProgressionFeaturePlugIn.GetWorld(player.GameContext)?.Configuration;
         return player.Attributes is { } attributes
                && EvolutionRules.IsMet(
-                   requirement,
+                   configuration is null ? player.GameContext.Configuration.GetReachableTotalLevel(requirement) : requirement,
                    (int)attributes[Stats.Level],
                    (int)attributes[Stats.MasterLevel],
                    (int)attributes[Stats.Resets],
-                   ProgressionFeaturePlugIn.GetWorld(player.GameContext)?.Configuration);
+                   configuration);
     }
 
     /// <summary>
@@ -48,6 +49,7 @@ public static class PlayerEvolutionExtensions
     public static (int Level, ProgressionLevelKey Key) GetEvolutionRequirement(this Player player, ClassEvolution evolution)
     {
         var configuration = ProgressionFeaturePlugIn.GetWorld(player.GameContext)?.Configuration;
-        return (EvolutionRules.GetRequiredLevel(evolution, configuration), EvolutionRules.GetLevelKey(configuration));
+        var level = EvolutionRules.GetRequiredLevel(evolution, configuration);
+        return (configuration is null ? player.GameContext.Configuration.GetReachableTotalLevel(level) : level, EvolutionRules.GetLevelKey(configuration));
     }
 }

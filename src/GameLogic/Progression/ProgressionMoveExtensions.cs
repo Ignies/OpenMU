@@ -45,6 +45,21 @@ public static class ProgressionMoveExtensions
     }
 
     /// <summary>
+    /// Gets the Season 21 total level a world can ask for: a total above its caps (level plus master level) is the caps,
+    /// so a world capped below the Season 21 levels never compares a raw Season 21 total. The progression modes map a
+    /// total before it's checked and don't need it.
+    /// </summary>
+    /// <param name="configuration">The game configuration.</param>
+    /// <param name="season21Total">The Season 21 total level.</param>
+    /// <returns>The total level the world asks for.</returns>
+    public static int GetReachableTotalLevel(this GameConfiguration configuration, int season21Total)
+    {
+        return configuration.MaximumLevel > 0
+            ? Math.Min(season21Total, configuration.MaximumLevel + configuration.MaximumMasterLevel)
+            : season21Total;
+    }
+
+    /// <summary>
     /// Gets the level which the level requirement of an item is checked against, when the progression decides it: the
     /// power level (level plus the worth of the stars, capped) in the stars mode.
     /// </summary>
@@ -72,7 +87,7 @@ public static class ProgressionMoveExtensions
     /// <param name="storedRequirement">The stored level requirement.</param>
     /// <param name="table">The Season 21 table of the move kind.</param>
     /// <param name="key">The warp index or gate number.</param>
-    /// <returns>The level requirement.</returns>
+    /// <returns>The level requirement, at most the level cap of the world.</returns>
     private static int GetLevelRequirement(IGameContext gameContext, GameMapDefinition? map, int storedRequirement, Func<ProgressionConfiguration, Dictionary<int, int>> table, int key)
     {
         if (ProgressionFeaturePlugIn.GetWorld(gameContext) is { } world && world.TryGetRequirement(map, out var requirement))
@@ -80,8 +95,10 @@ public static class ProgressionMoveExtensions
             return requirement.Level;
         }
 
-        return ProgressionFeaturePlugIn.GetConfiguration(gameContext) is { } configuration && table(configuration).TryGetValue(key, out var season21Level)
+        var level = ProgressionFeaturePlugIn.GetConfiguration(gameContext) is { } configuration && table(configuration).TryGetValue(key, out var season21Level)
             ? ProgressionMapping.GetClassicEntryLevel(storedRequirement, season21Level, configuration)
             : storedRequirement;
+        var cap = gameContext.Configuration.MaximumLevel;
+        return cap > 0 ? Math.Min(level, cap) : level;
     }
 }
