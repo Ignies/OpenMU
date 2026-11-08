@@ -53,6 +53,11 @@ public static class EnhanceTreeEffects
     public const short SplashCount = 1154;
 
     /// <summary>
+    /// The skill number of "Add Ext Skill Extra Damage Rate": the chance in percent of a Mastery DMG hit.
+    /// </summary>
+    public const short ExtraDamageRate = 1007;
+
+    /// <summary>
     /// The skill number of "Add Ext Skill Radio": tiles more of the skill's area.
     /// </summary>
     public const short SkillRadius = 1009;
@@ -95,6 +100,8 @@ public static class EnhanceTreeEffects
     private static readonly short[] SplashCountNodes = [SplashDamage, SplashCount];
 
     private static readonly short[] SplashRadiusNodes = [SplashRadius];
+
+    private static readonly short[] ExtraDamageRateNodes = [ExtraDamageRate];
 
     private static readonly short[] RangeNodes = [SkillRange];
 
@@ -234,6 +241,37 @@ public static class EnhanceTreeEffects
     /// <returns>The percentage.</returns>
     public static float GetWeaponRise(EnhanceTreeConfiguration configuration, BaseClassCode baseClass, short skill, Func<short, int?> levelOf, DamageType damageType)
         => GetValue(configuration, baseClass, skill, levelOf, LevelOfLookup, WeaponNodes(damageType));
+
+    /// <summary>
+    /// Gets the chance in percent of a Mastery DMG hit of a skill.
+    /// </summary>
+    /// <param name="configuration">The configuration of the tree.</param>
+    /// <param name="baseClass">The base class of the character.</param>
+    /// <param name="skill">The number of the used skill.</param>
+    /// <param name="levelOf">The level of a learned tree skill, <c>null</c> when it isn't learned.</param>
+    /// <returns>The chance in percent.</returns>
+    public static float GetMasteryDamageChance(EnhanceTreeConfiguration configuration, BaseClassCode baseClass, short skill, Func<short, int?> levelOf)
+        => GetValue(configuration, baseClass, skill, levelOf, LevelOfLookup, ExtraDamageRateNodes);
+
+    /// <summary>
+    /// Gets the factor of the damage of a hit by its Mastery DMG.
+    /// </summary>
+    /// <param name="configuration">The configuration of the tree.</param>
+    /// <param name="isMasteryHit">If set to <c>true</c>, the hit is a Mastery DMG hit.</param>
+    /// <returns>The factor.</returns>
+    public static double GetMasteryDamageFactor(EnhanceTreeConfiguration configuration, bool isMasteryHit)
+        => isMasteryHit ? 1 + (configuration.MasteryDamagePercent / 100.0) : 1;
+
+    /// <summary>
+    /// Rolls the Mastery DMG of a skill hit of a player, when the tree is on and gives the Mastery DMG an amount.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="skill">The used skill.</param>
+    /// <returns>The factor of the hit's damage.</returns>
+    public static double RollMasteryDamageFactor(Player player, Skill skill)
+        => EnhanceTreeFeaturePlugIn.GetConfiguration(player.GameContext) is { MasteryDamagePercent: > 0 } configuration
+            ? GetMasteryDamageFactor(configuration, Rand.NextRandomBool(GetValue(player, skill, ExtraDamageRateNodes) / 100.0))
+            : 1;
 
     /// <summary>
     /// Hits the monsters around the target of a skill with the splash of the player's tree.

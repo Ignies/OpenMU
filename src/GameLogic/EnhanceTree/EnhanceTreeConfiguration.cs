@@ -76,6 +76,14 @@ public class EnhanceTreeConfiguration
     public int DebuffRateScale { get; set; } = 1000;
 
     /// <summary>
+    /// Gets or sets the damage a Mastery DMG hit adds in percent of the hit. The node "Add Ext Skill Extra Damage Rate"
+    /// (1007) gives its chance; no source has the amount, so it is 0 by default.
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EnhanceTreeConfiguration_MasteryDamagePercent_Name))]
+    [Range(0, 1000)]
+    public int MasteryDamagePercent { get; set; }
+
+    /// <summary>
     /// Gets or sets the value formulas by their id (S21Emu <c>Formula.txt</c>, section SkillTree), in the syntax of
     /// <see cref="MasterSkillDefinition.ValueFormula"/>.
     /// </summary>

@@ -264,6 +264,10 @@ public static class AttackableExtensions
             }
 
             dmg = (int)(dmg * multiplier * damageFactor);
+            if (attacker is Player skillPlayer && skill.Skill is { } usedSkill)
+            {
+                dmg = (int)(dmg * EnhanceTreeEffects.RollMasteryDamageFactor(skillPlayer, usedSkill));
+            }
         }
         else if (attacker.Attributes[Stats.IsDinorantEquipped] > 0)
         {

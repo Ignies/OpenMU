@@ -2052,6 +2052,9 @@
   <data name="EnhanceTreeConfiguration_DebuffRateScale_Name" xml:space="preserve">
     <value>Debuff rate scale</value>
   </data>
+  <data name="EnhanceTreeConfiguration_MasteryDamagePercent_Name" xml:space="preserve">
+    <value>Mastery damage (% of the hit)</value>
+  </data>
   <data name="EvolutionQuestFeaturePlugIn_Name" xml:space="preserve">
     <value>Evolution quests (4th and 5th class)</value>
   </data>

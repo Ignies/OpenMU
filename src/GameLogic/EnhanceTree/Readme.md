@@ -37,8 +37,10 @@ turns it on.
     weapon's part of its damage type rises by the percentage (tree tool "Increases the equipped weapon's WIZ Raise by a
     percentage when using the skill"): the physical damage of the weapon (`MinimumPhysBaseDmgByWeapon`), the staff rise
     or the book rise (`GetWeaponRise`, `AttackableExtensions.GetBaseDmg`).
-  - Left as data: extra damage rate 1007 ("chance to deal Mastery DMG", no amount in any source), speed 1008
-    (client animation), cooldown 1019, the explosions 1125-1135 and 1196-1201.
+  - Extra damage rate 1007 (formulas 50-53, tree tool "+1.12 % Mastery DMG Chance" at 1): the chance in percent of a
+    Mastery DMG hit of the skill. No source has the amount of the Mastery DMG, so it is the setting
+    `MasteryDamagePercent` (percent of the hit, 0 by default: the node does nothing until an operator sets it).
+  - Left as data: speed 1008 (client animation), cooldown 1019, the explosions 1125-1135 and 1196-1201.
 
 ## Debuffs (`EnhanceTreeDebuffs`)
 

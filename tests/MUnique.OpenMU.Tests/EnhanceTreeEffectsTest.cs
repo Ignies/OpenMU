@@ -156,6 +156,24 @@ public class EnhanceTreeEffectsTest
         Assert.That(EnhanceTreeEffects.GetWeaponRise(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf, DamageType.Curse), Is.Zero);
     }
 
+    /// <summary>
+    /// "Add Ext Skill Extra Damage Rate" (1007, formula 51) is the chance in percent of a Mastery DMG hit (muonlinefanz.com:
+    /// "+1.12 % Mastery DMG Chance" at level 1). No source has the amount of that damage: it is a setting, 0 by default.
+    /// </summary>
+    [Test]
+    public void ExtraDamageRateIsTheChanceOfTheMasteryDamage()
+    {
+        var configuration = CreateSheet(new EnhanceTreeNode { Index = 2, Skill = EnhanceTreeEffects.ExtraDamageRate, FormulaId = 51 });
+        configuration.Formulas[51] = "((((((3.33+level)^1.3)/10)*5)/3)*1)";
+        var levels = new Dictionary<short, int> { [MeteorStrikeExtended] = 1, [EnhanceTreeEffects.ExtraDamageRate] = 1 };
+        int? LevelOf(short skill) => levels.TryGetValue(skill, out var level) ? level : null;
+
+        Assert.That(EnhanceTreeEffects.GetMasteryDamageChance(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf), Is.EqualTo(1.12).Within(0.01));
+        Assert.That(new EnhanceTreeConfiguration().MasteryDamagePercent, Is.Zero);
+        Assert.That(EnhanceTreeEffects.GetMasteryDamageFactor(new EnhanceTreeConfiguration { MasteryDamagePercent = 50 }, isMasteryHit: true), Is.EqualTo(1.5));
+        Assert.That(EnhanceTreeEffects.GetMasteryDamageFactor(new EnhanceTreeConfiguration { MasteryDamagePercent = 50 }, isMasteryHit: false), Is.EqualTo(1));
+    }
+
     private static EnhanceTreeConfiguration CreateSheet(params EnhanceTreeNode[] nodes)
     {
         var configuration = new EnhanceTreeConfiguration
