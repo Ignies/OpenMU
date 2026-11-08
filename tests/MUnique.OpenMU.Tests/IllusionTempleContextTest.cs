@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Tests;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Moq;
+using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -239,27 +240,27 @@ public class IllusionTempleContextTest
     }
 
     /// <summary>
-    /// Taking and delivering the relic are objectives which plugins learn about (e.g. the event contribution of Season 21).
+    /// The team which reaches 7 points wins at once - delivering the 7th relic ends the game.
     /// </summary>
     [Test]
-    public async ValueTask RelicObjectivesReachThePlugInsAsync()
+    public async ValueTask DeliveringTheSeventhPointEndsTheGameAsync()
     {
         var gameContext = CreateGameContext();
-        var plugIn = new Mock<IMiniGameObjectiveReachedPlugIn>();
-        plugIn.Setup(p => p.ObjectiveReachedAsync(It.IsAny<MiniGameContext>(), It.IsAny<Player>(), It.IsAny<MiniGameObjective>(), It.IsAny<int>())).Returns(ValueTask.CompletedTask);
-        gameContext.PlugInManager.RegisterPlugInAtPlugInPoint(plugIn.Object);
         var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
         await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
         var players = await EnterPlayersAsync(illusionTemple, gameContext, 2).ConfigureAwait(false);
         await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
         var carrier = players.First(p => GetTeamOf(illusionTemple, p) == IllusionTempleTeam.AlliedForces);
+        illusionTemple.Score.IncreaseScore(IllusionTempleTeam.AlliedForces, 6);
         carrier.OpenedNpc = CreateStatueNpc(illusionTemple);
-
         await illusionTemple.TalkToNpcStoneStatueAsync(carrier).ConfigureAwait(false);
+        var gameEnded = GetGameEndedToken(illusionTemple);
+        Assert.That(gameEnded.IsCancellationRequested, Is.False);
+
         await illusionTemple.TalkToNpcTeamStorageAsync(AlliedStorageNumber, carrier).ConfigureAwait(false);
 
-        plugIn.Verify(p => p.ObjectiveReachedAsync(illusionTemple, carrier, MiniGameObjective.RelicClaimed, 0), Times.Once);
-        plugIn.Verify(p => p.ObjectiveReachedAsync(illusionTemple, carrier, MiniGameObjective.RelicScored, 1), Times.Once);
+        Assert.That(illusionTemple.Score.AlliedForcesScore, Is.EqualTo(7));
+        Assert.That(gameEnded.IsCancellationRequested, Is.True);
     }
 
     /// <summary>
@@ -393,6 +394,17 @@ public class IllusionTempleContextTest
     {
         var field = typeof(IllusionTempleContext).GetField("_relicCarrier", BindingFlags.NonPublic | BindingFlags.Instance);
         return (Player?)field!.GetValue(context);
+    }
+
+    /// <summary>
+    /// Reads the protected <c>GameEndedToken</c> of the <see cref="MiniGameContext"/> via reflection, which tells
+    /// whether the game was finished. Test-only, like <see cref="GetRelicCarrier"/>.
+    /// </summary>
+    [SuppressMessage("Security Hotspot", "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields", Justification = "Test-only code reading a protected property of a type from this same solution. The member name is a hardcoded literal - no external input reaches this call - and exposing a public accessor purely for tests isn't warranted for an internal implementation detail.")]
+    private static CancellationToken GetGameEndedToken(MiniGameContext context)
+    {
+        var property = typeof(MiniGameContext).GetProperty("GameEndedToken", BindingFlags.NonPublic | BindingFlags.Instance);
+        return (CancellationToken)property!.GetValue(context)!;
     }
 
     private static NonPlayerCharacter CreateStatueNpc(IllusionTempleContext context)
@@ -638,5 +650,29 @@ public class IllusionTempleContextTest
         {
             // The invoked method was synchronous (e.g. "async void") - there is nothing to await.
         }
+    }
+
+    /// <summary>
+    /// Taking and delivering the relic are objectives which plugins learn about (e.g. the event contribution of Season 21).
+    /// </summary>
+    [Test]
+    public async ValueTask RelicObjectivesReachThePlugInsAsync()
+    {
+        var gameContext = CreateGameContext();
+        var plugIn = new Mock<IMiniGameObjectiveReachedPlugIn>();
+        plugIn.Setup(p => p.ObjectiveReachedAsync(It.IsAny<MiniGameContext>(), It.IsAny<Player>(), It.IsAny<MiniGameObjective>(), It.IsAny<int>())).Returns(ValueTask.CompletedTask);
+        gameContext.PlugInManager.RegisterPlugInAtPlugInPoint(plugIn.Object);
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 2).ConfigureAwait(false);
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+        var carrier = players.First(p => GetTeamOf(illusionTemple, p) == IllusionTempleTeam.AlliedForces);
+        carrier.OpenedNpc = CreateStatueNpc(illusionTemple);
+
+        await illusionTemple.TalkToNpcStoneStatueAsync(carrier).ConfigureAwait(false);
+        await illusionTemple.TalkToNpcTeamStorageAsync(AlliedStorageNumber, carrier).ConfigureAwait(false);
+
+        plugIn.Verify(p => p.ObjectiveReachedAsync(illusionTemple, carrier, MiniGameObjective.RelicClaimed, 0), Times.Once);
+        plugIn.Verify(p => p.ObjectiveReachedAsync(illusionTemple, carrier, MiniGameObjective.RelicScored, 1), Times.Once);
     }
 }
