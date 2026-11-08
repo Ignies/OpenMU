@@ -19,7 +19,8 @@ is the item slot:
 Every slot needs the fifth evolution. The levels are read through the world's progression mode like every Season 21
 requirement (`AbilityCoreRules`, `EvolutionRules.IsMet`): Original the total level, Normalized level plus master level
 against T(R), Stars the power level. The levels and the color rule (`RowsMatchColor`) are from the webzen guides; the data
-has no slot rule.
+has no slot rule. A game master opens the slots for a test by the levels of the mode: `/setmasterlevel` (original,
+normalized) or `/setresets` (stars, where the world has no master levels and `/setmasterlevel` says so).
 
 A card takes effect while its slot is open and it fits: its kind, the row color, its class (`BaseClasses`), for a skill
 card the fourth evolution skill of the skill enhancement tree it needs (`RequiredSkill`, learned or available); an elite

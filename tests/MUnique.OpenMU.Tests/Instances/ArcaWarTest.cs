@@ -11,6 +11,7 @@ using MUnique.OpenMU.GameLogic.ArcaWar;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
@@ -99,6 +100,33 @@ public class ArcaWarTest
         await this.AdvanceAsync(TimeSpan.FromMinutes(1)).ConfigureAwait(false);
         Assert.That(this.Context.Stage, Is.EqualTo(ArcaWarStage.Waiting));
         Assert.That(this.Context.Guilds.Single().Members, Has.Count.EqualTo(2));
+    }
+
+    /// <summary>
+    /// A game master opens the war with <c>/arcawar</c> and ends each stage early with it, at the next tick.
+    /// </summary>
+    [Test]
+    public async ValueTask GameMasterCommandAdvancesTheStagesAsync()
+    {
+        // A world of its own: the command finds the war's plugin of the world, the first one added to it.
+        var world = await Season21EventWorld.CreateAsync(new AddSeason21AcheronGuardianUpdatePlugIn(), new AddSeason21ArcaWarUpdatePlugIn()).ConfigureAwait(false);
+        world.GameContext.ServerTimeZone = TimeZoneInfo.Utc;
+        var configuration = world.GetStoredConfiguration<ArcaWarConfiguration>(typeof(ArcaWarPlugIn).GUID)!;
+        configuration.StateFile = string.Empty;
+        var now = Start.AddHours(-2);
+        var plugIn = new ArcaWarPlugIn { Configuration = configuration, UtcNow = () => now };
+        world.AddFeaturePlugIn(plugIn);
+        var gameMaster = await world.CreatePlayerAsync(CharacterClassNumber.DarkKnight, 300, 0).ConfigureAwait(false);
+        gameMaster.SelectedCharacter!.CharacterStatus = CharacterStatus.GameMaster;
+        var context = plugIn.GetContext(world.GameContext);
+
+        await new ArcaWarChatCommandPlugIn().HandleCommandAsync(gameMaster, "/arcawar").ConfigureAwait(false);
+        await plugIn.TickAsync(world.GameContext).ConfigureAwait(false);
+        Assert.That(context.Stage, Is.EqualTo(ArcaWarStage.MasterRegistration));
+
+        await new ArcaWarChatCommandPlugIn().HandleCommandAsync(gameMaster, "/arcawar").ConfigureAwait(false);
+        await plugIn.TickAsync(world.GameContext).ConfigureAwait(false);
+        Assert.That(context.Stage, Is.EqualTo(ArcaWarStage.MemberRegistration));
     }
 
     /// <summary>

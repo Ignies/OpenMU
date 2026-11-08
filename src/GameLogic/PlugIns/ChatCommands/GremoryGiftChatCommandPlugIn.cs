@@ -5,8 +5,10 @@
 namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 
 using System.Runtime.InteropServices;
+using MUnique.OpenMU.GameLogic.Administration;
 using MUnique.OpenMU.GameLogic.GremoryCase;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -44,14 +46,10 @@ public class GremoryGiftChatCommandPlugIn : ChatCommandPlugInBase<GremoryGiftCha
             return;
         }
 
-        var item = target.PersistenceContext.CreateNew<Item>();
-        item.Definition = definition;
-        item.Level = arguments.Level;
-        item.Durability = definition.Durability;
+        var item = GameMasterItemFactory.CreateItem(definition, new ItemSpecification(arguments.Group, arguments.Number, arguments.Level));
         var kind = arguments.Case == AccountCase ? GremoryCaseKind.Account : GremoryCaseKind.Character;
         if (await GremoryCaseService.TryAddAsync(target, item, kind).ConfigureAwait(false) is null)
         {
-            await target.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
             await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.GremoryGiftFailed), target.Name).ConfigureAwait(false);
             return;
         }

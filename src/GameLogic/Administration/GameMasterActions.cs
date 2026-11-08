@@ -45,6 +45,7 @@ public static class GameMasterActions
         }
 
         await player.ForEachWorldObserverAsync<IShowEffectPlugIn>(p => p.ShowEffectAsync(player, IShowEffectPlugIn.EffectType.LevelUp), true).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IEnhanceTreeViewPlugIn>(p => p.ShowEnhanceTreeAsync()).ConfigureAwait(false);
         return GameServerAdminResult.Success;
     }
 

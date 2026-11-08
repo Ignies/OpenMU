@@ -3576,5 +3576,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ArcaWarEnded", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Arca War goes to its next stage..
+        /// </summary>
+        public static string ArcaWarAdvanced {
+            get {
+                return ResourceManager.GetString("ArcaWarAdvanced", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This world has no master levels: in the stars mode of the progression the stars count instead, set them with /setresets..
+        /// </summary>
+        public static string MasterLevelsOff {
+            get {
+                return ResourceManager.GetString("MasterLevelsOff", resourceCulture);
+            }
+        }
     }
 }

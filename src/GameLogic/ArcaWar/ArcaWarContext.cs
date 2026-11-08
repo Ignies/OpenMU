@@ -429,6 +429,21 @@ public sealed class ArcaWarContext : IEventStateProvider
     }
 
     /// <summary>
+    /// Opens the registration at the next tick if the war is closed; otherwise ends the current stage at the next tick.
+    /// </summary>
+    internal void Advance()
+    {
+        if (this.Stage == ArcaWarStage.Closed)
+        {
+            this.ForceStart();
+        }
+        else
+        {
+            this.StageEndsAtUtc = this._utcNow();
+        }
+    }
+
+    /// <summary>
     /// Registers a guild without its master asking, at any stage.
     /// </summary>
     /// <param name="guildId">The id of the guild.</param>

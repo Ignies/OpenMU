@@ -9318,5 +9318,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("SummonInvasionPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Arca War Chat Command.
+        /// </summary>
+        public static string ArcaWarChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ArcaWarChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/arcawar&apos;. Opens the registration of the Arca War, or ends its current stage, at the next tick..
+        /// </summary>
+        public static string ArcaWarChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ArcaWarChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

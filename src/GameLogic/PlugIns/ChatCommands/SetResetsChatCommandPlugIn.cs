@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Resets;
+using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -72,6 +73,7 @@ public class SetResetsChatCommandPlugIn : ChatCommandPlugInBase<SetResetsChatCom
         }
 
         targetPlayer.Attributes![Stats.Resets] = checked(arguments.Resets);
+        await targetPlayer.InvokeViewPlugInAsync<IEnhanceTreeViewPlugIn>(p => p.ShowEnhanceTreeAsync()).ConfigureAwait(false);
         await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.SetResetsResult), arguments.Resets).ConfigureAwait(false);
     }
 

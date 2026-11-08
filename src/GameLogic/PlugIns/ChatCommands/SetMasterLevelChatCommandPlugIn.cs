@@ -46,6 +46,13 @@ public class SetMasterLevelChatCommandPlugIn : ChatCommandPlugInBase<SetMasterLe
             return;
         }
 
+        if (targetPlayer.GameContext.Configuration.MaximumMasterLevel <= 0)
+        {
+            // The stars mode of the progression turns the master levels off; the stars (resets) take their place.
+            await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MasterLevelsOff)).ConfigureAwait(false);
+            return;
+        }
+
         if (arguments is null || arguments.MasterLevel < 1 || arguments.MasterLevel > targetPlayer.GameContext.Configuration.MaximumMasterLevel)
         {
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InvalidCharacterLevel), targetPlayer.GameContext.Configuration.MaximumMasterLevel).ConfigureAwait(false);

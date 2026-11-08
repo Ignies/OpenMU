@@ -75,6 +75,12 @@ public sealed class ArcaWarPlugIn : IFeaturePlugIn, IPeriodicTaskPlugIn, ISuppor
     public object CreateDefaultConfig() => new ArcaWarConfiguration();
 
     /// <summary>
+    /// Opens the war of a game context at the next tick, or ends its current stage then (the game master command).
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    public void Advance(IGameContext gameContext) => this.GetContext(gameContext).Advance();
+
+    /// <summary>
     /// Handles a request of a player and shows its result.
     /// </summary>
     /// <param name="player">The player.</param>

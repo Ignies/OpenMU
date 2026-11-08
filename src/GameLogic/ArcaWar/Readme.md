@@ -18,6 +18,9 @@ online to a random spawn area of its group, and a member who comes later enters 
 the member to the town of Acheron (the safe zone map of 92 and 96), and back in the world it's slower for 90 s (effect 184,
 `DeathPenaltySpeedFactor` 0.5, no data).
 
+A game master opens the registration at once with `/arcawar` (`ArcaWarChatCommandPlugIn`); each further `/arcawar`
+ends the current stage at the next tick of the war.
+
 ## Obelisks
 
 Three obelisks (the Fire Tower, monster 598, a destructible): Alkmaar 89/41 and Ubaid 188/101 on Acheron, Deventer 162/54,

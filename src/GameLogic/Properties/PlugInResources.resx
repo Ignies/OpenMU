@@ -3261,4 +3261,10 @@
   <data name="OwnMapRespawnConfiguration_Maps_Name" xml:space="preserve">
     <value>Maps</value>
   </data>
+  <data name="ArcaWarChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Arca War Chat Command</value>
+  </data>
+  <data name="ArcaWarChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/arcawar'. Opens the registration of the Arca War, or ends its current stage, at the next tick.</value>
+  </data>
 </root>

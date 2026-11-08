@@ -99,7 +99,7 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
     {
         if (coordinates == default)
         {
-            var result = this.GetWarpInfo(gameMaster, map)?.Gate;
+            var result = this.GetWarpInfo(gameMaster, map)?.Gate ?? (await this.FindMapAsync(gameMaster, map).ConfigureAwait(false))?.ExitGates.OrderByDescending(g => g.IsSpawnGate).FirstOrDefault();
             if (result is null)
             {
                 await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MapNotFound), map).ConfigureAwait(false);
@@ -108,12 +108,7 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
             return result;
         }
 
-        var mapDefinition = ushort.TryParse(map, out var mapId)
-            ? (await gameMaster.GameContext.GetMapAsync(mapId).ConfigureAwait(false))?.Definition
-            : gameMaster.GameContext.Configuration.Maps.FirstOrDefault(x =>
-                x.Name.GetTranslationAsSpan(gameMaster.Culture).Equals(map, StringComparison.OrdinalIgnoreCase)
-                || x.Name.ValueInNeutralLanguageAsSpan.Equals(map, StringComparison.OrdinalIgnoreCase));
-
+        var mapDefinition = await this.FindMapAsync(gameMaster, map).ConfigureAwait(false);
         if (mapDefinition is null)
         {
             await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.MapNotFound), map).ConfigureAwait(false);
@@ -128,6 +123,21 @@ public abstract class ChatCommandPlugInBase<T> : IChatCommandPlugIn
             Y1 = coordinates.Y,
             Y2 = coordinates.Y,
         };
+    }
+
+    /// <summary>
+    /// Finds a map by its number or name.
+    /// </summary>
+    /// <param name="gameMaster">The game master.</param>
+    /// <param name="map">The number or name of the map.</param>
+    /// <returns>The map definition, or <c>null</c>.</returns>
+    protected async ValueTask<GameMapDefinition?> FindMapAsync(Player gameMaster, string map)
+    {
+        return ushort.TryParse(map, out var mapId)
+            ? (await gameMaster.GameContext.GetMapAsync(mapId).ConfigureAwait(false))?.Definition
+            : gameMaster.GameContext.Configuration.Maps.FirstOrDefault(x =>
+                x.Name.GetTranslationAsSpan(gameMaster.Culture).Equals(map, StringComparison.OrdinalIgnoreCase)
+                || x.Name.ValueInNeutralLanguageAsSpan.Equals(map, StringComparison.OrdinalIgnoreCase));
     }
 
     /// <summary>
