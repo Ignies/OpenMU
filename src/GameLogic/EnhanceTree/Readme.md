@@ -40,7 +40,8 @@ turns it on.
   - Extra damage rate 1007 (formulas 50-53, tree tool "+1.12 % Mastery DMG Chance" at 1): the chance in percent of a
     Mastery DMG hit of the skill. No source has the amount of the Mastery DMG, so it is the setting
     `MasteryDamagePercent` (percent of the hit, 0 by default: the node does nothing until an operator sets it).
-  - Left as data: speed 1008 (client animation), cooldown 1019, the explosions 1125-1135 and 1196-1201.
+  - Left as data: speed 1008 (the skill's animation speed, which only the client plays; the server has no speed of a
+    skill to raise) and cooldown 1019 (OpenMU's skills have no cooldown to remove: S21Emu's `Delay` isn't imported).
 
 ## Debuffs (`EnhanceTreeDebuffs`)
 
@@ -67,8 +68,31 @@ sheet (extension learned, like the node effects):
     Effect"; Frostbite: "moving speed and attack speed will decrease by % of the effect", so its improved value nodes
     add to both).
 - No source, so settings: the circle's base targets and range (1 each), the rate scale and the movement slow of
-  Chilling (`ChillMovementSlow`, 50 %, like OpenMU's iced slow). Left as data: the explosions (1125-1135, 1196-1201) and
-  the shock/stun line (no S21Emu field).
+  Chilling (`ChillMovementSlow`, 50 %, like OpenMU's iced slow). Left as data: the shock/stun line (S21Emu
+  `Effect.txt` has the effects 276 Shock and 280 Shock Improved, but no field, node or value of any source places them;
+  Webzen guide 112 names Shock, Stun and Stun Boom without numbers).
+
+## Explosions (`EnhanceTreeExplosions`)
+
+The explosion sheet of every class (S21Emu groups 3-8, color 3) holds three lines; each line head improves itself
+(`RelatedSkill` = its skill) and its nodes name it as the skill they improve, so the node effects index a line like a
+sheet (`EnhanceTreeEffects`). Meanings from the muonlinefanz.com tree tool (sheet "Debuff"):
+
+| Line | Explodes | Besides the hit |
+|---|---|---|
+| Poison Storm 1125 | Toxic (277) | Poisoning to 2 targets around (`Value`), a poisoned one upgraded to Toxic; "Target Increase" 1133 +1 |
+| Frozen Slayer 1126 | Frostbite (278) | the targets around take 30 % of the skill damage; 1134 +1 % |
+| Bloodying Hit 1127 | Bleeding Severe (279) | the target's defense -15 % (`Stats.DefenseDecrement`); 1135 +1 % |
+
+- A cast on a target without that debuff does nothing; with it, the debuff goes and the skill hits
+  (`TargetedSkillDefaultPlugin`). The damage is the line head's formula (139-141) at the character's total level
+  (level + master level: 25000 at 800, 25 more each level) plus "Enhanced (1)/(2)" (1129-1131, 1196-1198) like
+  "Add Ext Skill Damage"; "Range Increase" (1199-1201, +1 at 10 and 20) adds to its range (`GetReach`).
+- The explosion skills deal physical damage for every class (skills update version 5): as wizardry, a class without a
+  staff rise multiplied the damage by zero.
+- No source, so settings (`Explosions`): the radius around the target (2 tiles), the seconds of the defense decrease
+  (10, a circle's seconds) and its effect number (313, the "Dec Def" debuff of S21Emu `Effect.txt`; above 255, so no
+  Season 6 client sees it).
 
 ## Points (`EnhanceTreePoints`)
 

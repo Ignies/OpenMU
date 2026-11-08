@@ -81,6 +81,60 @@ public static class EnhanceTreeDebuffs
     public static ValueTask ApplyAfterHitAsync(EnhanceTreeConfiguration configuration, BaseClassCode baseClass, Func<short, int?> levelOf, IAttacker attacker, IAttackable target, short skill, HitInfo hit, DateTime now)
         => ApplyAfterHitAsync(configuration, baseClass, levelOf, EnhanceTreeEffects.LevelOfLookup, attacker, target, skill, hit, now);
 
+    /// <summary>
+    /// Places a debuff without a roll and without node values, replacing the basic debuff of its kind.
+    /// </summary>
+    /// <param name="configuration">The configuration of the tree.</param>
+    /// <param name="kind">The kind.</param>
+    /// <param name="improved">If set to <c>true</c>, the upgraded debuff of the kind.</param>
+    /// <param name="attacker">The attacker.</param>
+    /// <param name="target">The target.</param>
+    /// <returns>The task.</returns>
+    public static async ValueTask PlaceAsync(EnhanceTreeConfiguration configuration, EnhanceTreeDebuffKind kind, bool improved, IAttacker attacker, IAttackable target)
+    {
+        if (FindDebuff(configuration, kind, false) is not { } basic
+            || (improved ? FindDebuff(configuration, kind, true) : basic) is not { } debuff)
+        {
+            return;
+        }
+
+        if (target.MagicEffectList.TryGetEffect(basic.EffectNumber, out var basicEffect))
+        {
+            await basicEffect.DisposeAsync().ConfigureAwait(false);
+        }
+
+        var noNodes = new SheetValues<int>(configuration, default, 0, 0, static (_, _) => null);
+        await target.MagicEffectList.AddEffectAsync(CreateEffect(noNodes, Nodes[(int)kind], basic, debuff, attacker, target)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Gets the definition of a magic effect of the tree, which only its number identifies.
+    /// </summary>
+    /// <param name="number">The number of the effect.</param>
+    /// <returns>The definition.</returns>
+    internal static MagicEffectDefinition GetEffectDefinition(short number)
+        => Definitions.GetOrAdd(number, static n => new MagicEffectDefinition { Number = n, StopByDeath = true });
+
+    /// <summary>
+    /// Gets the debuff of a kind.
+    /// </summary>
+    /// <param name="configuration">The configuration of the tree.</param>
+    /// <param name="kind">The kind.</param>
+    /// <param name="improved">If set to <c>true</c>, the upgraded debuff of the kind.</param>
+    /// <returns>The debuff, or <c>null</c>.</returns>
+    internal static EnhanceTreeDebuff? FindDebuff(EnhanceTreeConfiguration configuration, EnhanceTreeDebuffKind kind, bool improved)
+    {
+        foreach (var debuff in configuration.Debuffs)
+        {
+            if (debuff.Kind == kind && debuff.Improved == improved)
+            {
+                return debuff;
+            }
+        }
+
+        return null;
+    }
+
     private static async ValueTask ApplyAfterHitAsync<TState>(EnhanceTreeConfiguration configuration, BaseClassCode baseClass, TState state, Func<TState, short, int?> levelOf, IAttacker attacker, IAttackable target, short skill, HitInfo hit, DateTime now)
     {
         if (hit.TotalDamage == 0)
@@ -178,7 +232,7 @@ public static class EnhanceTreeDebuffs
     private static EnhanceTreeDebuffEffect CreateEffect<TState>(SheetValues<TState> sheet, KindNodes nodes, EnhanceTreeDebuff basic, EnhanceTreeDebuff debuff, IAttacker attacker, IAttackable target)
     {
         var duration = TimeSpan.FromSeconds(debuff.Seconds + sheet.Get(nodes.Duration));
-        var definition = Definitions.GetOrAdd(debuff.EffectNumber, static number => new MagicEffectDefinition { Number = number, StopByDeath = true });
+        var definition = GetEffectDefinition(debuff.EffectNumber);
         var value = sheet.Get(nodes.Value);
         var improvedValue = debuff.Improved ? sheet.Get(nodes.ImprovedValue) : 0;
         var multiplier = debuff.Improved ? debuff.Multiplier : 1;
@@ -214,19 +268,6 @@ public static class EnhanceTreeDebuffs
             if (field.Type == (byte)kind)
             {
                 return field;
-            }
-        }
-
-        return null;
-    }
-
-    private static EnhanceTreeDebuff? FindDebuff(EnhanceTreeConfiguration configuration, EnhanceTreeDebuffKind kind, bool improved)
-    {
-        foreach (var debuff in configuration.Debuffs)
-        {
-            if (debuff.Kind == kind && debuff.Improved == improved)
-            {
-                return debuff;
             }
         }
 

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.EnhanceTree;
 
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using MUnique.OpenMU.GameLogic.Classes;
 using org.mariuszgromada.math.mxparser;
@@ -91,7 +92,7 @@ public static class EnhanceTreeEffects
 
     private const int BaseSplashRadius = 1;
 
-    private static readonly short[] ExtSkillDamageNodes = [ExtSkillDamage];
+    private static readonly short[] ExtSkillDamageNodes = [ExtSkillDamage, .. EnhanceTreeExplosions.DamageNodes];
 
     private static readonly short[] DamageCountNodes = [DamageCount1, DamageCount2, DamageCount3];
 
@@ -103,7 +104,7 @@ public static class EnhanceTreeEffects
 
     private static readonly short[] ExtraDamageRateNodes = [ExtraDamageRate];
 
-    private static readonly short[] RangeNodes = [SkillRange];
+    private static readonly short[] RangeNodes = [SkillRange, .. EnhanceTreeExplosions.RangeNodes];
 
     private static readonly short[] RadiusNodes = [SkillRadius];
 
@@ -304,6 +305,31 @@ public static class EnhanceTreeEffects
     }
 
     /// <summary>
+    /// Gets the tree of a player: the configuration when the tree is on, the base class and the skills.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="configuration">The configuration of the tree.</param>
+    /// <param name="baseClass">The base class of the character.</param>
+    /// <param name="skills">The skills of the player.</param>
+    /// <returns><c>true</c>, when the tree is on and the player has a character with skills.</returns>
+    internal static bool TryGetTree(Player player, [NotNullWhen(true)] out EnhanceTreeConfiguration? configuration, out BaseClassCode baseClass, [NotNullWhen(true)] out ISkillList? skills)
+    {
+        skills = player.SkillList;
+        configuration = EnhanceTreeFeaturePlugIn.GetConfiguration(player.GameContext);
+        baseClass = default;
+        if (skills is null
+            || configuration is null
+            || player.SelectedCharacter?.CharacterClass is not { } characterClass
+            || ClassCodes.GetBaseClass(characterClass.Number) is not { } code)
+        {
+            return false;
+        }
+
+        baseClass = code;
+        return true;
+    }
+
+    /// <summary>
     /// Gets the level of a learned tree skill of a skill list.
     /// </summary>
     /// <param name="list">The skill list.</param>
@@ -381,15 +407,22 @@ public static class EnhanceTreeEffects
 
     private static Dictionary<(byte BaseClass, short Skill), Sheet[]> CreateIndex(EnhanceTreeConfiguration configuration)
         => configuration.Nodes
-            .Where(n => n.Index == ExtensionNodeIndex && n.RelatedSkill != 0)
+            .Where(n => n.RelatedSkill != 0 && (n.Index == ExtensionNodeIndex || IsLineHead(n)))
             .GroupBy(n => (n.BaseClass, n.RelatedSkill))
             .ToDictionary(
                 g => g.Key,
                 g => g.Select(extension => new Sheet(extension.Skill, configuration.Nodes
-                        .Where(n => n.BaseClass == extension.BaseClass && n.Group == extension.Group && n.Index != ExtensionNodeIndex && configuration.Formulas.ContainsKey(n.FormulaId))
+                        .Where(n => n.BaseClass == extension.BaseClass && n.Group == extension.Group && n.Index != extension.Index && configuration.Formulas.ContainsKey(n.FormulaId))
+                        .Where(n => IsLineHead(extension) ? n.RelatedSkill == extension.Skill : n.Index != ExtensionNodeIndex)
                         .Select(n => (n.Skill, configuration.Formulas[n.FormulaId]))
                         .ToArray()))
                     .ToArray());
+
+    /// <summary>
+    /// Gets a value indicating whether a node heads a line of a sheet: it improves itself, like an explosion skill, and
+    /// the nodes of its line name it as the skill they improve.
+    /// </summary>
+    private static bool IsLineHead(EnhanceTreeNode node) => node.Skill == node.RelatedSkill;
 
     private sealed record Sheet(short Extension, (short Skill, string Formula)[] Nodes);
 }

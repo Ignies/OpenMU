@@ -833,6 +833,11 @@ public static class AttackableExtensions
             return result;
         }
 
+        if (EnhanceTreeExplosions.GetDamage(player, skill) is { } explosionDamage)
+        {
+            result = (int)explosionDamage;
+        }
+
         result += (int)EnhanceTreeEffects.GetExtraSkillDamage(player, skill);
         if (skill.MasterDefinition is { } masterDefinition)
         {

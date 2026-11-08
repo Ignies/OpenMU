@@ -43,6 +43,13 @@ internal sealed class Season21SkillsInitializer : SkillsInitializerBase
     private static readonly HashSet<int> PassiveUses = [3, 7, 9, 10, 11];
 
     /// <summary>
+    /// The explosion skills of the enhance tree: the nodes which improve themselves (Poison Storm, Frozen Slayer, Bloodying
+    /// Hit). Every class learns them, so their damage is physical: as wizardry, a class without a staff rise would
+    /// multiply it by zero.
+    /// </summary>
+    private static readonly HashSet<short> ExplosionSkills = Season21SkillCatalog.Data.EnhanceNodes.Where(n => n.Skill == n.Related).Select(n => n.Skill).ToHashSet();
+
+    /// <summary>
     /// The attributes of the enhance tree passives (S21Emu Skill.xml names). The stat points, the impenetrable defense and
     /// the 4th wing passives have no attribute of their own and stay data.
     /// </summary>
@@ -101,6 +108,18 @@ internal sealed class Season21SkillsInitializer : SkillsInitializerBase
             MagicFields = data.MagicFields.Select(f => new EnhanceTreeMagicField { Type = f.Type, Skill = f.Skill, Seconds = f.Seconds, CooldownSeconds = f.Cooldown }).ToList(),
             Formulas = new Dictionary<short, string>(data.Formulas),
         };
+    }
+
+    /// <summary>
+    /// Makes the explosion skills of the enhance tree physical which an earlier version imported as wizardry; another
+    /// damage type (the operator's) stays.
+    /// </summary>
+    public void MakeExplosionsPhysical()
+    {
+        foreach (var skill in this.GameConfiguration.Skills.Where(s => ExplosionSkills.Contains(s.Number) && s.DamageType == DamageType.Wizardry))
+        {
+            skill.DamageType = DamageType.Physical;
+        }
     }
 
     /// <summary>
@@ -206,6 +225,11 @@ internal sealed class Season21SkillsInitializer : SkillsInitializerBase
         if (row.Kind is not (0 or 7) || PassiveUses.Contains(row.Use))
         {
             return DamageType.None;
+        }
+
+        if (ExplosionSkills.Contains(row.Number))
+        {
+            return DamageType.Physical;
         }
 
         return row.DivisionStat switch

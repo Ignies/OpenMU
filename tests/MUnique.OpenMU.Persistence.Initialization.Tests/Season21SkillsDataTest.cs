@@ -164,6 +164,27 @@ internal class Season21SkillsDataTest
         Assert.That(spinStep.AttackDamage, Is.EqualTo(123));
     }
 
+    /// <summary>
+    /// The explosion skills of the enhance tree (1125-1127, every class) deal physical damage: as wizardry, a class without
+    /// a staff rise multiplies it by zero. Version 5 moves the imported wizardry ones; an operator's other type stays.
+    /// </summary>
+    [Test]
+    public async Task ExplosionsArePhysicalAsync()
+    {
+        var (context, gameConfiguration) = await CreateWithSkillsAsync().ConfigureAwait(false);
+        var explosions = gameConfiguration.Skills.Where(s => s.Number is >= 1125 and <= 1127).OrderBy(s => s.Number).ToList();
+        Assert.That(explosions.Select(s => s.DamageType), Is.EqualTo(new[] { DamageType.Physical, DamageType.Physical, DamageType.Physical }));
+
+        explosions[0].DamageType = DamageType.Wizardry;
+        explosions[1].DamageType = DamageType.Curse;
+        var updates = await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false);
+        updates.Single(u => u.Key == new AddSeason21SkillsUpdatePlugIn().Key).Version = 4;
+        await new AddSeason21SkillsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(explosions[0].DamageType, Is.EqualTo(DamageType.Physical));
+        Assert.That(explosions[1].DamageType, Is.EqualTo(DamageType.Curse), "the operator's");
+    }
+
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateWithSkillsAsync()
     {
         var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);

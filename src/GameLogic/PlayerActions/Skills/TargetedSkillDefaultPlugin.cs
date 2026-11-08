@@ -266,6 +266,12 @@ public class TargetedSkillDefaultPlugin : TargetedSkillPluginBase
             {
                 if (!target.IsAtSafezone() && !player.IsAtSafezone() && target != player)
                 {
+                    if (await EnhanceTreeExplosions.TryExplodeAsync(player, target, skillEntry).ConfigureAwait(false))
+                    {
+                        player.LastAttackedTarget.SetTarget(target);
+                        continue;
+                    }
+
                     var hits = skill.NumberOfHitsPerAttack + EnhanceTreeEffects.GetExtraHits(player, skill);
                     var hitInfo = await target.AttackByAsync(player, skillEntry, isCombo, 1, hits > 1 ? false : null).ConfigureAwait(false);
                     player.LastAttackedTarget.SetTarget(target);

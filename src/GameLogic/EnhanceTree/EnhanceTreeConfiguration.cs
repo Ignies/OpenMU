@@ -92,6 +92,12 @@ public class EnhanceTreeConfiguration
     public int MasteryDamagePercent { get; set; }
 
     /// <summary>
+    /// Gets or sets the explosion skills (muonlinefanz.com tree tool, sheet "Debuff").
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EnhanceTreeConfiguration_Explosions_Name))]
+    public List<EnhanceTreeExplosion> Explosions { get; set; } = EnhanceTreeExplosions.CreateDefaultExplosions();
+
+    /// <summary>
     /// Gets or sets the value formulas by their id (S21Emu <c>Formula.txt</c>, section SkillTree), in the syntax of
     /// <see cref="MasterSkillDefinition.ValueFormula"/>.
     /// </summary>

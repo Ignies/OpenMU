@@ -5711,6 +5711,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Explosions.
+        /// </summary>
+        public static string EnhanceTreeConfiguration_Explosions_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeConfiguration_Explosions_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Evolution quests (4th and 5th class).
         /// </summary>
         public static string EvolutionQuestFeaturePlugIn_Name {
