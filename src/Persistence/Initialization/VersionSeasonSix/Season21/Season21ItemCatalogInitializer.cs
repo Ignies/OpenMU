@@ -116,6 +116,23 @@ internal class Season21ItemCatalogInitializer
         }
 
         new Season21DropGroups(this._context, this._gameConfiguration).Apply();
+        this.QualifyClasses();
+    }
+
+    /// <summary>
+    /// Adds the classes which may use a catalogued item and miss it, the nine classes of Season 21 and the fourth and
+    /// fifth evolutions included: the classes may come after the items.
+    /// </summary>
+    /// <param name="classes">The classes to qualify, or <c>null</c> for every class.</param>
+    public void QualifyClasses(IReadOnlyCollection<CharacterClass>? classes = null)
+    {
+        foreach (var item in this._gameConfiguration.Items)
+        {
+            if (this._rows.TryGetValue((item.Group, item.Number), out var row))
+            {
+                Season21ClassRanks.Qualify(classes ?? (IEnumerable<CharacterClass>)this._gameConfiguration.CharacterClasses, item, row.Classes);
+            }
+        }
     }
 
     private static int[] SeasonSixRanks(Season21CatalogItem row)

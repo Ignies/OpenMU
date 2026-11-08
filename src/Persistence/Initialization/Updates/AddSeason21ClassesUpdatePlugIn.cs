@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Updates;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
@@ -44,10 +45,10 @@ public class AddSeason21ClassesUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 05, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    public override int Version => 3;
+    public override int Version => 4;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 07, 12, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 08, 2, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration, int? installedVersion)
@@ -69,7 +70,12 @@ public class AddSeason21ClassesUpdatePlugIn : UpdatePlugInBase
             }
         }
 
+        var existing = gameConfiguration.CharacterClasses.ToHashSet();
         initialization.InitializeSeason21();
+
+        // version 4: the items of the data name the nine classes and the fourth and fifth evolutions too
+        var added = gameConfiguration.CharacterClasses.Where(c => !existing.Contains(c)).ToList();
+        new Season21ItemCatalogInitializer(context, gameConfiguration).QualifyClasses(installedVersion is > 0 and < 4 ? null : added);
         return ValueTask.CompletedTask;
     }
 

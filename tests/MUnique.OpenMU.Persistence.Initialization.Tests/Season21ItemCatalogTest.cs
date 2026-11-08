@@ -223,6 +223,37 @@ internal class Season21ItemCatalogTest
 
     private static short Key(ItemDefinition item) => (short)((item.Group * 512) + item.Number);
 
+    /// <summary>
+    /// The nine new classes and the fourth and fifth evolutions wear what their column of the data allows, whichever
+    /// of the catalog and the classes installs first: on the first live run a Grow Lancer could wear nothing. An item
+    /// without classes is for everybody.
+    /// </summary>
+    /// <param name="classesFirst">Whether the classes update installs before the catalog.</param>
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task EveryClassWearsWhatItsColumnAllowsAsync(bool classesFirst)
+    {
+        var (context, gameConfiguration) = await CreateWithGearAsync().ConfigureAwait(false);
+        if (classesFirst)
+        {
+            await new AddSeason21ClassesUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        }
+
+        await new AddSeason21ItemCatalogUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        if (!classesFirst)
+        {
+            await new AddSeason21ClassesUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        }
+
+        var growLancer = gameConfiguration.CharacterClasses.Single(c => c.Number == 184);
+        var dragonKnight = gameConfiguration.CharacterClasses.Single(c => c.Number == 139);
+        var lancerRows = Season21ItemCatalog.Items.Where(r => r.Classes[7] == 1).ToList();
+        var knightRows = Season21ItemCatalog.Items.Where(r => r.Classes[1] is >= 1 and <= 4).ToList();
+        Assert.That(lancerRows.Count(r => Item(gameConfiguration, r.Group, r.Number).QualifiedCharacters.Contains(growLancer)), Is.GreaterThan(100));
+        Assert.That(lancerRows.Where(r => Item(gameConfiguration, r.Group, r.Number).QualifiedCharacters is { Count: > 0 } classes && !classes.Contains(growLancer)).Select(r => (r.Group, r.Number)), Is.Empty);
+        Assert.That(knightRows.Where(r => Item(gameConfiguration, r.Group, r.Number).QualifiedCharacters is { Count: > 0 } classes && !classes.Contains(dragonKnight)).Select(r => (r.Group, r.Number)), Is.Empty);
+    }
+
     private static Season21CatalogItem Row(byte group, short number) => Season21ItemCatalog.Items.Single(i => i.Group == group && i.Number == number);
 
     private static ItemDefinition Item(GameConfiguration gameConfiguration, byte group, short number)
