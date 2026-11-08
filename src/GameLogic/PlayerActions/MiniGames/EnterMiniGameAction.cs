@@ -37,8 +37,7 @@ public class EnterMiniGameAction
 
         // The availability includes the entrance map, independently of the map requirements
         // below, which a running game may waive for rejoining players.
-        var miniGameDefinition = player.GameContext.Configuration.MiniGameDefinitions
-            .FirstOrDefault(def => def.Type == miniGameType && def.GameLevel == gameLevel && def.IsAvailable());
+        var miniGameDefinition = player.GameContext.Configuration.FindEnterableDefinition(player, miniGameType, gameLevel);
         if (miniGameDefinition is null
             || (miniGameDefinition.RequiresMasterClass && !player.SelectedCharacter.CharacterClass.IsMasterClass)
             || player.CurrentMiniGame is not null)

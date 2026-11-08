@@ -31,6 +31,29 @@ public static class MiniGameDefinitionExtensions
     }
 
     /// <summary>
+    /// Finds the definition a player enters with a request for the game level: the requested one when it's available
+    /// and holds the player, else the available one of the type which holds the player (the Season 6 client picks the
+    /// grade by its own level brackets, which the grades of Season 21 do not follow), else the requested one, so the
+    /// usual refusals apply.
+    /// </summary>
+    /// <param name="configuration">The game configuration.</param>
+    /// <param name="player">The player.</param>
+    /// <param name="miniGameType">Type of the mini game.</param>
+    /// <param name="gameLevel">The requested game level.</param>
+    /// <returns>The definition, or <c>null</c> if no available one has the requested level and none holds the player.</returns>
+    public static MiniGameDefinition? FindEnterableDefinition(this GameConfiguration configuration, Player player, MiniGameType miniGameType, int gameLevel)
+    {
+        var available = configuration.MiniGameDefinitions.Where(def => def.Type == miniGameType && def.IsAvailable()).ToList();
+        var requested = available.FirstOrDefault(def => def.GameLevel == gameLevel);
+        if (requested is not null && requested.IsInLevelRange(player))
+        {
+            return requested;
+        }
+
+        return available.FirstOrDefault(def => def.IsInLevelRange(player)) ?? requested;
+    }
+
+    /// <summary>
     /// Determines whether the mini game is available in the game, which requires that
     /// it's active, and that it has an entrance map which is active, too.
     /// </summary>
