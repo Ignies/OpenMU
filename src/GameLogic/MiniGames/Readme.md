@@ -217,6 +217,10 @@ get the Wings of Conqueror (12/268) once when they enter the world from the rewa
 `DamageReduction` scales the PvP hits in the league (`IPlayerDamageFactorPlugIn`). The state is kept in
 `state/illusion_temple_league_guilds.json` and `_players.json` (guilds by their persistent id).
 
+The Babylon client gets `IIllusionTempleLeagueViewPlugIn`: the league of the guild (`EE BE`, on entering the world on a
+league day, at the start and the end of a match) and the stones with the place of the hollow (`EE BF`, on each change);
+layouts in `docs/babylon.md`.
+
 Settings without a source (ours): `MaximumPlayerEntries` 0 (none), `DamageReduction` 0, `StatueSpawnRateReductionPerPoint`
 0, `StoneSealProtection` 10 seconds. Not ported: the title of the champion (no title system), the event point rewards of
 `EventMapPointIntegration.xml`, the `StageTypeSettings` (`PlayDuration`, `SpawnMonster`; the data has no rows and maps

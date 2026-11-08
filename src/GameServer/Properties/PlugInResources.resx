@@ -3131,4 +3131,10 @@
   <data name="AbilityCoreRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the actions of the Ability Enhancement Core window of the Babylon client (EE 44): insert, remove, level up and reduce a card.</value>
   </data>
+  <data name="IllusionTempleLeagueBabylonPlugIn_Name" xml:space="preserve">
+    <value>Illusion Temple League (Babylon)</value>
+  </data>
+  <data name="IllusionTempleLeagueBabylonPlugIn_Description" xml:space="preserve">
+    <value>Sends the league of the guild (EE BE) and the stones of the renewed Illusion Temple (EE BF) to the Babylon client.</value>
+  </data>
 </root>

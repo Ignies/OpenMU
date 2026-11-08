@@ -101,7 +101,7 @@ Rules:
 | `creatable_classes` | `C1 EE 14 CreatableClasses` after the class codes of the list: every class the creation offers with the state of the server's creation rule (`GameLogic/Classes/ClassCreationRule.cs`) and its creation level |
 | `level_penalties` | The damage and experience penalties of Season 21 below a monster's level + 600 (S21Emu `DamagePenalty.lua`, `ExperienciePenalty.lua`; plugin "Level penalties (Season 21)", off by default, levels mapped through the progression mode, `src/GameLogic/Progression`). No packet |
 | `ability_core` | The Ability Enhancement Core of the fifth evolution: 45 skill, option, elite and extra damage cards in 22 slots (`Character.AbilityCore`, migration `AddSeason21AbilityCore`), their options as item options by card level, the fifth evolution skills of the skill cards, level up and reduction, card crafting at the chaos goblin (update "Add the Ability Enhancement Core of Season 21", plugin "Ability Enhancement Core (Season 21)", off by default; slot levels mapped through the progression mode; `src/GameLogic/AbilityCore`; `EE 43`-`45`) |
-| `illusion_temple_league` | The Illusion Temple League of Season 21 (maps 98 and 99, event type 14 of `EE B1`, level 1 or 2): the renewed temple (the Cursed Statue 658 gives the Cursed Hollow, its carrier seals it into one of the ten Captured Stone Statues 659-668 for a point, the other team unseals a stone to take it back, 7 points or the most at the end win) for the parties of two guilds (5 members of one guild, total level 400 through the progression mode); eliminations on the 3rd-9th (5 matches a guild), ranked by occupied stones, kills and level sum; the best four play the semi-finals on the 11th (first against fourth, second against third), their winners the final on the 12th; the players of the champion in the final get the Wings of Conqueror (12/268) from the 13th (update "Add the Illusion Temple League of Season 21", plugins "Illusion Temple League (Season 21)" and "Illusion Temple League start", off by default; `src/GameLogic/MiniGames/Readme.md`) |
+| `illusion_temple_league` | The Illusion Temple League of Season 21 (maps 98 and 99, event type 14 of `EE B1`, level 1 or 2): the renewed temple (the Cursed Statue 658 gives the Cursed Hollow, its carrier seals it into one of the ten Captured Stone Statues 659-668 for a point, the other team unseals a stone to take it back, 7 points or the most at the end win) for the parties of two guilds (5 members of one guild, total level 400 through the progression mode); eliminations on the 3rd-9th (5 matches a guild), ranked by occupied stones, kills and level sum; the best four play the semi-finals on the 11th (first against fourth, second against third), their winners the final on the 12th; the players of the champion in the final get the Wings of Conqueror (12/268) from the 13th (update "Add the Illusion Temple League of Season 21", plugins "Illusion Temple League (Season 21)" and "Illusion Temple League start", off by default; `src/GameLogic/MiniGames/Readme.md`; `EE BE`-`BF`) |
 
 ## Balance
 
@@ -393,6 +393,27 @@ C1 08+24n EE BD  ArcaWarObelisks (server, once a second to the players on maps 9
 The state comes to everyone at each stage change, after a request and on entering the world while the war isn't closed;
 the Season 6 client gets the stage changes as golden messages and can't register (no packet). Monster 598 is a
 destructible the client draws as the obelisk; its shield (`IsOpen`) is down only for the guild on all three auras.
+
+```
+C1 14 EE BE  IllusionTempleLeagueState (server; fork id illusion_temple_league)
+  4  u8      stage of the day: 0 none, 1 eliminations, 2 semi-finals, 3 final, 4 reward day
+  5  u8      rank of the guild in the eliminations (0 none)
+  6  u8      elimination matches of the guild, 7 u8 the most a guild may play (0 no limit)
+  8  u16 LE  occupied stones, 10 u16 LE kills, 12 u32 LE level sums of the eliminations
+  16 u8      0 none, 1 semi-final in temple 1, 2 semi-final in temple 2, 3 finalist, 4 champion
+  17 u8      elimination matches of the character, 18 u8 the most a character may play (0 no limit)
+
+C1 08+4n EE BF  IllusionTempleStones (server)
+  4  u8      stone count n (10), 5 u8 own team (1 allied, 2 illusion forces)
+  6  u8      Cursed Hollow: 0 in the Cursed Statue, 1 carried, 2 on the ground, 3 none (the statue comes back)
+  8  n x 4   0 u8 index (0-9, NPC 659-668), 1 u8 holder (0 none, 1 allied, 2 illusion), 2 u8 x, 3 u8 y
+```
+
+The league state comes when a character of a guild enters the world on a league day, when a league match starts and
+after it ended; the stones at the battle start and whenever a stone is sealed or unsealed or the hollow changes hands.
+The league temples are entered with `EE B1` (type 14, level 1 or 2); inside, the Season 6 Illusion Temple packets (`BF`)
+carry the time, the score, the skills and the result as in the old temple, with the occupied stones as the score. A
+Season 6 client gets the rules as golden messages (no stones view).
 
 Item rewards go into the gremory case where Season 21 does (and the plugin is on), else into the inventory.
 

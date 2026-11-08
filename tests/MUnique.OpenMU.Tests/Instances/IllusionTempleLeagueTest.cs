@@ -131,6 +131,26 @@ public class IllusionTempleLeagueTest
     }
 
     /// <summary>
+    /// The standing of a guild shows its rank, entries and totals of the eliminations and how far it came.
+    /// </summary>
+    [Test]
+    public void StandingShowsTheLeagueOfTheGuild()
+    {
+        var plugIn = CreatePlugIn();
+        var (a, b) = (Guid.NewGuid(), Guid.NewGuid());
+        var player = Guid.NewGuid();
+        plugIn.Record(IllusionTempleLeagueStage.Elimination, [Result(a, 3, 4, 800, player), Result(b, 5, 0, 800)], EliminationDay);
+
+        Assert.That(plugIn.GetStanding(a, player, EliminationDay), Is.EqualTo(new IllusionTempleLeagueStanding(IllusionTempleLeagueStage.Elimination, 2, 1, 1, 3, 4, 800, IllusionTempleLeagueQualification.SemiFinalTemple2, 5, 0)));
+        Assert.That(plugIn.GetStanding(b, Guid.NewGuid(), SemiFinalDay).Qualification, Is.EqualTo(IllusionTempleLeagueQualification.SemiFinalTemple1));
+        plugIn.Record(IllusionTempleLeagueStage.SemiFinal, [Result(a, 2, 0, 400), Result(b, 1, 0, 400)], SemiFinalDay);
+        Assert.That(plugIn.GetStanding(a, player, FinalDay).Qualification, Is.EqualTo(IllusionTempleLeagueQualification.Finalist));
+        plugIn.Record(IllusionTempleLeagueStage.Final, [Result(a, 2, 0, 400), Result(b, 1, 0, 400)], FinalDay);
+        Assert.That(plugIn.GetStanding(a, player, RewardDay), Is.EqualTo(new IllusionTempleLeagueStanding(IllusionTempleLeagueStage.Reward, 2, 1, 1, 3, 4, 800, IllusionTempleLeagueQualification.Champion, 5, 0)));
+        Assert.That(plugIn.GetStanding(Guid.NewGuid(), Guid.NewGuid(), RewardDay), Is.EqualTo(new IllusionTempleLeagueStanding(IllusionTempleLeagueStage.Reward, 0, 0, 0, 0, 0, 0, IllusionTempleLeagueQualification.None, 5, 0)));
+    }
+
+    /// <summary>
     /// The update adds the league temples on maps 98 and 99 with the Cursed Statue and the ten stones. Only a party of
     /// one guild gets in on an elimination day; the guilds are the teams; the carrier of the Cursed Hollow seals a stone
     /// for a point, the other guild unseals it and takes the hollow; the result of the match goes into the league.

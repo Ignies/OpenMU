@@ -162,14 +162,39 @@ public class IllusionTempleLeaguePlugIn : IFeaturePlugIn, ISupportCustomConfigur
     public async ValueTask PlayerStateChangedAsync(Player player, State previousState, State currentState)
     {
         if (currentState != PlayerState.EnteredWorld
-            || player.SelectedCharacter is not { } character
-            || this.ClaimReward(character.Id, this.GetLocalNow(player.GameContext)) is not { } reward)
+            || previousState != PlayerState.CharacterSelection
+            || player.SelectedCharacter is not { } character)
         {
             return;
         }
 
-        this._players.Save(TimeSpan.Zero, player.Logger);
-        await RewardDelivery.DeliverAsync(player, reward).ConfigureAwait(false);
+        var localNow = this.GetLocalNow(player.GameContext);
+        if (this.ClaimReward(character.Id, localNow) is { } reward)
+        {
+            this._players.Save(TimeSpan.Zero, player.Logger);
+            await RewardDelivery.DeliverAsync(player, reward).ConfigureAwait(false);
+        }
+
+        if (this.GetStage(localNow) != IllusionTempleLeagueStage.None)
+        {
+            await this.ShowStandingAsync(player).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Shows the league of his guild to a player.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>A task.</returns>
+    public async ValueTask ShowStandingAsync(Player player)
+    {
+        if (player.SelectedCharacter is not { } character || await this.GetGuildAsync(player).ConfigureAwait(false) is not { } guild)
+        {
+            return;
+        }
+
+        var standing = this.GetStanding(guild.Key, character.Id, this.GetLocalNow(player.GameContext));
+        await player.InvokeViewPlugInAsync<IIllusionTempleLeagueViewPlugIn>(p => p.ShowLeagueStateAsync(standing)).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -365,6 +390,49 @@ public class IllusionTempleLeaguePlugIn : IFeaturePlugIn, ISupportCustomConfigur
         var slots = this.Settings.SemiFinalSlots;
         var slot = rank < slots.Count ? slots[rank] : rank + 1;
         return slot <= 2 ? 1 : 2;
+    }
+
+    /// <summary>
+    /// Gets the standing of a guild and a character in the league of the month.
+    /// </summary>
+    /// <param name="guildKey">The key of the guild.</param>
+    /// <param name="characterId">The id of the character.</param>
+    /// <param name="localNow">The time of the server.</param>
+    /// <returns>The standing.</returns>
+    internal IllusionTempleLeagueStanding GetStanding(Guid guildKey, Guid characterId, DateTime localNow)
+    {
+        var month = MonthOf(localNow);
+        var rank = this.GetRanking(localNow).ToList().IndexOf(guildKey) + 1;
+        lock (this._guilds.SyncRoot)
+        {
+            lock (this._players.SyncRoot)
+            {
+                var guild = this.FindEntry(guildKey, month);
+                var playerEntries = this._players.Find(characterId) is { } player && player.Month == month ? player.Entries : 0;
+                var qualification = guild switch
+                {
+                    { IsChampion: true } => IllusionTempleLeagueQualification.Champion,
+                    { IsFinalist: true } => IllusionTempleLeagueQualification.Finalist,
+                    _ => this.GetSemiFinalLevel(guildKey, localNow) switch
+                    {
+                        1 => IllusionTempleLeagueQualification.SemiFinalTemple1,
+                        2 => IllusionTempleLeagueQualification.SemiFinalTemple2,
+                        _ => IllusionTempleLeagueQualification.None,
+                    },
+                };
+                return new IllusionTempleLeagueStanding(
+                    this.GetStage(localNow),
+                    rank,
+                    guild?.Entries ?? 0,
+                    playerEntries,
+                    guild?.Stones ?? 0,
+                    guild?.Kills ?? 0,
+                    guild?.LevelSum ?? 0,
+                    qualification,
+                    this.Settings.MaximumGuildEntries,
+                    this.Settings.MaximumPlayerEntries);
+            }
+        }
     }
 
     /// <summary>

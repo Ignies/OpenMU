@@ -633,6 +633,36 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the structure size calculation for IllusionTempleStoneState.
+    /// </summary>
+    [Test]
+    public void IllusionTempleStoneState_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 4;
+        var actualLength = IllusionTempleStoneState.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Index' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Index' exceeds structure boundary");
+        
+        // Validate field 'Holder' boundary
+        Assert.That(1 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Holder' exceeds structure boundary");
+        
+        // Validate field 'X' boundary
+        Assert.That(2 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'X' exceeds structure boundary");
+        
+        // Validate field 'Y' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Y' exceeds structure boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for ForkHello.
     /// </summary>
     [Test]
@@ -2726,5 +2756,81 @@ public class PacketStructureTests
         // Field 'ObeliskCount' starts at index 4 with size 1
         Assert.That(4, Is.GreaterThanOrEqualTo(0), 
             "Field 'ObeliskCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for IllusionTempleLeagueState.
+    /// </summary>
+    [Test]
+    public void IllusionTempleLeagueState_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 20;
+        var actualLength = IllusionTempleLeagueStateRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Stage' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Stage' exceeds packet boundary");
+        
+        // Validate field 'Rank' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Rank' exceeds packet boundary");
+        
+        // Validate field 'GuildEntries' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'GuildEntries' exceeds packet boundary");
+        
+        // Validate field 'MaximumGuildEntries' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MaximumGuildEntries' exceeds packet boundary");
+        
+        // Validate field 'Stones' boundary
+        Assert.That(8 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Stones' exceeds packet boundary");
+        
+        // Validate field 'Kills' boundary
+        Assert.That(10 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Kills' exceeds packet boundary");
+        
+        // Validate field 'LevelSum' boundary
+        Assert.That(12 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'LevelSum' exceeds packet boundary");
+        
+        // Validate field 'Qualification' boundary
+        Assert.That(16 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Qualification' exceeds packet boundary");
+        
+        // Validate field 'PlayerEntries' boundary
+        Assert.That(17 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'PlayerEntries' exceeds packet boundary");
+        
+        // Validate field 'MaximumPlayerEntries' boundary
+        Assert.That(18 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MaximumPlayerEntries' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for IllusionTempleStones.
+    /// </summary>
+    [Test]
+    public void IllusionTempleStones_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'StoneCount' starts at index 4 with size 1
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'StoneCount' has invalid negative index");
+        
+        // Field 'OwnTeam' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'OwnTeam' has invalid negative index");
+        
+        // Field 'HollowState' starts at index 6 with size 1
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'HollowState' has invalid negative index");
     }
 }

@@ -195,4 +195,28 @@ public class EventPacketsTest
         var second = obelisks[1];
         Assert.That((second.Index, second.Element, second.MapNumber, second.X, second.Y, second.HealthPercent, second.AuraMask, second.IsOpen, second.OwnerGuildId, second.OwnerGuildName), Is.EqualTo(((byte)3, (byte)5, (ushort)96, (byte)162, (byte)54, (byte)100, (byte)7, true, 1234u, "Ignies")));
     }
+
+    /// <summary>
+    /// The Illusion Temple League view sends the league of the guild and the stones of the renewed temple; only the
+    /// Babylon client has it.
+    /// </summary>
+    [Test]
+    public async ValueTask IllusionTempleLeaguePacketsHaveTheirFieldsAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(BabylonClient.Version);
+        player.GameContext.PlugInManager.RegisterPlugIn<IViewPlugIn, IllusionTempleLeagueBabylonPlugIn>();
+        Assert.That(player.ViewPlugIns.GetPlugIn<IIllusionTempleLeagueViewPlugIn>(), Is.InstanceOf<IllusionTempleLeagueBabylonPlugIn>());
+        var view = new IllusionTempleLeagueBabylonPlugIn(player);
+
+        await view.ShowLeagueStateAsync(new IllusionTempleLeagueStanding(IllusionTempleLeagueStage.SemiFinal, 3, 5, 2, 12, 40, 4500, IllusionTempleLeagueQualification.SemiFinalTemple2, 5, 0)).ConfigureAwait(false);
+        var state = new IllusionTempleLeagueState(output.ToArray());
+        Assert.That((state.Header.SubCode, (int)state.Header.Length, state.Stage, state.Rank, state.GuildEntries, state.MaximumGuildEntries), Is.EqualTo(((byte)0xBE, 20, (byte)2, (byte)3, (byte)5, (byte)5)));
+        Assert.That((state.Stones, state.Kills, state.LevelSum, state.Qualification, state.PlayerEntries, state.MaximumPlayerEntries), Is.EqualTo(((ushort)12, (ushort)40, 4500u, (byte)2, (byte)2, (byte)0)));
+
+        output.SetLength(0);
+        await view.ShowStonesAsync(IllusionTempleTeam.IllusionForces, IllusionTempleHollowState.Carried, [new(0, null, 136, 101), new(9, IllusionTempleTeam.AlliedForces, 207, 47)]).ConfigureAwait(false);
+        var stones = new IllusionTempleStonesRef(output.ToArray());
+        Assert.That((stones.Header.SubCode, (int)stones.Header.Length, stones.StoneCount, stones.OwnTeam, stones.HollowState), Is.EqualTo(((byte)0xBF, 8 + (2 * 4), (byte)2, (byte)2, (byte)1)));
+        Assert.That((stones[0].Index, stones[0].Holder, stones[1].Index, stones[1].Holder, stones[1].X, stones[1].Y), Is.EqualTo(((byte)0, (byte)0, (byte)9, (byte)1, (byte)207, (byte)47)));
+    }
 }

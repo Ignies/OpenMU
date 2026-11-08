@@ -378,6 +378,7 @@ public sealed class IllusionTempleContext : MiniGameContext
         {
             Interlocked.CompareExchange(ref this._statue, null, statue);
             await statue.DisposeAsync().ConfigureAwait(false);
+            await this.ShowStonesForAllAsync().ConfigureAwait(false);
         }
     }
 
@@ -735,6 +736,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             this._relicOnGround = true;
             this._relicCarrier = null;
             await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleRelicDroppedFormat), carrier.Name).ConfigureAwait(false);
+            await this.ShowStonesForAllAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -756,6 +758,7 @@ public sealed class IllusionTempleContext : MiniGameContext
         {
             this._relicOnGround = false;
             await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleRelicPickedUpFormat), args.Picker.Name).ConfigureAwait(false);
+            await this.ShowStonesForAllAsync().ConfigureAwait(false);
 
             // The client needs to be told who the new carrier is - otherwise it keeps showing the
             // previous one (or nobody) as the hero on its mini map.
@@ -810,6 +813,7 @@ public sealed class IllusionTempleContext : MiniGameContext
         if (this._isLeague)
         {
             this.RecordLeagueMatch();
+            await this.ShowStandingsForAllAsync().ConfigureAwait(false);
         }
 
         foreach (var winner in finishers.Where(this.IsWinner))
@@ -1073,6 +1077,7 @@ public sealed class IllusionTempleContext : MiniGameContext
         if (this._isLeague)
         {
             await this.SpawnStonesAsync().ConfigureAwait(false);
+            await this.ShowStandingsForAllAsync().ConfigureAwait(false);
         }
 
         await this.SpawnRandomStatueAsync().ConfigureAwait(false);
@@ -1131,6 +1136,7 @@ public sealed class IllusionTempleContext : MiniGameContext
         await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleStoneSealedFormat), player.Name).ConfigureAwait(false);
         await this.NotifyObjectiveReachedAsync(player, MiniGameObjective.RelicScored, this.Score.GetScore(team)).ConfigureAwait(false);
         await this.UpdateStateForAllAsync().ConfigureAwait(false);
+        await this.ShowStonesForAllAsync().ConfigureAwait(false);
         if (this.Score.GetScore(team) >= WinningScore)
         {
             this.FinishEvent();
@@ -1178,7 +1184,38 @@ public sealed class IllusionTempleContext : MiniGameContext
 
         await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleStoneUnsealedFormat), player.Name).ConfigureAwait(false);
         await this.UpdateStateForAllAsync().ConfigureAwait(false);
+        await this.ShowStonesForAllAsync().ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Shows the stones and where the hollow is to the players of a league match.
+    /// </summary>
+    private ValueTask ShowStonesForAllAsync()
+    {
+        if (!this._isLeague)
+        {
+            return ValueTask.CompletedTask;
+        }
+
+        IReadOnlyList<IllusionTempleStoneView> stones = [.. this._stones.Values
+            .OrderBy(s => s.Index)
+            .Select(s => new IllusionTempleStoneView(s.Index, s.Holder, s.Npc.Position.X, s.Npc.Position.Y))];
+        var hollow = this._relicCarrier is not null ? IllusionTempleHollowState.Carried
+            : this._relicOnGround ? IllusionTempleHollowState.OnGround
+            : this._statue is not null ? IllusionTempleHollowState.Statue
+            : IllusionTempleHollowState.None;
+        return this.ForEachPlayerAsync(player => this._teams.TryGetValue(player, out var team)
+            ? player.InvokeViewPlugInAsync<IIllusionTempleLeagueViewPlugIn>(p => p.ShowStonesAsync(team, hollow, stones)).AsTask()
+            : Task.CompletedTask);
+    }
+
+    /// <summary>
+    /// Shows the league of their guild to the players of a league match.
+    /// </summary>
+    private ValueTask ShowStandingsForAllAsync()
+        => this._league is { } league
+            ? this.ForEachPlayerAsync(player => league.ShowStandingAsync(player).AsTask())
+            : ValueTask.CompletedTask;
 
     /// <summary>
     /// Spawns the ten Captured Stone Statues of the renewed temple.
@@ -1267,6 +1304,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             this._statue = statue;
             await this.Map.AddAsync(statue).ConfigureAwait(false);
             statue.OnSpawn();
+            await this.ShowStonesForAllAsync().ConfigureAwait(false);
 
             await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleStatueSpawnedMessage)).ConfigureAwait(false);
         }

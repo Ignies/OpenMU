@@ -625,6 +625,35 @@
         </Field>
       </Fields>
     </Structure>
+    <Structure>
+      <Name>IllusionTempleStoneState</Name>
+      <Description>A Captured Stone Statue of the renewed Illusion Temple.</Description>
+      <Length>4</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>Index</Name>
+          <Description>The index of the stone, 0-9 (NPC 659-668).</Description>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>Byte</Type>
+          <Name>Holder</Name>
+          <Description>The team which sealed the hollow into it: 0 none, 1 allied forces, 2 illusion forces.</Description>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>Byte</Type>
+          <Name>X</Name>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Y</Name>
+        </Field>
+      </Fields>
+    </Structure>
   </Structures>
   <Packets>
     <Packet>
@@ -3162,6 +3191,113 @@
           <TypeName>ArcaObeliskState</TypeName>
           <Name>Obelisks</Name>
           <ItemCountField>ObeliskCount</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>BE</SubCode>
+      <Name>IllusionTempleLeagueState</Name>
+      <Length>20</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>When a character of a guild enters the world on a league day, when a league match starts and after it ended, while the plugin of the Illusion Temple League is on.</SentWhen>
+      <CausedReaction>The client shows the league of the guild: the stage of the day, the rank, the entries and the qualification.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Stage</Name>
+          <Description>The stage of the day: 0 no league day, 1 eliminations, 2 semi-finals, 3 final, 4 reward day.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Rank</Name>
+          <Description>The rank of the guild in the eliminations of the month, 0 when it played none.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>GuildEntries</Name>
+          <Description>The elimination matches the guild played this month.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>MaximumGuildEntries</Name>
+          <Description>The elimination matches a guild may play, 0 for no limit.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Stones</Name>
+          <Description>The occupied stones of the guild in the eliminations.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Kills</Name>
+          <Description>The kills of the guild in the eliminations.</Description>
+        </Field>
+        <Field>
+          <Index>12</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>LevelSum</Name>
+          <Description>The level sums of the guild in the eliminations.</Description>
+        </Field>
+        <Field>
+          <Index>16</Index>
+          <Type>Byte</Type>
+          <Name>Qualification</Name>
+          <Description>0 none, 1 semi-final in temple 1, 2 semi-final in temple 2, 3 finalist, 4 champion.</Description>
+        </Field>
+        <Field>
+          <Index>17</Index>
+          <Type>Byte</Type>
+          <Name>PlayerEntries</Name>
+          <Description>The elimination matches the character played this month.</Description>
+        </Field>
+        <Field>
+          <Index>18</Index>
+          <Type>Byte</Type>
+          <Name>MaximumPlayerEntries</Name>
+          <Description>The elimination matches a character may play, 0 for no limit.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>BF</SubCode>
+      <Name>IllusionTempleStones</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>To the players of a renewed Illusion Temple when the battle starts and whenever a stone is sealed or unsealed or the Cursed Hollow changes hands.</SentWhen>
+      <CausedReaction>The client shows the stones, their holders and where the hollow is.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>StoneCount</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>OwnTeam</Name>
+          <Description>The team of the player: 1 allied forces, 2 illusion forces.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>HollowState</Name>
+          <Description>Where the Cursed Hollow is: 0 in the Cursed Statue, 1 carried, 2 on the ground, 3 none (the statue comes back).</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Structure[]</Type>
+          <TypeName>IllusionTempleStoneState</TypeName>
+          <Name>Stones</Name>
+          <ItemCountField>StoneCount</ItemCountField>
         </Field>
       </Fields>
     </Packet>

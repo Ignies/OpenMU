@@ -2086,4 +2086,50 @@ public static class ConnectionExtensions
         }
 
         await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="IllusionTempleLeagueState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="stage">The stage of the day: 0 no league day, 1 eliminations, 2 semi-finals, 3 final, 4 reward day.</param>
+    /// <param name="rank">The rank of the guild in the eliminations of the month, 0 when it played none.</param>
+    /// <param name="guildEntries">The elimination matches the guild played this month.</param>
+    /// <param name="maximumGuildEntries">The elimination matches a guild may play, 0 for no limit.</param>
+    /// <param name="stones">The occupied stones of the guild in the eliminations.</param>
+    /// <param name="kills">The kills of the guild in the eliminations.</param>
+    /// <param name="levelSum">The level sums of the guild in the eliminations.</param>
+    /// <param name="qualification">0 none, 1 semi-final in temple 1, 2 semi-final in temple 2, 3 finalist, 4 champion.</param>
+    /// <param name="playerEntries">The elimination matches the character played this month.</param>
+    /// <param name="maximumPlayerEntries">The elimination matches a character may play, 0 for no limit.</param>
+    /// <remarks>
+    /// Is sent by the server when: When a character of a guild enters the world on a league day, when a league match starts and after it ended, while the plugin of the Illusion Temple League is on.
+    /// Causes reaction on client side: The client shows the league of the guild: the stage of the day, the rank, the entries and the qualification.
+    /// </remarks>
+    public static async ValueTask SendIllusionTempleLeagueStateAsync(this IConnection? connection, byte @stage, byte @rank, byte @guildEntries, byte @maximumGuildEntries, ushort @stones, ushort @kills, uint @levelSum, byte @qualification, byte @playerEntries, byte @maximumPlayerEntries)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = IllusionTempleLeagueStateRef.Length;
+            var packet = new IllusionTempleLeagueStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.Stage = @stage;
+            packet.Rank = @rank;
+            packet.GuildEntries = @guildEntries;
+            packet.MaximumGuildEntries = @maximumGuildEntries;
+            packet.Stones = @stones;
+            packet.Kills = @kills;
+            packet.LevelSum = @levelSum;
+            packet.Qualification = @qualification;
+            packet.PlayerEntries = @playerEntries;
+            packet.MaximumPlayerEntries = @maximumPlayerEntries;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
     }}

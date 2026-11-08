@@ -8965,5 +8965,23 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("AbilityCoreRequestHandlerPlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Illusion Temple League (Babylon).
+        /// </summary>
+        public static string IllusionTempleLeagueBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeagueBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the league of the guild (EE BE) and the stones of the renewed Illusion Temple (EE BF) to the Babylon client..
+        /// </summary>
+        public static string IllusionTempleLeagueBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeagueBabylonPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }
