@@ -78,6 +78,29 @@ public class EnhanceTreeDebuffsTest
     }
 
     /// <summary>
+    /// Chilling slows the movement (Webzen guide 112: "Movement Speed Effect"; no source has the amount, so it is the setting
+    /// <see cref="EnhanceTreeConfiguration.ChillMovementSlow"/>, 50 % like OpenMU's iced slow); Frostbite slows it by the
+    /// improved value nodes (1037) more ("moving speed and attack speed will decrease by % of the effect").
+    /// </summary>
+    [Test]
+    public async ValueTask ChillSlowsTheMovementAsync()
+    {
+        var configuration = CreateConfiguration((1025, "100"), (1041, "level/10"), (1037, "level"));
+        this._levels[1025] = 1;
+        this._levels[1037] = 10;
+        var (attacker, target) = await CreatePlayersAsync().ConfigureAwait(false);
+        target.Attributes!.AddElement(new ConstantElement(1), Stats.MovementSpeedFactor);
+
+        await this.HitAsync(configuration, attacker, target, Start).ConfigureAwait(false);
+        Assert.That(target.Attributes[Stats.MovementSpeedFactor], Is.EqualTo(0.5).Within(0.001));
+
+        this._levels[1041] = 10;
+        await this.HitAsync(configuration, attacker, target, Start.AddSeconds(1)).ConfigureAwait(false);
+        Assert.That(target.MagicEffectList.ContainsEffect(278), Is.True);
+        Assert.That(target.Attributes[Stats.MovementSpeedFactor], Is.EqualTo(0.4).Within(0.001));
+    }
+
+    /// <summary>
     /// The circle lasts 10 seconds and is cast again after its cooldown of 20 seconds (S21Emu <c>DisappearSec</c>,
     /// <c>CooldownSec</c>); between them a hit places nothing.
     /// </summary>

@@ -5693,6 +5693,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Chill movement slow (%).
+        /// </summary>
+        public static string EnhanceTreeConfiguration_ChillMovementSlow_Name {
+            get {
+                return ResourceManager.GetString("EnhanceTreeConfiguration_ChillMovementSlow_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Mastery damage (% of the hit).
         /// </summary>
         public static string EnhanceTreeConfiguration_MasteryDamagePercent_Name {

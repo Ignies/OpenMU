@@ -191,15 +191,18 @@ public static class EnhanceTreeDebuffs
                 return new EnhanceTreeDebuffEffect(definition, duration, debuff, attacker, target, (value * multiplier) + improvedValue, basic.Value * multiplier);
             default:
                 var defense = new MagicEffect.ElementWithTarget(new ConstantElement(-(debuff.Value + value)), Stats.DefenseBase);
+                var slow = new MagicEffect.ElementWithTarget(SlowBy(sheet.Configuration.ChillMovementSlow + improvedValue), Stats.MovementSpeedFactor);
                 if (!debuff.Improved)
                 {
-                    return new EnhanceTreeDebuffEffect(definition, duration, debuff, attacker, target, 0, 0, defense);
+                    return new EnhanceTreeDebuffEffect(definition, duration, debuff, attacker, target, 0, 0, defense, slow);
                 }
 
-                var speed = new ConstantElement(Math.Max(0, 1 - ((debuff.AttackSpeed + improvedValue) / 100f)), AggregateType.Multiplicate);
-                return new EnhanceTreeDebuffEffect(definition, duration, debuff, attacker, target, 0, 0, defense, new(speed, Stats.AttackSpeed), new(speed, Stats.MagicSpeed));
+                var speed = SlowBy(debuff.AttackSpeed + improvedValue);
+                return new EnhanceTreeDebuffEffect(definition, duration, debuff, attacker, target, 0, 0, defense, slow, new(speed, Stats.AttackSpeed), new(speed, Stats.MagicSpeed));
         }
     }
+
+    private static ConstantElement SlowBy(float percent) => new(Math.Max(0, 1 - (percent / 100f)), AggregateType.Multiplicate);
 
     private static bool Roll(EnhanceTreeConfiguration configuration, float rate)
         => Rand.NextRandomBool(rate / Math.Max(1, configuration.DebuffRateScale));

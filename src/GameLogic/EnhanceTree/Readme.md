@@ -63,8 +63,12 @@ sheet (extension learned, like the node effects):
   - Chilling: defense - (106 + value node 1029); Frostbite also attack and magic speed - (20 + improved nodes 1037/1059) %.
   - Bleeding: each later skill hit on the target (any player's) bleeds 20 % of it plus the value node (1030), 10 times;
     Bleeding Severe twice that plus the improved value nodes (1038, 1060).
-- No source, so settings: the circle's base targets and range (1 each) and the rate scale. Left as data: the explosions
-  (1125-1135, 1196-1201), the movement slow of Chilling and the shock/stun line (no S21Emu field).
+  - Chilling and Frostbite also slow the movement (`Stats.MovementSpeedFactor`, Webzen guide 112: "Movement Speed
+    Effect"; Frostbite: "moving speed and attack speed will decrease by % of the effect", so its improved value nodes
+    add to both).
+- No source, so settings: the circle's base targets and range (1 each), the rate scale and the movement slow of
+  Chilling (`ChillMovementSlow`, 50 %, like OpenMU's iced slow). Left as data: the explosions (1125-1135, 1196-1201) and
+  the shock/stun line (no S21Emu field).
 
 ## Points (`EnhanceTreePoints`)
 

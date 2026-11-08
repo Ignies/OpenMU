@@ -76,6 +76,14 @@ public class EnhanceTreeConfiguration
     public int DebuffRateScale { get; set; } = 1000;
 
     /// <summary>
+    /// Gets or sets the movement slow of Chilling in percent; Frostbite adds its improved value nodes (no source has the
+    /// amount: 50, like OpenMU's iced slow).
+    /// </summary>
+    [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.EnhanceTreeConfiguration_ChillMovementSlow_Name))]
+    [Range(0, 100)]
+    public int ChillMovementSlow { get; set; } = 50;
+
+    /// <summary>
     /// Gets or sets the damage a Mastery DMG hit adds in percent of the hit. The node "Add Ext Skill Extra Damage Rate"
     /// (1007) gives its chance; no source has the amount, so it is 0 by default.
     /// </summary>
