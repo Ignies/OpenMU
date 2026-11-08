@@ -622,6 +622,50 @@ internal class Season21MapsDataTest
     }
 
     /// <summary>
+    /// An entrance stands on walkable ground of its map, within the 12 tiles which OpenMU accepts from the point of the
+    /// sources: the Temple of Arnil entrance 635 at Elbeland 209,135 (Webzen guide 411, almacengamertv).
+    /// </summary>
+    /// <param name="gateNumber">The gate number.</param>
+    /// <param name="mapNumber">The map number.</param>
+    /// <param name="x1">The first x.</param>
+    /// <param name="y1">The first y.</param>
+    /// <param name="x2">The last x.</param>
+    /// <param name="y2">The last y.</param>
+    [TestCase(635, 51, 209, 133, 211, 135)]
+    public async Task EntranceStandsOnWalkableGroundAsync(short gateNumber, byte mapNumber, byte x1, byte y1, byte x2, byte y2)
+    {
+        var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
+
+        var map = gameConfiguration.Maps.Single(m => m.Number == mapNumber && m.Discriminator == 0);
+        var gate = map.EnterGates.Single(g => g.Number == gateNumber);
+        Assert.That((gate.X1, gate.Y1, gate.X2, gate.Y2), Is.EqualTo((x1, y1, x2, y2)));
+        var terrain = new GameLogic.GameMapTerrain(map);
+        Assert.That(Enumerable.Range(x1, x2 - x1 + 1).SelectMany(x => Enumerable.Range(y1, y2 - y1 + 1).Select(y => terrain.WalkMap[x, y])), Has.All.True);
+    }
+
+    /// <summary>
+    /// The maps update moves an entrance of an older database which still has its old area (635 at 223,118-226,120), and
+    /// keeps an area the operator chose.
+    /// </summary>
+    [Test]
+    public async Task UpdateMovesTheEntrancesOfAnOlderDatabaseAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        await new AddSeason21LevelCapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var arnil = gameConfiguration.Maps.Single(m => m.Number == 51 && m.Discriminator == 0).EnterGates.Single(g => g.Number == 635);
+        (arnil.X1, arnil.Y1, arnil.X2, arnil.Y2) = (223, 118, 226, 120);
+
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.That((arnil.X1, arnil.Y1, arnil.X2, arnil.Y2), Is.EqualTo(((byte)209, (byte)133, (byte)211, (byte)135)));
+
+        (arnil.X1, arnil.Y1, arnil.X2, arnil.Y2) = (200, 130, 202, 132);
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.That((arnil.X1, arnil.Y1, arnil.X2, arnil.Y2), Is.EqualTo(((byte)200, (byte)130, (byte)202, (byte)132)), "the operator's area");
+        Assert.That(new AddSeason21MapsUpdatePlugIn().Version, Is.GreaterThanOrEqualTo(12));
+    }
+
+    /// <summary>
     /// Version 9 of the maps update adds Aquilas Temple to a database which has the maps of an older version, and keeps
     /// what the operator changed on them.
     /// </summary>

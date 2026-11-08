@@ -55,11 +55,12 @@ public class AddSeason21MapsUpdatePlugIn : UpdatePlugInBase
     /// Version 9: the Sanctuary of Aquilas (Aquilas Temple, map 145) with its monsters, gates and warp 75.
     /// Version 10: the two Illusion Temple League maps 98/99 with their spawn areas (no league yet).
     /// Version 11: the four same-map shortcuts of Dungeon (gates 475-482).
+    /// Version 12: the Temple of Arnil entrance 635 moves to Elbeland 209,133-211,135 (<see cref="Season21MovedGates"/>).
     /// </remarks>
-    public override int Version => 11;
+    public override int Version => 12;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 08, 21, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 08, 22, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21LevelCapsUpdatePlugIn).GUID];
@@ -71,6 +72,7 @@ public class AddSeason21MapsUpdatePlugIn : UpdatePlugInBase
         new Season21MapsInitializer(context, gameConfiguration, gameServers).Initialize();
         Season21PlaceholderRows.Repair(gameConfiguration);
         Season21MapsInitializer.RepairEntryLevels(gameConfiguration);
+        Season21MovedGates.Repair(gameConfiguration);
         Season21ClassicSpawns.Repair(context, gameConfiguration);
         Season21ClassicSpawns.PlaceTownNpcs(context, gameConfiguration);
         EnableOwnMapRespawn(context, gameConfiguration);

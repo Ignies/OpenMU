@@ -137,6 +137,17 @@ Dungeon shortcuts (maps update version 11): the four same-map gate pairs of Dung
 0, all on walkable ground of the Season 6 `Terrain2.att`: 475 (115,231) to 45,152; 477 (45,148) to 112,232; 479 (233,106)
 to 241,85; 481 (244,86) to 229,108. The client triggers them from its own gate areas. Their version is our assumption.
 
+## Moved entrances
+
+The client sends a gate number from its own gate areas, and OpenMU accepts it only within 12 tiles of the server's area
+(`WarpGateAction.GateEntryTolerance`), so an entrance stands where the sources put it, on walkable ground of the terrain
+the server has. `Season21MovedGates` keeps the old area of each moved entrance; the maps update moves a database's gate
+which still has it, an area the operator chose stays:
+
+* Temple of Arnil 635 (version 12): Elbeland 209,133-211,135, at the 209,135 of Webzen guide 411 and almacengamertv.
+  `Gate.xml`'s 219,123-222,125 is the door of the renewed Elbeland, no-move on the Season 6 `Terrain52.att`; the old
+  223,118-226,120 was 14 tiles from 209,135.
+
 Devias (`Season21ClassicSpawns`, maps update version 5): the 280 monsters of `MonsterSetBase/002 - Devias.xml` (10
 spots and 47 single monsters: 40 Yeti, 82 Elite Yeti, 11 Ice Queens) replace the 560 of Season 6 (no Yeti, 235 Elite
 Yeti, 75 Ice Queens) while the roster is still the Season 6 one; the NPCs stay.
