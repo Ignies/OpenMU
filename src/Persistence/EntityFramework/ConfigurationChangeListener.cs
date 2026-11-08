@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.Persistence.EntityFramework;
 
-using System.Collections;
 using System.IO;
 using Microsoft.EntityFrameworkCore.Metadata;
 using MUnique.OpenMU.DataModel;
@@ -59,9 +58,9 @@ public class ConfigurationChangeListener : IConfigurationChangeListener
             using var context = this._contextProvider.Value.CreateNewContext(gameConfiguration);
             var cachedParent = await context.GetByIdAsync(parentId, parentCollectionNavigation.DeclaringEntityType.ClrType).ConfigureAwait(false);
 
-            // The cached parent may contain it already, when it was added together with its new parent,
+            // The cached parent may contain a copy already, when it was added together with its new parent,
             // because the values of the parent are assigned including its children.
-            if (cachedParent is not null && !collectionAccessor.Contains(cachedParent, configuration))
+            if (cachedParent is not null && CachedCollections.Find(collectionAccessor, cachedParent, id) is null)
             {
                 var cachedConfiguration = configContext.CreateNew(type);
                 if (cachedConfiguration is IAssignable assignable)
@@ -91,8 +90,7 @@ public class ConfigurationChangeListener : IConfigurationChangeListener
         if (parentCollectionNavigation?.GetCollectionAccessor() is { } collectionAccessor
             && (parent as Guid? ?? parent?.GetId()) is { } parentId
             && await context.GetByIdAsync(parentId, parentCollectionNavigation.DeclaringEntityType.ClrType).ConfigureAwait(false) is { } cachedParent
-            && collectionAccessor.GetOrCreate(cachedParent, false) is IEnumerable cachedCollection
-            && cachedCollection.Cast<object>().FirstOrDefault(cachedObject => cachedObject.GetId() == id) is { } cachedEntity)
+            && CachedCollections.Find(collectionAccessor, cachedParent, id) is { } cachedEntity)
         {
             collectionAccessor.Remove(cachedParent, cachedEntity);
             this.RefreshConfigurationCaches();
