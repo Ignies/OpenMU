@@ -131,6 +131,31 @@ public class EnhanceTreeEffectsTest
         Assert.That(AreaSkillAttackAction.GetAttackLimits(new AreaSkillSettings(), 2), Is.EqualTo((int.MaxValue, int.MaxValue)));
     }
 
+    /// <summary>
+    /// "Add Weapon Physi/Magic/Curse Damage" (1020 formula 66 = level * 0.75, 1021 and 1156 formula 67 = level) raise the
+    /// weapon's damage of the skill's damage type by their percentage (muonlinefanz.com: "+20 % Weapon WIZ Raise" at 20).
+    /// </summary>
+    [Test]
+    public void WeaponNodesRaiseTheirDamageTypeOnly()
+    {
+        var configuration = CreateSheet(
+            new EnhanceTreeNode { Index = 2, Skill = EnhanceTreeEffects.WeaponPhysicalDamage, FormulaId = 66 },
+            new EnhanceTreeNode { Index = 3, Skill = EnhanceTreeEffects.WeaponWizardryDamage, FormulaId = 67 });
+        configuration.Formulas[66] = "level*0.75";
+        configuration.Formulas[67] = "level*1";
+        var levels = new Dictionary<short, int>
+        {
+            [MeteorStrikeExtended] = 1,
+            [EnhanceTreeEffects.WeaponPhysicalDamage] = 20,
+            [EnhanceTreeEffects.WeaponWizardryDamage] = 20,
+        };
+        int? LevelOf(short skill) => levels.TryGetValue(skill, out var level) ? level : null;
+
+        Assert.That(EnhanceTreeEffects.GetWeaponRise(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf, DamageType.Physical), Is.EqualTo(15).Within(0.001));
+        Assert.That(EnhanceTreeEffects.GetWeaponRise(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf, DamageType.Wizardry), Is.EqualTo(20).Within(0.001));
+        Assert.That(EnhanceTreeEffects.GetWeaponRise(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf, DamageType.Curse), Is.Zero);
+    }
+
     private static EnhanceTreeConfiguration CreateSheet(params EnhanceTreeNode[] nodes)
     {
         var configuration = new EnhanceTreeConfiguration

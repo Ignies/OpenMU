@@ -935,20 +935,24 @@ public static class AttackableExtensions
         var attackerStats = attacker.Attributes;
         GetSkillDmg(attacker, skill, out var skillMinimumDamage, out var skillMaximumDamage, out damageType, out var isSummonerSkill);
 
+        // The weapon nodes of the skill enhancement tree raise the weapon's part of the damage by their percentage.
+        var weaponRise = attacker is Player player && skill?.Skill is { } usedSkill ? EnhanceTreeEffects.GetWeaponRise(player, usedSkill) / 100f : 0f;
         switch (damageType)
         {
             // Common damage types
             case DamageType.Wizardry:
-                minimumBaseDamage = (int)((attackerStats[Stats.MinimumWizBaseDmg] + skillMinimumDamage) * attackerStats[Stats.WizardryAttackDamageIncrease]);
-                maximumBaseDamage = (int)((attackerStats[Stats.MaximumWizBaseDmg] + skillMaximumDamage) * attackerStats[Stats.WizardryAttackDamageIncrease]);
+                var wizardryIncrease = attackerStats[Stats.WizardryAttackDamageIncrease] + (attackerStats[Stats.StaffRise] / 100f * weaponRise);
+                minimumBaseDamage = (int)((attackerStats[Stats.MinimumWizBaseDmg] + skillMinimumDamage) * wizardryIncrease);
+                maximumBaseDamage = (int)((attackerStats[Stats.MaximumWizBaseDmg] + skillMaximumDamage) * wizardryIncrease);
                 break;
             case DamageType.Curse:
-                minimumBaseDamage = (int)((attackerStats[Stats.MinimumCurseBaseDmg] + skillMinimumDamage) * attackerStats[Stats.CurseAttackDamageIncrease]);
-                maximumBaseDamage = (int)((attackerStats[Stats.MaximumCurseBaseDmg] + skillMaximumDamage) * attackerStats[Stats.CurseAttackDamageIncrease]);
+                var curseIncrease = attackerStats[Stats.CurseAttackDamageIncrease] + (attackerStats[Stats.BookRise] / 100f * weaponRise);
+                minimumBaseDamage = (int)((attackerStats[Stats.MinimumCurseBaseDmg] + skillMinimumDamage) * curseIncrease);
+                maximumBaseDamage = (int)((attackerStats[Stats.MaximumCurseBaseDmg] + skillMaximumDamage) * curseIncrease);
                 break;
             case DamageType.Physical:
-                minimumBaseDamage = (int)attackerStats[Stats.MinimumPhysBaseDmg] + skillMinimumDamage;
-                maximumBaseDamage = (int)attackerStats[Stats.MaximumPhysBaseDmg] + skillMaximumDamage;
+                minimumBaseDamage = (int)(attackerStats[Stats.MinimumPhysBaseDmg] + (attackerStats[Stats.MinimumPhysBaseDmgByWeapon] * weaponRise)) + skillMinimumDamage;
+                maximumBaseDamage = (int)(attackerStats[Stats.MaximumPhysBaseDmg] + (attackerStats[Stats.MaximumPhysBaseDmgByWeapon] * weaponRise)) + skillMaximumDamage;
                 break;
             case DamageType.Fenrir:
                 minimumBaseDamage = (int)attackerStats[Stats.FenrirBaseDmg] + skillMinimumDamage;

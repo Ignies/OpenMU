@@ -67,6 +67,21 @@ public static class EnhanceTreeEffects
     /// </summary>
     public const short TargetNumber = 1012;
 
+    /// <summary>
+    /// The skill number of "Add Weapon Physi Damage": the weapon's physical damage rises by its percentage.
+    /// </summary>
+    public const short WeaponPhysicalDamage = 1020;
+
+    /// <summary>
+    /// The skill number of "Add Weapon Magic Damage": the staff rise rises by its percentage.
+    /// </summary>
+    public const short WeaponWizardryDamage = 1021;
+
+    /// <summary>
+    /// The skill number of "Add Weapon Curse Damage": the book rise rises by its percentage.
+    /// </summary>
+    public const short WeaponCurseDamage = 1156;
+
     private const byte ExtensionNodeIndex = 0;
 
     private const int BaseSplashRadius = 1;
@@ -86,6 +101,12 @@ public static class EnhanceTreeEffects
     private static readonly short[] RadiusNodes = [SkillRadius];
 
     private static readonly short[] TargetNodes = [TargetNumber];
+
+    private static readonly short[] WeaponPhysicalNodes = [WeaponPhysicalDamage];
+
+    private static readonly short[] WeaponWizardryNodes = [WeaponWizardryDamage];
+
+    private static readonly short[] WeaponCurseNodes = [WeaponCurseDamage];
 
     private static readonly ConcurrentDictionary<(string Formula, int Level), float> Values = new();
 
@@ -193,6 +214,28 @@ public static class EnhanceTreeEffects
         => GetReach(configuration, baseClass, skill, levelOf, LevelOfLookup);
 
     /// <summary>
+    /// Gets the percentage by which the learned weapon nodes of a player raise the weapon's damage of a damage type, when
+    /// the tree is on.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="skill">The used skill.</param>
+    /// <returns>The percentage.</returns>
+    public static float GetWeaponRise(Player player, Skill skill)
+        => GetValue(player, skill, WeaponNodes(skill.DamageType));
+
+    /// <summary>
+    /// Gets the percentage by which the learned weapon nodes raise the weapon's damage of a damage type.
+    /// </summary>
+    /// <param name="configuration">The configuration of the tree.</param>
+    /// <param name="baseClass">The base class of the character.</param>
+    /// <param name="skill">The number of the used skill.</param>
+    /// <param name="levelOf">The level of a learned tree skill, <c>null</c> when it isn't learned.</param>
+    /// <param name="damageType">The damage type of the skill.</param>
+    /// <returns>The percentage.</returns>
+    public static float GetWeaponRise(EnhanceTreeConfiguration configuration, BaseClassCode baseClass, short skill, Func<short, int?> levelOf, DamageType damageType)
+        => GetValue(configuration, baseClass, skill, levelOf, LevelOfLookup, WeaponNodes(damageType));
+
+    /// <summary>
     /// Hits the monsters around the target of a skill with the splash of the player's tree.
     /// </summary>
     /// <param name="player">The player.</param>
@@ -283,6 +326,14 @@ public static class EnhanceTreeEffects
            && EnhanceTreeFeaturePlugIn.GetConfiguration(player.GameContext) is { } configuration
             ? GetValue(configuration, baseClass, (short)skill.Number, skills, LevelInList, nodes)
             : 0;
+
+    private static short[] WeaponNodes(DamageType damageType) => damageType switch
+    {
+        DamageType.Physical => WeaponPhysicalNodes,
+        DamageType.Wizardry => WeaponWizardryNodes,
+        DamageType.Curse => WeaponCurseNodes,
+        _ => [],
+    };
 
     private static EnhanceTreeReach GetReach<TState>(EnhanceTreeConfiguration configuration, BaseClassCode baseClass, short skill, TState state, Func<TState, short, int?> levelOf)
         => new(

@@ -33,8 +33,11 @@ turns it on.
     radius to the effect range, the target area, the area around the caster and the implicit targets of a targeted
     skill; the targets to an area skill with a limit (`AreaSkillSettings.MaximumNumberOfHitsPerAttack`), an unlimited one
     hits every target already. `SkillHitValidator` and `DeferredHitScheduler` check the same widened area.
-  - Left as data: extra damage rate 1007 ("chance to deal Mastery DMG", no amount in any source), weapon damage
-    1020/1021/1156 (a weapon rise percentage per used skill, which the attribute system has no place for), speed 1008
+  - Weapon damage 1020 (physical, level * 0.75), 1021 (wizardry) and 1156 (curse, level): while the skill is used, the
+    weapon's part of its damage type rises by the percentage (tree tool "Increases the equipped weapon's WIZ Raise by a
+    percentage when using the skill"): the physical damage of the weapon (`MinimumPhysBaseDmgByWeapon`), the staff rise
+    or the book rise (`GetWeaponRise`, `AttackableExtensions.GetBaseDmg`).
+  - Left as data: extra damage rate 1007 ("chance to deal Mastery DMG", no amount in any source), speed 1008
     (client animation), cooldown 1019, the explosions 1125-1135 and 1196-1201.
 
 ## Debuffs (`EnhanceTreeDebuffs`)
