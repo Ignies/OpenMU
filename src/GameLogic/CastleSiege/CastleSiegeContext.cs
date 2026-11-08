@@ -222,6 +222,11 @@ public class CastleSiegeContext : IEventStateProvider
     internal DateTime NextMiniMapUpdateUtc { get; set; } = DateTime.MaxValue;
 
     /// <summary>
+    /// Gets or sets the next time the remaining battle time goes to the players on the castle map.
+    /// </summary>
+    internal DateTime NextBattleTimeUpdateUtc { get; set; } = DateTime.MaxValue;
+
+    /// <summary>
     /// Gets the Ready-state countdown values which have already been sent.
     /// </summary>
     internal HashSet<int> SentReadyCountdownMinutes { get; } = new();
@@ -725,6 +730,35 @@ public class CastleSiegeContext : IEventStateProvider
     {
         var actions = this.GetSiegePlayers().Select(action);
         await Task.WhenAll(actions).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Tells the players on the castle map whether the battle runs and, while it runs, its remaining time.
+    /// </summary>
+    /// <param name="utcNow">The current time.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    internal ValueTask BroadcastBattleStateAsync(DateTime utcNow)
+        => this.ForEachSiegePlayerAsync(player => this.ShowBattleStateAsync(player, utcNow).AsTask());
+
+    /// <summary>
+    /// Tells a player whether the battle runs and, while it runs, its remaining time.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="utcNow">The current time.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    internal async ValueTask ShowBattleStateAsync(Player player, DateTime utcNow)
+    {
+        var isStarted = this.CurrentState == CastleSiegeState.Start;
+        await player.InvokeViewPlugInAsync<ICastleSiegeBattleStatePlugIn>(p => p.ShowBattleStateAsync(isStarted)).ConfigureAwait(false);
+        if (!isStarted)
+        {
+            return;
+        }
+
+        var left = this.StateEndTimeUtc - utcNow;
+        var minutes = Math.Max(0, (int)left.TotalMinutes);
+        await player.InvokeViewPlugInAsync<ICastleSiegeBattleStatePlugIn>(
+            p => p.ShowRemainingTimeAsync((byte)Math.Min(minutes / 60, byte.MaxValue), (byte)(minutes % 60))).ConfigureAwait(false);
     }
 
     /// <summary>

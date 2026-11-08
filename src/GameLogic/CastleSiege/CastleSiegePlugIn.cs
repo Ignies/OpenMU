@@ -32,6 +32,8 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
     private static readonly TimeSpan ParticipantUpdateInterval = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan MiniMapUpdateInterval = TimeSpan.FromSeconds(3);
 
+    private static readonly TimeSpan BattleTimeUpdateInterval = TimeSpan.FromMinutes(1);
+
     private readonly ConditionalWeakTable<IGameContext, CastleSiegeContext> _contexts = new();
     private readonly TimeProvider _timeProvider;
 
@@ -397,6 +399,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             if (context.CurrentState == CastleSiegeState.Start)
             {
                 await CastleSiegeSwitchMechanics.SynchronizePlayerAsync(context, player).ConfigureAwait(false);
+                await context.ShowBattleStateAsync(player, this._timeProvider.GetUtcNow().UtcDateTime).ConfigureAwait(false);
             }
         }
     }
@@ -435,6 +438,11 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         }
 
         await this.BroadcastStateUpdateAsync(context).ConfigureAwait(false);
+        if (previousState == CastleSiegeState.Start || period.State == CastleSiegeState.Start)
+        {
+            await context.BroadcastBattleStateAsync(period.StartUtc).ConfigureAwait(false);
+            context.NextBattleTimeUpdateUtc = period.StartUtc + BattleTimeUpdateInterval;
+        }
 
         logger.LogInformation(
             "Castle Siege changed from state {previousState} to {state}; the state ends at {stateEndUtc}.",
@@ -595,6 +603,12 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 context.StateStartTimeUtc,
                 utcNow,
                 ParticipantUpdateInterval);
+        }
+
+        if (context.CurrentState == CastleSiegeState.Start && context.NextBattleTimeUpdateUtc <= utcNow)
+        {
+            context.NextBattleTimeUpdateUtc = utcNow + BattleTimeUpdateInterval;
+            await context.BroadcastBattleStateAsync(utcNow).ConfigureAwait(false);
         }
 
         if (context.CurrentState == CastleSiegeState.Start)

@@ -642,6 +642,28 @@ public class CastleSiegeGuildSelectionTests
     }
 
     /// <summary>
+    /// The players on the castle map learn that the battle runs and how long it has left, and that it ended (the
+    /// client draws the battle clock, the battle skills and the team marks only while it runs).
+    /// </summary>
+    [Test]
+    public async ValueTask BattleStateAndRemainingTimeReachTheSiegePlayersAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var player = await CreateSiegePlayerAsync(fixture, AlphaGuildId, "Clock").ConfigureAwait(false);
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<ICastleSiegeBattleStatePlugIn>()!);
+        fixture.Context.CurrentState = CastleSiegeState.Start;
+        fixture.Context.StateEndTimeUtc = fixture.InitializationTimeUtc.AddMinutes(90.5);
+
+        await fixture.Context.BroadcastBattleStateAsync(fixture.InitializationTimeUtc).ConfigureAwait(false);
+        fixture.Context.CurrentState = CastleSiegeState.End;
+        await fixture.Context.BroadcastBattleStateAsync(fixture.InitializationTimeUtc).ConfigureAwait(false);
+
+        view.Verify(v => v.ShowBattleStateAsync(true), Times.Once);
+        view.Verify(v => v.ShowRemainingTimeAsync(1, 30), Times.Once);
+        view.Verify(v => v.ShowBattleStateAsync(false), Times.Once);
+    }
+
+    /// <summary>
     /// Verifies the two direct packet request codes handled by this issue.
     /// </summary>
     [Test]

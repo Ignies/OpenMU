@@ -38,6 +38,29 @@ public class CastleSiegeGuildSelectionRemoteViewTests
     }
 
     /// <summary>
+    /// Verifies the battle start (0xB2 0x17) and remaining time (0xB2 0x1E) packets.
+    /// </summary>
+    [Test]
+    public async ValueTask SerializeBattleStateAndRemainingTimeAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer();
+        var view = new CastleSiegeBattleStatePlugIn(player);
+
+        await view.ShowBattleStateAsync(true).ConfigureAwait(false);
+        await view.ShowRemainingTimeAsync(1, 30).ConfigureAwait(false);
+
+        var data = output.ToArray().AsMemory();
+        var start = (CastleSiegeBattleStartEnd)data[..CastleSiegeBattleStartEnd.Length];
+        var time = (CastleSiegeRemainingTime)data.Slice(CastleSiegeBattleStartEnd.Length, CastleSiegeRemainingTime.Length);
+        Assert.Multiple(() =>
+        {
+            Assert.That(data.Length, Is.EqualTo(CastleSiegeBattleStartEnd.Length + CastleSiegeRemainingTime.Length));
+            Assert.That(start.IsStarted, Is.True);
+            Assert.That((time.Hour, time.Minute), Is.EqualTo(((byte)1, (byte)30)));
+        });
+    }
+
+    /// <summary>
     /// Verifies join-side, registration-list and selected-guild-list packets.
     /// </summary>
     [Test]
