@@ -10,6 +10,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Pathfinding;
 
@@ -485,11 +486,11 @@ public sealed class IllusionTempleContext : MiniGameContext
         if (this._skillPoints.GetValueOrDefault(player, InitialSkillPoints) < SkillCost(skillNumber))
         {
             await player.InvokeViewPlugInAsync<IIllusionTempleSkillUsageResultViewPlugin>(
-                p => p.ShowSkillUsageResultAsync(false, skillNumber, player.Id, targetObjectIndex)).ConfigureAwait(false);
+                p => p.ShowSkillUsageResultAsync(false, skillNumber, ViewExtensions.ConstantPlayerId, targetObjectIndex)).ConfigureAwait(false);
             return;
         }
 
-        var target = player.CurrentMap?.GetObject(targetObjectIndex) as IAttackable;
+        var target = player.GetObject(targetObjectIndex) as IAttackable;
         var success = skillNumber switch
         {
             OrderOfProtectionSkillNumber => await this.UseOrderOfProtectionAsync(player).ConfigureAwait(false),
@@ -505,7 +506,7 @@ public sealed class IllusionTempleContext : MiniGameContext
         }
 
         await player.InvokeViewPlugInAsync<IIllusionTempleSkillUsageResultViewPlugin>(
-            p => p.ShowSkillUsageResultAsync(success, skillNumber, player.Id, target?.Id ?? 0)).ConfigureAwait(false);
+            p => p.ShowSkillUsageResultAsync(success, skillNumber, ViewExtensions.ConstantPlayerId, target.GetId(player))).ConfigureAwait(false);
     }
 
     /// <summary>

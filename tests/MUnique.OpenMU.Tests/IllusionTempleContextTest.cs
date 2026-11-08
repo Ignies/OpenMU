@@ -18,6 +18,7 @@ using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.NPC;
 using MUnique.OpenMU.Pathfinding;
 
@@ -674,5 +675,28 @@ public class IllusionTempleContextTest
 
         plugIn.Verify(p => p.ObjectiveReachedAsync(illusionTemple, carrier, MiniGameObjective.RelicClaimed, 0), Times.Once);
         plugIn.Verify(p => p.ObjectiveReachedAsync(illusionTemple, carrier, MiniGameObjective.RelicScored, 1), Times.Once);
+    }
+
+    /// <summary>
+    /// The skill result goes to the caster only, so it names him by the constant id of his own view (his map id differs
+    /// on the temple map, and the client would not recognize its own cast).
+    /// </summary>
+    [Test]
+    public async ValueTask SkillResultNamesTheCasterByTheIdOfHisViewAsync()
+    {
+        var gameContext = CreateGameContext();
+        var definition = CreateDefinition(gameContext, minimumPlayerCount: 2);
+        await using var illusionTemple = await CreateContextAsync(gameContext, definition).ConfigureAwait(false);
+        var players = await EnterPlayersAsync(illusionTemple, gameContext, 2).ConfigureAwait(false);
+        await StartGameAsync(illusionTemple, players).ConfigureAwait(false);
+        var registry = typeof(MiniGameContext).GetField("_players", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(illusionTemple)!;
+        await AwaitResultAsync(registry.GetType().GetMethod("SetStateAsync")!.Invoke(registry, [MiniGameState.Playing])).ConfigureAwait(false);
+        var caster = players[1];
+        Assume.That(caster.Id, Is.Not.EqualTo(ViewExtensions.ConstantPlayerId));
+
+        await illusionTemple.UseSkillAsync(caster, 210, ViewExtensions.ConstantPlayerId).ConfigureAwait(false);
+
+        var view = Mock.Get(caster.ViewPlugIns.GetPlugIn<IIllusionTempleSkillUsageResultViewPlugin>()!);
+        view.Verify(p => p.ShowSkillUsageResultAsync(It.IsAny<bool>(), 210, ViewExtensions.ConstantPlayerId, It.IsAny<ushort>()), Times.Once);
     }
 }
