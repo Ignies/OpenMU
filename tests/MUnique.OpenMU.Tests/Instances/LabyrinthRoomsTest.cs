@@ -9,6 +9,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
@@ -185,6 +186,39 @@ public class LabyrinthRoomsTest
         finally
         {
             this._events.Configuration.Labyrinth = original;
+            this._world.PlugInManager.DeactivatePlugIn<LabyrinthRoomsPlugIn>();
+        }
+    }
+
+    /// <summary>
+    /// A floor starts when the client of the runner has loaded the map, not when the entry time is over: a slow loader
+    /// was placed outside the entrance room, on a blocked tile, and sent back to the Instance Zone.
+    /// </summary>
+    [Test]
+    public async ValueTask FloorWaitsForTheRunnerToLoadTheMapAsync()
+    {
+        var rooms = new LabyrinthRoomsPlugIn { Configuration = CreateRooms() };
+        this._world.AddFeaturePlugIn(rooms);
+        var definition = this._world.Configuration.MiniGameDefinitions.First(d => d.Type == MiniGameType.LabyrinthOfDimensions && d.MapCreationPolicy != MiniGameMapCreationPolicy.Shared);
+        var enterDuration = definition.EnterDuration;
+        definition.EnterDuration = TimeSpan.FromMilliseconds(100);
+        try
+        {
+            var player = await this._world.CreatePlayerAsync(CharacterClassNumber.BladeMaster, 400, 100, 114, 232, 57).ConfigureAwait(false);
+            var portal = player.CurrentMap!.GetNpcsInRange(player.Position, 255).First(n => n.Definition.Number == 758);
+            await new TalkNpcAction().TalkToNpcAsync(player, portal).ConfigureAwait(false);
+            var run = (Season21RoundsContext)player.CurrentMiniGame!;
+
+            await Task.Delay(1000).ConfigureAwait(false);
+            Assert.That(run.State, Is.EqualTo(MiniGameState.Open), "the client is still loading");
+
+            await Season21EventWorld.CompleteMapChangeAsync(player).ConfigureAwait(false);
+            await Season21EventWorld.WaitUntilAsync(() => run.Rooms?.Room == 0).ConfigureAwait(false);
+            Assert.That((player.CurrentMap, IsIn(player, 78, 226, 93, 237)), Is.EqualTo((run.Map, true)));
+        }
+        finally
+        {
+            definition.EnterDuration = enterDuration;
             this._world.PlugInManager.DeactivatePlugIn<LabyrinthRoomsPlugIn>();
         }
     }

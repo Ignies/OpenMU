@@ -84,6 +84,9 @@ public sealed class Season21RoundsContext : MiniGameContext
     /// <inheritdoc />
     protected override TimeSpan MinimumEnterDuration => this._isInstance ? TimeSpan.Zero : base.MinimumEnterDuration;
 
+    /// <inheritdoc />
+    protected override bool StartsWhenEntrantsAreOnTheMap => this._isInstance;
+
     /// <summary>
     /// Gets the points of a player.
     /// </summary>

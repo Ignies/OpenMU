@@ -25,6 +25,12 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// </summary>
     private static readonly TimeSpan CountdownMessageDuration = TimeSpan.FromSeconds(30);
 
+    /// <summary>
+    /// How long a game of <see cref="StartsWhenEntrantsAreOnTheMap"/> waits at most for the clients of its entrants to load the map.
+    /// Below a minute, so the entering phase shows no "starts in minutes" message.
+    /// </summary>
+    private static readonly TimeSpan EntrantLoadingAllowance = TimeSpan.FromSeconds(55);
+
     private readonly IGameContext _gameContext;
     private readonly IMapInitializer _mapInitializer;
     private readonly MiniGamePlayerRegistry _players;
@@ -42,6 +48,8 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     private readonly SkippableDelay _skipDelay;
 
     private int _gameLoopStarted;
+
+    private CancellationTokenSource? _entrantsArrived;
 
     private Stopwatch? _elapsedTimeSinceStart;
 
@@ -173,6 +181,13 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// override this with <see cref="TimeSpan.Zero"/>.
     /// </summary>
     protected virtual TimeSpan MinimumEnterDuration => CountdownMessageDuration;
+
+    /// <summary>
+    /// Gets a value indicating whether the entering phase ends as soon as every entered player stands on the map, i.e. its
+    /// client loaded it, instead of after the <see cref="MiniGameDefinition.EnterDuration"/> (at most <see cref="EntrantLoadingAllowance"/>).
+    /// A game whose start places its players (e.g. the rooms of the labyrinth) must not start while a client still loads.
+    /// </summary>
+    protected virtual bool StartsWhenEntrantsAreOnTheMap => false;
 
     /// <summary>
     /// Gets the remaining time of the event, in case it has been finished by the player earlier than the timeout.
@@ -551,6 +566,18 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     /// <param name="args">The event parameters.</param>
     protected virtual async ValueTask OnObjectAddedToMapAsync((GameMap Map, ILocateable Object) args)
     {
+        if (args.Object is Player && this._entrantsArrived is { } arrived && await this.AreEntrantsOnTheMapAsync().ConfigureAwait(false))
+        {
+            try
+            {
+                await arrived.CancelAsync().ConfigureAwait(false);
+            }
+            catch (ObjectDisposedException)
+            {
+                // The entering phase is over already.
+            }
+        }
+
         if (this._gameContext.PlugInManager.GetPlugInPoint<IObjectAddedToMapPlugIn>() is { } plugInPoint)
         {
             await plugInPoint.ObjectAddedToMapAsync(args.Map, args.Object).ConfigureAwait(false);
@@ -755,6 +782,12 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             var enterDuration = this.Definition.EnterDuration.AtLeast(this.MinimumEnterDuration);
             var gameDuration = this.Definition.GameDuration.AtLeast(CountdownMessageDuration);
             var exitDuration = this.Definition.ExitDuration.Subtract(CountdownMessageDuration).AtLeast(CountdownMessageDuration);
+
+            if (this.StartsWhenEntrantsAreOnTheMap)
+            {
+                await this.WaitForEntrantsAsync(enterDuration.AtLeast(EntrantLoadingAllowance), cancellationToken).ConfigureAwait(false);
+                enterDuration = TimeSpan.Zero;
+            }
 
             this.Logger.LogDebug("{context}: Waiting for entering players for {enterDuration}", this, enterDuration);
 
@@ -962,4 +995,34 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
         return result;
     }
+
+    /// <summary>
+    /// Waits until every entered player stands on the map, at most for the duration.
+    /// </summary>
+    /// <param name="duration">The longest wait.</param>
+    /// <param name="cancellationToken">The token of the game.</param>
+    private async ValueTask WaitForEntrantsAsync(TimeSpan duration, CancellationToken cancellationToken)
+    {
+        using var arrived = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        this._entrantsArrived = arrived;
+        try
+        {
+            // Checked after the source is set: an entrant which arrives in between cancels it.
+            if (!await this.AreEntrantsOnTheMapAsync().ConfigureAwait(false))
+            {
+                await this.DelayWithSkipAsync(duration, arrived.Token).ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            // Every entrant stands on the map.
+        }
+        finally
+        {
+            this._entrantsArrived = null;
+        }
+    }
+
+    private async ValueTask<bool> AreEntrantsOnTheMapAsync()
+        => (await this._players.GetSnapshotAsync().ConfigureAwait(false)).All(player => player.CurrentMap == this.Map);
 }

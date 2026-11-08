@@ -78,6 +78,9 @@ each the mission monsters (Great Sword 754 x2, Soldier 755 x3, Lancer 756 x3 of 
 50 points per floor number, the Ruud of the first seven floors (30 to 400) and at the floors 10, 20 and 30 one item of the
 lower, medium and higher Maze of Dimensions box (bags 240-242); a floor which runs out ends the run.
 Not ported: Elena's Letter. The rooms of a floor are the next section.
+A run starts when the client of its runner loaded map 115 (`StartsWhenEntrantsAreOnTheMap`, at most 55 s), not after the
+10 s entering phase: the first floor places the runner in its entrance room, and a client still on the loader was placed
+on a blocked tile and sent back to the Instance Zone.
 
 #### Rooms of the labyrinth (fork feature `labyrinth_rooms`)
 
