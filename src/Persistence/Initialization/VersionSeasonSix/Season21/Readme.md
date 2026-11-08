@@ -113,7 +113,7 @@ maps and elite zones updates, version 2, repair a database which still has them,
 Sanctuary of Aquilas (Aquilas Temple, map 145, maps update version 9; Webzen guides 423 and 430):
 
 * Map, entry total level 1600, warp 75 for 50,000 Zen and gates 718-726 from `Gate.xml` / `Move.txt`: in from Kanturu
-  Ruins (719 at 125,175, Webzen: 124,171), back out (721), and the two inner portals (723/724, 725/726). Its safezone
+  Ruins (719 at Webzen's 124,171, see "Moved entrances"), back out (721), and the two inner portals (723/724, 725/726). Its safezone
   map is Kanturu Ruins, its entrance; no source names a respawn.
 * The data has no spawn file for 145. The guides (muonline.net) give 175 spawns: 55 Warriors 975, 51 Gunners 976 and
   69 Magicians 977, without points. They are ours: one monster a point within 3 tiles, spread at least 8 tiles apart over
@@ -147,6 +147,8 @@ which still has it, an area the operator chose stays:
 * Temple of Arnil 635 (version 12): Elbeland 209,133-211,135, at the 209,135 of Webzen guide 411 and almacengamertv.
   `Gate.xml`'s 219,123-222,125 is the door of the renewed Elbeland, no-move on the Season 6 `Terrain52.att`; the old
   223,118-226,120 was 14 tiles from 209,135.
+* Sanctuary of Aquilas 719 (version 13): Kanturu Ruins 124,171-125,172 (Webzen guide 423); `Gate.xml`'s 125,175-126,176
+  is all no-move on `Terrain38.att`.
 
 Devias (`Season21ClassicSpawns`, maps update version 5): the 280 monsters of `MonsterSetBase/002 - Devias.xml` (10
 spots and 47 single monsters: 40 Yeti, 82 Elite Yeti, 11 Ice Queens) replace the 560 of Season 6 (no Yeti, 235 Elite

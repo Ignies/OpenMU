@@ -7104,7 +7104,7 @@ internal static class Season21MapData
         Gates:
         [
             new(718, Season21GateKind.Spawn, 145, 121, 63, 123, 68),
-            new(719, Season21GateKind.Entrance, 37, 125, 175, 126, 176, Target: 720),
+            new(719, Season21GateKind.Entrance, 37, 124, 171, 125, 172, Target: 720),
             new(720, Season21GateKind.Target, 145, 121, 63, 123, 68),
             new(721, Season21GateKind.Entrance, 145, 112, 65, 113, 66, Target: 722),
             new(722, Season21GateKind.Target, 37, 124, 166, 129, 167),

@@ -551,7 +551,7 @@ internal class Season21MapsDataTest
         Assert.That((spawn.X1, spawn.Y1, spawn.X2, spawn.Y2), Is.EqualTo(((byte)121, (byte)63, (byte)123, (byte)68)));
         var kanturu = gameConfiguration.Maps.Single(m => m.Number == KanturuRuinsNumber);
         var entrance = kanturu.EnterGates.Single(g => g.Number == 719);
-        Assert.That((entrance.X1, entrance.Y1, entrance.TargetGate?.Map), Is.EqualTo(((byte)125, (byte)175, map)));
+        Assert.That((entrance.X1, entrance.Y1, entrance.TargetGate?.Map), Is.EqualTo(((byte)124, (byte)171, map)));
         Assert.That(entrance.LevelRequirement, Is.EqualTo(VersionSeasonSix.Season21.Season21MapsInitializer.GetNormalLevel(1600, gameConfiguration.MaximumLevel)));
         var exit = map.EnterGates.Single(g => g.Number == 721);
         Assert.That((exit.TargetGate?.Map, exit.TargetGate?.X1, exit.TargetGate?.Y1), Is.EqualTo((kanturu, (byte)124, (byte)166)));
@@ -623,7 +623,8 @@ internal class Season21MapsDataTest
 
     /// <summary>
     /// An entrance stands on walkable ground of its map, within the 12 tiles which OpenMU accepts from the point of the
-    /// sources: the Temple of Arnil entrance 635 at Elbeland 209,135 (Webzen guide 411, almacengamertv).
+    /// sources: the Temple of Arnil entrance 635 at Elbeland 209,135 (Webzen guide 411, almacengamertv), the Sanctuary of
+    /// Aquilas entrance 719 at Kanturu Ruins 124,171 (Webzen guide 423; <c>Gate.xml</c>'s 125,175 is no-move).
     /// </summary>
     /// <param name="gateNumber">The gate number.</param>
     /// <param name="mapNumber">The map number.</param>
@@ -632,6 +633,7 @@ internal class Season21MapsDataTest
     /// <param name="x2">The last x.</param>
     /// <param name="y2">The last y.</param>
     [TestCase(635, 51, 209, 133, 211, 135)]
+    [TestCase(719, KanturuRuinsNumber, 124, 171, 125, 172)]
     public async Task EntranceStandsOnWalkableGroundAsync(short gateNumber, byte mapNumber, byte x1, byte y1, byte x2, byte y2)
     {
         var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
@@ -644,7 +646,7 @@ internal class Season21MapsDataTest
     }
 
     /// <summary>
-    /// The maps update moves an entrance of an older database which still has its old area (635 at 223,118-226,120), and
+    /// The maps update moves an entrance of an older database which still has its old area (635 at 223,118-226,120, 719 at 125,175-126,176), and
     /// keeps an area the operator chose.
     /// </summary>
     [Test]
@@ -655,14 +657,17 @@ internal class Season21MapsDataTest
         await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         var arnil = gameConfiguration.Maps.Single(m => m.Number == 51 && m.Discriminator == 0).EnterGates.Single(g => g.Number == 635);
         (arnil.X1, arnil.Y1, arnil.X2, arnil.Y2) = (223, 118, 226, 120);
+        var aquilas = gameConfiguration.Maps.Single(m => m.Number == KanturuRuinsNumber && m.Discriminator == 0).EnterGates.Single(g => g.Number == 719);
+        (aquilas.X1, aquilas.Y1, aquilas.X2, aquilas.Y2) = (125, 175, 126, 176);
 
         await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.That((arnil.X1, arnil.Y1, arnil.X2, arnil.Y2), Is.EqualTo(((byte)209, (byte)133, (byte)211, (byte)135)));
+        Assert.That((aquilas.X1, aquilas.Y1, aquilas.X2, aquilas.Y2), Is.EqualTo(((byte)124, (byte)171, (byte)125, (byte)172)));
 
         (arnil.X1, arnil.Y1, arnil.X2, arnil.Y2) = (200, 130, 202, 132);
         await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.That((arnil.X1, arnil.Y1, arnil.X2, arnil.Y2), Is.EqualTo(((byte)200, (byte)130, (byte)202, (byte)132)), "the operator's area");
-        Assert.That(new AddSeason21MapsUpdatePlugIn().Version, Is.GreaterThanOrEqualTo(12));
+        Assert.That(new AddSeason21MapsUpdatePlugIn().Version, Is.GreaterThanOrEqualTo(13));
     }
 
     /// <summary>

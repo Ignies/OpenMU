@@ -56,11 +56,12 @@ public class AddSeason21MapsUpdatePlugIn : UpdatePlugInBase
     /// Version 10: the two Illusion Temple League maps 98/99 with their spawn areas (no league yet).
     /// Version 11: the four same-map shortcuts of Dungeon (gates 475-482).
     /// Version 12: the Temple of Arnil entrance 635 moves to Elbeland 209,133-211,135 (<see cref="Season21MovedGates"/>).
+    /// Version 13: the Sanctuary of Aquilas entrance 719 moves to Kanturu Ruins 124,171-125,172 (<see cref="Season21MovedGates"/>).
     /// </remarks>
-    public override int Version => 12;
+    public override int Version => 13;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 08, 22, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 08, 23, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21LevelCapsUpdatePlugIn).GUID];

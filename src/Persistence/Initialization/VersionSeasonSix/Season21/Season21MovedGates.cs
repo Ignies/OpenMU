@@ -18,6 +18,7 @@ internal static class Season21MovedGates
     public static IReadOnlyList<(short Number, byte X1, byte Y1, byte X2, byte Y2)> OldAreas { get; } =
     [
         (635, 223, 118, 226, 120),
+        (719, 125, 175, 126, 176),
     ];
 
     /// <summary>
