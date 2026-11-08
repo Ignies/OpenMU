@@ -1721,6 +1721,36 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies that the Land of Trials setting (B2 1F) and its entrance fee (B2 09 type 3) are handled from the window of
+    /// the Land of Trials guard (220), which the original client sends them from, as from the Senior's; the other taxes
+    /// stay with the Senior.
+    /// </summary>
+    [Test]
+    public async ValueTask LandOfTrialsSettingsAreHandledFromTheGuardWindowAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        fixture.Player.OpenedNpc = new NonPlayerCharacter(
+            null!,
+            new MonsterDefinition { Number = CastleSiegeLandOfTrialsGuardTalkPlugIn.GuardNumber },
+            null!);
+        var setting = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.CastleSiegeHuntingZoneEntranceSetting.Length];
+        var huntTax = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.CastleSiegeTaxChangeRequest.Length];
+        huntTax[4] = (byte)CastleSiegeTaxType.HuntZone;
+        var storeTax = new byte[MUnique.OpenMU.Network.Packets.ClientToServer.CastleSiegeTaxChangeRequest.Length];
+        storeTax[4] = (byte)CastleSiegeTaxType.Store;
+
+        await new CastleSiegeHuntZoneToggleHandlerPlugIn().HandlePacketAsync(fixture.Player, setting).ConfigureAwait(false);
+        await new CastleSiegeTaxChangeHandlerPlugIn().HandlePacketAsync(fixture.Player, huntTax).ConfigureAwait(false);
+        await new CastleSiegeTaxChangeHandlerPlugIn().HandlePacketAsync(fixture.Player, storeTax).ConfigureAwait(false);
+
+        Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeHuntZoneResultPlugIn>()!)
+            .Verify(view => view.ShowEntranceSettingResultAsync(It.IsAny<CastleSiegeRequestResult>(), It.IsAny<bool>()), Times.Once);
+        var taxView = Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeTaxChangeResultPlugIn>()!);
+        taxView.Verify(view => view.ShowTaxChangeResultAsync(It.IsAny<CastleSiegeRequestResult>(), CastleSiegeTaxType.HuntZone, It.IsAny<uint>()), Times.Once);
+        taxView.Verify(view => view.ShowTaxChangeResultAsync(It.IsAny<CastleSiegeRequestResult>(), CastleSiegeTaxType.Store, It.IsAny<uint>()), Times.Never);
+    }
+
+    /// <summary>
     /// Verifies all client request identifiers required by the NPC issue.
     /// </summary>
     [Test]
