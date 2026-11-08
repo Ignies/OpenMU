@@ -26,6 +26,11 @@ internal static class Season21InstanceZoneData
     internal const byte LabyrinthMap = 115;
 
     /// <summary>
+    /// The number of Loren Market, which the Instance Zone is linked to on foot.
+    /// </summary>
+    internal const byte LorenMarketMap = 79;
+
+    /// <summary>
     /// The Portal of Dimension, the entrance of the labyrinth.
     /// </summary>
     internal const short PortalOfDimension = 758;
@@ -64,6 +69,9 @@ internal static class Season21InstanceZoneData
             new(691, Season21GateKind.Target, InstanceZoneMap, 116, 236, 120, 238),
             new(680, Season21GateKind.Target, InstanceZoneMap, 169, 236, 174, 237),
             new(533, Season21GateKind.Target, InstanceZoneMap, 232, 56, 234, 59),
+            new(532, Season21GateKind.Entrance, LorenMarketMap, 227, 55, 227, 60, Target: 533),
+            new(535, Season21GateKind.Target, LorenMarketMap, 223, 56, 224, 59),
+            new(534, Season21GateKind.Entrance, InstanceZoneMap, 228, 56, 229, 59, Target: 535),
             new(5000, Season21GateKind.Spawn, LabyrinthMap, 20, 11, 22, 13),
         ],
         [])

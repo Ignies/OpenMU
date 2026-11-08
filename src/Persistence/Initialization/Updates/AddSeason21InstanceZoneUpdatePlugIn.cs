@@ -37,6 +37,13 @@ public class AddSeason21InstanceZoneUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 07, 2, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    /// <remarks>Version 2: the walk between Loren Market and the Instance Zone (gates 532-535).</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 08, 10, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21InstancesUpdatePlugIn).GUID];
 
     /// <inheritdoc />

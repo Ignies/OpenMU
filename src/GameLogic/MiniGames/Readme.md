@@ -66,6 +66,7 @@ rewards, which the data names but doesn't list; the definition has no item rewar
 
 Update "Add the Instance Zone and the Labyrinth of Dimensions of Season 21": map 114 (`Terrain115.att`) with Cent
 (765), Eunice (940), Jerint (522) and the Portal of Dimension (758) at their S21Emu places, gates 537, 691, 680 and 533.
+Loren Market and the zone are linked on foot (version 2: 532 at Loren Market's east edge to 533, 534 back to 535).
 Sent (764) and Eunice (939) in the towns now take a character to the zone (gates 537 and 691), and Cent and Eunice there
 into the trial instance of its party (stored configuration of "Evolution quests"; worlds without the update keep the
 direct way). The Portal of Dimension enters the labyrinth (`Season21EventsConfiguration.Entrances`, the Season 6 client

@@ -112,6 +112,25 @@ internal class Season21EventsDataTest
     }
 
     /// <summary>
+    /// The Instance Zone and Loren Market are linked on foot both ways (S21Emu gates 532-535); version 2 of the update
+    /// adds the walk to a database which applied version 1.
+    /// </summary>
+    [Test]
+    public void InstanceZoneWalksToAndFromLorenMarket()
+    {
+        var zone = this._gameConfiguration.Maps.Single(m => m.Number == 114);
+        var market = this._gameConfiguration.Maps.Single(m => m.Number == 79);
+        var back = zone.EnterGates.Single(g => g.Number == 534);
+        Assert.That((back.X1, back.Y1, back.X2, back.Y2), Is.EqualTo(((byte)228, (byte)56, (byte)229, (byte)59)));
+        Assert.That((back.TargetGate?.Map, back.TargetGate?.X1, back.TargetGate?.Y1, back.TargetGate?.X2, back.TargetGate?.Y2), Is.EqualTo((market, (byte)223, (byte)56, (byte)224, (byte)59)));
+        var into = market.EnterGates.Single(g => g.Number == 532);
+        Assert.That((into.X1, into.Y1, into.X2, into.Y2), Is.EqualTo(((byte)227, (byte)55, (byte)227, (byte)60)));
+        Assert.That((into.TargetGate?.Map, into.TargetGate?.X1, into.TargetGate?.Y1), Is.EqualTo((zone, (byte)232, (byte)56)));
+        Assert.That((into.LevelRequirement, back.LevelRequirement), Is.EqualTo(((short)0, (short)0)));
+        Assert.That(new AddSeason21InstanceZoneUpdatePlugIn().Version, Is.EqualTo(2));
+    }
+
+    /// <summary>
     /// The Boss Battle is on map 139 with its bosses, the Protector of Acheron on the event copies 92 and 96 with its
     /// reward bag, both scheduled; every day of the Imperial Guardian starts at total level 1000.
     /// </summary>
