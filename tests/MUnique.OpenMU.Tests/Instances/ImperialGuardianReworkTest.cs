@@ -4,7 +4,10 @@
 
 namespace MUnique.OpenMU.Tests.Instances;
 
+using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Entities;
+using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.GameLogic.MiniGames.ImperialGuardian;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
@@ -79,5 +82,30 @@ public class ImperialGuardianReworkTest
         var items = player.Inventory!.Items.Where(i => i.Definition?.Group == 20).Select(i => i.Definition!.Number).ToList();
         Assert.That(items.Count, Is.AnyOf(1, 2, 4));
         Assert.That(items.Distinct().Single(), Is.AnyOf((short)94, (short)95));
+    }
+
+    /// <summary>
+    /// The grade of total level 1000 is checked against level and master level, not the normal level alone.
+    /// </summary>
+    [Test]
+    public async ValueTask TotalLevelPassesTheGradeAsync()
+    {
+        var leader = await this._world.CreatePlayerAsync(CharacterClassNumber.BladeMaster, 400, 600).ConfigureAwait(false);
+        var mate = await this._world.CreatePlayerAsync(CharacterClassNumber.BladeMaster, 400, 600).ConfigureAwait(false);
+        await Season21EventWorld.CreatePartyAsync(leader, mate).ConfigureAwait(false);
+        foreach (var number in new short[] { 102, 109 })
+        {
+            var item = leader.PersistenceContext.CreateNew<Item>();
+            item.Definition = this._world.Configuration.Items.Single(i => i.Group == 14 && i.Number == number);
+            item.Durability = 1;
+            Assert.That(await leader.Inventory!.AddItemAsync(item).ConfigureAwait(false), Is.True);
+        }
+
+        await new EnterImperialGuardianAction().TryEnterAsync(leader).ConfigureAwait(false);
+
+        var view = Mock.Get(leader.ViewPlugIns.GetPlugIn<IImperialGuardianViewPlugIn>()!);
+        view.Verify(
+            v => v.ShowEnterResultAsync(ImperialGuardianEnterResult.CharacterLevelTooLow, It.IsAny<byte>(), It.IsAny<int>(), It.IsAny<ImperialGuardianWeather>(), It.IsAny<TimeSpan>()),
+            Times.Never);
     }
 }

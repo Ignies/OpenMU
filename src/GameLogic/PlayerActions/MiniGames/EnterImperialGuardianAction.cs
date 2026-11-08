@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 
-using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.MiniGames.ImperialGuardian;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 
@@ -71,7 +70,7 @@ public class EnterImperialGuardianAction
             return;
         }
 
-        if ((player.Attributes?[Stats.Level] ?? 0) < definition.MinimumCharacterLevel)
+        if (definition.GetBracketLevel(player, player.SelectedCharacter?.IsSpecialCharacter() ?? false) < definition.MinimumCharacterLevel)
         {
             // The client doesn't show a message for this result.
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ImperialGuardianLevelTooLow), definition.MinimumCharacterLevel).ConfigureAwait(false);
