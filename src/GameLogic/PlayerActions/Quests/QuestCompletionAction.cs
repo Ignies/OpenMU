@@ -181,9 +181,8 @@ public class QuestCompletionAction
                 await player.InvokeViewPlugInAsync<IUpdateMasterStatsPlugIn>(p => p.SendMasterStatsAsync()).ConfigureAwait(false);
                 break;
             case QuestRewardType.CharacterEvolution:
-                if (new EvolveCharacterAction().TryEvolve(player, true))
+                if (await new EvolveCharacterAction().TryEvolveAsync(player, true, ClassEvolutionReason.Quest).ConfigureAwait(false))
                 {
-                    await player.ForEachWorldObserverAsync<IClassEvolvedPlugIn>(p => p.ClassEvolvedAsync(player, ClassEvolutionReason.Quest), true).ConfigureAwait(false);
                     await player.InvokeViewPlugInAsync<IUpdateMasterStatsPlugIn>(p => p.SendMasterStatsAsync()).ConfigureAwait(false);
                 }
 

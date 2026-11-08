@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests.Classes;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
@@ -13,6 +14,7 @@ using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Character;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.GameServer.MessageHandler.Babylon;
 using MUnique.OpenMU.Network.Packets.Babylon;
 using MUnique.OpenMU.Persistence.InMemory;
@@ -174,9 +176,13 @@ public class Season21ClassesInGameTest
         character.CharacterStatus = CharacterStatus.GameMaster;
         await player.SetSelectedCharacterAsync(character).ConfigureAwait(false);
 
+        var skillList = Mock.Get(player.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()!);
+        skillList.Invocations.Clear();
+
         await new EvolveChatCommandPlugIn().HandleCommandAsync(player, "/evolve").ConfigureAwait(false);
 
         Assert.That(character.CharacterClass?.Number, Is.EqualTo((byte)CharacterClassNumber.ImpactCrusader));
+        skillList.Verify(v => v.UpdateSkillListAsync(), Times.Once, "the skill list carries the tree of the new class");
     }
 
     /// <summary>

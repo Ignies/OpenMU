@@ -48,9 +48,8 @@ public class EvolveChatCommandPlugIn : ChatCommandPlugInBase<EvolveChatCommandPl
             return;
         }
 
-        if (new EvolveCharacterAction().TryEvolve(targetPlayer, false))
+        if (await new EvolveCharacterAction().TryEvolveAsync(targetPlayer, false, ClassEvolutionReason.GameMaster).ConfigureAwait(false))
         {
-            await targetPlayer.ForEachWorldObserverAsync<IClassEvolvedPlugIn>(p => p.ClassEvolvedAsync(targetPlayer, ClassEvolutionReason.GameMaster), true).ConfigureAwait(false);
             await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.CharacterEvolved), character.Name, character.CharacterClass?.Name.ToString() ?? string.Empty).ConfigureAwait(false);
         }
         else

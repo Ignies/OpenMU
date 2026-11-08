@@ -19,6 +19,7 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Progression;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
@@ -137,6 +138,7 @@ public class EvolutionQuestInGameTest
     {
         var thirdRuneWizard = ClassCodes.FromCode(ClassCodes.GetCode(BaseClassCode.RuneWizard, ClassEvolution.Third))!.Value;
         var player = await this.CreateThirdClassAsync((CharacterClassNumber)thirdRuneWizard, 400, 400).ConfigureAwait(false);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()!).Invocations.Clear();
         await this.TalkAsync(player, 764).ConfigureAwait(false);
         await this.TalkAsync(player, 766).ConfigureAwait(false);
 
@@ -149,6 +151,7 @@ public class EvolutionQuestInGameTest
 
         Assert.That(player.SelectedCharacter!.CharacterClass?.GetEvolution(), Is.EqualTo(ClassEvolution.Fourth));
         Assert.That(player.SelectedCharacter.CharacterClass?.GetClassCode() >> 3, Is.EqualTo((int)BaseClassCode.RuneWizard));
+        Mock.Get(player.ViewPlugIns.GetPlugIn<ISkillListViewPlugIn>()!).Verify(v => v.UpdateSkillListAsync(), Times.Once, "the skill list carries the tree of the new class");
     }
 
     /// <summary>
