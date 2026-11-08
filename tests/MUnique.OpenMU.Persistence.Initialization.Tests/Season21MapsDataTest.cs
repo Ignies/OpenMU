@@ -29,7 +29,7 @@ internal class Season21MapsDataTest
     private static readonly byte[] AllMapNumbers =
     [
         123, 124, 125, 126, 127, 113, 122, 131, 91, 95, 100, 110, 112, 116, 117, 118, 119, 120,
-        132, 133, 134, 135, 136, 137, 138, 140, 141, 142, 143, 144, 145, 128, 129, 130,
+        132, 133, 134, 135, 136, 137, 138, 140, 141, 142, 143, 144, 145, 128, 129, 130, 98, 99,
     ];
 
     /// <summary>
@@ -566,6 +566,31 @@ internal class Season21MapsDataTest
     }
 
     /// <summary>
+    /// The update adds the two maps of the Illusion Temple League (98/99, S21Emu MapAttribute "IllussionTempleLeague 1/2",
+    /// both on Terrain99.att) with the three spawn areas of each (gates 444-449); the league itself isn't ported, so no
+    /// warp and no entrance lead there.
+    /// </summary>
+    /// <param name="mapNumber">The map number.</param>
+    /// <param name="name">The name.</param>
+    [TestCase(98, "Illusion Temple League 1")]
+    [TestCase(99, "Illusion Temple League 2")]
+    public async Task UpdateAddsTheIllusionTempleLeagueMapsAsync(byte mapNumber, string name)
+    {
+        var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
+
+        var map = gameConfiguration.Maps.Single(m => m.Number == mapNumber);
+        Assert.That(map.Name.ValueInNeutralLanguage, Is.EqualTo(name));
+        Assert.That(map.TerrainData, Is.EqualTo(TerrainUpdateHelper.ReadTerrainResource("Season21.Terrain99.att")));
+        Assert.That(map.SafezoneMap?.Number, Is.EqualTo(DeviasNumber));
+        Assert.That(map.MapRequirements.Single(r => r.Attribute == Stats.TotalLevel).MinimumValue, Is.EqualTo(400));
+        Assert.That(map.ExitGates.Select(g => (g.IsSpawnGate, g.X1, g.Y1, g.X2, g.Y2)), Is.EquivalentTo(new[] { (true, (byte)98, (byte)128, (byte)108, (byte)137), (true, (byte)141, (byte)41, (byte)146, (byte)45), (true, (byte)194, (byte)124, (byte)198, (byte)127) }));
+        Assert.That(map.MonsterSpawns, Is.Empty);
+        Assert.That(gameConfiguration.WarpList.Where(w => w.Gate?.Map == map), Is.Empty);
+        Assert.That(gameConfiguration.Maps.SelectMany(m => m.EnterGates).Where(g => g.TargetGate?.Map == map), Is.Empty);
+        Assert.That(new AddSeason21MapsUpdatePlugIn().Version, Is.EqualTo(10));
+    }
+
+    /// <summary>
     /// Version 9 of the maps update adds Aquilas Temple to a database which has the maps of an older version, and keeps
     /// what the operator changed on them.
     /// </summary>
@@ -584,7 +609,7 @@ internal class Season21MapsDataTest
 
         await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
-        Assert.That(new AddSeason21MapsUpdatePlugIn().Version, Is.EqualTo(9));
+        Assert.That(new AddSeason21MapsUpdatePlugIn().Version, Is.GreaterThanOrEqualTo(9));
         Assert.That(gameConfiguration.Maps.Count(m => m.Number == AquilasTempleNumber), Is.EqualTo(1));
         Assert.That(kanturu.EnterGates.Single(g => g.Number == 719).TargetGate?.Map?.Number, Is.EqualTo(AquilasTempleNumber));
         Assert.That(gameConfiguration.WarpList.Count(w => w.Index == 75), Is.EqualTo(1));

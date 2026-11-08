@@ -127,6 +127,12 @@ Sanctuary of Aquilas (Aquilas Temple, map 145, maps update version 9; Webzen gui
   five elite zones (elite zones update version 3).
 * The level penalty of Webzen (1650) isn't set: `LevelPenaltyConfiguration.MapPenaltyLevels` is empty by default.
 
+Illusion Temple League (maps 98/99, maps update version 10): the two maps on `Terrain99.att` (`MapAttribute.xml`) with
+the three spawn areas of each (`Gate.xml` 444-449), total level 400 (`IllusionTempleLeague.xml` MinLevel), safezone
+Devias as the Season 6 temples. No warp or entrance leads there: the league, a guild tournament by the day of the month
+(eliminations, semi-final, final, reward day) on the renewed temple (Cursed Statue 658, Captured Stone Statues 659-668),
+isn't ported. Its version (Season 9) is our assumption.
+
 Devias (`Season21ClassicSpawns`, maps update version 5): the 280 monsters of `MonsterSetBase/002 - Devias.xml` (10
 spots and 47 single monsters: 40 Yeti, 82 Elite Yeti, 11 Ice Queens) replace the 560 of Season 6 (no Yeti, 235 Elite
 Yeti, 75 Ice Queens) while the roster is still the Season 6 one; the NPCs stay.

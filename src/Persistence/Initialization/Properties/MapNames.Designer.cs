@@ -797,6 +797,20 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AquilasTemple", resourceCulture);
             }
         }
+
+        /// <summary>Gets IllusionTempleLeague1 from the configuration name resources.</summary>
+        public static string IllusionTempleLeague1 {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeague1", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets IllusionTempleLeague2 from the configuration name resources.</summary>
+        public static string IllusionTempleLeague2 {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeague2", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Trial Area.

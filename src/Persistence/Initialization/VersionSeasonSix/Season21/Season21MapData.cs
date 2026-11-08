@@ -44,6 +44,7 @@ internal static class Season21MapData
         AtlansAbyss2,
         AtlansAbyss3,
         AquilasTemple,
+        IllusionTempleLeague,
     ];
 
     /// <summary>
@@ -7115,4 +7116,30 @@ internal static class Season21MapData
         [
             new(75, LocalizedString.FromResource(() => WarpNames.AquilasTemple), 718),
         ]);
+
+    /// <summary>
+    /// Gets the set of the two Illusion Temple League maps: the maps and their spawn areas only, the league (a guild
+    /// tournament, S21Emu <c>Event/IlusionTempleLeague</c>) isn't ported, see Readme.md.
+    /// </summary>
+    private static Season21MapSet IllusionTempleLeague { get; } = new(
+        GameVersion.Season9Episode1,
+        EntryLevel: 400,
+        EntryMoney: 0,
+        Maps:
+        [
+            new(98, LocalizedString.FromResource(() => MapNames.IllusionTempleLeague1), 2, 99),
+            new(99, LocalizedString.FromResource(() => MapNames.IllusionTempleLeague2), 2, 99),
+        ],
+        Monsters: [],
+        Spawns: [],
+        Gates:
+        [
+            new(444, Season21GateKind.Spawn, 98, 98, 128, 108, 137),
+            new(445, Season21GateKind.Spawn, 99, 98, 128, 108, 137),
+            new(446, Season21GateKind.Spawn, 98, 141, 41, 146, 45),
+            new(447, Season21GateKind.Spawn, 99, 141, 41, 146, 45),
+            new(448, Season21GateKind.Spawn, 98, 194, 124, 198, 127),
+            new(449, Season21GateKind.Spawn, 99, 194, 124, 198, 127),
+        ],
+        Warps: []);
 }
