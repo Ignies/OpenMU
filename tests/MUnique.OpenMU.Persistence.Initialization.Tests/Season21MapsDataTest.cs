@@ -25,6 +25,7 @@ internal class Season21MapsDataTest
     private const short MineDiggerNumber = 810;
     private const byte AquilasTempleNumber = 145;
     private const byte KanturuRuinsNumber = 37;
+    private const byte DungeonNumber = 1;
 
     private static readonly byte[] AllMapNumbers =
     [
@@ -587,7 +588,37 @@ internal class Season21MapsDataTest
         Assert.That(map.MonsterSpawns, Is.Empty);
         Assert.That(gameConfiguration.WarpList.Where(w => w.Gate?.Map == map), Is.Empty);
         Assert.That(gameConfiguration.Maps.SelectMany(m => m.EnterGates).Where(g => g.TargetGate?.Map == map), Is.Empty);
-        Assert.That(new AddSeason21MapsUpdatePlugIn().Version, Is.EqualTo(10));
+        Assert.That(new AddSeason21MapsUpdatePlugIn().Version, Is.GreaterThanOrEqualTo(10));
+    }
+
+    /// <summary>
+    /// The update adds the four same-map shortcuts of Dungeon (S21Emu <c>Gate.xml</c> 475-482, level 0) on walkable ground,
+    /// also to a database which has the maps of an older version.
+    /// </summary>
+    [Test]
+    public async Task UpdateAddsTheDungeonShortcutsAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        await new AddSeason21LevelCapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var dungeon = gameConfiguration.Maps.Single(m => m.Number == DungeonNumber && m.Discriminator == 0);
+        dungeon.EnterGates.Where(g => g.Number == 479).ToList().ForEach(g => dungeon.EnterGates.Remove(g));
+
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var shortcuts = dungeon.EnterGates.Where(g => g.Number is >= 475 and <= 482).OrderBy(g => g.Number)
+            .Select(g => (g.Number, g.X1, g.Y1, g.X2, g.Y2, g.LevelRequirement, g.TargetGate?.Map?.Number, g.TargetGate?.X1, g.TargetGate?.Y1, g.TargetGate?.X2, g.TargetGate?.Y2));
+        Assert.That(shortcuts, Is.EqualTo(new (short, byte, byte, byte, byte, short, short?, byte?, byte?, byte?, byte?)[]
+        {
+            (475, 115, 231, 117, 233, 0, DungeonNumber, 45, 152, 48, 155),
+            (477, 45, 148, 47, 150, 0, DungeonNumber, 112, 232, 113, 234),
+            (479, 233, 106, 237, 108, 0, DungeonNumber, 241, 85, 242, 89),
+            (481, 244, 86, 245, 89, 0, DungeonNumber, 229, 108, 231, 110),
+        }));
+        var terrain = new GameLogic.GameMapTerrain(dungeon);
+        var areas = dungeon.EnterGates.Where(g => g.Number is >= 475 and <= 482).SelectMany(g => new Gate[] { g, g.TargetGate! });
+        Assert.That(areas.Where(g => Enumerable.Range(g.X1, g.X2 - g.X1 + 1).Any(x => Enumerable.Range(g.Y1, g.Y2 - g.Y1 + 1).Any(y => !terrain.WalkMap[x, y]))), Is.Empty);
+        Assert.That(new AddSeason21MapsUpdatePlugIn().Version, Is.GreaterThanOrEqualTo(11));
     }
 
     /// <summary>

@@ -54,11 +54,12 @@ public class AddSeason21MapsUpdatePlugIn : UpdatePlugInBase
     /// Version 8: Bass 744 and Vasuki 745 swap level, health and damage (muonlinefanz.com, muonline.net).
     /// Version 9: the Sanctuary of Aquilas (Aquilas Temple, map 145) with its monsters, gates and warp 75.
     /// Version 10: the two Illusion Temple League maps 98/99 with their spawn areas (no league yet).
+    /// Version 11: the four same-map shortcuts of Dungeon (gates 475-482).
     /// </remarks>
-    public override int Version => 10;
+    public override int Version => 11;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 08, 19, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 08, 21, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21LevelCapsUpdatePlugIn).GUID];

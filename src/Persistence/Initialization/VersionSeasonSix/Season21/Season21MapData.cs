@@ -45,6 +45,7 @@ internal static class Season21MapData
         AtlansAbyss3,
         AquilasTemple,
         IllusionTempleLeague,
+        DungeonShortcuts,
     ];
 
     /// <summary>
@@ -7140,6 +7141,29 @@ internal static class Season21MapData
             new(447, Season21GateKind.Spawn, 99, 141, 41, 146, 45),
             new(448, Season21GateKind.Spawn, 98, 194, 124, 198, 127),
             new(449, Season21GateKind.Spawn, 99, 194, 124, 198, 127),
+        ],
+        Warps: []);
+
+    /// <summary>
+    /// Gets the four same-map shortcuts of Dungeon (map 1, level 0): no maps of their own, only the gates.
+    /// </summary>
+    private static Season21MapSet DungeonShortcuts { get; } = new(
+        GameVersion.Season9Episode1,
+        EntryLevel: 0,
+        EntryMoney: 0,
+        Maps: [],
+        Monsters: [],
+        Spawns: [],
+        Gates:
+        [
+            new(475, Season21GateKind.Entrance, 1, 115, 231, 117, 233, Target: 476),
+            new(476, Season21GateKind.Target, 1, 45, 152, 48, 155),
+            new(477, Season21GateKind.Entrance, 1, 45, 148, 47, 150, Target: 478),
+            new(478, Season21GateKind.Target, 1, 112, 232, 113, 234),
+            new(479, Season21GateKind.Entrance, 1, 233, 106, 237, 108, Target: 480),
+            new(480, Season21GateKind.Target, 1, 241, 85, 242, 89),
+            new(481, Season21GateKind.Entrance, 1, 244, 86, 245, 89, Target: 482),
+            new(482, Season21GateKind.Target, 1, 229, 108, 231, 110),
         ],
         Warps: []);
 }

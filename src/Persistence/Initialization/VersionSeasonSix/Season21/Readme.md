@@ -133,6 +133,10 @@ Devias as the Season 6 temples. No warp or entrance leads there: the league, a g
 (eliminations, semi-final, final, reward day) on the renewed temple (Cursed Statue 658, Captured Stone Statues 659-668),
 isn't ported. Its version (Season 9) is our assumption.
 
+Dungeon shortcuts (maps update version 11): the four same-map gate pairs of Dungeon (map 1) from `Gate.xml` 475-482, level
+0, all on walkable ground of the Season 6 `Terrain2.att`: 475 (115,231) to 45,152; 477 (45,148) to 112,232; 479 (233,106)
+to 241,85; 481 (244,86) to 229,108. The client triggers them from its own gate areas. Their version is our assumption.
+
 Devias (`Season21ClassicSpawns`, maps update version 5): the 280 monsters of `MonsterSetBase/002 - Devias.xml` (10
 spots and 47 single monsters: 40 Yeti, 82 Elite Yeti, 11 Ice Queens) replace the 560 of Season 6 (no Yeti, 235 Elite
 Yeti, 75 Ice Queens) while the roster is still the Season 6 one; the NPCs stay.
