@@ -78,6 +78,11 @@ internal static class Season21EliteZoneData
         new(144, EliteZoneElement.Earth, 24, 211, 18, 205, 30, 217, 18, 205, 30, 217, [new(972, 2), new(973, 2), new(974, 2)]),
         new(144, EliteZoneElement.Wind, 206, 16, 200, 10, 212, 22, 200, 10, 212, 22, [new(972, 2), new(973, 2), new(974, 2)]),
         new(144, EliteZoneElement.Darkness, 201, 218, 195, 212, 207, 224, 195, 212, 207, 224, [new(972, 2), new(973, 2), new(974, 2)]),
+        new(145, EliteZoneElement.Fire, 33, 46, 27, 40, 39, 52, 27, 40, 39, 52, [new(978, 2), new(979, 2), new(980, 2)]),
+        new(145, EliteZoneElement.Water, 43, 190, 37, 184, 49, 196, 37, 184, 49, 196, [new(978, 2), new(979, 2), new(980, 2)]),
+        new(145, EliteZoneElement.Earth, 206, 217, 200, 211, 212, 223, 200, 211, 212, 223, [new(978, 2), new(979, 2), new(980, 2)]),
+        new(145, EliteZoneElement.Wind, 215, 105, 209, 99, 221, 111, 209, 99, 221, 111, [new(978, 2), new(979, 2), new(980, 2)]),
+        new(145, EliteZoneElement.Darkness, 220, 25, 214, 19, 226, 31, 214, 19, 226, 31, [new(978, 2), new(979, 2), new(980, 2)]),
     ];
 
     /// <summary>
@@ -94,6 +99,9 @@ internal static class Season21EliteZoneData
         (144, new(972, LocalizedString.FromResource(() => MonsterNames.EliteShadowMasterOfDoom), Level: 2235, Health: 10855000, MinimumDamage: 40080, MaximumDamage: 40755, Defense: 15470, AttackRate: 15750, DefenseRate: 8763, MoveRange: 4, AttackRange: 1, ViewRange: 7, MoveDelay: 400, AttackDelay: 1770, RespawnDelay: 15, Attribute: 2, Resistances: [29, 29, 29, 29, 0, 0, 0])),
         (144, new(973, LocalizedString.FromResource(() => MonsterNames.EliteNapinOfDoom), Level: 2240, Health: 10919000, MinimumDamage: 38430, MaximumDamage: 39105, Defense: 15680, AttackRate: 16750, DefenseRate: 8549, MoveRange: 4, AttackRange: 3, ViewRange: 7, MoveDelay: 400, AttackDelay: 1770, RespawnDelay: 15, Attribute: 2, Resistances: [27, 27, 27, 27, 0, 0, 0])),
         (144, new(974, LocalizedString.FromResource(() => MonsterNames.EliteSapiQueenOfDoom), Level: 2240, Health: 10887000, MinimumDamage: 39255, MaximumDamage: 39930, Defense: 15575, AttackRate: 16500, DefenseRate: 8943, MoveRange: 4, AttackRange: 3, ViewRange: 7, MoveDelay: 400, AttackDelay: 1770, RespawnDelay: 15, Attribute: 2, Resistances: [28, 28, 28, 28, 0, 0, 0])),
+        (145, new(978, LocalizedString.FromResource(() => MonsterNames.EliteAquilasWarrior), Level: 2325, Health: 10887000, MinimumDamage: 40080, MaximumDamage: 40755, Defense: 15470, AttackRate: 17460, DefenseRate: 10370, MoveRange: 4, AttackRange: 2, ViewRange: 9, MoveDelay: 700, AttackDelay: 2500, RespawnDelay: 8, Attribute: 2, Resistances: [150, 20, 20, 20, 0, 0, 0])),
+        (145, new(979, LocalizedString.FromResource(() => MonsterNames.EliteAquilasGunner), Level: 2320, Health: 10855000, MinimumDamage: 38430, MaximumDamage: 39105, Defense: 15680, AttackRate: 16440, DefenseRate: 10577, MoveRange: 4, AttackRange: 2, ViewRange: 9, MoveDelay: 700, AttackDelay: 2500, RespawnDelay: 8, Attribute: 2, Resistances: [150, 20, 20, 20, 0, 0, 0])),
+        (145, new(980, LocalizedString.FromResource(() => MonsterNames.EliteAquilasMagician), Level: 2325, Health: 10887000, MinimumDamage: 39255, MaximumDamage: 39930, Defense: 15575, AttackRate: 13400, DefenseRate: 10474, MoveRange: 4, AttackRange: 3, ViewRange: 9, MoveDelay: 700, AttackDelay: 2000, RespawnDelay: 8, Attribute: 2, Resistances: [150, 20, 20, 20, 0, 0, 0])),
     ];
 
     /// <summary>

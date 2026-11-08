@@ -52,11 +52,12 @@ public class AddSeason21MapsUpdatePlugIn : UpdatePlugInBase
     /// Version 6: the town NPCs of the Season 21 data which Season 6 lacks stand in Noria and Lorencia.
     /// Version 7: Kanturu Underground respawns in its own safe zone (<see cref="OwnMapRespawnPlugIn"/>).
     /// Version 8: Bass 744 and Vasuki 745 swap level, health and damage (muonlinefanz.com, muonline.net).
+    /// Version 9: the Sanctuary of Aquilas (Aquilas Temple, map 145) with its monsters, gates and warp 75.
     /// </remarks>
-    public override int Version => 8;
+    public override int Version => 9;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 08, 17, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 08, 18, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21LevelCapsUpdatePlugIn).GUID];

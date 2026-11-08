@@ -23,6 +23,7 @@ internal class Season21WorldDataTest
 {
     private const short CrimsonIcarus = 132;
     private const short TwistedKarutan = 142;
+    private const short AquilasTemple = 145;
 
     /// <summary>
     /// Every elite of a zone map spawns inside one of its zones, Twisted Karutan's 45 elites included, on walkable ground.
@@ -58,6 +59,20 @@ internal class Season21WorldDataTest
         Assert.That(new GameMapTerrain(karutan).WalkMap[226, 54], Is.True, "The zone is open.");
         Assert.That(gameConfiguration.Maps.Single(m => m.Number == CrimsonIcarus).MonsterSpawns.Where(s => s.MonsterDefinition!.Number is 864 or 865).Sum(s => s.Quantity), Is.EqualTo(30), "No more elites spread over the map.");
         Assert.That(gameConfiguration.Monsters.Select(m => m.Number), Does.Contain((short)914).And.Contain((short)968).And.Contain((short)974));
+
+        var aquilas = configuration.Zones.Where(z => z.MapNumber == AquilasTemple).ToList();
+        Assert.That(aquilas.Select(z => (z.EntranceX, z.EntranceY)), Is.EquivalentTo(new[] { ((byte)33, (byte)46), ((byte)43, (byte)190), ((byte)206, (byte)217), ((byte)215, (byte)105), ((byte)220, (byte)25) }), "Webzen guide 430.");
+        var aquilasMap = gameConfiguration.Maps.Single(m => m.Number == AquilasTemple);
+        Assert.That(aquilasMap.MonsterSpawns.Where(s => s.MonsterDefinition!.Number is >= 978 and <= 980).Sum(s => s.Quantity), Is.EqualTo(30));
+        foreach (var (normal, elite) in new[] { (975, 978), (976, 979), (977, 980) })
+        {
+            var normalRow = gameConfiguration.Monsters.Single(m => m.Number == normal);
+            var eliteRow = gameConfiguration.Monsters.Single(m => m.Number == elite);
+            foreach (var attribute in new[] { Stats.MaximumHealth, Stats.MinimumPhysBaseDmg, Stats.MaximumPhysBaseDmg, Stats.DefenseBase, Stats.DefenseRatePvm })
+            {
+                Assert.That(ValueOf(eliteRow, attribute), Is.GreaterThan(ValueOf(normalRow, attribute)), $"{eliteRow.Designation} {attribute}");
+            }
+        }
 
         Assert.That(configuration.Debuffs, Has.Count.EqualTo(10), "Two debuffs per element (EliteMonster.txt).");
         Assert.That(configuration.Debuffs.Single(d => d.Element == EliteZoneElement.Wind && d.Kind == EliteDebuffKind.DecreaseDefense).Value, Is.EqualTo(20));
@@ -186,6 +201,9 @@ internal class Season21WorldDataTest
         Assert.That(new AddSeason21EliteZonesUpdatePlugIn().DependsOn.Select(d => d.Key), Does.Contain(new AddSeason21MapsUpdatePlugIn().Key));
         Assert.That(new AddSeason21FieldBossesUpdatePlugIn().DependsOn.Select(d => d.Key), Does.Contain(new AddSeason21MapsUpdatePlugIn().Key).And.Contain(new AddSeason21ItemCatalogUpdatePlugIn().Key));
     }
+
+    private static float ValueOf(MonsterDefinition monster, AttributeSystem.AttributeDefinition attribute)
+        => monster.Attributes.Single(a => a.AttributeDefinition == attribute).Value;
 
     private static bool HasWalkableTile(GameMapTerrain terrain, MonsterSpawnArea spawn)
         => HasTile(spawn, (x, y) => terrain.WalkMap[x, y]);

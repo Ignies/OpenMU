@@ -23,11 +23,13 @@ internal class Season21MapsDataTest
     private const byte DeviasNumber = 2;
     private const byte KuberaMine1Number = 123;
     private const short MineDiggerNumber = 810;
+    private const byte AquilasTempleNumber = 145;
+    private const byte KanturuRuinsNumber = 37;
 
     private static readonly byte[] AllMapNumbers =
     [
         123, 124, 125, 126, 127, 113, 122, 131, 91, 95, 100, 110, 112, 116, 117, 118, 119, 120,
-        132, 133, 134, 135, 136, 137, 138, 140, 141, 142, 143, 144, 128, 129, 130,
+        132, 133, 134, 135, 136, 137, 138, 140, 141, 142, 143, 144, 145, 128, 129, 130,
     ];
 
     /// <summary>
@@ -521,6 +523,72 @@ internal class Season21MapsDataTest
         plugIn.SetConfiguration(new OwnMapRespawnConfiguration { Maps = [137, 123] }, null);
         await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.That(plugIn.GetConfiguration<OwnMapRespawnConfiguration>(new IdIgnoringReferenceHandler())?.Maps, Is.EqualTo(new short[] { 137, 123 }), "the operator's maps");
+    }
+
+    /// <summary>
+    /// The update adds the Sanctuary of Aquilas (Aquilas Temple, map 145) from S21Emu: total level 1600, Terrain146.att,
+    /// the walk in from Kanturu Ruins (gates 719/720) and back (721/722), the two inner portals (723-726), the warp 75 for
+    /// 50,000 Zen and the 175 monsters of the guides (55 Warriors, 51 Gunners, 69 Magicians) on walkable ground.
+    /// </summary>
+    [Test]
+    public async Task UpdateAddsAquilasTempleAsync()
+    {
+        var gameConfiguration = await CreateWithSeason21MapsAsync().ConfigureAwait(false);
+
+        var map = gameConfiguration.Maps.Single(m => m.Number == AquilasTempleNumber);
+        Assert.That(map.Name.ValueInNeutralLanguage, Is.EqualTo("Sanctuary of Aquilas"));
+        Assert.That(map.IntroducedIn, Is.EqualTo(GameVersion.Season21Episode1));
+        Assert.That(map.SafezoneMap?.Number, Is.EqualTo(KanturuRuinsNumber));
+        Assert.That(map.TerrainData, Is.EqualTo(TerrainUpdateHelper.ReadTerrainResource("Season21.Terrain146.att")));
+        Assert.That(map.MapRequirements.Single(r => r.Attribute == Stats.TotalLevel).MinimumValue, Is.EqualTo(1600));
+        Assert.That(SpawnsOf(gameConfiguration, AquilasTempleNumber), Is.EquivalentTo(new Dictionary<short, int> { { 975, 55 }, { 976, 51 }, { 977, 69 } }));
+
+        var terrain = new GameLogic.GameMapTerrain(map);
+        Assert.That(map.MonsterSpawns.Where(s => !terrain.WalkMap[(s.X1 + s.X2) / 2, (s.Y1 + s.Y2) / 2] || terrain.SafezoneMap[(s.X1 + s.X2) / 2, (s.Y1 + s.Y2) / 2]), Is.Empty);
+
+        var spawn = map.ExitGates.Single(g => g.IsSpawnGate);
+        Assert.That((spawn.X1, spawn.Y1, spawn.X2, spawn.Y2), Is.EqualTo(((byte)121, (byte)63, (byte)123, (byte)68)));
+        var kanturu = gameConfiguration.Maps.Single(m => m.Number == KanturuRuinsNumber);
+        var entrance = kanturu.EnterGates.Single(g => g.Number == 719);
+        Assert.That((entrance.X1, entrance.Y1, entrance.TargetGate?.Map), Is.EqualTo(((byte)125, (byte)175, map)));
+        Assert.That(entrance.LevelRequirement, Is.EqualTo(VersionSeasonSix.Season21.Season21MapsInitializer.GetNormalLevel(1600, gameConfiguration.MaximumLevel)));
+        var exit = map.EnterGates.Single(g => g.Number == 721);
+        Assert.That((exit.TargetGate?.Map, exit.TargetGate?.X1, exit.TargetGate?.Y1), Is.EqualTo((kanturu, (byte)124, (byte)166)));
+        Assert.That(map.EnterGates.Single(g => g.Number == 723).TargetGate, Has.Property(nameof(ExitGate.Y1)).EqualTo(147).And.Property(nameof(ExitGate.Map)).SameAs(map));
+        Assert.That(map.EnterGates.Single(g => g.Number == 725).TargetGate, Has.Property(nameof(ExitGate.Y1)).EqualTo(82).And.Property(nameof(ExitGate.Map)).SameAs(map));
+
+        var warp = gameConfiguration.WarpList.Single(w => w.Index == 75);
+        Assert.That((warp.Name.ValueInNeutralLanguage, warp.Costs, warp.Gate), Is.EqualTo(("Sanctuary of Aquilas", 50000, spawn)));
+
+        var warrior = gameConfiguration.Monsters.Single(m => m.Number == 975);
+        Assert.That(warrior.Designation.ValueInNeutralLanguage, Is.EqualTo("Aquilas Warrior"));
+        Assert.That((ValueOf(warrior, Stats.Level), ValueOf(warrior, Stats.MaximumHealth), ValueOf(warrior, Stats.AttackRatePvm)), Is.EqualTo((2325f, 8595000f, 17460f)));
+    }
+
+    /// <summary>
+    /// Version 9 of the maps update adds Aquilas Temple to a database which has the maps of an older version, and keeps
+    /// what the operator changed on them.
+    /// </summary>
+    [Test]
+    public async Task UpdateAddsAquilasTempleToAnOlderDatabaseAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        await new AddSeason21LevelCapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        gameConfiguration.Maps.Remove(gameConfiguration.Maps.Single(m => m.Number == AquilasTempleNumber));
+        var kanturu = gameConfiguration.Maps.Single(m => m.Number == KanturuRuinsNumber);
+        kanturu.EnterGates.Remove(kanturu.EnterGates.Single(g => g.Number == 719));
+        gameConfiguration.WarpList.Remove(gameConfiguration.WarpList.Single(w => w.Index == 75));
+        var kubera = gameConfiguration.Maps.Single(m => m.Number == KuberaMine1Number).MapRequirements.Single(r => r.Attribute == Stats.TotalLevel);
+        kubera.MinimumValue = 900;
+
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(new AddSeason21MapsUpdatePlugIn().Version, Is.EqualTo(9));
+        Assert.That(gameConfiguration.Maps.Count(m => m.Number == AquilasTempleNumber), Is.EqualTo(1));
+        Assert.That(kanturu.EnterGates.Single(g => g.Number == 719).TargetGate?.Map?.Number, Is.EqualTo(AquilasTempleNumber));
+        Assert.That(gameConfiguration.WarpList.Count(w => w.Index == 75), Is.EqualTo(1));
+        Assert.That(kubera.MinimumValue, Is.EqualTo(900), "the operator's level");
     }
 
     private static Dictionary<short, int> SpawnsOf(GameConfiguration gameConfiguration, byte mapNumber)

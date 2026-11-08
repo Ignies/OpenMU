@@ -12,6 +12,6 @@ of `Move.txt` it belongs to, and 330 zones (a map, an element and the point wher
 - No source: the ranges sent to the client (`HuntRange`, `PickupRange`, `PlusHuntRange`, `PlusPickupRange`, 8 tiles like
   the classic helper window) and the cost of the plus mode (`PlusCostPercent`, 100: the guides name no other cost).
   `MuHelperZenCostCalculator` applies the percent while the plus mode is on.
-- The zones of Aquilas Temple (ground 30, warp 75) stay unreachable until the map is there: the maps update leaves it out.
+- The zones of Aquilas Temple (ground 30, warp 75) lead into map 145 of the maps update (version 9).
 - The Babylon client gets `C1 EE E0` and `C1 EE E2` and sends `C1 EE E1` and `C1 EE E3` (`docs/babylon.md`).
 - The data comes with the update "Add the MU Helper Plus of Season 21" (`Persistence/Initialization/VersionSeasonSix/Season21`).

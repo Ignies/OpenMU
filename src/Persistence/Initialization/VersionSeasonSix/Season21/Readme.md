@@ -108,8 +108,24 @@ maps and elite zones updates, version 2, repair a database which still has them,
 * Elites equal to or weaker than their normals (Atlans Abyss 3 839/840, Tormenta 945-947, Swamp of Doom 972-974): the
   normal's row times the median elite factor of the data's real elite pairs (health 1.267, damage 1.1, defense 1.059,
   defense rate 1.037, attack rate 1), never below the data's own value; the level stays. No source gives these rows.
-* Twisted Karutan 958-960 (`EliteMonster` 0 in the data) are real elites by their numbers and keep them; Aquilas Temple
-  (975-980) isn't shipped.
+* Twisted Karutan 958-960 (`EliteMonster` 0 in the data) are real elites by their numbers and keep them.
+
+Sanctuary of Aquilas (Aquilas Temple, map 145, maps update version 9; Webzen guides 423 and 430):
+
+* Map, entry total level 1600, warp 75 for 50,000 Zen and gates 718-726 from `Gate.xml` / `Move.txt`: in from Kanturu
+  Ruins (719 at 125,175, Webzen: 124,171), back out (721), and the two inner portals (723/724, 725/726). Its safezone
+  map is Kanturu Ruins, its entrance; no source names a respawn.
+* The data has no spawn file for 145. The guides (muonline.net) give 175 spawns: 55 Warriors 975, 51 Gunners 976 and
+  69 Magicians 977, without points. They are ours: one monster a point within 3 tiles, spread at least 8 tiles apart over
+  the walkable ground of `Terrain146.att`, 8 tiles or more from the safe zone and the gates. The operator moves them in
+  the admin panel.
+* Attack rates 17,460 / 16,440 / 13,400: the data (and muonline.net, which repeats it) has 1,746 / 1,644 / 1,340, a
+  tenth of every other monster of that tier (Swamp of Doom 15,750-16,750), so a lost digit (PAR-110). The normalized
+  modes don't see it: they scale by the set's median.
+* The elites 978-980 are byte-equal to their normals in the data: derived as above (health 1.267, damage 1.1, defense
+  1.059, defense rate 1.037), the same numbers as Swamp of Doom's elites where the normals match. They spawn only in the
+  five elite zones (elite zones update version 3).
+* The level penalty of Webzen (1650) isn't set: `LevelPenaltyConfiguration.MapPenaltyLevels` is empty by default.
 
 Devias (`Season21ClassicSpawns`, maps update version 5): the 280 monsters of `MonsterSetBase/002 - Devias.xml` (10
 spots and 47 single monsters: 40 Yeti, 82 Elite Yeti, 11 Ice Queens) replace the 560 of Season 6 (no Yeti, 235 Elite
@@ -152,8 +168,7 @@ element and the gates' maximum level and reset columns.
 
 Content which needs systems which don't exist yet: the event copies of Acheron
 and Deventer (Arca War), the mining spots of Kubera Mine, the boss Nix (spawned
-by the field bosses update, below), the elite zone flags (no client model)
-and the Aquilas Temple (Season 21), whose spawns aren't taken from the data yet.
+by the field bosses update, below) and the elite zone flags (no client model).
 
 ## Elite zones and field bosses
 
@@ -161,13 +176,14 @@ Two more optional updates, both after the maps:
 
 * `AddSeason21EliteZonesUpdatePlugIn` (`Season21EliteZonesInitializer`, `Season21EliteZoneData`): five zones per map
   at Webzen's entrances (Atlans Abyss 3, Scorched Canyon, Crimson Icarus, Ashen Aida, Blaze Kethotum, Kanturu
-  Underground, Ignis, Blood Tarkan, Tormenta, Twisted Karutan, Kardamahal, Swamp of Doom). A zone's area spans its
+  Underground, Ignis, Blood Tarkan, Tormenta, Twisted Karutan, Kardamahal, Swamp of Doom, Aquilas). A zone's area spans its
   entrance and the elite spot of the spawn file (else 6 tiles around the entrance); its elites spawn there and every
   other spawn of them on the map goes. Crimson Icarus keeps 6 elites a zone of its 187 spread ones; Ignis, Kardamahal
-  and Swamp of Doom get their elites (914-916, 966-968, 972-974), which the data defines but never spawns, 6 a zone.
+  Swamp of Doom and Aquilas get their elites (914-916, 966-968, 972-974, 978-980), which the data defines but never
+  spawns, 6 a zone.
   Twisted Karutan's zones are walled in on the server terrain of the data but walkable on the terrain of the Season
   21 client (its tiles carry 0x0800 there): the update opens those 1,347 tiles, and its 45 elites spawn back on them.
-  Arenil Temple (no published zones), Old Kethotum (no elites) and Aquilas Temple (not shipped) have none.
+  Arenil Temple (no published zones) and Old Kethotum (no elites) have none.
   The update also places the Elite Zone Flags of the spawn files (not on Ignis, whose file copies Kanturu
   Underground's) and sets the debuffs (`EliteMonster.txt`) and weekly drop limits (`ItemDropLimit.xml`) when the
   configuration has none.

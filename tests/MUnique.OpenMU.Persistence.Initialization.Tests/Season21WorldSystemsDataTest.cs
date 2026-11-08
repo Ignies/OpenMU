@@ -250,7 +250,7 @@ internal class Season21WorldSystemsDataTest
 
     /// <summary>
     /// The helper plus update sets the 31 hunting grounds with their warps and the 330 zones of <c>MuHelperPlus.xml</c> and
-    /// switches the helper plus on; every ground's warp but the one of Aquilas Temple is one of the maps update.
+    /// switches the helper plus on; every ground's warp is one of the maps update and every zone lands on walkable ground.
     /// </summary>
     [Test]
     public async Task HelperPlusUpdateSetsTheZonesOfTheDataAsync()
@@ -266,7 +266,13 @@ internal class Season21WorldSystemsDataTest
         Assert.That((configuration.Grounds[0].WarpIndex, configuration.Grounds[0].Name), Is.EqualTo((49, "Debenter")));
         var zone = configuration.Zones[0];
         Assert.That((zone.Index, zone.Ground, zone.MapNumber, zone.Element, zone.X, zone.Y), Is.EqualTo(((short)0, (short)0, (short)95, (byte)1, (byte)190, (byte)98)));
-        Assert.That(configuration.Grounds.Select(g => g.WarpIndex).Distinct().Where(w => gameConfiguration.WarpList.All(i => i.Index != w)), Is.EqualTo(new[] { 75 }), "Only Aquilas Temple, which the maps update leaves out.");
+        Assert.That(configuration.Grounds.Select(g => g.WarpIndex).Distinct().Where(w => gameConfiguration.WarpList.All(i => i.Index != w)), Is.Empty, "Every ground's warp is one of the maps update.");
+        var unreachable = configuration.Zones
+            .Where(z => gameConfiguration.Maps.FirstOrDefault(m => m.Number == z.MapNumber) is not { } map || !new GameLogic.GameMapTerrain(map).WalkMap[z.X, z.Y])
+            .Select(z => $"zone {z.Index} on map {z.MapNumber} at {z.X}/{z.Y}")
+            .ToList();
+        Assert.That(unreachable, Is.Empty, "Every zone's hunting point is walkable ground of its map.");
+        Assert.That(configuration.Zones.Where(z => z.Ground == 30).Select(z => z.MapNumber).Distinct(), Is.EqualTo(new short[] { 145 }), "Aquilas Temple.");
         Assert.That(update.DependsOn.Select(d => d.Key), Does.Contain(new AddSeason21MapsUpdatePlugIn().Key));
         Assert.That(GameLogic.ForkInfo.Has("helper_plus"), Is.True);
     }

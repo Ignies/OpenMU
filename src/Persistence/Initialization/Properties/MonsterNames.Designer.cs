@@ -4431,6 +4431,48 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
+        /// <summary>Gets AquilasWarrior from the configuration name resources.</summary>
+        public static string AquilasWarrior {
+            get {
+                return ResourceManager.GetString("AquilasWarrior", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AquilasGunner from the configuration name resources.</summary>
+        public static string AquilasGunner {
+            get {
+                return ResourceManager.GetString("AquilasGunner", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AquilasMagician from the configuration name resources.</summary>
+        public static string AquilasMagician {
+            get {
+                return ResourceManager.GetString("AquilasMagician", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteAquilasWarrior from the configuration name resources.</summary>
+        public static string EliteAquilasWarrior {
+            get {
+                return ResourceManager.GetString("EliteAquilasWarrior", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteAquilasGunner from the configuration name resources.</summary>
+        public static string EliteAquilasGunner {
+            get {
+                return ResourceManager.GetString("EliteAquilasGunner", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EliteAquilasMagician from the configuration name resources.</summary>
+        public static string EliteAquilasMagician {
+            get {
+                return ResourceManager.GetString("EliteAquilasMagician", resourceCulture);
+            }
+        }
+
         /// <summary>Gets PriestJames from the configuration name resources.</summary>
         public static string PriestJames {
             get {

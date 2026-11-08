@@ -182,7 +182,7 @@ internal class ProgressionTest
     }
 
     /// <summary>
-    /// The requirements of the three maps in each mode.
+    /// The requirements of the four maps in each mode.
     /// </summary>
     /// <param name="map">The map number.</param>
     /// <param name="mode">The mode.</param>
@@ -196,6 +196,9 @@ internal class ProgressionTest
     [TestCase(144, ProgressionMode.Normalized, 400, 170, 0)]
     [TestCase(144, ProgressionMode.Stars, 270, 0, 3)]
     [TestCase(144, ProgressionMode.Original, 400, 1150, 0)]
+    [TestCase(145, ProgressionMode.Normalized, 400, 185, 0)]
+    [TestCase(145, ProgressionMode.Stars, 185, 0, 4)]
+    [TestCase(145, ProgressionMode.Original, 400, 1200, 0)]
     public async Task RealDataGoldenRequirementsAsync(short map, ProgressionMode mode, int level, int masterLevel, int stars)
     {
         var (_, gameConfiguration) = await GetSeason21Async().ConfigureAwait(false);

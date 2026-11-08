@@ -790,6 +790,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AtlansAbyss3", resourceCulture);
             }
         }
+
+        /// <summary>Gets AquilasTemple from the configuration name resources.</summary>
+        public static string AquilasTemple {
+            get {
+                return ResourceManager.GetString("AquilasTemple", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Trial Area.

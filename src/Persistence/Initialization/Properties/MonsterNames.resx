@@ -977,6 +977,9 @@
   <data name="ShadowMasterOfDoom" xml:space="preserve"><value>Shadow Master of Doom</value></data>
   <data name="NapinOfDoom" xml:space="preserve"><value>Napin of Doom</value></data>
   <data name="SapiQueenOfDoom" xml:space="preserve"><value>Sapi Queen of Doom</value></data>
+  <data name="AquilasWarrior" xml:space="preserve"><value>Aquilas Warrior</value></data>
+  <data name="AquilasGunner" xml:space="preserve"><value>Aquilas Gunner</value></data>
+  <data name="AquilasMagician" xml:space="preserve"><value>Aquilas Magician</value></data>
   <data name="BahamutOfAbyss" xml:space="preserve"><value>Bahamut of Abyss</value></data>
   <data name="VeparOfAbyss" xml:space="preserve"><value>Vepar of Abyss</value></data>
   <data name="MediumBahamutOfAbyss" xml:space="preserve"><value>Medium Bahamut of Abyss</value></data>
@@ -1022,6 +1025,9 @@
   <data name="EliteShadowMasterOfDoom" xml:space="preserve"><value>(Elite) Shadow Master of Doom</value></data>
   <data name="EliteNapinOfDoom" xml:space="preserve"><value>(Elite) Napin of Doom</value></data>
   <data name="EliteSapiQueenOfDoom" xml:space="preserve"><value>(Elite) Sapi Queen of Doom</value></data>
+  <data name="EliteAquilasWarrior" xml:space="preserve"><value>(Elite) Aquilas Warrior</value></data>
+  <data name="EliteAquilasGunner" xml:space="preserve"><value>(Elite) Aquilas Gunner</value></data>
+  <data name="EliteAquilasMagician" xml:space="preserve"><value>(Elite) Aquilas Magician</value></data>
   <data name="PriestJames" xml:space="preserve"><value>Priest James</value></data>
   <data name="EliteZoneFlag" xml:space="preserve"><value>Elite Zone Flag</value></data>
   <data name="Monica" xml:space="preserve">
