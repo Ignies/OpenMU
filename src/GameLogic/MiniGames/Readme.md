@@ -190,6 +190,38 @@ points are kept in `state/chaos_castle_survival.json`.
 Not ported: the Hall of Fame, the Battle Core exchange of the event items and the `ExperienceTable` of the data (no
 meaning given).
 
+### Illusion Temple League (fork feature `illusion_temple_league`)
+
+Update "Add the Illusion Temple League of Season 21" (S21Emu `Event/IlusionTempleLeague`): on maps 98 and 99 (maps update
+10) the Cursed Statue 658 and the ten Captured Stone Statues 659-668 of `IllusionTemple_League_NPC.xml`, spawned by the
+match; a league temple on each (`MiniGameType.IllusionTempleLeague`, levels 1 and 2) for 2 to 10 players from total level
+400 (a bracket above the maximum level, so the progression mode maps it), entered at the waiting area (gates 444/445), 5
+minutes to enter, 15 to play, 1 to leave (`Time` of the data). `IllusionTempleLeagueStartPlugIn` opens them 5 minutes
+before 13:00 to 22:00 (the schedule of the data without its test row).
+
+The match is `IllusionTempleContext` with the renewed rules (Webzen guide 129, muonlinefanz): the teams are the two guilds
+(the first to enter are the allied forces) and keep their parties; the Cursed Statue gives the Cursed Hollow (the relic
+14/64), its carrier seals it into a free stone for a point, a player of the other team unseals a stone (after
+`StoneSealProtection`) for the hollow, which takes the point away; one hollow is in play at a time (an unsealed stone
+replaces a standing statue); after a seal the statue comes back after 5 seconds with the chance
+`100 - occupied stones * StatueSpawnRateReductionPerPoint` percent, tried again every 5 seconds. 7 points end the match;
+the winner is decided by occupied stones, kills, then the level sum (S21Emu). The Season 6 skills and skill points stay.
+
+The plugin "Illusion Temple League (Season 21)" (`IllusionTempleLeaguePlugIn`, server time) makes the matches a monthly
+league: eliminations on the 3rd to 9th (5 matches a guild, Webzen; a player limit is a setting), their stones, kills and
+level sums add up; the best four play the semi-finals on the 11th at 14:55 (slots of `RankTeam`: first and fourth in
+temple 1, second and third in temple 2), the winners the final on the 12th at 14:55 in temple 1; a draw of the final is
+not kept, so it can be played again. `MayEnterAsync` lets in a party of at least 5 members of one guild (Webzen; S21Emu's
+`MinUserInParty` has no value), two guilds a temple, half of the players a guild. The players of the champion in the final
+get the Wings of Conqueror (12/268) once when they enter the world from the reward day (13th) to the end of the month.
+`DamageReduction` scales the PvP hits in the league (`IPlayerDamageFactorPlugIn`). The state is kept in
+`state/illusion_temple_league_guilds.json` and `_players.json` (guilds by their persistent id).
+
+Settings without a source (ours): `MaximumPlayerEntries` 0 (none), `DamageReduction` 0, `StatueSpawnRateReductionPerPoint`
+0, `StoneSealProtection` 10 seconds. Not ported: the title of the champion (no title system), the event point rewards of
+`EventMapPointIntegration.xml`, the `StageTypeSettings` (`PlayDuration`, `SpawnMonster`; the data has no rows and maps
+98/99 no monsters) and the S21 Mait NPC entrance (the client enters with `EE B1`).
+
 ### Daily entry limits
 
 `Season21EventsConfiguration.DailyEntryLimits` caps how often a character enters an event a day (UTC); the event rules

@@ -372,5 +372,14 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ChaosCastleSurvival", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The Illusion Temple League of Season 21: the renewed Illusion Temple on maps 98 and 99, where the parties of two guilds play the eliminations, semi-finals and final of a monthly tournament..
+        /// </summary>
+        public static string IllusionTempleLeague {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeague", resourceCulture);
+            }
+        }
     }
 }

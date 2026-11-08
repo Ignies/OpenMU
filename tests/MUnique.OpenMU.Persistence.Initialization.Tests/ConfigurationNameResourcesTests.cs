@@ -134,6 +134,7 @@ internal class ConfigurationNameResourcesTests
                 await new AddSeason21AcheronGuardianUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
                 await new AddSeason21ChaosCastleSurvivalUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
                 await new AddSeason21ArcaWarUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
+                await new AddSeason21IllusionTempleLeagueUpdatePlugIn().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
             }
 
             var names = LocalizedCaption.FindAll(configuration).Select(caption => caption.Value)

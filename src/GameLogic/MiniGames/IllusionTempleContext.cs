@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.Pathfinding;
@@ -52,6 +53,21 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// The number of the stone statue, which holds the sacred relic during a match.
     /// </summary>
     private const short StatueNPC = 380;
+
+    /// <summary>
+    /// The number of the Cursed Statue, which holds the Cursed Hollow in the renewed temple.
+    /// </summary>
+    private const short CursedStatueNPC = 658;
+
+    /// <summary>
+    /// The number of the first Captured Stone Statue of the renewed temple.
+    /// </summary>
+    private const short FirstStoneNPC = 659;
+
+    /// <summary>
+    /// The number of the last Captured Stone Statue of the renewed temple.
+    /// </summary>
+    private const short LastStoneNPC = 668;
 
     /// <summary>
     /// The item group of the sacred relic ("Cursed Castle Water").
@@ -200,6 +216,58 @@ public sealed class IllusionTempleContext : MiniGameContext
     private readonly Point _illusionForcesCoordinates = new Point(194, 124);
 
     /// <summary>
+    /// Whether this is a match of the Illusion Temple League: the renewed temple, two guilds as the teams.
+    /// </summary>
+    private readonly bool _isLeague;
+
+    /// <summary>
+    /// The league, when its plugin is on.
+    /// </summary>
+    private readonly IllusionTempleLeaguePlugIn? _league;
+
+    /// <summary>
+    /// The stage of the league of this match.
+    /// </summary>
+    private readonly IllusionTempleLeagueStage _leagueStage;
+
+    /// <summary>
+    /// The Captured Stone Statues of the renewed temple.
+    /// </summary>
+    private readonly ConcurrentDictionary<NonPlayerCharacter, IllusionTempleStone> _stones = new();
+
+    /// <summary>
+    /// The kills of enemy players by team.
+    /// </summary>
+    private readonly ConcurrentDictionary<IllusionTempleTeam, int> _teamKills = new();
+
+    /// <summary>
+    /// The guild of each team of a league match.
+    /// </summary>
+    private readonly ConcurrentDictionary<IllusionTempleTeam, (Guid Key, string Name)> _teamGuilds = new();
+
+    /// <summary>
+    /// The guild of each player who entered a league match.
+    /// </summary>
+    private readonly ConcurrentDictionary<Player, uint> _entrantGuilds = new();
+
+    private readonly object _stoneLock = new();
+
+    /// <summary>
+    /// The standing statue which holds the relic, <c>null</c> when none stands.
+    /// </summary>
+    private NonPlayerCharacter? _statue;
+
+    /// <summary>
+    /// Whether the relic lies on the ground.
+    /// </summary>
+    private bool _relicOnGround;
+
+    /// <summary>
+    /// The winning team of a league match, decided at its end by occupied stones, kills and level sum.
+    /// </summary>
+    private IllusionTempleTeam? _leagueWinner;
+
+    /// <summary>
     /// The time which is left until the match ends.
     /// </summary>
     private TimeSpan _remainingTime;
@@ -219,6 +287,12 @@ public sealed class IllusionTempleContext : MiniGameContext
     public IllusionTempleContext(MiniGameMapKey key, MiniGameDefinition definition, IGameContext gameContext, IMapInitializer mapInitializer)
         : base(key, definition, gameContext, mapInitializer)
     {
+        this._isLeague = definition.Type == MiniGameType.IllusionTempleLeague;
+        if (this._isLeague && IllusionTempleLeaguePlugIn.Get(gameContext) is { } league)
+        {
+            this._league = league;
+            this._leagueStage = league.GetStage(league.GetLocalNow(gameContext));
+        }
     }
 
     /// <inheritdoc />
@@ -249,7 +323,7 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// winner exists at all can be evaluated. Which players actually won is decided by
     /// <see cref="IsWinner"/> instead, since this event has a winning team rather than a single winner.
     /// </remarks>
-    protected override Player? Winner => this.Score.LeadingTeam is { } leadingTeam
+    protected override Player? Winner => this.WinningTeam is { } leadingTeam
         ? this._teams.FirstOrDefault(entry => entry.Value == leadingTeam).Key
         : null;
 
@@ -259,6 +333,11 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// <see cref="MiniGameDefinition.MinimumPlayerCount"/> in the admin panel.
     /// </remarks>
     protected override int MinimumPlayerCount => this.Definition.MinimumPlayerCount > 0 ? this.Definition.MinimumPlayerCount : 2;
+
+    /// <summary>
+    /// Gets the winning team: the leading team, in the league the winner of its order at the end.
+    /// </summary>
+    private IllusionTempleTeam? WinningTeam => this._isLeague ? this._leagueWinner : this.Score.LeadingTeam;
 
     /// <summary>
     /// Gets the spawn gate of the player.
@@ -295,57 +374,37 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// <param name="player">The player who talked to the statue.</param>
     public async ValueTask TalkToNpcStoneStatueAsync(Player player)
     {
-        // Claim the carrier slot before the first await - otherwise two players talking to the same
-        // statue at the same time could both pass the check and walk away with a relic each.
-        if (Interlocked.CompareExchange(ref this._relicCarrier, player, null) is not null)
+        if (await this.TryHandOverRelicAsync(player).ConfigureAwait(false) && player.OpenedNpc is { } statue)
         {
-            // Somebody already carries the relic - the statue that granted it must already be gone.
+            Interlocked.CompareExchange(ref this._statue, null, statue);
+            await statue.DisposeAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Handles a player talking to a Captured Stone Statue (NPC 659 to 668) of the renewed temple: the carrier of the
+    /// Cursed Hollow seals it into a free stone, which scores a point for his team; a player of the other team unseals a
+    /// stone after its protection, which takes the point away and gives him the hollow, when no other hollow is in play.
+    /// </summary>
+    /// <param name="player">The player who talked to the stone.</param>
+    /// <param name="stoneNpc">The stone.</param>
+    public async ValueTask TalkToNpcCapturedStoneAsync(Player player, NonPlayerCharacter stoneNpc)
+    {
+        if (!this.IsEventRunning
+            || !player.IsAlive
+            || !this._teams.TryGetValue(player, out var team)
+            || !this._stones.TryGetValue(stoneNpc, out var stone))
+        {
             return;
         }
 
-        try
+        if (player == this._relicCarrier)
         {
-            if (player.GameContext.Configuration.Items.FirstOrDefault(IsRelicDefinition) is not { } relicDefinition)
-            {
-                this.Logger.LogWarning(
-                    "The sacred relic item (group {Group}, number {Number}) is missing in the configuration - the illusion temple can't be played.",
-                    RelicItemGroup,
-                    RelicItemNumber);
-                this._relicCarrier = null;
-                return;
-            }
-
-            var item = player.PersistenceContext.CreateNew<Item>();
-            item.Definition = relicDefinition;
-
-            if (player.Inventory?.CheckInvSpace(item) is null)
-            {
-                // Hand the claim back, and don't leave the unused item behind as an orphan entity.
-                this._relicCarrier = null;
-                await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
-                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InventoryFull)).ConfigureAwait(false);
-                return;
-            }
-
-            await player.Inventory!.AddItemAsync(item).ConfigureAwait(false);
-            await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
-            await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleRelicPickedUpFormat), player.Name).ConfigureAwait(false);
-            await this.NotifyObjectiveReachedAsync(player, MiniGameObjective.RelicClaimed, 0).ConfigureAwait(false);
-
-            if (player.OpenedNpc is { } statue)
-            {
-                await statue.DisposeAsync().ConfigureAwait(false);
-            }
-
-            await this.ForEachPlayerAsync(p => p.InvokeViewPlugInAsync<IIllusionTempleHolyItemRelicsViewPlugIn>(
-                vp => vp.ShowHolyItemRelicsAsync(player.Id, player.Name)).AsTask()).ConfigureAwait(false);
+            await this.SealAsync(player, team, stone).ConfigureAwait(false);
         }
-        catch
+        else
         {
-            // Never keep the claim on an error - otherwise the statue would stay locked for the rest
-            // of the match, and nobody could pick up the relic anymore.
-            this._relicCarrier = null;
-            throw;
+            await this.UnsealAsync(player, stone).ConfigureAwait(false);
         }
     }
 
@@ -405,23 +464,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             return;
         }
 
-        // The next statue doesn't appear immediately - just like in the original event, there's a
-        // short delay after a scored point. This runs in the background so the delivering player's
-        // action isn't held up by it.
-        _ = Task.Run(
-            async () =>
-            {
-                try
-                {
-                    await Task.Delay(StatueRespawnDelay, this.GameEndedToken).ConfigureAwait(false);
-                    await this.SpawnRandomStatueAsync().ConfigureAwait(false);
-                }
-                catch (OperationCanceledException)
-                {
-                    // The event ended before the respawn delay elapsed.
-                }
-            },
-            this.GameEndedToken);
+        this.ScheduleStatueSpawn();
     }
 
     /// <summary>
@@ -493,7 +536,7 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// everyone but the first winner.
     /// </remarks>
     protected override bool IsWinner(Player player)
-        => this.Score.LeadingTeam is { } leadingTeam
+        => this.WinningTeam is { } leadingTeam
            && this._teams.TryGetValue(player, out var team)
            && team == leadingTeam;
 
@@ -517,82 +560,52 @@ public sealed class IllusionTempleContext : MiniGameContext
             return;
         }
 
-        var playersArray = players.ToArray();
-
-        // Random players to add to the teams
-        for (var i = playersArray.Length - 1; i > 0; i--)
+        if (this._isLeague)
         {
-            var j = Rand.NextInt(0, i + 1);
-            (playersArray[i], playersArray[j]) = (playersArray[j], playersArray[i]);
+            if (!await this.AssignGuildTeamsAsync(players).ConfigureAwait(false))
+            {
+                // A league match needs two guilds.
+                this.FinishEvent();
+                return;
+            }
         }
-
-        var gameContext = playersArray[0].GameContext;
-        var alliedParty = gameContext.PartyManager.CreateParty();
-        var illusionParty = gameContext.PartyManager.CreateParty();
-
-        for (var i = 0; playersArray.Length > i; i++)
+        else
         {
-            // Adding player to team AlliedForces or IllusionForces
-            var player = playersArray[i];
-            var team = i % 2 == 0 ? IllusionTempleTeam.AlliedForces : IllusionTempleTeam.IllusionForces;
-            if (!this._teams.TryAdd(player, team))
-            {
-                this.Logger.LogWarning("Player {Player} was already assigned to a team.", player.Name);
-                continue;
-            }
-
-            this._skillPoints[player] = InitialSkillPoints;
-            var party = team == IllusionTempleTeam.AlliedForces ? alliedParty : illusionParty;
-            if (!await party.AddAsync(player).ConfigureAwait(false))
-            {
-                // The player still takes part in the event and is assigned to a team - he just doesn't
-                // show up in the party window of his team mates.
-                this.Logger.LogWarning(
-                    "Player {Player} doesn't fit into the party of team {Team}: the party is limited to {MaxPartySize} members, while the event allows {MaximumPlayerCount} players.",
-                    player.Name,
-                    team,
-                    party.MaxPartySize,
-                    this.Definition.MaximumPlayerCount);
-            }
-
-            // i / 2 is the player's index within his own team, since the teams alternate.
-            await this.TeleportToStartCoordinatesAsync(team, player, i / 2).ConfigureAwait(false);
+            await this.AssignRandomTeamsAsync(players).ConfigureAwait(false);
         }
 
         await base.OnGameStartAsync(players).ConfigureAwait(false);
+        await this.StartBattleAsync().ConfigureAwait(false);
+    }
 
-        // The client keeps its event interface closed and the arena barriers up until it's told that
-        // the battle started - the barrier areas are hardcoded at client side, so this is the only way
-        // to open them. The two states are deliberately separated by a short delay, so the players
-        // actually get to see the preparation phase before the barriers drop - sending both back to
-        // back made the client skip straight to the battle without any noticeable wait.
-        var templeNumber = (byte)this.Definition.GameLevel;
-        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IIllusionTempleEventStateViewPlugIn>(
-            p => p.ChangeEventStateAsync(templeNumber, IllusionTempleEventStatus.Preparation)).AsTask()).ConfigureAwait(false);
-
-        try
+    /// <inheritdoc />
+    /// <remarks>
+    /// A league match takes parties of two guilds, which the league lets in (<see cref="IllusionTempleLeaguePlugIn"/>),
+    /// at most half of the players for each guild.
+    /// </remarks>
+    protected override async ValueTask<bool> MayEnterAsync(Player player)
+    {
+        if (!this._isLeague)
         {
-            await Task.Delay(this.PreparationDuration, this.GameEndedToken).ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
-            // The event was already finished (e.g. not enough players) while the preparation phase
-            // was still running.
-            return;
+            return true;
         }
 
-        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IIllusionTempleEventStateViewPlugIn>(
-            p => p.ChangeEventStateAsync(templeNumber, IllusionTempleEventStatus.BattleStarted)).AsTask()).ConfigureAwait(false);
-        await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleBattleStartedMessage)).ConfigureAwait(false);
+        var check = await this.CheckLeagueEntryAsync(player).ConfigureAwait(false);
+        if (check == IllusionTempleLeagueEntryCheck.Allowed)
+        {
+            return true;
+        }
 
-        await this.SpawnRandomStatueAsync().ConfigureAwait(false);
-
-        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IIllusionTempleSkillPointUpdateViewPlugin>(
-            p => p.UpdateSkillPointsAsync(this._skillPoints.GetValueOrDefault(player, InitialSkillPoints))).AsTask()).ConfigureAwait(false);
-
-        // The cyclic state update runs until the game ends - the token makes sure that it doesn't
-        // outlive the context and keeps sending to players who already left the event.
-        _ = Task.Run(async () => await this.ShowRemainingTimeLoopAsync(this.GameEndedToken).ConfigureAwait(false), this.GameEndedToken);
+        var (message, argument) = check switch
+        {
+            IllusionTempleLeagueEntryCheck.GuildPartyRequired => (nameof(PlayerMessage.IllusionTempleLeagueGuildPartyRequired), (object?)this._league?.Settings.MinimumGuildPartyMembers),
+            IllusionTempleLeagueEntryCheck.GuildEntriesUsed or IllusionTempleLeagueEntryCheck.PlayerEntriesUsed => (nameof(PlayerMessage.IllusionTempleLeagueEntriesUsed), null),
+            IllusionTempleLeagueEntryCheck.NotQualified => (nameof(PlayerMessage.IllusionTempleLeagueNotQualified), null),
+            IllusionTempleLeagueEntryCheck.Full => (nameof(PlayerMessage.IllusionTempleLeagueFull), null),
+            _ => (nameof(PlayerMessage.IllusionTempleLeagueClosed), null),
+        };
+        await player.ShowLocalizedBlueMessageAsync(message, argument).ConfigureAwait(false);
+        return false;
     }
 
     /// <inheritdoc />
@@ -620,6 +633,7 @@ public sealed class IllusionTempleContext : MiniGameContext
                 && this._teams.TryGetValue(deadPlayer, out var deadPlayerTeam)
                 && killerTeam != deadPlayerTeam)
             {
+                this._teamKills.AddOrUpdate(killerTeam, 1, (_, kills) => kills + 1);
                 await this.AwardSkillPointsAsync(killer, SkillPointsPerPlayerKill).ConfigureAwait(false);
             }
         }
@@ -677,10 +691,13 @@ public sealed class IllusionTempleContext : MiniGameContext
         {
             await this.DropRelicIfCarriedByAsync(player).ConfigureAwait(false);
 
-            if (player.Party is { } party)
+            // The players of a league match keep the party of their guild.
+            if (!this._isLeague && player.Party is { } party)
             {
                 await party.KickMySelfAsync(player).ConfigureAwait(false);
             }
+
+            this._entrantGuilds.TryRemove(player, out _);
 
             // Otherwise he'd keep showing up as an alive team mate on the mini map of his former team.
             this._teams.TryRemove(player, out _);
@@ -715,6 +732,7 @@ public sealed class IllusionTempleContext : MiniGameContext
                 return;
             }
 
+            this._relicOnGround = true;
             this._relicCarrier = null;
             await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleRelicDroppedFormat), carrier.Name).ConfigureAwait(false);
         }
@@ -736,6 +754,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             && IsRelicDefinition(droppedItem.Item.Definition)
             && Interlocked.CompareExchange(ref this._relicCarrier, args.Picker, null) is null)
         {
+            this._relicOnGround = false;
             await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleRelicPickedUpFormat), args.Picker.Name).ConfigureAwait(false);
 
             // The client needs to be told who the new carrier is - otherwise it keeps showing the
@@ -788,6 +807,11 @@ public sealed class IllusionTempleContext : MiniGameContext
     /// </remarks>
     protected override async ValueTask GameEndedAsync(ICollection<Player> finishers)
     {
+        if (this._isLeague)
+        {
+            this.RecordLeagueMatch();
+        }
+
         foreach (var winner in finishers.Where(this.IsWinner))
         {
             var rank = this._winnerRanks.Count + 1;
@@ -846,14 +870,390 @@ public sealed class IllusionTempleContext : MiniGameContext
         => itemDefinition is { Group: RelicItemGroup, Number: RelicItemNumber };
 
     /// <summary>
-    /// Spawns the stone statue at a random position from the map's pool of statue spawn points.
+    /// Gives the relic to a player and makes him its carrier, when nobody carries it.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns><c>true</c>, if the player got the relic.</returns>
+    private async ValueTask<bool> TryHandOverRelicAsync(Player player)
+    {
+        // Claim the carrier slot before the first await - otherwise two players talking to the same
+        // statue at the same time could both pass the check and walk away with a relic each.
+        if (Interlocked.CompareExchange(ref this._relicCarrier, player, null) is not null)
+        {
+            // Somebody already carries the relic - the statue that granted it must already be gone.
+            return false;
+        }
+
+        try
+        {
+            if (player.GameContext.Configuration.Items.FirstOrDefault(IsRelicDefinition) is not { } relicDefinition)
+            {
+                this.Logger.LogWarning(
+                    "The sacred relic item (group {Group}, number {Number}) is missing in the configuration - the illusion temple can't be played.",
+                    RelicItemGroup,
+                    RelicItemNumber);
+                this._relicCarrier = null;
+                return false;
+            }
+
+            var item = player.PersistenceContext.CreateNew<Item>();
+            item.Definition = relicDefinition;
+
+            if (player.Inventory?.CheckInvSpace(item) is null)
+            {
+                // Hand the claim back, and don't leave the unused item behind as an orphan entity.
+                this._relicCarrier = null;
+                await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
+                await player.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.InventoryFull)).ConfigureAwait(false);
+                return false;
+            }
+
+            await player.Inventory!.AddItemAsync(item).ConfigureAwait(false);
+            await player.InvokeViewPlugInAsync<IItemAppearPlugIn>(p => p.ItemAppearAsync(item)).ConfigureAwait(false);
+            await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleRelicPickedUpFormat), player.Name).ConfigureAwait(false);
+            await this.NotifyObjectiveReachedAsync(player, MiniGameObjective.RelicClaimed, 0).ConfigureAwait(false);
+            await this.ForEachPlayerAsync(p => p.InvokeViewPlugInAsync<IIllusionTempleHolyItemRelicsViewPlugIn>(
+                vp => vp.ShowHolyItemRelicsAsync(player.Id, player.Name)).AsTask()).ConfigureAwait(false);
+            return true;
+        }
+        catch
+        {
+            // Never keep the claim on an error - otherwise the statue would stay locked for the rest
+            // of the match, and nobody could pick up the relic anymore.
+            this._relicCarrier = null;
+            throw;
+        }
+    }
+
+    private async ValueTask<IllusionTempleLeagueEntryCheck> CheckLeagueEntryAsync(Player player)
+    {
+        if (this._league is not { } league || player.SelectedCharacter is not { } character)
+        {
+            return IllusionTempleLeagueEntryCheck.NotOpen;
+        }
+
+        if (!league.HasGuildParty(player) || player.GuildStatus is not { } status || await league.GetGuildAsync(player).ConfigureAwait(false) is not { } guild)
+        {
+            return IllusionTempleLeagueEntryCheck.GuildPartyRequired;
+        }
+
+        var check = league.CheckEntry(guild.Key, character.Id, this.Definition.GameLevel, league.GetLocalNow(this.GameContext));
+        if (check != IllusionTempleLeagueEntryCheck.Allowed)
+        {
+            return check;
+        }
+
+        lock (this._entrantGuilds)
+        {
+            var entrants = this._entrantGuilds.Where(e => e.Key != player && e.Key.CurrentMiniGame == this).Select(e => e.Value).ToList();
+            if ((!entrants.Contains(status.GuildId) && entrants.Distinct().Count() >= 2)
+                || entrants.Count(g => g == status.GuildId) >= this.Definition.MaximumPlayerCount / 2)
+            {
+                return IllusionTempleLeagueEntryCheck.Full;
+            }
+
+            this._entrantGuilds[player] = status.GuildId;
+        }
+
+        return IllusionTempleLeagueEntryCheck.Allowed;
+    }
+
+    /// <summary>
+    /// Splits the players of a league match into the teams by their guild: the first guild are the allied forces, the
+    /// second the illusion forces. The players keep their parties.
+    /// </summary>
+    /// <returns><c>true</c>, if two guilds play.</returns>
+    private async ValueTask<bool> AssignGuildTeamsAsync(ICollection<Player> players)
+    {
+        var guilds = players.Select(p => p.GuildStatus?.GuildId ?? 0).Where(id => id != 0).Distinct().Take(2).ToList();
+        if (guilds.Count < 2)
+        {
+            return false;
+        }
+
+        var indexes = new int[2];
+        foreach (var player in players)
+        {
+            var guildIndex = guilds.IndexOf(player.GuildStatus?.GuildId ?? 0);
+            if (guildIndex < 0)
+            {
+                continue;
+            }
+
+            var team = guildIndex == 0 ? IllusionTempleTeam.AlliedForces : IllusionTempleTeam.IllusionForces;
+            if (!this._teams.TryAdd(player, team))
+            {
+                continue;
+            }
+
+            this._skillPoints[player] = InitialSkillPoints;
+            if (!this._teamGuilds.ContainsKey(team))
+            {
+                var guild = this._league is { } league ? await league.GetGuildAsync(player).ConfigureAwait(false) : null;
+                this._teamGuilds[team] = guild ?? (IllusionTempleLeaguePlugIn.GetFallbackGuildKey(guilds[guildIndex]), string.Empty);
+            }
+
+            await this.TeleportToStartCoordinatesAsync(team, player, indexes[guildIndex]++).ConfigureAwait(false);
+        }
+
+        return true;
+    }
+
+    private async ValueTask AssignRandomTeamsAsync(ICollection<Player> players)
+    {
+        var playersArray = players.ToArray();
+
+        // Random players to add to the teams
+        for (var i = playersArray.Length - 1; i > 0; i--)
+        {
+            var j = Rand.NextInt(0, i + 1);
+            (playersArray[i], playersArray[j]) = (playersArray[j], playersArray[i]);
+        }
+
+        var gameContext = playersArray[0].GameContext;
+        var alliedParty = gameContext.PartyManager.CreateParty();
+        var illusionParty = gameContext.PartyManager.CreateParty();
+
+        for (var i = 0; playersArray.Length > i; i++)
+        {
+            // Adding player to team AlliedForces or IllusionForces
+            var player = playersArray[i];
+            var team = i % 2 == 0 ? IllusionTempleTeam.AlliedForces : IllusionTempleTeam.IllusionForces;
+            if (!this._teams.TryAdd(player, team))
+            {
+                this.Logger.LogWarning("Player {Player} was already assigned to a team.", player.Name);
+                continue;
+            }
+
+            this._skillPoints[player] = InitialSkillPoints;
+            var party = team == IllusionTempleTeam.AlliedForces ? alliedParty : illusionParty;
+            if (!await party.AddAsync(player).ConfigureAwait(false))
+            {
+                // The player still takes part in the event and is assigned to a team - he just doesn't
+                // show up in the party window of his team mates.
+                this.Logger.LogWarning(
+                    "Player {Player} doesn't fit into the party of team {Team}: the party is limited to {MaxPartySize} members, while the event allows {MaximumPlayerCount} players.",
+                    player.Name,
+                    team,
+                    party.MaxPartySize,
+                    this.Definition.MaximumPlayerCount);
+            }
+
+            // i / 2 is the player's index within his own team, since the teams alternate.
+            await this.TeleportToStartCoordinatesAsync(team, player, i / 2).ConfigureAwait(false);
+        }
+    }
+
+    private async ValueTask StartBattleAsync()
+    {
+        // The client keeps its event interface closed and the arena barriers up until it's told that
+        // the battle started - the barrier areas are hardcoded at client side, so this is the only way
+        // to open them. The two states are deliberately separated by a short delay, so the players
+        // actually get to see the preparation phase before the barriers drop - sending both back to
+        // back made the client skip straight to the battle without any noticeable wait.
+        var templeNumber = (byte)this.Definition.GameLevel;
+        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IIllusionTempleEventStateViewPlugIn>(
+            p => p.ChangeEventStateAsync(templeNumber, IllusionTempleEventStatus.Preparation)).AsTask()).ConfigureAwait(false);
+
+        try
+        {
+            await Task.Delay(this.PreparationDuration, this.GameEndedToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // The event was already finished (e.g. not enough players) while the preparation phase
+            // was still running.
+            return;
+        }
+
+        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IIllusionTempleEventStateViewPlugIn>(
+            p => p.ChangeEventStateAsync(templeNumber, IllusionTempleEventStatus.BattleStarted)).AsTask()).ConfigureAwait(false);
+        await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleBattleStartedMessage)).ConfigureAwait(false);
+
+        if (this._isLeague)
+        {
+            await this.SpawnStonesAsync().ConfigureAwait(false);
+        }
+
+        await this.SpawnRandomStatueAsync().ConfigureAwait(false);
+
+        await this.ForEachPlayerAsync(player => player.InvokeViewPlugInAsync<IIllusionTempleSkillPointUpdateViewPlugin>(
+            p => p.UpdateSkillPointsAsync(this._skillPoints.GetValueOrDefault(player, InitialSkillPoints))).AsTask()).ConfigureAwait(false);
+
+        // The cyclic state update runs until the game ends - the token makes sure that it doesn't
+        // outlive the context and keeps sending to players who already left the event.
+        _ = Task.Run(async () => await this.ShowRemainingTimeLoopAsync(this.GameEndedToken).ConfigureAwait(false), this.GameEndedToken);
+    }
+
+    /// <summary>
+    /// Decides the winner of a league match by occupied stones, kills and level sum, and records the match in the league.
+    /// </summary>
+    private void RecordLeagueMatch()
+    {
+        var results = this._teamGuilds
+            .OrderBy(entry => entry.Key)
+            .Select(entry =>
+            {
+                var players = this._teams.Where(t => t.Value == entry.Key).Select(t => t.Key).ToList();
+                return (Team: entry.Key, Result: new IllusionTempleLeagueResult(
+                    entry.Value.Key,
+                    entry.Value.Name,
+                    this.Score.GetScore(entry.Key),
+                    this._teamKills.GetValueOrDefault(entry.Key),
+                    players.Sum(p => (int)((p.Attributes?[Stats.Level] ?? 0) + (p.Attributes?[Stats.MasterLevel] ?? 0))),
+                    [.. players.Select(p => p.SelectedCharacter?.Id ?? Guid.Empty).Where(id => id != Guid.Empty)]));
+            })
+            .ToList();
+        var winner = IllusionTempleLeaguePlugIn.GetWinner([.. results.Select(r => r.Result)]);
+        this._leagueWinner = winner is null ? null : results.First(r => ReferenceEquals(r.Result, winner)).Team;
+        this._league?.Record(this.GameContext, this._leagueStage, [.. results.Select(r => r.Result)], this.Logger);
+    }
+
+    /// <summary>
+    /// Seals the Cursed Hollow of its carrier into a free stone: a point for his team, and the Cursed Statue may appear
+    /// again.
+    /// </summary>
+    private async ValueTask SealAsync(Player player, IllusionTempleTeam team, IllusionTempleStone stone)
+    {
+        lock (this._stoneLock)
+        {
+            if (stone.Holder is not null)
+            {
+                return;
+            }
+
+            stone.Holder = team;
+            stone.SealedAt = DateTime.UtcNow;
+        }
+
+        await this.RemoveRelicFromInventoryAsync(player).ConfigureAwait(false);
+        this.Score.IncreaseScore(team);
+        await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleStoneSealedFormat), player.Name).ConfigureAwait(false);
+        await this.NotifyObjectiveReachedAsync(player, MiniGameObjective.RelicScored, this.Score.GetScore(team)).ConfigureAwait(false);
+        await this.UpdateStateForAllAsync().ConfigureAwait(false);
+        if (this.Score.GetScore(team) >= WinningScore)
+        {
+            this.FinishEvent();
+            return;
+        }
+
+        this.ScheduleStatueSpawn();
+    }
+
+    /// <summary>
+    /// Unseals a stone of the other team after its protection, when no other hollow is in play: the point goes away, the
+    /// player gets the hollow.
+    /// </summary>
+    private async ValueTask UnsealAsync(Player player, IllusionTempleStone stone)
+    {
+        var protection = this._league?.Settings.StoneSealProtection ?? TimeSpan.Zero;
+        IllusionTempleTeam holder;
+        lock (this._stoneLock)
+        {
+            if (stone.Holder is not { } sealedBy
+                || sealedBy == this._teams.GetValueOrDefault(player)
+                || this._relicCarrier is not null
+                || this._relicOnGround
+                || DateTime.UtcNow - stone.SealedAt < protection)
+            {
+                return;
+            }
+
+            holder = sealedBy;
+            stone.Holder = null;
+        }
+
+        if (!await this.TryHandOverRelicAsync(player).ConfigureAwait(false))
+        {
+            stone.Holder = holder;
+            return;
+        }
+
+        this.Score.IncreaseScore(holder, -1);
+        if (Interlocked.Exchange(ref this._statue, null) is { } statue)
+        {
+            // One hollow is in play at a time: the one of the stone replaces the one of the statue.
+            await statue.DisposeAsync().ConfigureAwait(false);
+        }
+
+        await this.ShowGoldenMessageAsync(nameof(PlayerMessage.IllusionTempleStoneUnsealedFormat), player.Name).ConfigureAwait(false);
+        await this.UpdateStateForAllAsync().ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Spawns the ten Captured Stone Statues of the renewed temple.
+    /// </summary>
+    private async ValueTask SpawnStonesAsync()
+    {
+        foreach (var spawnArea in this.Map.Definition.MonsterSpawns.Where(s => s.MonsterDefinition?.Number is >= FirstStoneNPC and <= LastStoneNPC))
+        {
+            var stone = new NonPlayerCharacter(spawnArea, spawnArea.MonsterDefinition!, this.Map);
+            stone.Initialize();
+            this._stones[stone] = new IllusionTempleStone(stone);
+            await this.Map.AddAsync(stone).ConfigureAwait(false);
+            stone.OnSpawn();
+        }
+    }
+
+    /// <summary>
+    /// Lets the next statue appear after <see cref="StatueRespawnDelay"/>; in the renewed temple each occupied stone
+    /// lowers its chance by <see cref="IllusionTempleLeagueConfiguration.StatueSpawnRateReductionPerPoint"/>, so it tries
+    /// again after each delay.
+    /// </summary>
+    private void ScheduleStatueSpawn()
+    {
+        // The next statue doesn't appear immediately - just like in the original event, there's a
+        // short delay after a scored point. This runs in the background so the delivering player's
+        // action isn't held up by it.
+        _ = Task.Run(
+            async () =>
+            {
+                try
+                {
+                    do
+                    {
+                        await Task.Delay(StatueRespawnDelay, this.GameEndedToken).ConfigureAwait(false);
+                    }
+                    while (!this.RollStatueSpawn());
+
+                    await this.SpawnRandomStatueAsync().ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    // The event ended before the respawn delay elapsed.
+                }
+            },
+            this.GameEndedToken);
+    }
+
+    private bool RollStatueSpawn()
+    {
+        if (!this._isLeague)
+        {
+            return true;
+        }
+
+        var occupied = this._stones.Values.Count(s => s.Holder is not null);
+        var reduction = this._league?.Settings.StatueSpawnRateReductionPerPoint ?? 0;
+        return Rand.NextInt(0, 100) < 100 - (occupied * reduction);
+    }
+
+    /// <summary>
+    /// Spawns the stone statue at a random position from the map's pool of statue spawn points; in the renewed temple the
+    /// Cursed Statue, when no other hollow is in play.
     /// </summary>
     private async ValueTask SpawnRandomStatueAsync()
     {
         try
         {
+            if (this._isLeague && (this._relicCarrier is not null || this._relicOnGround || this._statue is not null))
+            {
+                return;
+            }
+
+            var statueNumber = this._isLeague ? CursedStatueNPC : StatueNPC;
             var statueSpawns = this.Map.Definition.MonsterSpawns
-                .Where(spawn => spawn.MonsterDefinition?.Number == StatueNPC)
+                .Where(spawn => spawn.MonsterDefinition?.Number == statueNumber)
                 .ToList();
             if (statueSpawns.Count == 0)
             {
@@ -864,6 +1264,7 @@ public sealed class IllusionTempleContext : MiniGameContext
             var spawnArea = statueSpawns[Rand.NextInt(0, statueSpawns.Count)];
             var statue = new NonPlayerCharacter(spawnArea, spawnArea.MonsterDefinition!, this.Map);
             statue.Initialize();
+            this._statue = statue;
             await this.Map.AddAsync(statue).ConfigureAwait(false);
             statue.OnSpawn();
 

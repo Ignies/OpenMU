@@ -9336,5 +9336,59 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ArcaWarChatCommandPlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Illusion Temple League (Season 21).
+        /// </summary>
+        public static string IllusionTempleLeaguePlugIn_Name {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeaguePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The monthly guild tournament on the renewed Illusion Temple (maps 98 and 99): parties of one guild play the eliminations (3rd-9th), the best four the semi-finals (11th), their winners the final (12th); the players of the champion get the Wings of Conqueror from the reward day (13th)..
+        /// </summary>
+        public static string IllusionTempleLeaguePlugIn_Description {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeaguePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Illusion Temple League start.
+        /// </summary>
+        public static string IllusionTempleLeagueStartPlugIn_Name {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeagueStartPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Opens the temples of the Illusion Temple League by its timetable, on the days of the league..
+        /// </summary>
+        public static string IllusionTempleLeagueStartPlugIn_Description {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeagueStartPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Illusion Temple renewal statues.
+        /// </summary>
+        public static string IllusionTempleRenewalStatueTalkPlugIn_Name {
+            get {
+                return ResourceManager.GetString("IllusionTempleRenewalStatueTalkPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles talking to the Cursed Statue (658), which gives the Cursed Hollow, and to the Captured Stone Statues (659-668), which seal or unseal it, in the renewed Illusion Temple..
+        /// </summary>
+        public static string IllusionTempleRenewalStatueTalkPlugIn_Description {
+            get {
+                return ResourceManager.GetString("IllusionTempleRenewalStatueTalkPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

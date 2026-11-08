@@ -652,4 +652,10 @@
   <data name="AddSeason21LuckySetsUpdatePlugIn_Description" xml:space="preserve">
     <value>Adds the 29 lucky sets of S21Emu SetItemType.xml and SetItemOption.xml (Moros, Dione, Hades ... Elio). They always apply: from two different pieces the first options by the count (health, skill damage or defense, double damage, critical damage chance), on the full set also the critical and excellent damage chance and damage (and 5 % to ignore the defense on the second sets). Sets which exist stay.</value>
   </data>
+  <data name="AddSeason21IllusionTempleLeagueUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the Illusion Temple League of Season 21</value>
+  </data>
+  <data name="AddSeason21IllusionTempleLeagueUpdatePlugIn_Description" xml:space="preserve">
+    <value>The renewed Illusion Temple on maps 98 and 99 (the Cursed Statue 658 and the Captured Stone Statues 659-668 of S21Emu IllusionTemple_League_NPC.xml) for two guild parties of up to five from total level 400 (5 minutes to enter, 15 to play), its timetable of S21Emu IllusionTempleLeague.xml and the monthly league: eliminations on the 3rd to 9th, semi-finals on the 11th, the final on the 12th, the reward from the 13th. Keeps what the operator set.</value>
+  </data>
 </root>

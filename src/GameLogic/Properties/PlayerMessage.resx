@@ -1306,4 +1306,25 @@ Inventory Extensions: {18}</value>
   <data name="MasterLevelsOff" xml:space="preserve">
     <value>This world has no master levels: in the stars mode of the progression the stars count instead, set them with /setresets.</value>
   </data>
+  <data name="IllusionTempleLeagueClosed" xml:space="preserve">
+    <value>The Illusion Temple League doesn't play today.</value>
+  </data>
+  <data name="IllusionTempleLeagueGuildPartyRequired" xml:space="preserve">
+    <value>Only a party of at least {0} members of your guild may enter the Illusion Temple League.</value>
+  </data>
+  <data name="IllusionTempleLeagueEntriesUsed" xml:space="preserve">
+    <value>Your guild or you played all matches of the eliminations this month.</value>
+  </data>
+  <data name="IllusionTempleLeagueNotQualified" xml:space="preserve">
+    <value>Your guild didn't qualify for this match of the Illusion Temple League.</value>
+  </data>
+  <data name="IllusionTempleLeagueFull" xml:space="preserve">
+    <value>Two guilds already play in this temple, or the side of your guild is full.</value>
+  </data>
+  <data name="IllusionTempleStoneSealedFormat" xml:space="preserve">
+    <value>{0} sealed the Cursed Hollow into a stone statue!</value>
+  </data>
+  <data name="IllusionTempleStoneUnsealedFormat" xml:space="preserve">
+    <value>{0} unsealed a stone statue and took the Cursed Hollow!</value>
+  </data>
 </root>

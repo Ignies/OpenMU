@@ -3267,4 +3267,22 @@
   <data name="ArcaWarChatCommandPlugIn_Description" xml:space="preserve">
     <value>Handles the chat command '/arcawar'. Opens the registration of the Arca War, or ends its current stage, at the next tick.</value>
   </data>
+  <data name="IllusionTempleLeaguePlugIn_Name" xml:space="preserve">
+    <value>Illusion Temple League (Season 21)</value>
+  </data>
+  <data name="IllusionTempleLeaguePlugIn_Description" xml:space="preserve">
+    <value>The monthly guild tournament on the renewed Illusion Temple (maps 98 and 99): parties of one guild play the eliminations (3rd-9th), the best four the semi-finals (11th), their winners the final (12th); the players of the champion get the Wings of Conqueror from the reward day (13th).</value>
+  </data>
+  <data name="IllusionTempleLeagueStartPlugIn_Name" xml:space="preserve">
+    <value>Illusion Temple League start</value>
+  </data>
+  <data name="IllusionTempleLeagueStartPlugIn_Description" xml:space="preserve">
+    <value>Opens the temples of the Illusion Temple League by its timetable, on the days of the league.</value>
+  </data>
+  <data name="IllusionTempleRenewalStatueTalkPlugIn_Name" xml:space="preserve">
+    <value>Illusion Temple renewal statues</value>
+  </data>
+  <data name="IllusionTempleRenewalStatueTalkPlugIn_Description" xml:space="preserve">
+    <value>Handles talking to the Cursed Statue (658), which gives the Cursed Hollow, and to the Captured Stone Statues (659-668), which seal or unseal it, in the renewed Illusion Temple.</value>
+  </data>
 </root>

@@ -80,4 +80,10 @@ public enum MiniGameType
     /// monthly tournament.
     /// </summary>
     ChaosCastleSurvival,
+
+    /// <summary>
+    /// The Illusion Temple League of Season 21: the renewed Illusion Temple on maps 98 and 99, played by guild parties as
+    /// the matches of a monthly tournament.
+    /// </summary>
+    IllusionTempleLeague,
 }

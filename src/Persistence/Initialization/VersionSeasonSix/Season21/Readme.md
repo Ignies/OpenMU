@@ -129,9 +129,9 @@ Sanctuary of Aquilas (Aquilas Temple, map 145, maps update version 9; Webzen gui
 
 Illusion Temple League (maps 98/99, maps update version 10): the two maps on `Terrain99.att` (`MapAttribute.xml`) with
 the three spawn areas of each (`Gate.xml` 444-449), total level 400 (`IllusionTempleLeague.xml` MinLevel), safezone
-Devias as the Season 6 temples. No warp or entrance leads there: the league, a guild tournament by the day of the month
-(eliminations, semi-final, final, reward day) on the renewed temple (Cursed Statue 658, Captured Stone Statues 659-668),
-isn't ported. Its version (Season 9) is our assumption.
+Devias as the Season 6 temples. Its version (Season 9) is our assumption. The update "Add the Illusion Temple League of
+Season 21" adds the statues of the renewed temple and the league temples entered at 444/445 (`Season21IllusionTempleLeagueData`,
+`Season21EventsInitializer.AddIllusionTempleLeague`; rules in `src/GameLogic/MiniGames/Readme.md`).
 
 Dungeon shortcuts (maps update version 11): the four same-map gate pairs of Dungeon (map 1) from `Gate.xml` 475-482, level
 0, all on walkable ground of the Season 6 `Terrain2.att`: 475 (115,231) to 45,152; 477 (45,148) to 112,232; 479 (233,106)

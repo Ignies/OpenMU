@@ -379,5 +379,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("ChaosCastleSurvival", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Illusion Temple League 1.
+        /// </summary>
+        public static string IllusionTempleLeague1 {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeague1", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Illusion Temple League 2.
+        /// </summary>
+        public static string IllusionTempleLeague2 {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeague2", resourceCulture);
+            }
+        }
     }
 }

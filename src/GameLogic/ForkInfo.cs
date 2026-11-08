@@ -90,6 +90,7 @@ public static class ForkInfo
         "labyrinth_rooms",
         "arca_war",
         "ability_core",
+        "illusion_temple_league",
     ];
 
     /// <summary>

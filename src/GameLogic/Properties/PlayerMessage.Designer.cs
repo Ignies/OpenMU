@@ -3594,5 +3594,68 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("MasterLevelsOff", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The Illusion Temple League doesn&apos;t play today..
+        /// </summary>
+        public static string IllusionTempleLeagueClosed {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeagueClosed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Only a party of at least {0} members of your guild may enter the Illusion Temple League..
+        /// </summary>
+        public static string IllusionTempleLeagueGuildPartyRequired {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeagueGuildPartyRequired", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Your guild or you played all matches of the eliminations this month..
+        /// </summary>
+        public static string IllusionTempleLeagueEntriesUsed {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeagueEntriesUsed", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Your guild didn&apos;t qualify for this match of the Illusion Temple League..
+        /// </summary>
+        public static string IllusionTempleLeagueNotQualified {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeagueNotQualified", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Two guilds already play in this temple, or the side of your guild is full..
+        /// </summary>
+        public static string IllusionTempleLeagueFull {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeagueFull", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} sealed the Cursed Hollow into a stone statue!.
+        /// </summary>
+        public static string IllusionTempleStoneSealedFormat {
+            get {
+                return ResourceManager.GetString("IllusionTempleStoneSealedFormat", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to {0} unsealed a stone statue and took the Cursed Hollow!.
+        /// </summary>
+        public static string IllusionTempleStoneUnsealedFormat {
+            get {
+                return ResourceManager.GetString("IllusionTempleStoneUnsealedFormat", resourceCulture);
+            }
+        }
     }
 }

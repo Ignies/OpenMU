@@ -283,6 +283,47 @@ internal class Season21EventsInitializer
     }
 
     /// <summary>
+    /// Adds the Illusion Temple League of Season 21 (S21Emu <c>Event/IlusionTempleLeague</c>): the statues of the renewed
+    /// temple on maps 98 and 99 (they spawn with the match), a league temple on each for two guild parties of up to five
+    /// from total level 400, entered from the waiting area (gates 444/445), and switches the league and its timetable on.
+    /// Keeps a temple and statues the operator changed.
+    /// </summary>
+    public void AddIllusionTempleLeague()
+    {
+        for (byte level = 1; level <= Season21IllusionTempleLeagueData.MapNumbers.Length; level++)
+        {
+            var mapNumber = Season21IllusionTempleLeagueData.MapNumbers[level - 1];
+            if (this._gameConfiguration.Maps.FirstOrDefault(m => m.Number == mapNumber && m.Discriminator == 0) is not { } map
+                || map.ExitGates.Where(g => g.IsSpawnGate).OrderBy(g => g.X1).ThenBy(g => g.Y1).FirstOrDefault() is not { } waitingArea)
+            {
+                continue;
+            }
+
+            this.AddIllusionTempleLeagueStatues(map);
+            var name = MiniGameNames.ResourceManager.GetLocalizedString($"IllusionTempleLeague{level}");
+            var definition = this.GetOrCreateDefinition(MiniGameType.IllusionTempleLeague, level, name, LocalizedString.FromResource(() => MiniGameDescriptions.IllusionTempleLeague), waitingArea);
+            if (definition.MaximumPlayerCount != 0)
+            {
+                continue;
+            }
+
+            definition.MapCreationPolicy = MiniGameMapCreationPolicy.Shared;
+            definition.MaximumPlayerCount = 10;
+            definition.MinimumPlayerCount = 2;
+            definition.MinimumCharacterLevel = 400;
+            definition.MinimumSpecialCharacterLevel = 400;
+            definition.EnterDuration = TimeSpan.FromMinutes(5);
+            definition.GameDuration = TimeSpan.FromMinutes(15);
+            definition.ExitDuration = TimeSpan.FromMinutes(1);
+            definition.AllowParty = true;
+            definition.ArePlayerKillersAllowedToEnter = false;
+        }
+
+        this.SwitchOn(typeof(IllusionTempleLeaguePlugIn).GUID);
+        this.SwitchOn(typeof(IllusionTempleLeagueStartPlugIn).GUID);
+    }
+
+    /// <summary>
     /// Applies the Crywolf renewal of Season 21 Part 1 Update 3 (webzen guide 425): the army takes the element of the week
     /// (fire, water, earth, wind, darkness, from Thursday 00:00), Balgass appears 6:40 into the battle, is immune to debuffs
     /// and the rewards go into the gremory case; the altars open on Monday 9:30. The state durations are the ones of S21Emu
@@ -393,6 +434,30 @@ internal class Season21EventsInitializer
         configuration.Entrances.Add(new EvolutionTrialEntrance { NpcNumber = Season21InstanceZoneData.CentEntrance, Evolution = ClassEvolution.Fourth, Map = EvolutionQuestConfiguration.Season21TrialMap, X1 = 147, Y1 = 27, X2 = 148, Y2 = 28 });
         configuration.Entrances.Add(new EvolutionTrialEntrance { NpcNumber = Season21InstanceZoneData.EuniceEntrance, Evolution = ClassEvolution.Fifth, Map = EvolutionQuestConfiguration.Season21TrialMap, X1 = 101, Y1 = 27, X2 = 105, Y2 = 28 });
         plugIn.SetConfiguration(configuration, null);
+    }
+
+    private void AddIllusionTempleLeagueStatues(GameMapDefinition map)
+    {
+        short number = 1;
+        foreach (var (monsterNumber, x, y) in Season21IllusionTempleLeagueData.Statues)
+        {
+            if (this._gameConfiguration.Monsters.FirstOrDefault(m => m.Number == monsterNumber) is not { } statue
+                || map.MonsterSpawns.Any(s => s.MonsterDefinition == statue))
+            {
+                number++;
+                continue;
+            }
+
+            var area = this._context.CreateNew<MonsterSpawnArea>();
+            area.SetGuid(map.Number, number++);
+            area.GameMap = map;
+            area.MonsterDefinition = statue;
+            area.Quantity = 1;
+            area.Direction = monsterNumber == Season21IllusionTempleLeagueData.Statues[0].Number ? Direction.South : Direction.Undefined;
+            area.SpawnTrigger = SpawnTrigger.ManuallyForEvent;
+            (area.X1, area.X2, area.Y1, area.Y2) = (x, x, y, y);
+            map.MonsterSpawns.Add(area);
+        }
     }
 
     private ExitGate? FindSpawnGate(byte mapNumber)

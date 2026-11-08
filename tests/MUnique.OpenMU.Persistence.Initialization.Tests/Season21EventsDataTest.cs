@@ -200,6 +200,31 @@ internal class Season21EventsDataTest
     }
 
     /// <summary>
+    /// The Illusion Temple League plays on maps 98 and 99: the Cursed Statue and the ten stones of the data spawn with the
+    /// match, the temples take two guild parties of up to five from total level 400 at the waiting area; its start and
+    /// league are on.
+    /// </summary>
+    [Test]
+    public void IllusionTempleLeagueHasItsTemples()
+    {
+        var definitions = this._gameConfiguration.MiniGameDefinitions.Where(d => d.Type == MiniGameType.IllusionTempleLeague).OrderBy(d => d.GameLevel).ToList();
+        Assert.That(definitions.Select(d => d.Entrance?.Map?.Number), Is.EqualTo(new short?[] { 98, 99 }));
+        foreach (var definition in definitions)
+        {
+            var statues = definition.Entrance!.Map!.MonsterSpawns.Where(s => s.MonsterDefinition?.Number is >= 658 and <= 668).ToList();
+            Assert.That(statues.Select(s => s.MonsterDefinition!.Number).Order(), Is.EqualTo(Enumerable.Range(658, 11).Select(n => (short)n)));
+            Assert.That(statues.Select(s => s.SpawnTrigger), Has.All.EqualTo(SpawnTrigger.ManuallyForEvent));
+            Assert.That(statues.Single(s => s.MonsterDefinition!.Number == 658), Has.Property(nameof(MonsterSpawnArea.X1)).EqualTo(169).And.Property(nameof(MonsterSpawnArea.Y1)).EqualTo(84));
+            Assert.That((definition.Entrance.X1, definition.Entrance.Y1), Is.EqualTo(((byte)98, (byte)128)));
+            Assert.That((definition.MaximumPlayerCount, definition.MinimumPlayerCount, definition.MinimumCharacterLevel, definition.GameDuration, definition.AllowParty), Is.EqualTo((10, 2, 400, TimeSpan.FromMinutes(15), true)));
+        }
+
+        Assert.That(
+            this._gameConfiguration.PlugInConfigurations.Where(c => c.TypeId == typeof(GameLogic.MiniGames.Season21.IllusionTempleLeaguePlugIn).GUID || c.TypeId == typeof(GameLogic.MiniGames.Season21.IllusionTempleLeagueStartPlugIn).GUID).Select(c => c.IsActive),
+            Is.EqualTo(new[] { true, true }));
+    }
+
+    /// <summary>
     /// A Crywolf schedule which the operator changed stays when the renewal runs again.
     /// </summary>
     [Test]
@@ -422,6 +447,7 @@ internal class Season21EventsDataTest
         new AddSeason21ChaosCastleSurvivalUpdatePlugIn(),
         new AddSeason21LabyrinthRoomsUpdatePlugIn(),
         new AddSeason21ArcaWarUpdatePlugIn(),
+        new AddSeason21IllusionTempleLeagueUpdatePlugIn(),
     ];
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateSeason6Async()

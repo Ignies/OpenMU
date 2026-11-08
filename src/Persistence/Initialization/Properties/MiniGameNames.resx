@@ -153,4 +153,10 @@
   <data name="ChaosCastleSurvival" xml:space="preserve">
     <value>Chaos Castle Survival of the Fittest</value>
   </data>
+  <data name="IllusionTempleLeague1" xml:space="preserve">
+    <value>Illusion Temple League 1</value>
+  </data>
+  <data name="IllusionTempleLeague2" xml:space="preserve">
+    <value>Illusion Temple League 2</value>
+  </data>
 </root>

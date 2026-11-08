@@ -1686,5 +1686,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21AbilityCoreUpdatePlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add the Illusion Temple League of Season 21.
+        /// </summary>
+        public static string AddSeason21IllusionTempleLeagueUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21IllusionTempleLeagueUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The renewed Illusion Temple on maps 98 and 99 (the Cursed Statue 658 and the Captured Stone Statues 659-668 of S21Emu IllusionTemple_League_NPC.xml) for two guild parties of up to five from total level 400 (5 minutes to enter, 15 to play), its timetable of S21Emu IllusionTempleLeague.xml and the monthly league: eliminations on the 3rd to 9th, semi-finals on the 11th, the final on the 12th, the reward from the 13th. Keeps what the operator set..
+        /// </summary>
+        public static string AddSeason21IllusionTempleLeagueUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21IllusionTempleLeagueUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

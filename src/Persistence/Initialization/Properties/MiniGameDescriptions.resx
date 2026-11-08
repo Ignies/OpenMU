@@ -150,4 +150,7 @@
   <data name="ChaosCastleSurvival" xml:space="preserve">
     <value>The Chaos Castle Survival of the Fittest of Season 21: the try-outs, semi-finals and final of a monthly tournament on map 97.</value>
   </data>
+  <data name="IllusionTempleLeague" xml:space="preserve">
+    <value>The Illusion Temple League of Season 21: the renewed Illusion Temple on maps 98 and 99, where the parties of two guilds play the eliminations, semi-finals and final of a monthly tournament.</value>
+  </data>
 </root>
