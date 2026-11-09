@@ -12,11 +12,12 @@ using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 
 /// <summary>
-/// Holds the runtime state of Castle Siege for one game context.
+/// Holds the runtime state of Castle Siege for one world.
 /// </summary>
 /// <remarks>
-/// Runtime registrations and <see cref="ExecutionLock"/> are scoped to this game context. Deployments which run
-/// multiple game-server processes require external coordination when registrations are changed concurrently.
+/// The game servers of a world in one process share this context (<see cref="WorldGameContexts"/>); the owning
+/// <see cref="GameContext"/> runs the battle. Deployments which run multiple game-server processes require external
+/// coordination when registrations are changed concurrently.
 /// </remarks>
 public class CastleSiegeContext : IEventStateProvider
 {
@@ -27,6 +28,7 @@ public class CastleSiegeContext : IEventStateProvider
     private readonly System.Collections.Concurrent.ConcurrentDictionary<Player, CastleSiegeJoinSide> _notifiedPlayerJoinSides = new();
     private readonly System.Collections.Concurrent.ConcurrentDictionary<Player, byte> _siegeMapPlayers = new();
     private readonly System.Collections.Concurrent.ConcurrentDictionary<uint, CastleSiegeLifeStone> _lifeStones = new();
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<IGameContext, byte> _worldGameContexts = new();
     private int _requestedState = -1;
 
     /// <summary>
@@ -38,6 +40,7 @@ public class CastleSiegeContext : IEventStateProvider
     public CastleSiegeContext(IGameContext gameContext, CastleSiegeConfiguration configuration, TimeProvider? timeProvider = null)
     {
         this._gameContext = gameContext;
+        this._worldGameContexts[gameContext] = 0;
         this._timeProvider = timeProvider ?? TimeProvider.System;
         this.Configuration = configuration;
         this.Schedule = new CastleSiegeSchedule(configuration.StateSchedule, gameContext.ServerTimeZone);
@@ -181,6 +184,35 @@ public class CastleSiegeContext : IEventStateProvider
     /// Gets the game context.
     /// </summary>
     internal IGameContext GameContext => this._gameContext;
+
+    /// <summary>
+    /// Gets the game servers of the world which share this siege, including the owning one.
+    /// </summary>
+    internal IEnumerable<IGameContext> WorldGameContexts => this._worldGameContexts.Keys;
+
+    /// <summary>
+    /// Adds a game server of the world which shares this siege.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    internal void AddWorldGameContext(IGameContext gameContext)
+    {
+        this._worldGameContexts.TryAdd(gameContext, 0);
+    }
+
+    /// <summary>
+    /// Gets the players of all game servers of the world.
+    /// </summary>
+    /// <returns>The players.</returns>
+    internal async ValueTask<List<Player>> GetWorldPlayersAsync()
+    {
+        var players = new List<Player>();
+        foreach (var gameContext in this.WorldGameContexts)
+        {
+            players.AddRange(await gameContext.GetPlayersAsync().ConfigureAwait(false));
+        }
+
+        return players;
+    }
 
     /// <summary>
     /// Gets the clock used by Castle Siege runtime operations.

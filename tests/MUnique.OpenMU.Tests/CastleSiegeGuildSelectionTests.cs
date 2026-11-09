@@ -493,6 +493,38 @@ public class CastleSiegeGuildSelectionTests
     }
 
     /// <summary>
+    /// A participant who plays on another game server of the world gets the reward right away, not at the next
+    /// login.
+    /// </summary>
+    [Test]
+    public async ValueTask ParticipantOnAnotherGameServerOfTheWorldIsRewardedRightAwayAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var otherServer = CreateGameServerContext(fixture.GameConfiguration, fixture.PersistenceContextProvider, fixture.GuildServer.Object);
+        fixture.Context.AddWorldGameContext(otherServer);
+        var player = await PlayerTestHelper.CreatePlayerAsync(otherServer).ConfigureAwait(false);
+        player.SelectedCharacter!.Id = Guid.NewGuid();
+        await otherServer.AddPlayerAsync(player).ConfigureAwait(false);
+        fixture.Context.ParticipantTracking[player.SelectedCharacter.Id] = new CastleSiegeParticipant
+        {
+            CharacterId = player.SelectedCharacter.Id,
+            GuildId = AlphaGuildId,
+            ParticipationTime = TimeSpan.FromSeconds(fixture.CastleSiegeConfiguration.ParticipantRewardMinSeconds),
+        };
+
+        await CastleSiegeParticipantTracker.AwardRewardsAsync(fixture.Context).ConfigureAwait(false);
+
+        using var persistenceContext = fixture.PersistenceContextProvider.CreateNewTypedContext(
+            typeof(CastleSiegePendingReward), false, fixture.GameConfiguration);
+        var queuedRewards = await persistenceContext.GetAsync<CastleSiegePendingReward>().ConfigureAwait(false);
+        Assert.Multiple(() =>
+        {
+            Assert.That(player.Inventory!.Items.Count(item => item.Definition == fixture.RewardItemDefinition), Is.EqualTo(1));
+            Assert.That(queuedRewards, Is.Empty);
+        });
+    }
+
+    /// <summary>
     /// Verifies the exact participation threshold for online delivery and offline queuing.
     /// </summary>
     /// <param name="secondsBelowThreshold">The number of seconds missing from eligibility.</param>
@@ -874,29 +906,7 @@ public class CastleSiegeGuildSelectionTests
             .Setup(server => server.IncreaseGuildScoreAsync(It.IsAny<uint>(), It.IsAny<int>()))
             .Returns(ValueTask.CompletedTask);
 
-        var mapInitializer = new MapInitializer(
-            gameConfiguration,
-            new NullLogger<MapInitializer>(),
-            NullDropGenerator.Instance,
-            null);
-        var gameServerContext = new GameServerContext(
-            new BasicModel.GameServerDefinition
-            {
-                GameConfiguration = gameConfiguration,
-                ServerConfiguration = new BasicModel.GameServerConfiguration(),
-            },
-            guildServer.Object,
-            new Mock<IEventPublisher>().Object,
-            new Mock<ILoginServer>().Object,
-            new Mock<IFriendServer>().Object,
-            persistenceContextProvider,
-            mapInitializer,
-            NullLoggerFactory.Instance,
-            new PlugInManager([], NullLoggerFactory.Instance, null, null),
-            NullDropGenerator.Instance,
-            new ConfigurationChangeMediator());
-        mapInitializer.PlugInManager = gameServerContext.PlugInManager;
-        mapInitializer.PathFinderPool = gameServerContext.PathFinderPool;
+        var gameServerContext = CreateGameServerContext(gameConfiguration, persistenceContextProvider, guildServer.Object);
 
         var context = new CastleSiegeContext(gameServerContext, castleSiegeConfiguration);
         await context.InitializeAsync(initializationTimeUtc).ConfigureAwait(false);
@@ -913,6 +923,37 @@ public class CastleSiegeGuildSelectionTests
             persistentGuildIds["Alpha"],
             offlineCharacterId,
             initializationTimeUtc);
+    }
+
+    private static GameServerContext CreateGameServerContext(
+        GameConfiguration gameConfiguration,
+        IPersistenceContextProvider persistenceContextProvider,
+        IGuildServer guildServer)
+    {
+        var mapInitializer = new MapInitializer(
+            gameConfiguration,
+            new NullLogger<MapInitializer>(),
+            NullDropGenerator.Instance,
+            null);
+        var gameServerContext = new GameServerContext(
+            new BasicModel.GameServerDefinition
+            {
+                GameConfiguration = gameConfiguration,
+                ServerConfiguration = new BasicModel.GameServerConfiguration(),
+            },
+            guildServer,
+            new Mock<IEventPublisher>().Object,
+            new Mock<ILoginServer>().Object,
+            new Mock<IFriendServer>().Object,
+            persistenceContextProvider,
+            mapInitializer,
+            NullLoggerFactory.Instance,
+            new PlugInManager([], NullLoggerFactory.Instance, null, null),
+            NullDropGenerator.Instance,
+            new ConfigurationChangeMediator());
+        mapInitializer.PlugInManager = gameServerContext.PlugInManager;
+        mapInitializer.PathFinderPool = gameServerContext.PathFinderPool;
+        return gameServerContext;
     }
 
     private sealed record TestFixture(

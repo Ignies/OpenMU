@@ -459,6 +459,7 @@ public class CastleSiegeStateMachineTests
         {
             Assert.That(otherServers.Select(server => plugIn.GetContext(server.Object)), Is.All.SameAs(context));
             Assert.That(context.GameContext, Is.SameAs(fixture.GameContext.Object));
+            Assert.That(context.WorldGameContexts, Is.EquivalentTo(otherServers.Prepend(fixture.GameContext).Select(server => server.Object)));
             Assert.That(fixture.Notifications, Is.EqualTo(new[] { "Castle Siege guild registration is open." }));
             Assert.That(recorder.Changes, Is.EqualTo(new[] { (CastleSiegeState.RegisterGuild, CastleSiegeState.Idle2) }));
         });
@@ -489,6 +490,7 @@ public class CastleSiegeStateMachineTests
         Assert.Multiple(() =>
         {
             Assert.That(context.GameContext, Is.SameAs(otherServer.Object));
+            Assert.That(context.WorldGameContexts, Is.EquivalentTo(new[] { fixture.GameContext.Object, otherServer.Object }));
             Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.RegisterGuild));
             Assert.That(context.RegisteredGuilds, Contains.Key(fixture.RegisteredGuildId));
         });

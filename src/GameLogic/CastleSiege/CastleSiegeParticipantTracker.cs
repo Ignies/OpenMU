@@ -36,8 +36,8 @@ public static class CastleSiegeParticipantTracker
     /// </summary>
     /// <param name="context">The Castle Siege context.</param>
     /// <remarks>
-    /// Guild-score awarding follows the current single-game-server Castle Siege deployment model.
-    /// A future multi-server event coordinator must invoke the shared guild-score award exactly once.
+    /// Participants online on any game server of the world get the item right away; the others at their next login.
+    /// The owning game server runs this once per siege, so the guild scores are awarded once.
     /// </remarks>
     /// <returns>A task that represents the asynchronous reward operation.</returns>
     public static async ValueTask AwardRewardsAsync(CastleSiegeContext context)
@@ -45,7 +45,7 @@ public static class CastleSiegeParticipantTracker
         var eligibleParticipants = context.ParticipantTracking.Values
             .Where(participant => participant.ParticipationTime.TotalSeconds >= context.Configuration.ParticipantRewardMinSeconds)
             .ToList();
-        var onlinePlayers = (await context.GameContext.GetPlayersAsync().ConfigureAwait(false))
+        var onlinePlayers = (await context.GetWorldPlayersAsync().ConfigureAwait(false))
             .Where(player => player.SelectedCharacter is not null)
             .GroupBy(player => player.SelectedCharacter!.Id)
             .ToDictionary(group => group.Key, group => group.First());

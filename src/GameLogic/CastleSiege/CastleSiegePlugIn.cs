@@ -430,6 +430,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             _ => new SiegeWorld(new CastleSiegeContext(gameContext, configuration, this._timeProvider), utcNow));
         lock (world)
         {
+            world.Context.AddWorldGameContext(gameContext);
             if (world.Context.GameContext != gameContext)
             {
                 if (utcNow - world.LastOwnerTickUtc < OwnerTimeout)
@@ -438,10 +439,15 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 }
 
                 logger.LogWarning("The game server which ran the Castle Siege stopped running it; this game server takes it over.");
+                var previous = world.Context;
                 world.Context = new CastleSiegeContext(gameContext, configuration, this._timeProvider)
                 {
-                    LastForceRequestVersion = world.Context.LastForceRequestVersion,
+                    LastForceRequestVersion = previous.LastForceRequestVersion,
                 };
+                foreach (var worldGameContext in previous.WorldGameContexts)
+                {
+                    world.Context.AddWorldGameContext(worldGameContext);
+                }
             }
 
             world.LastOwnerTickUtc = utcNow;
