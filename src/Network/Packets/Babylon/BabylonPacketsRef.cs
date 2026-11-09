@@ -1046,6 +1046,56 @@ public readonly ref struct SeasonPassMissionRef
 
 
 /// <summary>
+/// An item reward of a guide quest step..
+/// </summary>
+public readonly ref struct GuideQuestRewardItemRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GuideQuestRewardItemRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public GuideQuestRewardItemRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 4;
+
+    /// <summary>
+    /// Gets or sets the group.
+    /// </summary>
+    public byte Group
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the count.
+    /// </summary>
+    public byte Count
+    {
+        get => this._data[1];
+        set => this._data[1] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the number.
+    /// </summary>
+    public ushort Number
+    {
+        get => ReadUInt16LittleEndian(this._data[2..]);
+        set => WriteUInt16LittleEndian(this._data[2..], value);
+    }
+}
+
+
+/// <summary>
 /// A goal of the mission of a room of the Labyrinth of Dimensions and its progress..
 /// </summary>
 public readonly ref struct LabyrinthGoalStateRef
@@ -3138,6 +3188,365 @@ public readonly ref struct ClassEvolvedRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(ClassEvolvedRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The character entered a map, asked for its guide quest, accepted or completed a step, or the progress of its step changed.
+/// Causes reaction on client side: The client shows the step in the quest guide window and its line on the quest tracker.
+/// </summary>
+public readonly ref struct GuideQuestStateRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GuideQuestStateRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public GuideQuestStateRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GuideQuestStateRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private GuideQuestStateRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xC0;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets 0 the class has no guide quests, 1 the step can be accepted, 2 accepted, 3 accepted and its objective is met, 4 the step needs a higher level, 5 every step is done.
+    /// </summary>
+    public byte Status
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the answer to the request which caused it: 0 none, 1 accepted, 2 completed, 3 the objective isn't met, 4 the level is too low.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the number of the step (S21Emu QuestGuide.txt); 0 when there is none.
+    /// </summary>
+    public ushort StepNumber
+    {
+        get => ReadUInt16LittleEndian(this._data[6..]);
+        set => WriteUInt16LittleEndian(this._data[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the place of the step in the chain of the class, from 1.
+    /// </summary>
+    public ushort StepIndex
+    {
+        get => ReadUInt16LittleEndian(this._data[8..]);
+        set => WriteUInt16LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the number of steps in the chain of the class.
+    /// </summary>
+    public ushort StepCount
+    {
+        get => ReadUInt16LittleEndian(this._data[10..]);
+        set => WriteUInt16LittleEndian(this._data[10..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the chapter.
+    /// </summary>
+    public byte Chapter
+    {
+        get => this._data[12];
+        set => this._data[12] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 1 collect items, 2 hunt monsters, 3 reach a level, 4 finish a class quest, 5 go to a spot.
+    /// </summary>
+    public byte Objective
+    {
+        get => this._data[13];
+        set => this._data[13] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the minimum level.
+    /// </summary>
+    public ushort MinimumLevel
+    {
+        get => ReadUInt16LittleEndian(this._data[14..]);
+        set => WriteUInt16LittleEndian(this._data[14..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the monster number, the level, the class quest number (1 second class, 2 hero status, 6 third class) or the item group.
+    /// </summary>
+    public uint Target
+    {
+        get => ReadUInt32LittleEndian(this._data[16..]);
+        set => WriteUInt32LittleEndian(this._data[16..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the item number of a collect objective.
+    /// </summary>
+    public ushort TargetNumber
+    {
+        get => ReadUInt16LittleEndian(this._data[20..]);
+        set => WriteUInt16LittleEndian(this._data[20..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the kills, items or level the objective asks for; 1 for a move or a class quest.
+    /// </summary>
+    public ushort RequiredCount
+    {
+        get => ReadUInt16LittleEndian(this._data[22..]);
+        set => WriteUInt16LittleEndian(this._data[22..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets how far the objective is: kills, items carried, the level, or 1 when the spot was reached or the class quest is done.
+    /// </summary>
+    public ushort Progress
+    {
+        get => ReadUInt16LittleEndian(this._data[24..]);
+        set => WriteUInt16LittleEndian(this._data[24..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the map of the spot: where to go, or where the monsters are.
+    /// </summary>
+    public ushort MapNumber
+    {
+        get => ReadUInt16LittleEndian(this._data[26..]);
+        set => WriteUInt16LittleEndian(this._data[26..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the x.
+    /// </summary>
+    public byte X
+    {
+        get => this._data[28];
+        set => this._data[28] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the y.
+    /// </summary>
+    public byte Y
+    {
+        get => this._data[29];
+        set => this._data[29] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the warp gate of the data which leads near the spot.
+    /// </summary>
+    public ushort Gate
+    {
+        get => ReadUInt16LittleEndian(this._data[30..]);
+        set => WriteUInt16LittleEndian(this._data[30..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the experience.
+    /// </summary>
+    public uint Experience
+    {
+        get => ReadUInt32LittleEndian(this._data[32..]);
+        set => WriteUInt32LittleEndian(this._data[32..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the money.
+    /// </summary>
+    public uint Money
+    {
+        get => ReadUInt32LittleEndian(this._data[36..]);
+        set => WriteUInt32LittleEndian(this._data[36..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the name of the step, UTF-8, zero padded.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.ExtractString(40, 40, System.Text.Encoding.UTF8);
+        set => this._data.Slice(40, 40).WriteString(value, System.Text.Encoding.UTF8);
+    }
+
+    /// <summary>
+    /// Gets or sets the reward item count.
+    /// </summary>
+    public byte RewardItemCount
+    {
+        get => this._data[80];
+        set => this._data[80] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="GuideQuestRewardItemRef"/> of the specified index.
+    /// </summary>
+        public GuideQuestRewardItemRef this[int index] => new (this._data[(84 + index * GuideQuestRewardItemRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuideQuestState"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator GuideQuestStateRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="GuideQuestState"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(GuideQuestStateRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="GuideQuestRewardItemRef"/>.
+    /// </summary>
+    /// <param name="rewardItemsCount">The count of <see cref="GuideQuestRewardItemRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int rewardItemsCount) => rewardItemsCount * GuideQuestRewardItemRef.Length + 84;
+}
+
+
+/// <summary>
+/// Is sent by the client when: The player opens the quest guide, or accepts or completes its step.
+/// Causes reaction on server side: The server answers with GuideQuestState; a request for another step than the current one only gets the state.
+/// </summary>
+public readonly ref struct GuideQuestRequestRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GuideQuestRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public GuideQuestRequestRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="GuideQuestRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private GuideQuestRequestRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xC1;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets 0 show the state, 1 accept, 2 complete.
+    /// </summary>
+    public byte Action
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the step the client shows.
+    /// </summary>
+    public ushort StepNumber
+    {
+        get => ReadUInt16LittleEndian(this._data[6..]);
+        set => WriteUInt16LittleEndian(this._data[6..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="GuideQuestRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator GuideQuestRequestRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="GuideQuestRequest"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(GuideQuestRequestRef packet) => packet._data; 
 }
 
 

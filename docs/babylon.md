@@ -60,6 +60,7 @@ Rules:
 | `s21_skills` | The skills of Season 21: the nine new classes, the fourth and fifth evolution skills, the master tree nodes Season 21 adds, the books (update "Add the skills of Season 21") |
 | `enhance_tree` | The skill enhancement tree of the fourth evolution and its points per progression mode (`src/GameLogic/EnhanceTree`) |
 | `evolution_quests` | The fourth and fifth class quests, the Trial Area and the experience hold at the fourth evolution (update "Add the evolution quests of Season 21", `src/GameLogic/EvolutionQuests`) |
+| `muquest` | The quest guide: 186 steps (164 for each class) from level 1 to the third class (update "Add the guide quests of Season 21", plugin "Guide quests (Season 21)", `src/GameLogic/GuideQuests`) |
 | `elite_zones` | The five elemental elite zones of the maps from Atlans Abyss 3 and Scorched Canyon on, with their elites inside (update "Add the elite zones of Season 21", plugin "Elite zones", `src/GameLogic/EliteZones`) |
 | `world_bosses` | The field bosses Medusa, Lord Silvester, Core Magriffy, Lord of Ferea, Nix and the God of Darkness with the shared 18 to 24 hour respawn, stages, arenas, item bags and `/fieldboss` (update "Add the field bosses of Season 21", plugin "Field bosses", `src/GameLogic/FieldBosses`) |
 | `wide_items` | Per-client item visibility: what only the W32 format carries never reaches a Season 6 client; the waiting items of the catalog activated for fork clients (update "Activate the items of the wide item format", section "Wide items") |
@@ -247,6 +248,19 @@ numbers 7-12 (S21Emu `Quest/Quest.xml`). On top of them, for the Babylon client:
   required level (u16 LE) at 8. Sent on every map entry, after a completed quest and when the hold starts.
 - `C1 EE 13 ClassEvolved` (server, 8, characters range): player id (u16 BE) at 4, class code at 6, reason at 7
   (0 quest, 1 game master, 2 item). Sent to the player and every player who sees it.
+
+The guide quests (feature `muquest`, update "Add the guide quests of Season 21", `src/GameLogic/GuideQuests`) have no
+NPC and no Season 6 packet; only the Babylon client sees them:
+
+- `C1 EE C0 GuideQuestState` (server, 84 + 4 per item): status at 4 (0 none, 1 offered, 2 active, 3 ready, 4 level
+  too low, 5 finished), result at 5 (0 none, 1 accepted, 2 completed, 3 not ready, 4 level too low), step number at 6,
+  index at 8, count at 10 (u16 LE each), chapter at 12, objective at 13 (1 collect, 2 hunt, 3 level, 4 class quest,
+  5 move), minimum level (u16) at 14, target (u32) at 16, item number (u16) at 20, required (u16) at 22, progress
+  (u16) at 24, map (u16) at 26, x at 28, y at 29, gate (u16) at 30, experience (u32) at 32, money (u32) at 36, name
+  (40 bytes UTF-8) at 40, item count at 80, then from 84 per item group, count, number (u16). Sent on every map
+  entry, level up, kill or arrival that moves the step, and as the answer to a request.
+- `C1 EE C1 GuideQuestRequest` (client, 8): action at 4 (0 show, 1 accept, 2 complete), the step the client shows
+  (u16 LE) at 6.
 
 World packets (range A0-AF). A Season 6 client gets none of them; it sees the bosses and the announcements through the
 Season 6 packets (golden notices for a spawn, a kill and a lost battle, blue notices at the arena).

@@ -72,6 +72,8 @@
   * [C1 EE BD - ArcaWarObelisks (by server)](C1-EE-BD-ArcaWarObelisks_by-server.md)
   * [C1 EE BE - IllusionTempleLeagueState (by server)](C1-EE-BE-IllusionTempleLeagueState_by-server.md)
   * [C1 EE BF - IllusionTempleStones (by server)](C1-EE-BF-IllusionTempleStones_by-server.md)
+  * [C1 EE C0 - GuideQuestState (by server)](C1-EE-C0-GuideQuestState_by-server.md)
+  * [C1 EE C1 - GuideQuestRequest (by client)](C1-EE-C1-GuideQuestRequest_by-client.md)
   * [C1 EE C4 - EvolutionQuestState (by server)](C1-EE-C4-EvolutionQuestState_by-server.md)
   * [C2 EE D0 - RankingPage (by server)](C2-EE-D0-RankingPage_by-server.md)
   * [C2 EE D1 - HuntingRecordList (by server)](C2-EE-D1-HuntingRecordList_by-server.md)

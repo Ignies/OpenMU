@@ -550,6 +550,12 @@
   <data name="AddSeason21HuntingRecordUpdatePlugIn_Description" xml:space="preserve">
     <value>Sets the 59 hunting maps and the excluded event monsters of the Season 21 hunting record and turns the hunting record and the ranking on. A configuration with maps stays. Optional.</value>
   </data>
+  <data name="AddSeason21GuideQuestsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the guide quests of Season 21</value>
+  </data>
+  <data name="AddSeason21GuideQuestsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Sets the 186 steps of the Season 21 quest guide (go somewhere, hunt, collect, reach a level, finish a class quest, with their rewards) and turns the guide quests on. A configuration with steps stays. Optional.</value>
+  </data>
   <data name="AddSeason21SoulConverterUpdatePlugIn_Name" xml:space="preserve">
     <value>Add the monster soul converter of Season 21</value>
   </data>

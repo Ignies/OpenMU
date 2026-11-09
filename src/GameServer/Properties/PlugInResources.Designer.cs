@@ -8209,6 +8209,42 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("EvolutionQuestStateBabylonPlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Guide quest state (Babylon).
+        /// </summary>
+        public static string GuideQuestBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GuideQuestBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the guide quest step of the character to the Babylon client (C1 EE C0)..
+        /// </summary>
+        public static string GuideQuestBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GuideQuestBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Guide quest request handler (Babylon).
+        /// </summary>
+        public static string GuideQuestRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GuideQuestRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the guide quest requests of the Babylon client (C1 EE C1): show, accept and complete the step..
+        /// </summary>
+        public static string GuideQuestRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GuideQuestRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Babylon: elite zones.

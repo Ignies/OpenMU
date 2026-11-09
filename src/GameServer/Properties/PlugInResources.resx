@@ -2879,6 +2879,18 @@
   <data name="EvolutionQuestStateBabylonPlugIn_Description" xml:space="preserve">
     <value>Shows what the next evolution asks for and whether the experience is held to the Babylon client (C1 EE C4).</value>
   </data>
+  <data name="GuideQuestBabylonPlugIn_Name" xml:space="preserve">
+    <value>Guide quest state (Babylon)</value>
+  </data>
+  <data name="GuideQuestBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the guide quest step of the character to the Babylon client (C1 EE C0).</value>
+  </data>
+  <data name="GuideQuestRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Guide quest request handler (Babylon)</value>
+  </data>
+  <data name="GuideQuestRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the guide quest requests of the Babylon client (C1 EE C1): show, accept and complete the step.</value>
+  </data>
   <data name="EliteZonesBabylonPlugIn_Name" xml:space="preserve">
     <value>Babylon: elite zones</value>
   </data>

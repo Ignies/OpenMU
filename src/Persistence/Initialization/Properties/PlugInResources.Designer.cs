@@ -1398,6 +1398,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21HuntingRecordUpdatePlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add the guide quests of Season 21.
+        /// </summary>
+        public static string AddSeason21GuideQuestsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21GuideQuestsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Sets the 186 steps of the Season 21 quest guide and turns the guide quests on..
+        /// </summary>
+        public static string AddSeason21GuideQuestsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21GuideQuestsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Add the monster soul converter of Season 21.

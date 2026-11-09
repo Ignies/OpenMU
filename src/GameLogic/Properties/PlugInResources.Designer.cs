@@ -7860,7 +7860,61 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("HuntingRecordConfiguration_StateFile_Name", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Guide quests (Season 21).
+        /// </summary>
+        public static string GuideQuestPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GuideQuestPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The quest guide of Season 21: a chain of steps per class..
+        /// </summary>
+        public static string GuideQuestPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GuideQuestPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Steps.
+        /// </summary>
+        public static string GuideQuestConfiguration_Steps_Name {
+            get {
+                return ResourceManager.GetString("GuideQuestConfiguration_Steps_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Arrival distance.
+        /// </summary>
+        public static string GuideQuestConfiguration_ArrivalDistance_Name {
+            get {
+                return ResourceManager.GetString("GuideQuestConfiguration_ArrivalDistance_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Save interval.
+        /// </summary>
+        public static string GuideQuestConfiguration_SaveInterval_Name {
+            get {
+                return ResourceManager.GetString("GuideQuestConfiguration_SaveInterval_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to State file.
+        /// </summary>
+        public static string GuideQuestConfiguration_StateFile_Name {
+            get {
+                return ResourceManager.GetString("GuideQuestConfiguration_StateFile_Name", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Monster soul converter (Season 21).
         /// </summary>

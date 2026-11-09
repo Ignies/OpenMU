@@ -110,6 +110,7 @@
     <EmbeddedResource Include="Resources\Season21\MasteryMixes.json" />
     <EmbeddedResource Include="Resources\Season21\Skills.json" />
     <EmbeddedResource Include="Resources\Season21\WorldSystems.json" />
+    <EmbeddedResource Include="Resources\Season21\GuideQuests.json" />
     <EmbeddedResource Include="Resources\Season21\Elements.json" />
     <EmbeddedResource Include="Resources\Terrain1.att" />
     <EmbeddedResource Include="Resources\Terrain10_4.att" />

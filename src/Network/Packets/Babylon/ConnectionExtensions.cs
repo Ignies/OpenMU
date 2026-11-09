@@ -385,6 +385,36 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="GuideQuestRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="action">0 show the state, 1 accept, 2 complete.</param>
+    /// <param name="stepNumber">The step the client shows.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player opens the quest guide, or accepts or completes its step.
+    /// Causes reaction on server side: The server answers with GuideQuestState; a request for another step than the current one only gets the state.
+    /// </remarks>
+    public static async ValueTask SendGuideQuestRequestAsync(this IConnection? connection, byte @action, ushort @stepNumber)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = GuideQuestRequestRef.Length;
+            var packet = new GuideQuestRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Action = @action;
+            packet.StepNumber = @stepNumber;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="EvolutionQuestState" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

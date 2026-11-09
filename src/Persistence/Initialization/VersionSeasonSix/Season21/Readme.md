@@ -37,6 +37,10 @@ them, as optional updates of a Season 6 database:
 * `AddSeason21HuntingRecordUpdatePlugIn` sets the 59 maps and the 64 excluded event monsters of `HuntingRecord.txt` and turns
   the hunting record and the ranking on (`Season21HuntingRecordInitializer`, data `Resources/Season21/WorldSystems.json`
   written by `Generator/season21-world.mjs`). See `GameLogic/HuntingRecord/Readme.md`.
+* `AddSeason21GuideQuestsUpdatePlugIn` sets the 186 steps of the quest guide and turns the guide quests on
+  (`Season21GuideQuestsInitializer`, data `Resources/Season21/GuideQuests.json` written by
+  `Generator/season21-guide-quests.mjs --data <S21Emu Data>` from `QuestGuide/QuestGuide.txt`); it needs the item catalog
+  and drops reward items it doesn't know. See `GameLogic/GuideQuests/Readme.md`.
 * `AddSeason21SoulConverterUpdatePlugIn` sets the five tiers of the monster soul converter with their missions and reward
   bags and turns it on (`Season21SoulConverterInitializer`); it needs the item catalog. See `GameLogic/SoulConverter/Readme.md`.
 * `AddSeason21HelperPlusUpdatePlugIn` sets the hunting grounds and zones of the MU Helper Plus and turns it on

@@ -2766,6 +2766,24 @@
   <data name="HuntingRecordConfiguration_StateFile_Name" xml:space="preserve">
     <value>State file</value>
   </data>
+  <data name="GuideQuestPlugIn_Name" xml:space="preserve">
+    <value>Guide quests (Season 21)</value>
+  </data>
+  <data name="GuideQuestPlugIn_Description" xml:space="preserve">
+    <value>The quest guide of Season 21: a chain of steps per class (go somewhere, hunt, collect, reach a level, finish a class quest), accepted and completed from the client's guide window, each with experience, money and items as reward.</value>
+  </data>
+  <data name="GuideQuestConfiguration_Steps_Name" xml:space="preserve">
+    <value>Steps</value>
+  </data>
+  <data name="GuideQuestConfiguration_ArrivalDistance_Name" xml:space="preserve">
+    <value>Arrival distance</value>
+  </data>
+  <data name="GuideQuestConfiguration_SaveInterval_Name" xml:space="preserve">
+    <value>Save interval</value>
+  </data>
+  <data name="GuideQuestConfiguration_StateFile_Name" xml:space="preserve">
+    <value>State file</value>
+  </data>
   <data name="SoulConverterPlugIn_Name" xml:space="preserve">
     <value>Monster soul converter (Season 21)</value>
   </data>
