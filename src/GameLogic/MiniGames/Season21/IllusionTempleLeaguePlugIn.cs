@@ -51,6 +51,12 @@ public class IllusionTempleLeaguePlugIn : IFeaturePlugIn, ISupportCustomConfigur
     public IllusionTempleLeagueConfiguration Settings => this._configuration ??= new IllusionTempleLeagueConfiguration();
 
     /// <summary>
+    /// Gets or sets the stage a game master plays on every day (<c>/itleague</c>); <c>null</c> for the stages of the
+    /// days. While it's set, the temples may open at every time of the timetable. It isn't persisted.
+    /// </summary>
+    public IllusionTempleLeagueStage? ForcedStage { get; set; }
+
+    /// <summary>
     /// Gets or sets the clock; tests replace it.
     /// </summary>
     internal Func<DateTime> UtcNow { get; set; } = () => DateTime.UtcNow;
@@ -220,6 +226,11 @@ public class IllusionTempleLeaguePlugIn : IFeaturePlugIn, ISupportCustomConfigur
     /// <returns>The stage.</returns>
     internal IllusionTempleLeagueStage GetStage(DateTime localNow)
     {
+        if (this.ForcedStage is { } forced)
+        {
+            return forced;
+        }
+
         var settings = this.Settings;
         var day = (byte)localNow.Day;
         if (day == settings.SemiFinalDay)
@@ -248,6 +259,11 @@ public class IllusionTempleLeaguePlugIn : IFeaturePlugIn, ISupportCustomConfigur
     /// <returns><c>true</c>, if the temples may open.</returns>
     internal bool MayStart(DateTime localNow)
     {
+        if (this.ForcedStage is not null)
+        {
+            return true;
+        }
+
         var times = this.GetStage(localNow) switch
         {
             IllusionTempleLeagueStage.Elimination => null,

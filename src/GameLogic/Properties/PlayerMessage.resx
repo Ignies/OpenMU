@@ -1345,4 +1345,10 @@ Inventory Extensions: {18}</value>
   <data name="LabyrinthAdvanced" xml:space="preserve">
     <value>The labyrinth goes on with floor {0}.</value>
   </data>
+  <data name="IllusionTempleLeagueStageForced" xml:space="preserve">
+    <value>The Illusion Temple League plays the stage {0} on every day now; its temples open.</value>
+  </data>
+  <data name="IllusionTempleLeagueStageReleased" xml:space="preserve">
+    <value>The Illusion Temple League follows the days of the month again.</value>
+  </data>
 </root>

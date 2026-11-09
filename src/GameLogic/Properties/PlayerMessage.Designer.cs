@@ -3711,5 +3711,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("LabyrinthAdvanced", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The Illusion Temple League plays the stage {0} on every day now; its temples open..
+        /// </summary>
+        public static string IllusionTempleLeagueStageForced {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeagueStageForced", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The Illusion Temple League follows the days of the month again..
+        /// </summary>
+        public static string IllusionTempleLeagueStageReleased {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeagueStageReleased", resourceCulture);
+            }
+        }
     }
 }

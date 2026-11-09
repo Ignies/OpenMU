@@ -6314,6 +6314,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Chat command: /itleague.
+        /// </summary>
+        public static string IllusionTempleLeagueChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeagueChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Plays a stage of the Illusion Temple League on any day: /itleague &lt;stage&gt;..
+        /// </summary>
+        public static string IllusionTempleLeagueChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("IllusionTempleLeagueChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Chat command: /siege.
         /// </summary>
         public static string SiegeChatCommandPlugIn_Name {

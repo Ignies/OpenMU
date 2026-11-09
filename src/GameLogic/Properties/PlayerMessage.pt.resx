@@ -1279,4 +1279,10 @@ Extensões de inventário: {18}</value>
   <data name="LabyrinthAdvanced" xml:space="preserve">
     <value>O labirinto continua no andar {0}.</value>
   </data>
+  <data name="IllusionTempleLeagueStageForced" xml:space="preserve">
+    <value>A Illusion Temple League joga agora a fase {0} todos os dias; os seus templos abrem.</value>
+  </data>
+  <data name="IllusionTempleLeagueStageReleased" xml:space="preserve">
+    <value>A Illusion Temple League segue novamente os dias do mês.</value>
+  </data>
 </root>

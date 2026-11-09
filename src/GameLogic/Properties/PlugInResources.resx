@@ -2259,6 +2259,12 @@
   <data name="LabyrinthChatCommandPlugIn_Description" xml:space="preserve">
     <value>Outside of the Labyrinth of Dimensions it enters a run without a ticket, at the given floor; inside, it clears the current floor and goes on with the given floor or the next one: /labyrinth [floor].</value>
   </data>
+  <data name="IllusionTempleLeagueChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chat command: /itleague</value>
+  </data>
+  <data name="IllusionTempleLeagueChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Plays a stage of the Illusion Temple League on any day and opens its temples at once (elim, semi, final, reward); off gives the stages back to the days: /itleague &lt;stage&gt;.</value>
+  </data>
   <data name="SiegeChatCommandPlugIn_Name" xml:space="preserve">
     <value>Chat command: /siege</value>
   </data>

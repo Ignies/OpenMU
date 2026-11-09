@@ -5,12 +5,16 @@
 namespace MUnique.OpenMU.Tests.Instances;
 
 using System.Reflection;
+using Moq;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
+using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
+using MUnique.OpenMU.GameLogic.PlugIns.PeriodicTasks;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Pathfinding;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
@@ -209,6 +213,33 @@ public class IllusionTempleLeagueTest
         typeof(MiniGameContext).GetMethod("FinishEvent", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(temple, null);
         await Season21EventWorld.WaitUntilAsync(() => plugIn.GetRanking(now).Count == 2).ConfigureAwait(false);
         Assert.That(plugIn.GetRanking(now)[0], Is.EqualTo(IllusionTempleLeaguePlugIn.GetFallbackGuildKey(2)));
+    }
+
+    /// <summary>
+    /// A game master forces a stage of the league on any day (<c>/itleague final</c>): the temples open with it at once
+    /// and at every time of the timetable, until <c>/itleague off</c> gives the days back.
+    /// </summary>
+    [Test]
+    public async ValueTask GameMasterForcesAStageAsync()
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        player.SelectedCharacter!.CharacterStatus = CharacterStatus.GameMaster;
+        var noLeagueDay = new DateTime(2026, 11, 2, 16, 20, 0, DateTimeKind.Utc);
+        var league = CreatePlugIn(utcNow: () => noLeagueDay);
+        player.GameContext.FeaturePlugIns.AddPlugIn(league, true);
+        var start = new Mock<IPeriodicMiniGameStartPlugIn>();
+        start.SetupGet(s => s.Key).Returns(MiniGameType.IllusionTempleLeague);
+        player.GameContext.PlugInManager.RegisterPlugInAtPlugInPoint<IPeriodicMiniGameStartPlugIn>(start.Object);
+        var command = new IllusionTempleLeagueChatCommandPlugIn();
+
+        await command.HandleCommandAsync(player, "/itleague final").ConfigureAwait(false);
+        Assert.That(league.GetStage(noLeagueDay), Is.EqualTo(IllusionTempleLeagueStage.Final));
+        Assert.That(league.MayStart(noLeagueDay), Is.True);
+        start.Verify(s => s.ForceStart(), Times.Once);
+
+        await command.HandleCommandAsync(player, "/itleague off").ConfigureAwait(false);
+        Assert.That(league.GetStage(noLeagueDay), Is.EqualTo(IllusionTempleLeagueStage.None));
+        start.Verify(s => s.ForceStart(), Times.Once);
     }
 
     private static IllusionTempleLeaguePlugIn CreatePlugIn(Action<IllusionTempleLeagueConfiguration>? configure = null, Func<DateTime>? utcNow = null)
