@@ -165,6 +165,25 @@ public class CastleSiegeEconomyTests
     }
 
     /// <summary>
+    /// Verifies that a tax change reaches the players of the other game servers of the world.
+    /// </summary>
+    [Test]
+    public async ValueTask TaxBroadcastReachesEveryGameServerOfTheWorldAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var otherServerPlayer = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        await ((GameContext)otherServerPlayer.GameContext).AddPlayerAsync(otherServerPlayer).ConfigureAwait(false);
+        fixture.Context.AddWorldGameContext(otherServerPlayer.GameContext);
+        var otherServerView = Mock.Get(otherServerPlayer.ViewPlugIns.GetPlugIn<ICastleSiegeTaxChangeResultPlugIn>()!);
+
+        await CastleSiegeEconomyNotifier
+            .BroadcastTaxRateAsync(fixture.Context, CastleSiegeTaxType.Store, 2)
+            .ConfigureAwait(false);
+
+        otherServerView.Verify(view => view.ShowTaxRateUpdateAsync(CastleSiegeTaxType.Store, 2), Times.Once);
+    }
+
+    /// <summary>
     /// Verifies owner-only rate changes, valid limits, public-access changes, and treasury withdrawals.
     /// </summary>
     [Test]

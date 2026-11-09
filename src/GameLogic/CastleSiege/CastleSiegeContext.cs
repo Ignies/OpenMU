@@ -215,6 +215,19 @@ public class CastleSiegeContext : IEventStateProvider
     }
 
     /// <summary>
+    /// Sends a golden notification to the players of all game servers of the world.
+    /// </summary>
+    /// <param name="message">The message.</param>
+    /// <returns>The task.</returns>
+    internal async ValueTask SendWorldNotificationAsync(string message)
+    {
+        foreach (var gameContext in this.WorldGameContexts)
+        {
+            await gameContext.SendGlobalNotificationAsync(message).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Gets the clock used by Castle Siege runtime operations.
     /// </summary>
     internal TimeProvider TimeProvider => this._timeProvider;

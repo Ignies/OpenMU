@@ -72,7 +72,9 @@ The other game servers find the same state for their players, so a guild
 registered on one server is registered on all of them, and a restart clears or
 loads the stored registrations once. When the owning game server stops running
 the siege for 30 seconds (stopped or removed), the next game server which runs
-its periodic tasks takes it over from the stored state.
+its periodic tasks takes it over from the stored state. The siege's
+notifications (registration open, the countdown, the battle) and the tax changes
+reach the players of every game server of the world.
 
 The battle (gates, statues, crown, life stones, machines) takes place on the
 owning game server's instance of the Valley of Loren. To have every player on

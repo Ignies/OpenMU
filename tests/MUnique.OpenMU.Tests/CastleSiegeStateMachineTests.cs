@@ -466,6 +466,29 @@ public class CastleSiegeStateMachineTests
     }
 
     /// <summary>
+    /// A siege notification reaches the players of every game server of the world, not only the owning one's.
+    /// </summary>
+    [Test]
+    public async ValueTask SiegeNotificationReachesEveryGameServerOfTheWorldAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var otherServers = new[] { CreateGameServerOfWorld(fixture, null), CreateGameServerOfWorld(fixture, null) };
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+        foreach (var server in otherServers.Prepend(fixture.GameContext))
+        {
+            await plugIn.ExecuteTaskAsync(server.Object).ConfigureAwait(false);
+        }
+
+        fixture.Notifications.Clear();
+        new CastleSiegeAdministration(plugIn).ForceState(fixture.GameContext.Object, CastleSiegeState.RegisterMark);
+        timeProvider.Advance(TimeSpan.FromSeconds(1));
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+
+        Assert.That(fixture.Notifications, Is.EqualTo(Enumerable.Repeat("Castle Siege mark registration is open.", 3)));
+    }
+
+    /// <summary>
     /// When the game server which owns the siege stops running it, another game server of the world takes it over
     /// from the stored state.
     /// </summary>

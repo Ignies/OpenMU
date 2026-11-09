@@ -724,7 +724,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
 
         if (context.SentReadyCountdownMinutes.Add(remainingMinutes))
         {
-            await context.GameContext.SendGlobalNotificationAsync($"Castle Siege starts in {remainingMinutes} minute(s).").ConfigureAwait(false);
+            await context.SendWorldNotificationAsync($"Castle Siege starts in {remainingMinutes} minute(s).").ConfigureAwait(false);
         }
     }
 
@@ -741,7 +741,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
 
         return string.IsNullOrEmpty(message)
             ? ValueTask.CompletedTask
-            : context.GameContext.SendGlobalNotificationAsync(message);
+            : context.SendWorldNotificationAsync(message);
     }
 
     /// <summary>
