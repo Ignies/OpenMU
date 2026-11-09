@@ -3704,6 +3704,15 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to {0} has {1} Ruud..
+        /// </summary>
+        public static string RuudInfo {
+            get {
+                return ResourceManager.GetString("RuudInfo", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to The labyrinth goes on with floor {0}..
         /// </summary>
         public static string LabyrinthAdvanced {

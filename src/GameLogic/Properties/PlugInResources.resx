@@ -2253,6 +2253,12 @@
   <data name="SetRuudChatCommandPlugIn_Description" xml:space="preserve">
     <value>Sets the Ruud of a character: /setruud &lt;character&gt; &lt;amount&gt;.</value>
   </data>
+  <data name="GetRuudChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chat command: /getruud</value>
+  </data>
+  <data name="GetRuudChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Shows the Ruud of a character, the own without a name: /getruud [character].</value>
+  </data>
   <data name="LabyrinthChatCommandPlugIn_Name" xml:space="preserve">
     <value>Chat command: /labyrinth</value>
   </data>

@@ -1342,6 +1342,9 @@ Inventory Extensions: {18}</value>
   <data name="CastleSiegeCrownTestOff" xml:space="preserve">
     <value>Crown test off: the Crown needs both switches again.</value>
   </data>
+  <data name="RuudInfo" xml:space="preserve">
+    <value>{0} has {1} Ruud.</value>
+  </data>
   <data name="LabyrinthAdvanced" xml:space="preserve">
     <value>The labyrinth goes on with floor {0}.</value>
   </data>

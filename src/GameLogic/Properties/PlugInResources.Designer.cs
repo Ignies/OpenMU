@@ -6296,6 +6296,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Chat command: /getruud.
+        /// </summary>
+        public static string GetRuudChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("GetRuudChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the Ruud of a character, the own without a name: /getruud [character]..
+        /// </summary>
+        public static string GetRuudChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("GetRuudChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Chat command: /labyrinth.
         /// </summary>
         public static string LabyrinthChatCommandPlugIn_Name {

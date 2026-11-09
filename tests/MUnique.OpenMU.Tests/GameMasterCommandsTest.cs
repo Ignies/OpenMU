@@ -13,6 +13,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.GremoryCase;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Resets;
+using MUnique.OpenMU.GameLogic.Ruud;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Interfaces;
@@ -96,6 +97,23 @@ public class GameMasterCommandsTest
         Assert.That(await new GateProbe().GateOfAsync(player, "0").ConfigureAwait(false), Is.SameAs(spawn));
         map.ExitGates.Remove(spawn);
         Assert.That(await new GateProbe().GateOfAsync(player, "0").ConfigureAwait(false), Is.SameAs(gate));
+    }
+
+    /// <summary>
+    /// A game master reads the Ruud of a character, his own without a name, like <c>/getmoney</c>.
+    /// </summary>
+    [Test]
+    public async ValueTask GetRuudShowsTheRuudAsync()
+    {
+        var player = await CreateGameMasterAsync().ConfigureAwait(false);
+        player.GameContext.FeaturePlugIns.AddPlugIn(new RuudFeaturePlugIn { Configuration = new RuudConfiguration() }, true);
+        player.SelectedCharacter!.Ruud = 4321;
+        var messages = Mock.Get(player.ViewPlugIns.GetPlugIn<IShowMessagePlugIn>()!);
+
+        await new GetRuudChatCommandPlugIn().HandleCommandAsync(player, "/getruud").ConfigureAwait(false);
+        await new GetRuudChatCommandPlugIn().HandleCommandAsync(player, $"/getruud {player.Name}").ConfigureAwait(false);
+
+        messages.Verify(v => v.ShowMessageAsync(It.Is<string>(m => m.Contains("4321") && m.Contains(player.Name)), MessageType.BlueNormal), Times.Exactly(2));
     }
 
     private static async ValueTask<Player> CreateGameMasterAsync()

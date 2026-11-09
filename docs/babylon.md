@@ -113,6 +113,7 @@ Chat commands of the fork for testing its systems with one or two clients (minim
 | `/siege crown` | Crown test on or off: the two switches are waived, so one attacker alone at the Crown captures it (crown, life stone and ruins with one client); a restart ends it |
 | `/labyrinth [floor]` | Outside the Labyrinth of Dimensions: enters a run of its own without ticket, level or daily limit checks, at the floor when given (1-41); inside: clears the current floor (its rewards count) and goes on with the given floor or the next one, without the pause |
 | `/itleague <elim\|semi\|final\|reward\|off>` | Plays the Illusion Temple League stage on any day (`IllusionTempleLeaguePlugIn.ForcedStage`, not persisted) and force-starts the league temples (not for `reward`); while forced the temples open at every time of the timetable; `off` gives the stages back to the days of the month |
+| `/getruud [character]` | Shows the Ruud of a character, the own without a name (`/setruud <character> <amount>` sets it) |
 
 ## Balance
 
