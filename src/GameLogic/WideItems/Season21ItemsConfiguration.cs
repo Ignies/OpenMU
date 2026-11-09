@@ -31,4 +31,11 @@ public class Season21ItemsConfiguration
     /// Gets or sets the rolls of the lucky item ticket exchange.
     /// </summary>
     public LuckyTicketRolls LuckyTicketRolls { get; set; } = new();
+
+    /// <summary>
+    /// Gets or sets the Ruud which the item bags give besides their items
+    /// (<see cref="PlayerActions.ItemConsumeActions.ItemBagConsumeHandlerPlugInBase"/>): the Red Card [Elemental] gives
+    /// 50 to 250 (S21Emu <c>EventItemBag/308</c>, <c>BagRuudInfoEx</c>).
+    /// </summary>
+    public List<ItemBagRuud> BagRuud { get; set; } = [new() { Group = 19, Number = 14, Minimum = 50, Maximum = 250 }];
 }

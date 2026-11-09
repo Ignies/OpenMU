@@ -91,6 +91,7 @@ public static class ForkInfo
         "arca_war",
         "ability_core",
         "illusion_temple_league",
+        "s21_bag_items",
     ];
 
     /// <summary>

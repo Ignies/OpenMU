@@ -3318,4 +3318,28 @@
   <data name="IllusionTempleRenewalStatueTalkPlugIn_Description" xml:space="preserve">
     <value>Handles talking to the Cursed Statue (658), which gives the Cursed Hollow, and to the Captured Stone Statues (659-668), which seal or unseal it, in the renewed Illusion Temple.</value>
   </data>
+  <data name="ItemBagConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Opens an item bag of Season 21: one item of every drop group of the bag lands next to the player, and the Ruud of the bag's row in the Season 21 item rules goes to the character. Needs the item rules of Season 21.</value>
+  </data>
+  <data name="PandoraBoxConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Pandora Box consume handler</value>
+  </data>
+  <data name="RedCardConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Red Card consume handler</value>
+  </data>
+  <data name="BlueCardConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Blue Card consume handler</value>
+  </data>
+  <data name="PremiumMuunBoxConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Premium Muun Box consume handler</value>
+  </data>
+  <data name="ElementalRedCardConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Red Card [Elemental] consume handler</value>
+  </data>
+  <data name="BlessingOfEuniceConsumeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Blessing of Eunice consume handler</value>
+  </data>
+  <data name="BlessingOfEuniceConsumeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Applies the Blessing of Eunice (more experience from monsters for a while) to a character of the fifth evolution.</value>
+  </data>
 </root>

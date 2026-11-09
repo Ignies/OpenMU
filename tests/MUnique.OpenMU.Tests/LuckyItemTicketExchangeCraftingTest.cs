@@ -191,6 +191,58 @@ public class LuckyItemTicketExchangeCraftingTest
     }
 
     /// <summary>
+    /// Tests that a [Lvl. 0] ticket of Season 21 (group 19) is exchanged like its ticket of group 13 with the option
+    /// rolled, but at level 0 unless the rolls are told to roll its level too.
+    /// </summary>
+    /// <param name="rollLevel">The value of <see cref="LuckyTicketRolls.RollLevelOfLevelZeroTickets"/>.</param>
+    /// <param name="expectedLevel">The expected level.</param>
+    [TestCase(false, 0)]
+    [TestCase(true, 9)]
+    public async ValueTask LevelZeroTicketGivesLevelZeroAsync(bool rollLevel, byte expectedLevel)
+    {
+        var rolls = new LuckyTicketRolls
+        {
+            LevelWeights = [0, 0, 0, 0, 0, 0, 0, 0, 0, 10000],
+            OptionWeights = [0, 0, 0, 10000],
+            RollLevelOfLevelZeroTickets = rollLevel,
+        };
+        var armor = this._gameConfiguration.Items.Single(i => i.Group == 8 && i.Number == 62);
+        var defenseOption = this._gameConfiguration.ItemOptions.First(o => o.PossibleOptions.Any(p => p.OptionType == ItemOptionTypes.Option && p.PowerUpDefinition?.TargetAttribute == Stats.DefenseBase));
+        if (!armor.PossibleItemOptions.Contains(defenseOption))
+        {
+            armor.PossibleItemOptions.Add(defenseOption);
+        }
+
+        var levelZeroTicket = this._gameConfiguration.Items.FirstOrDefault(i => i is { Group: 19, Number: 4 });
+        if (levelZeroTicket is null)
+        {
+            levelZeroTicket = this._contextProvider.CreateNewConfigurationContext().CreateNew<DataModel.Configuration.Items.ItemDefinition>();
+            levelZeroTicket.Group = 19; // 1st Lucky Armor Ticket [Lvl. 0]
+            levelZeroTicket.Number = 4;
+            levelZeroTicket.Width = 1;
+            levelZeroTicket.Height = 1;
+            levelZeroTicket.Durability = 1;
+            this._gameConfiguration.Items.Add(levelZeroTicket);
+            this._settings.RequiredItems.First(r => r.PossibleItems.Any(i => i is { Group: HelperGroup, Number: 135 })).PossibleItems.Add(levelZeroTicket);
+        }
+
+        var gameContext = this.CreateGameContext();
+        gameContext.FeaturePlugIns.AddPlugIn(new Season21ItemsFeaturePlugIn { Configuration = new Season21ItemsConfiguration { LuckyTicketRolls = rolls } }, true);
+        var player = await this.CreatePlayerAsync(CharacterClassNumber.DarkKnight, gameContext).ConfigureAwait(false);
+        var ticket = player.PersistenceContext.CreateNew<Item>();
+        ticket.Definition = levelZeroTicket;
+        ticket.Durability = 1;
+        await player.TemporaryStorage!.AddItemAsync(ticket).ConfigureAwait(false);
+
+        var (result, item) = await new LuckyItemTicketExchangeCrafting(this._settings).DoMixAsync(player, 0).ConfigureAwait(false);
+
+        Assert.That(result, Is.EqualTo(CraftingResult.Success));
+        Assert.That(item!.Definition, Is.SameAs(armor));
+        Assert.That(item.Level, Is.EqualTo(expectedLevel));
+        Assert.That(item.ItemOptions.Single(o => o.ItemOption?.OptionType == ItemOptionTypes.Option).Level, Is.EqualTo(3));
+    }
+
+    /// <summary>
     /// Tests that the default rolls are the rows "(Lucky)" of S21Emu <c>ItemOptionRate.txt</c>, which <c>LuckySystem.xml</c>
     /// names with Option0-5 = 10: level +0 to +15 and option +0 to +3.
     /// </summary>

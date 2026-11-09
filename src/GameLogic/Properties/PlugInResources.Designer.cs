@@ -9489,5 +9489,77 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("IllusionTempleRenewalStatueTalkPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opens an item bag of Season 21: one item of every drop group of the bag lands next to the player, and the Ruud of the bag's row in the Season 21 item rules goes to the character. Needs the item rules of Season 21..
+        /// </summary>
+        public static string ItemBagConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ItemBagConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pandora Box consume handler.
+        /// </summary>
+        public static string PandoraBoxConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PandoraBoxConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Red Card consume handler.
+        /// </summary>
+        public static string RedCardConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("RedCardConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blue Card consume handler.
+        /// </summary>
+        public static string BlueCardConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("BlueCardConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Premium Muun Box consume handler.
+        /// </summary>
+        public static string PremiumMuunBoxConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("PremiumMuunBoxConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Red Card [Elemental] consume handler.
+        /// </summary>
+        public static string ElementalRedCardConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ElementalRedCardConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Blessing of Eunice consume handler.
+        /// </summary>
+        public static string BlessingOfEuniceConsumeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("BlessingOfEuniceConsumeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Applies the Blessing of Eunice (more experience from monsters for a while) to a character of the fifth evolution..
+        /// </summary>
+        public static string BlessingOfEuniceConsumeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("BlessingOfEuniceConsumeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

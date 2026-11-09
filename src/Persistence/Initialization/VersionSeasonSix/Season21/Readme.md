@@ -30,6 +30,10 @@ them, as optional updates of a Season 6 database:
   Lorencia or Noria from 00:05) and the Summon invasion (`SummonInvasionPlugIn`, ID 9: the Golden Goblin 652 on Tarkan, Aida,
   Kanturu, Karutan 1/2 or Acheron from 01:25), both every four hours for 10 minutes, with their monster rows, and switches
   them on; one count per monster, so 10 Goblins also on Karutan (data: 5).
+* `AddSeason21BagItemsUpdatePlugIn` gives the items of group 19 their uses (`Season21BagItemsInitializer`): the bags'
+  items (S21Emu `EventItemBag` 294-297, 308; one drop group per section, the amounts of stacks aren't carried), the
+  [Lvl. 0] tickets in David's exchange, the pentagram talisman 19/16 and the Elemental Talismans of Chaos and Luck in
+  the elemental refinery, and the Blessing of Eunice (effect 447: +50 % experience, 30 minutes). Values set already stay.
 * `AddSeason21HuntingRecordUpdatePlugIn` sets the 59 maps and the 64 excluded event monsters of `HuntingRecord.txt` and turns
   the hunting record and the ranking on (`Season21HuntingRecordInitializer`, data `Resources/Season21/WorldSystems.json`
   written by `Generator/season21-world.mjs`). See `GameLogic/HuntingRecord/Readme.md`.

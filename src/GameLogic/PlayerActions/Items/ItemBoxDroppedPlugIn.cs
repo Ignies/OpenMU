@@ -53,11 +53,16 @@ public sealed class ItemBoxDroppedPlugIn : IItemDropPlugIn
 
         if (dropEffect is not ItemDropEffect.Undefined)
         {
-            await this.ShowDropEffectAsync(player, dropEffect).ConfigureAwait(false);
+            await ShowDropEffectAsync(player, dropEffect).ConfigureAwait(false);
         }
     }
 
-    private async ValueTask ShowDropEffectAsync(Player player, ItemDropEffect dropEffect)
+    /// <summary>
+    /// Shows the effect of an opened box to the player and the players around.
+    /// </summary>
+    /// <param name="player">The player who opened the box.</param>
+    /// <param name="dropEffect">The effect.</param>
+    internal static async ValueTask ShowDropEffectAsync(Player player, ItemDropEffect dropEffect)
     {
         if (dropEffect == ItemDropEffect.Swirl)
         {

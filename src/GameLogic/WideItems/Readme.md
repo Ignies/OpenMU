@@ -23,6 +23,11 @@ drops and on the fourth wings combination) and the mastery item mixes (`MasteryM
 wings of the player's class. `LuckyTicketRolls` rolls the level and the option of the item of David's lucky ticket exchange
 (S21Emu `ItemOptionRate.txt` rows "(Lucky)"; Season 6 gives +0 without option). Data, numbers and sources: `docs/babylon.md`, "Options (W32 only)" and "Mixes".
 
+The [Lvl. 0] tickets of group 19 go through the same exchange at level 0 with the option rolled
+(`RollLevelOfLevelZeroTickets` rolls their level too). `BagRuud` is the Ruud of the item bags of group 19, which
+`PlayerActions/ItemConsumeActions/ItemBagConsumeHandlerPlugInBase` opens on use while these rules are on: one item of
+every drop group of the bag next to the player (the bags can't be dropped, so `ItemBoxDroppedPlugIn` never opens them).
+
 ## Jewel of Harmony on ancient items
 
 With these item rules on, the Jewel of Harmony takes ancient (set) items too (`HarmonyOnAncientItems`, on: S21Emu

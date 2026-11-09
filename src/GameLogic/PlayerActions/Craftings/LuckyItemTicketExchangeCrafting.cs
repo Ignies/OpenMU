@@ -23,6 +23,12 @@ using MUnique.OpenMU.GameLogic.WideItems;
 /// </remarks>
 public class LuckyItemTicketExchangeCrafting : SimpleItemCraftingHandler
 {
+    /// <summary>
+    /// The item group of the [Lvl. 0] tickets of Season 21, which give their item at level 0
+    /// (<see cref="LuckyTicketRolls.RollLevelOfLevelZeroTickets"/>).
+    /// </summary>
+    private const byte LevelZeroTicketGroup = 19;
+
     private readonly SimpleCraftingSettings _settings;
 
     /// <summary>
@@ -74,7 +80,13 @@ public class LuckyItemTicketExchangeCrafting : SimpleItemCraftingHandler
 
         var item = player.PersistenceContext.CreateNew<Item>();
         item.Definition = definition;
-        Season21ItemsFeaturePlugIn.GetConfiguration(player.GameContext)?.LuckyTicketRolls?.Apply(item, () => player.PersistenceContext.CreateNew<ItemOptionLink>(), Rand.GetRandomizer());
+        var rolls = Season21ItemsFeaturePlugIn.GetConfiguration(player.GameContext)?.LuckyTicketRolls;
+        rolls?.Apply(item, () => player.PersistenceContext.CreateNew<ItemOptionLink>(), Rand.GetRandomizer());
+        if (requiredItems.SelectMany(link => link.Items).Any(ticket => ticket.Definition?.Group == LevelZeroTicketGroup) && rolls?.RollLevelOfLevelZeroTickets is not true)
+        {
+            item.Level = 0;
+        }
+
         item.Durability = item.GetMaximumDurabilityOfOnePiece();
         await player.TemporaryStorage!.AddItemAsync(item).ConfigureAwait(false);
         return [item];

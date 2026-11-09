@@ -658,4 +658,10 @@
   <data name="AddSeason21IllusionTempleLeagueUpdatePlugIn_Description" xml:space="preserve">
     <value>The renewed Illusion Temple on maps 98 and 99 (the Cursed Statue 658 and the Captured Stone Statues 659-668 of S21Emu IllusionTemple_League_NPC.xml) for two guild parties of up to five from total level 400 (5 minutes to enter, 15 to play), its timetable of S21Emu IllusionTempleLeague.xml and the monthly league: eliminations on the 3rd to 9th, semi-finals on the 11th, the final on the 12th, the reward from the 13th. Keeps what the operator set.</value>
   </data>
+  <data name="AddSeason21BagItemsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the uses of the Season 21 items of group 19</value>
+  </data>
+  <data name="AddSeason21BagItemsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Fills the Pandora Box, the Red and Blue Card, the Premium Muun Box and the Red Card [Elemental] with their items, lets David exchange the [Lvl. 0] lucky tickets, puts the pentagram and elemental talismans into the elemental refinery and gives the Blessing of Eunice its experience bonus. The bags open with the item rules of Season 21.</value>
+  </data>
 </root>

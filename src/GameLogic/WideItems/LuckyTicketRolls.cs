@@ -29,6 +29,15 @@ public class LuckyTicketRolls
     public List<int> OptionWeights { get; set; } = [4000, 3000, 2000, 1000];
 
     /// <summary>
+    /// Gets or sets a value indicating whether the [Lvl. 0] tickets of Season 21 (item group 19) roll the level too.
+    /// </summary>
+    /// <remarks>
+    /// <c>LuckySystem.xml</c> lists them with the same item lists and rolls as the tickets of group 13; their name says
+    /// level 0. No source tells which is right, so they give level 0 unless this is set.
+    /// </remarks>
+    public bool RollLevelOfLevelZeroTickets { get; set; }
+
+    /// <summary>
     /// Rolls the level and the option of an exchanged lucky item.
     /// </summary>
     /// <param name="item">The item.</param>

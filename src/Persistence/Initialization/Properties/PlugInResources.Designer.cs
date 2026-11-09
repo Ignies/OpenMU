@@ -1704,5 +1704,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21IllusionTempleLeagueUpdatePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add the uses of the Season 21 items of group 19.
+        /// </summary>
+        public static string AddSeason21BagItemsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21BagItemsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fills the Pandora Box, the Red and Blue Card, the Premium Muun Box and the Red Card [Elemental] with their items, lets David exchange the [Lvl. 0] lucky tickets, puts the pentagram and elemental talismans into the elemental refinery and gives the Blessing of Eunice its experience bonus. The bags open with the item rules of Season 21..
+        /// </summary>
+        public static string AddSeason21BagItemsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21BagItemsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }
