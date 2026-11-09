@@ -19,6 +19,12 @@ public class MagicEffectsList : AsyncDisposable
     private const byte InvisibleEffectStartIndex = 200;
 
     /// <summary>
+    /// The last of OpenMU's own invisible effects (from <see cref="InvisibleEffectStartIndex"/>); the numbers past it are
+    /// effects of later seasons (S21Emu Effect.txt, such as the Blessing of Eunice 447), which the client shows.
+    /// </summary>
+    private const byte InvisibleEffectEndIndex = byte.MaxValue;
+
+    /// <summary>
     /// The effect numbers the list tracks: Season 21 numbers its effects up to 458 (S21Emu Effect.txt).
     /// </summary>
     private const int EffectNumberLimit = 0x200;
@@ -202,12 +208,12 @@ public class MagicEffectsList : AsyncDisposable
 
         if (added)
         {
-            if (effect.Id < InvisibleEffectStartIndex && this._owner is IWorldObserver observer)
+            if (IsVisible(effect) && this._owner is IWorldObserver observer)
             {
                 await observer.InvokeViewPlugInAsync<IActivateMagicEffectPlugIn>(p => p.ActivateMagicEffectAsync(effect, this._owner)).ConfigureAwait(false);
             }
 
-            if (effect.Id < InvisibleEffectStartIndex && effect.Definition.InformObservers && this._owner is IObservable observable)
+            if (IsVisible(effect) && effect.Definition.InformObservers && this._owner is IObservable observable)
             {
                 await observable.ForEachWorldObserverAsync<IActivateMagicEffectPlugIn>(p => p.ActivateMagicEffectAsync(effect, this._owner), false).ConfigureAwait(false);
             }
@@ -311,6 +317,9 @@ public class MagicEffectsList : AsyncDisposable
         await base.DisposeAsyncCore().ConfigureAwait(false);
     }
 
+    private static bool IsVisible(MagicEffect effect)
+        => effect.Id is < InvisibleEffectStartIndex or > InvisibleEffectEndIndex;
+
     private async ValueTask OnEffectTimeOutAsync(MagicEffect effect)
     {
         lock (this._sync)
@@ -334,7 +343,7 @@ public class MagicEffectsList : AsyncDisposable
             this._owner.Attributes.RemoveElement(powerUp.Element, powerUp.Target);
         }
 
-        if (effect.Id >= InvisibleEffectStartIndex)
+        if (!IsVisible(effect))
         {
             return;
         }

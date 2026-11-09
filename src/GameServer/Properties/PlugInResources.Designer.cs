@@ -8281,7 +8281,25 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("ItemExpiredBabylonPlugIn_Description", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Babylon: magic effects past a byte.
+        /// </summary>
+        public static string DeActivateMagicEffectBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("DeActivateMagicEffectBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Shows the Babylon client the magic effects numbered past 255 with their remaining time (C1 EE 32); the other effects as in Season 6..
+        /// </summary>
+        public static string DeActivateMagicEffectBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("DeActivateMagicEffectBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Babylon: Ruud and Ruud shop.
         /// </summary>

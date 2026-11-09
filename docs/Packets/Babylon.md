@@ -8,6 +8,7 @@
   * [C2 EE 20 - PlayerAppearanceWide (by server)](C2-EE-20-PlayerAppearanceWide_by-server.md)
   * [C1 EE 21 - AppearanceChangedWide (by server)](C1-EE-21-AppearanceChangedWide_by-server.md)
   * [C1 EE 31 - ItemExpired (by server)](C1-EE-31-ItemExpired_by-server.md)
+  * [C1 EE 32 - MagicEffectStatusWide (by server)](C1-EE-32-MagicEffectStatusWide_by-server.md)
   * [C2 EE 40 - EnhanceTreeState (by server)](C2-EE-40-EnhanceTreeState_by-server.md)
   * [C1 EE 41 - EnhanceTreeAddPoint (by client)](C1-EE-41-EnhanceTreeAddPoint_by-client.md)
   * [C1 EE 42 - EnhanceTreeAddPointResult (by server)](C1-EE-42-EnhanceTreeAddPointResult_by-server.md)

@@ -491,6 +491,40 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="MagicEffectStatusWide" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="isActive">The is active.</param>
+    /// <param name="objectId">The object id.</param>
+    /// <param name="effectNumber">The effect number.</param>
+    /// <param name="secondsLeft">The remaining seconds of the effect, 0 when it's removed or its duration isn't sent.</param>
+    /// <remarks>
+    /// Is sent by the server when: A magic effect numbered past 255 (a later season's effect, such as the Blessing of Eunice 447) was added to or removed from the own player; the Season 6 packet (07) carries the number in a byte.
+    /// Causes reaction on client side: The client shows the effect's icon with its remaining time, or hides it.
+    /// </remarks>
+    public static async ValueTask SendMagicEffectStatusWideAsync(this IConnection? connection, bool @isActive, ushort @objectId, ushort @effectNumber, uint @secondsLeft)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MagicEffectStatusWideRef.Length;
+            var packet = new MagicEffectStatusWideRef(connection.Output.GetSpan(length)[..length]);
+            packet.IsActive = @isActive;
+            packet.ObjectId = @objectId;
+            packet.EffectNumber = @effectNumber;
+            packet.SecondsLeft = @secondsLeft;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="MuunItemMove" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

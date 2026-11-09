@@ -2903,6 +2903,12 @@
   <data name="ItemExpiredBabylonPlugIn_Description" xml:space="preserve">
     <value>Tells the Babylon client which item expired (C1 EE 31).</value>
   </data>
+  <data name="DeActivateMagicEffectBabylonPlugIn_Name" xml:space="preserve">
+    <value>Babylon: magic effects past a byte</value>
+  </data>
+  <data name="DeActivateMagicEffectBabylonPlugIn_Description" xml:space="preserve">
+    <value>Shows the Babylon client the magic effects numbered past 255 with their remaining time (C1 EE 32); the other effects as in Season 6.</value>
+  </data>
   <data name="RuudBabylonPlugIn_Name" xml:space="preserve">
     <value>Babylon: Ruud and Ruud shop</value>
   </data>

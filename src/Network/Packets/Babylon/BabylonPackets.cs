@@ -3601,6 +3601,119 @@ public readonly struct ItemExpired
 
 
 /// <summary>
+/// Is sent by the server when: A magic effect numbered past 255 (a later season's effect, such as the Blessing of Eunice 447) was added to or removed from the own player; the Season 6 packet (07) carries the number in a byte.
+/// Causes reaction on client side: The client shows the effect's icon with its remaining time, or hides it.
+/// </summary>
+public readonly struct MagicEffectStatusWide
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MagicEffectStatusWide"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public MagicEffectStatusWide(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MagicEffectStatusWide"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private MagicEffectStatusWide(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x32;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 13;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the is active.
+    /// </summary>
+    public bool IsActive
+    {
+        get => this._data.Span[4..].GetBoolean();
+        set => this._data.Span[4..].SetBoolean(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the object id.
+    /// </summary>
+    public ushort ObjectId
+    {
+        get => ReadUInt16BigEndian(this._data.Span[5..]);
+        set => WriteUInt16BigEndian(this._data.Span[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the effect number.
+    /// </summary>
+    public ushort EffectNumber
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[7..]);
+        set => WriteUInt16LittleEndian(this._data.Span[7..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the remaining seconds of the effect, 0 when it's removed or its duration isn't sent.
+    /// </summary>
+    public uint SecondsLeft
+    {
+        get => ReadUInt32LittleEndian(this._data.Span[9..]);
+        set => WriteUInt32LittleEndian(this._data.Span[9..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="MagicEffectStatusWide"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator MagicEffectStatusWide(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="MagicEffectStatusWide"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(MagicEffectStatusWide packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the server when: When the character enters a map while the Muun system is on.
 /// Causes reaction on client side: The client shows the Muun inventory.
 /// </summary>

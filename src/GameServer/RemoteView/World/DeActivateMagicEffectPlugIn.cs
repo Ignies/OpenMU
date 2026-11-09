@@ -18,6 +18,10 @@ using MUnique.OpenMU.PlugIns;
 /// <summary>
 /// The default implementation of the <see cref="IActivateMagicEffectPlugIn"/> which is forwarding everything to the game client with specific data packets.
 /// </summary>
+/// <remarks>
+/// An effect numbered past a byte isn't sent: these packets carry the number in a byte, which would name another effect.
+/// The Babylon client gets it (<see cref="DeActivateMagicEffectBabylonPlugIn"/>).
+/// </remarks>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.DeActivateMagicEffectPlugIn_Name), Description = nameof(PlugInResources.DeActivateMagicEffectPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("67642604-8abb-44b9-a668-989cb3b28e89")]
@@ -57,7 +61,7 @@ public class DeActivateMagicEffectPlugIn : IActivateMagicEffectPlugIn, IDeactiva
     private async ValueTask SendMagicEffectStatusAsync(MagicEffect effect, IAttackable affectedObject, bool isActive, TimeSpan duration)
     {
         if (!(this._player.Connection?.Connected ?? false)
-            || effect.Definition.Number <= 0)
+            || effect.Definition.Number is <= 0 or > byte.MaxValue)
         {
             return;
         }

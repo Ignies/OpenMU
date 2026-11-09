@@ -1340,6 +1340,39 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>32</SubCode>
+      <Name>MagicEffectStatusWide</Name>
+      <Length>13</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A magic effect numbered past 255 (a later season's effect, such as the Blessing of Eunice 447) was added to or removed from the own player; the Season 6 packet (07) carries the number in a byte.</SentWhen>
+      <CausedReaction>The client shows the effect's icon with its remaining time, or hides it.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Boolean</Type>
+          <Name>IsActive</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>ObjectId</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>EffectNumber</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>SecondsLeft</Name>
+          <Description>The remaining seconds of the effect, 0 when it's removed or its duration isn't sent.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C2HeaderWithSubCode</HeaderType>
       <Code>EE</Code>
       <SubCode>50</SubCode>
