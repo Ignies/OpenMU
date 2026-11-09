@@ -149,16 +149,19 @@ public class EvolutionQuestFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigu
             return;
         }
 
-        // The warp changes the player state itself, so the talk action must leave it alone.
-        eventArgs.LeavesDialogOpen = true;
         player.OpenedNpc = null;
         if (PartyInstances.FindForMap(player.GameContext, map) is { } instance)
         {
             await PartyInstances.EnterAsync(player, instance).ConfigureAwait(false);
-            return;
+        }
+        else
+        {
+            await player.WarpToAsync(new ExitGate { Map = map, X1 = entrance.X1, Y1 = entrance.Y1, X2 = entrance.X2, Y2 = entrance.Y2 }).ConfigureAwait(false);
         }
 
-        await player.WarpToAsync(new ExitGate { Map = map, X1 = entrance.X1, Y1 = entrance.Y1, X2 = entrance.X2, Y2 = entrance.Y2 }).ConfigureAwait(false);
+        // A warp changes the player state itself, so the talk action must leave it alone; a refused entry doesn't warp,
+        // and the talk action closes the dialog, otherwise the next talk gets no answer.
+        eventArgs.LeavesDialogOpen = player.PlayerState.CurrentState != PlayerState.NpcDialogOpened;
     }
 
     /// <inheritdoc />
