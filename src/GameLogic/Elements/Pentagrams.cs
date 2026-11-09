@@ -107,6 +107,15 @@ public static class Pentagrams
     /// <param name="configuration">The configuration.</param>
     /// <param name="persistenceContext">The persistence context.</param>
     public static void UpdateConditionalOptions(this Item pentagram, ElementsConfiguration configuration, Persistence.IContext persistenceContext)
+        => pentagram.UpdateConditionalOptions(configuration, () => persistenceContext.CreateNew<ItemOptionLink>());
+
+    /// <summary>
+    /// Brings the conditional options of a pentagram up to date with the errtels in its sockets.
+    /// </summary>
+    /// <param name="pentagram">The pentagram.</param>
+    /// <param name="configuration">The configuration.</param>
+    /// <param name="createLink">Creates a new option link, e.g. a detached one for a new item.</param>
+    public static void UpdateConditionalOptions(this Item pentagram, ElementsConfiguration configuration, Func<ItemOptionLink> createLink)
     {
         var options = pentagram.Definition!.PossibleItemOptions
             .SelectMany(o => o.PossibleOptions)
@@ -121,7 +130,7 @@ public static class Pentagrams
                 : pentagram.ItemOptions.Count(l => l.ItemOption?.OptionType == Season21ItemOptionTypes.ErrtelSet && l.ItemOption.Number == option.Number / ErrtelSetBonusSetFactor) >= option.SubOptionType;
             if (isActive && link is null)
             {
-                link = persistenceContext.CreateNew<ItemOptionLink>();
+                link = createLink();
                 link.ItemOption = option;
                 pentagram.ItemOptions.Add(link);
             }

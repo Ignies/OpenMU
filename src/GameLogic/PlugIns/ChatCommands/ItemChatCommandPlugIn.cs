@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Administration;
+using MUnique.OpenMU.GameLogic.Elements;
 using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands.Arguments;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.PlugIns;
@@ -41,6 +42,14 @@ public class ItemChatCommandPlugIn : ChatCommandPlugInBase<ItemChatCommandArgs>
             }
 
             var item = GameMasterItemFactory.CreateItem(itemDefinition!, new ItemSpecification(arguments.Group, arguments.Number, arguments.Level, arguments.Skill, arguments.Luck, arguments.Opt, arguments.ExcellentNumber, arguments.Ancient, arguments.AncientBonusLevel));
+            var extras = new GameMasterItemExtras(arguments.Sockets, arguments.Seeds, arguments.Errtels, arguments.Options, arguments.MuunOptionDays);
+            var elements = gameMaster.GameContext.FeaturePlugIns.GetPlugIn<ElementsFeaturePlugIn>()?.Configuration;
+            if (GameMasterItemOptions.Apply(item, extras, gameMaster.GameContext.Configuration, elements) is { } unfitEntry)
+            {
+                await gameMaster.ShowLocalizedBlueMessageAsync(nameof(PlayerMessage.ItemOptionNotPossible), unfitEntry).ConfigureAwait(false);
+                return;
+            }
+
             var dropCoordinates = gameMaster.CurrentMap.Terrain.GetRandomCoordinate(gameMaster.Position, 1);
             var droppedItem = new DroppedItem(item, dropCoordinates, gameMaster.CurrentMap, gameMaster);
             await gameMaster.CurrentMap.AddAsync(droppedItem).ConfigureAwait(false);

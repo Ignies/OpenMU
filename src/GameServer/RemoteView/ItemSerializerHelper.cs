@@ -32,7 +32,7 @@ public static class ItemSerializerHelper
     /// <summary>
     /// Maximum socket options.
     /// </summary>
-    internal const byte MaximumSocketOptions = 50;
+    internal const byte MaximumSocketOptions = SocketOptionIndex.Count;
 
     /// <summary>
     /// The maximum sphere level index which the client supports, which is one less than the highest socket option level.
@@ -54,18 +54,6 @@ public static class ItemSerializerHelper
     /// The Gold Fenrir flag.
     /// </summary>
     private const byte GoldFenrirFlag = 0x04;
-
-    /// <summary>
-    /// The socket seed index offsets, where the key is the numerical value of a <see cref="SocketSubOptionType"/>
-    /// and the value is the first index of this corresponding elemental seed.
-    /// </summary>
-    /// <remarks>
-    /// Webzen decided to put every possible socket option of each elemental seed type into one big list,
-    /// which may contain up to <see cref="MaximumSocketOptions"/> elements.
-    /// I couldn't figure out a pattern, but found these index offsets by trial and error.
-    /// Their list contains holes, so expect that index 9 doesn't define an option.
-    /// </remarks>
-    private static readonly byte[] SocketOptionIndexOffsets = { 0, 10, 16, 21, 29, 36 };
 
     /// <summary>
     /// Gets the excellent (or wing) option byte for an item.
@@ -163,7 +151,7 @@ public static class ItemSerializerHelper
             return null;
         }
 
-        return ((byte)(SocketOptionIndexOffsets[option.SubOptionType] + option.Number), optionLink.Level);
+        return (SocketOptionIndex.Of(option), optionLink.Level);
     }
 
     /// <summary>
@@ -228,17 +216,9 @@ public static class ItemSerializerHelper
     /// <param name="item">The item.</param>
     public static void AddSocketOption(int optionIndex, int sphereLevel, int socketSlot, IContext persistenceContext, Item item)
     {
-        var indexOffset = SocketOptionIndexOffsets.Last(offset => offset <= optionIndex);
-        var elementType = Array.IndexOf(SocketOptionIndexOffsets, indexOffset);
-        var optionNumber = optionIndex - indexOffset;
-
-        var socketOption = item.Definition!.PossibleItemOptions
-                               .SelectMany(o => o.PossibleOptions
-                                   .Where(p => p.OptionType == ItemOptionTypes.SocketOption
-                                               && p.SubOptionType == elementType
-                                               && p.Number == optionNumber))
-                               .FirstOrDefault()
-                           ?? throw new ArgumentException($"The socket option {optionIndex} was set, but the option is not defined as possible option in the item definition ({item.Definition.Number}, {item.Definition.Group}).");
+        var definition = item.Definition!;
+        var socketOption = SocketOptionIndex.Find(definition, optionIndex)
+                           ?? throw new ArgumentException($"The socket option {optionIndex} was set, but the option is not defined as possible option in the item definition ({definition.Number}, {definition.Group}).");
         var optionLink = persistenceContext.CreateNew<ItemOptionLink>();
         optionLink.ItemOption = socketOption;
         optionLink.Level = sphereLevel;

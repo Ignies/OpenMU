@@ -1354,4 +1354,7 @@ Inventory Extensions: {18}</value>
   <data name="IllusionTempleLeagueStageReleased" xml:space="preserve">
     <value>The Illusion Temple League follows the days of the month again.</value>
   </data>
+  <data name="ItemOptionNotPossible" xml:space="preserve">
+    <value>The item can't have "{0}".</value>
+  </data>
 </root>

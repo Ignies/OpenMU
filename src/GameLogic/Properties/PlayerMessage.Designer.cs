@@ -3738,5 +3738,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("IllusionTempleLeagueStageReleased", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The item can&apos;t have &quot;{0}&quot;..
+        /// </summary>
+        public static string ItemOptionNotPossible {
+            get {
+                return ResourceManager.GetString("ItemOptionNotPossible", resourceCulture);
+            }
+        }
     }
 }

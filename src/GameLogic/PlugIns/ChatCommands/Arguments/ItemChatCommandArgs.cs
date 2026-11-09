@@ -69,4 +69,37 @@ public class ItemChatCommandArgs : ArgumentsBase
     [Argument("ancBonuslvl", false)]
     [ValidValues("1", "2")]
     public byte AncientBonusLevel { get; set; } = 1;
+
+    /// <summary>
+    /// Gets or sets the number of sockets; the default is the maximum of the item.
+    /// </summary>
+    [Argument("sck", false)]
+    public byte Sockets { get; set; } = byte.MaxValue;
+
+    /// <summary>
+    /// Gets or sets the seeds of the sockets in order: <c>index[:level]</c> separated by commas, the index over all
+    /// elements as the item data carries it (0-49), the sphere level 1-10 (default 1).
+    /// </summary>
+    [Argument("seeds", false)]
+    public string? Seeds { get; set; }
+
+    /// <summary>
+    /// Gets or sets the errtels in the sockets of a pentagram: <c>socket:ranks[:level]</c> separated by commas, the socket
+    /// 0 anger to 4 radiance, 1-5 ranks, the level 0-10 (default 0).
+    /// </summary>
+    [Argument("errtels", false)]
+    public string? Errtels { get; set; }
+
+    /// <summary>
+    /// Gets or sets more options of the item: <c>kind:number[:level]</c> separated by commas; the kinds are
+    /// <c>mastery</c>, <c>bonus</c> (mastery bonus), <c>element</c>, <c>grade</c> (wing grade) and <c>earring</c>.
+    /// </summary>
+    [Argument("opts", false)]
+    public string? Options { get; set; }
+
+    /// <summary>
+    /// Gets or sets the days of the additional option of a Muun; 0 for none.
+    /// </summary>
+    [Argument("muun", false)]
+    public byte MuunOptionDays { get; set; }
 }

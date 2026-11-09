@@ -1288,4 +1288,7 @@ Extensões de inventário: {18}</value>
   <data name="IllusionTempleLeagueStageReleased" xml:space="preserve">
     <value>A Illusion Temple League segue novamente os dias do mês.</value>
   </data>
+  <data name="ItemOptionNotPossible" xml:space="preserve">
+    <value>O item não pode ter "{0}".</value>
+  </data>
 </root>
