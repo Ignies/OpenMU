@@ -1024,5 +1024,9 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     }
 
     private async ValueTask<bool> AreEntrantsOnTheMapAsync()
-        => (await this._players.GetSnapshotAsync().ConfigureAwait(false)).All(player => player.CurrentMap == this.Map);
+    {
+        // An empty game has no entrants on the map yet: its loop runs before its creator entered.
+        var players = await this._players.GetSnapshotAsync().ConfigureAwait(false);
+        return players.Count > 0 && players.All(player => player.CurrentMap == this.Map);
+    }
 }

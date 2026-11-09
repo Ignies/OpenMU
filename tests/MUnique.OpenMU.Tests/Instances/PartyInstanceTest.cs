@@ -13,6 +13,7 @@ using MUnique.OpenMU.GameLogic.EvolutionQuests;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
+using MUnique.OpenMU.GameLogic.PlayerActions.MiniGames;
 using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
@@ -170,6 +171,23 @@ public class PartyInstanceTest
         {
             definition.EnterDuration = enterDuration;
         }
+    }
+
+    /// <summary>
+    /// A new instance waits for its first entrant: an empty instance isn't one whose entrants all stand on the map, so
+    /// its game loop doesn't close it before the player who created it got in.
+    /// </summary>
+    [Test]
+    public async ValueTask NewInstanceWaitsForItsFirstEntrantAsync()
+    {
+        var definition = this._world.Configuration.MiniGameDefinitions.Single(d => d.Type == MiniGameType.PartyInstance && d.Entrance?.Map?.Number == EvolutionQuestConfiguration.Season21TrialMap);
+        var player = await this._world.CreatePlayerAsync(CharacterClassNumber.BladeMaster, 400, 400).ConfigureAwait(false);
+        var instance = await this._world.GameContext.MiniGames.GetOrCreateAsync(definition, player).ConfigureAwait(false);
+        await Task.Delay(TimeSpan.FromMilliseconds(300)).ConfigureAwait(false);
+
+        Assert.That(await instance.TryEnterAsync(player).ConfigureAwait(false), Is.EqualTo(EnterResult.Success));
+        await instance.DisposeAsync().ConfigureAwait(false);
+        await Season21EventWorld.CompleteMapChangeAsync(player).ConfigureAwait(false);
     }
 
     /// <summary>
