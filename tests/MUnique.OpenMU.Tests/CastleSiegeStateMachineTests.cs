@@ -425,6 +425,76 @@ public class CastleSiegeStateMachineTests
     }
 
     /// <summary>
+    /// The game servers of one world share one siege: the first one which runs it owns the state, the others find
+    /// the same context, so a restart after a missed cycle end clears the registrations once and a state change
+    /// happens once (three game servers raced over the same rows before).
+    /// </summary>
+    [Test]
+    public async ValueTask GameServersOfOneWorldShareOneSiegeAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        await AddSelectedGuildAsync(fixture).ConfigureAwait(false);
+        var plugInManager = new PlugInManager(null, NullLoggerFactory.Instance, null, null);
+        var recorder = new StateChangeRecordingPlugIn();
+        plugInManager.RegisterPlugInAtPlugInPoint<ICastleSiegeStateChangedPlugIn>(recorder);
+        fixture.GameContext.SetupGet(game => game.PlugInManager).Returns(plugInManager);
+        var otherServers = new[] { CreateGameServerOfWorld(fixture, plugInManager), CreateGameServerOfWorld(fixture, plugInManager) };
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        foreach (var server in otherServers)
+        {
+            await plugIn.ExecuteTaskAsync(server.Object).ConfigureAwait(false);
+        }
+
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+        timeProvider.Advance(TimeSpan.FromHours(12));
+        foreach (var server in otherServers.Prepend(fixture.GameContext))
+        {
+            await plugIn.ExecuteTaskAsync(server.Object).ConfigureAwait(false);
+        }
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(otherServers.Select(server => plugIn.GetContext(server.Object)), Is.All.SameAs(context));
+            Assert.That(context.GameContext, Is.SameAs(fixture.GameContext.Object));
+            Assert.That(fixture.Notifications, Is.EqualTo(new[] { "Castle Siege guild registration is open." }));
+            Assert.That(recorder.Changes, Is.EqualTo(new[] { (CastleSiegeState.RegisterGuild, CastleSiegeState.Idle2) }));
+        });
+    }
+
+    /// <summary>
+    /// When the game server which owns the siege stops running it, another game server of the world takes it over
+    /// from the stored state.
+    /// </summary>
+    [Test]
+    public async ValueTask AnotherGameServerTakesOverAStoppedSiegeAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var otherServer = CreateGameServerOfWorld(fixture, null);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+        await plugIn.ExecuteTaskAsync(otherServer.Object).ConfigureAwait(false);
+
+        timeProvider.Advance(TimeSpan.FromSeconds(10));
+        await plugIn.ExecuteTaskAsync(otherServer.Object).ConfigureAwait(false);
+        Assert.That(plugIn.GetContext(otherServer.Object)!.GameContext, Is.SameAs(fixture.GameContext.Object));
+
+        timeProvider.Advance(TimeSpan.FromMinutes(1));
+        await plugIn.ExecuteTaskAsync(otherServer.Object).ConfigureAwait(false);
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.GameContext, Is.SameAs(otherServer.Object));
+            Assert.That(context.CurrentState, Is.EqualTo(CastleSiegeState.RegisterGuild));
+            Assert.That(context.RegisteredGuilds, Contains.Key(fixture.RegisteredGuildId));
+        });
+    }
+
+    /// <summary>
     /// Verifies that a state transition is reported to the <see cref="ICastleSiegeStateChangedPlugIn"/>.
     /// </summary>
     [Test]
@@ -1070,6 +1140,22 @@ public class CastleSiegeStateMachineTests
             gameContext,
             registeredGuildId,
             notifications);
+    }
+
+    private static Mock<IGameContext> CreateGameServerOfWorld(TestFixture fixture, PlugInManager? plugInManager)
+    {
+        var gameContext = new Mock<IGameContext>();
+        gameContext.SetupGet(game => game.Configuration).Returns(fixture.GameConfiguration);
+        gameContext.SetupGet(game => game.PersistenceContextProvider).Returns(fixture.PersistenceContextProvider);
+        gameContext.SetupGet(game => game.LoggerFactory).Returns(NullLoggerFactory.Instance);
+        gameContext.SetupGet(game => game.ServerTimeZone).Returns(TimeZoneInfo.Utc);
+        gameContext.Setup(game => game.SendGlobalNotificationAsync(It.IsAny<string>())).Callback<string>(fixture.Notifications.Add).Returns(ValueTask.CompletedTask);
+        if (plugInManager is not null)
+        {
+            gameContext.SetupGet(game => game.PlugInManager).Returns(plugInManager);
+        }
+
+        return gameContext;
     }
 
     private sealed record TestFixture(

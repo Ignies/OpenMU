@@ -4,8 +4,8 @@
 
 namespace MUnique.OpenMU.GameLogic.CastleSiege;
 
+using System.Collections.Concurrent;
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 using MUnique.OpenMU.DataModel.Configuration;
@@ -21,6 +21,8 @@ using MUnique.OpenMU.PlugIns;
 /// During the battle, the attacks and kills between players of opposing sides are exempted from the player killer penalty.
 /// During the battle, players of the same side can't damage each other.
 /// Players can't teleport over a closed gate with a skill.
+/// The game servers of a world share one siege: the first game server which runs it owns its state (see
+/// <see cref="OwnerTimeout"/>), the others find the same context for their players.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.CastleSiegePlugIn_Name), Description = nameof(PlugInResources.CastleSiegePlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -34,7 +36,13 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
 
     private static readonly TimeSpan BattleTimeUpdateInterval = TimeSpan.FromMinutes(1);
 
-    private readonly ConditionalWeakTable<IGameContext, CastleSiegeContext> _contexts = new();
+    /// <summary>
+    /// The time after which another game server of the world takes over a siege whose owning game server stopped
+    /// running it.
+    /// </summary>
+    private static readonly TimeSpan OwnerTimeout = TimeSpan.FromSeconds(30);
+
+    private readonly ConcurrentDictionary<object, SiegeWorld> _worlds = new();
     private readonly TimeProvider _timeProvider;
 
     private int _forceRequestVersion;
@@ -192,7 +200,10 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
     /// <returns>The Castle Siege context, or <see langword="null"/>.</returns>
     public CastleSiegeContext? GetContext(IGameContext gameContext)
     {
-        return this._contexts.TryGetValue(gameContext, out var context) ? context : null;
+        return gameContext.Configuration.CastleSiegeConfiguration is { } configuration
+               && this._worlds.TryGetValue(GetWorldKey(configuration), out var world)
+            ? world.Context
+            : null;
     }
 
     /// <summary>
@@ -225,10 +236,11 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
 
         var logger = gameContext.LoggerFactory.CreateLogger(this.GetType().Name);
         using var scope = logger.BeginScope(gameContext);
-        CastleSiegeContext context;
+        var utcNow = this._timeProvider.GetUtcNow().UtcDateTime;
+        CastleSiegeContext? context;
         try
         {
-            context = this._contexts.GetValue(gameContext, key => new CastleSiegeContext(key, configuration, this._timeProvider));
+            context = this.GetOwnedContext(gameContext, configuration, utcNow, logger);
         }
         catch (Exception ex)
         {
@@ -236,14 +248,13 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             return;
         }
 
-        if (!await context.ExecutionLock.WaitAsync(0).ConfigureAwait(false))
+        if (context is null || !await context.ExecutionLock.WaitAsync(0).ConfigureAwait(false))
         {
             return;
         }
 
         try
         {
-            var utcNow = this._timeProvider.GetUtcNow().UtcDateTime;
             if (!context.IsInitialized)
             {
                 await context.InitializeAsync(utcNow).ConfigureAwait(false);
@@ -321,6 +332,12 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         await context.SaveFinalGuildListAsync().ConfigureAwait(false);
     }
 
+    private static object GetWorldKey(CastleSiegeConfiguration configuration)
+    {
+        // Game servers which loaded the configuration separately share the world by its id.
+        return configuration is Persistence.IIdentifiable { Id: var id } && id != Guid.Empty ? id : configuration;
+    }
+
     private static TimeSpan? GetNotificationInterval(CastleSiegeState state)
     {
         return state switch
@@ -372,6 +389,36 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             {
                 player.Logger.LogError(ex, "The player could not be moved to its Castle Siege side.");
             }
+        }
+    }
+
+    /// <summary>
+    /// Gets the context of the world which the game server runs, or <see langword="null"/> when another game server
+    /// of the world owns the siege.
+    /// </summary>
+    private CastleSiegeContext? GetOwnedContext(IGameContext gameContext, CastleSiegeConfiguration configuration, DateTime utcNow, ILogger logger)
+    {
+        var world = this._worlds.GetOrAdd(
+            GetWorldKey(configuration),
+            _ => new SiegeWorld(new CastleSiegeContext(gameContext, configuration, this._timeProvider), utcNow));
+        lock (world)
+        {
+            if (world.Context.GameContext != gameContext)
+            {
+                if (utcNow - world.LastOwnerTickUtc < OwnerTimeout)
+                {
+                    return null;
+                }
+
+                logger.LogWarning("The game server which ran the Castle Siege stopped running it; this game server takes it over.");
+                world.Context = new CastleSiegeContext(gameContext, configuration, this._timeProvider)
+                {
+                    LastForceRequestVersion = world.Context.LastForceRequestVersion,
+                };
+            }
+
+            world.LastOwnerTickUtc = utcNow;
+            return world.Context;
         }
     }
 
@@ -672,5 +719,21 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         return string.IsNullOrEmpty(message)
             ? ValueTask.CompletedTask
             : context.GameContext.SendGlobalNotificationAsync(message);
+    }
+
+    /// <summary>
+    /// The siege of a world and its owning game server's last run.
+    /// </summary>
+    private sealed class SiegeWorld
+    {
+        public SiegeWorld(CastleSiegeContext context, DateTime lastOwnerTickUtc)
+        {
+            this.Context = context;
+            this.LastOwnerTickUtc = lastOwnerTickUtc;
+        }
+
+        public CastleSiegeContext Context { get; set; }
+
+        public DateTime LastOwnerTickUtc { get; set; }
     }
 }

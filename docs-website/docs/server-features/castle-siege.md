@@ -63,6 +63,24 @@ it is mapped like the other Season 21 thresholds (the evolutions, the map
 entries), so a level 400 master of the original mode is a level 190 master of
 the default normalized mode.
 
+## One siege per world
+
+The game servers of a world (one game configuration) share one siege. The
+first game server which runs its periodic tasks owns the siege state: the
+schedule, the registrations, the marks, the selected guilds and the battle.
+The other game servers find the same state for their players, so a guild
+registered on one server is registered on all of them, and a restart clears or
+loads the stored registrations once. When the owning game server stops running
+the siege for 30 seconds (stopped or removed), the next game server which runs
+its periodic tasks takes it over from the stored state.
+
+The battle (gates, statues, crown, life stones, machines) takes place on the
+owning game server's instance of the Valley of Loren. To have every player on
+that one battlefield, host the Valley of Loren on one game server only (remove
+it from the maps of the other server configurations): the players of the other
+game servers then enter the hosting server's instance (see the server settings
+on shared maps).
+
 ## Restarting after a missed cycle end
 
 When the server wasn't running at the end of a cycle (`EndCycle`), it notices
