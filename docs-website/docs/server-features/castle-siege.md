@@ -50,6 +50,19 @@ During the battle, players of the same siege side can't damage each other,
 including with area skills and pets. This applies only on the Castle Siege map
 and only to players with a siege side.
 
+## Registration rules
+
+A guild master registers the guild (or its alliance) when the guild has
+`RegisterMinMembers` members and the master's level plus master level reaches
+`RegisterMinLevel`. Season 6 data asks for 20 members and level 200. The update
+"Season 21 event rules" (version 3) sets the Season 21 values of S21Emu
+(`GameServerInfo - Event.dat`: CastleSiegeMinMemberToReg=3,
+CastleSiegeMasterMinLevelToReg=400), unless an operator changed them. The level
+is a Season 21 total level: with the progression in the normalized or stars mode
+it is mapped like the other Season 21 thresholds (the evolutions, the map
+entries), so a level 400 master of the original mode is a level 190 master of
+the default normalized mode.
+
 ## Restarting after a missed cycle end
 
 When the server wasn't running at the end of a cycle (`EndCycle`), it notices

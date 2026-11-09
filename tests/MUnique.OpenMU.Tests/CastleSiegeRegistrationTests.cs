@@ -13,6 +13,8 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.CastleSiege.Actions;
+using MUnique.OpenMU.GameLogic.Classes;
+using MUnique.OpenMU.GameLogic.Progression;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.MessageHandler.CastleSiege;
@@ -383,6 +385,38 @@ public class CastleSiegeRegistrationTests
         Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeRegistrationResultPlugIn>()!)
             .Verify(view => view.ShowRegistrationResultAsync(expected, GuildName), Times.Once);
         Assert.That(fixture.Context.RegisteredGuilds.ContainsKey(fixture.PersistentGuildId), Is.EqualTo(expected == CastleSiegeRegistrationResult.Success));
+    }
+
+    /// <summary>
+    /// The guild master level is a Season 21 total level (S21Emu CastleSiegeMasterMinLevelToReg=400), which the
+    /// progression modes map like the other Season 21 thresholds: the normalized and stars modes ask for the mapped
+    /// level, the original mode for the total.
+    /// </summary>
+    /// <param name="mode">The progression mode.</param>
+    /// <param name="missingLevels">The levels the guild master is below the mapped requirement.</param>
+    /// <param name="expected">The expected registration result.</param>
+    [TestCase(ProgressionMode.Normalized, 0, CastleSiegeRegistrationResult.Success)]
+    [TestCase(ProgressionMode.Normalized, 1, CastleSiegeRegistrationResult.LevelInsufficient)]
+    [TestCase(ProgressionMode.Stars, 0, CastleSiegeRegistrationResult.Success)]
+    [TestCase(ProgressionMode.Stars, 1, CastleSiegeRegistrationResult.LevelInsufficient)]
+    [TestCase(ProgressionMode.Original, 0, CastleSiegeRegistrationResult.Success)]
+    [TestCase(ProgressionMode.Original, 1, CastleSiegeRegistrationResult.LevelInsufficient)]
+    public async ValueTask GuildMasterLevelFollowsTheProgressionModeAsync(ProgressionMode mode, int missingLevels, CastleSiegeRegistrationResult expected)
+    {
+        const int season21Level = 400;
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        fixture.CastleSiegeConfiguration.RegisterMinLevel = season21Level;
+        var progression = new ProgressionConfiguration { Mode = mode };
+        fixture.GameServerContext.FeaturePlugIns.GetPlugIn<ProgressionFeaturePlugIn>()!.Configuration = progression;
+        var requiredLevel = mode == ProgressionMode.Original ? season21Level : EvolutionRules.GetRequiredLevel(season21Level, progression);
+        fixture.Player.GuildStatus = new GuildMemberStatus(RuntimeGuildId, GuildPosition.GuildMaster);
+        fixture.Player.Attributes![Stats.Level] = requiredLevel - missingLevels;
+
+        await new CastleSiegeRegisterGuildAction().RegisterAsync(fixture.Player, fixture.Context).ConfigureAwait(false);
+
+        Assert.That(requiredLevel, mode == ProgressionMode.Original ? Is.EqualTo(season21Level) : Is.LessThan(season21Level));
+        Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeRegistrationResultPlugIn>()!)
+            .Verify(view => view.ShowRegistrationResultAsync(expected, GuildName), Times.Once);
     }
 
     /// <summary>

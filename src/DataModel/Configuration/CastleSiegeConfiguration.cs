@@ -24,8 +24,9 @@ public partial class CastleSiegeConfiguration
     public int CrownHoldTimeSeconds { get; set; } = 30;
 
     /// <summary>
-    /// Gets or sets the minimum combined level of a guild master required to register for the siege.
+    /// Gets or sets the minimum combined level (level plus master level) of a guild master required to register for the siege.
     /// </summary>
+    /// <remarks>It's a Season 21 total level, which the progression modes map like the other Season 21 thresholds.</remarks>
     public int RegisterMinLevel { get; set; } = 200;
 
     /// <summary>

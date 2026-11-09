@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.CastleSiege.Actions;
 
 using MUnique.OpenMU.DataModel.Configuration;
-using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 
 /// <summary>
@@ -49,8 +49,7 @@ public class CastleSiegeRegisterGuildAction
                 return (resolutionResult, string.Empty);
             }
 
-            var combinedLevel = player.Level + (int)(player.Attributes?[Stats.MasterLevel] ?? 0);
-            if (combinedLevel < context.Configuration.RegisterMinLevel)
+            if (!player.MeetsSeason21Level(context.Configuration.RegisterMinLevel))
             {
                 return (CastleSiegeRegistrationResult.LevelInsufficient, guild.Name);
             }

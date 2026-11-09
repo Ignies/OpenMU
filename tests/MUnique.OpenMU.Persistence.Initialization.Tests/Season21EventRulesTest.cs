@@ -95,6 +95,30 @@ internal class Season21EventRulesTest
     }
 
     /// <summary>
+    /// The update sets the Castle Siege registration of S21Emu (GameServerInfo - Event.dat: CastleSiegeMinMemberToReg=3,
+    /// CastleSiegeMasterMinLevelToReg=400) over the Season 6 rules (20 members, level 200), which stay without it; a
+    /// value the operator changed stays when the update runs again.
+    /// </summary>
+    [Test]
+    public async Task UpdateSetsTheCastleSiegeRegistrationRulesAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        var siege = gameConfiguration.CastleSiegeConfiguration!;
+        Assert.That((siege.RegisterMinMembers, siege.RegisterMinLevel), Is.EqualTo((20, 200)));
+        var update = new AddSeason21EventRulesUpdatePlugIn();
+
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.That((siege.RegisterMinMembers, siege.RegisterMinLevel), Is.EqualTo((3, 400)));
+
+        siege.RegisterMinMembers = 5;
+        siege.RegisterMinLevel = 600;
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        Assert.That((siege.RegisterMinMembers, siege.RegisterMinLevel), Is.EqualTo((5, 600)));
+        Assert.That(update.Version, Is.EqualTo(3));
+        Assert.That(update.DependsOn.Select(d => d.Key), Does.Contain(new AddCastleSiegeDataUpdatePlugIn().Key));
+    }
+
+    /// <summary>
     /// The event rules need the total levels of Season 21, so they depend on its level caps.
     /// </summary>
     [Test]

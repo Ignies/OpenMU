@@ -13,7 +13,7 @@ using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Sets the event grades of Season 21 by total level and its party experience bonus.
+/// Sets the event grades of Season 21 by total level, its party experience bonus and its Castle Siege registration.
 /// </summary>
 /// <remarks>
 /// A grade whose maximum is above the maximum normal level is checked against the total level
@@ -52,6 +52,26 @@ public class AddSeason21EventRulesUpdatePlugIn : UpdatePlugInBase
         (180, 399), (400, 799), (800, 1399), (1400, 1599), (1600, int.MaxValue),
     ];
 
+    /// <summary>
+    /// The guild members a Castle Siege registration needs (S21Emu <c>GameServerInfo - Event.dat</c> CastleSiegeMinMemberToReg).
+    /// </summary>
+    private const int CastleSiegeMinMembers = 3;
+
+    /// <summary>
+    /// The total level of the guild master a Castle Siege registration needs (S21Emu CastleSiegeMasterMinLevelToReg).
+    /// </summary>
+    private const int CastleSiegeMinLevel = 400;
+
+    /// <summary>
+    /// The Season 6 registration rules (<c>CastleSiegeInitializer</c>), which the update replaces.
+    /// </summary>
+    private const int Season6CastleSiegeMinMembers = 20;
+
+    /// <summary>
+    /// The Season 6 guild master level, see <see cref="Season6CastleSiegeMinMembers"/>.
+    /// </summary>
+    private const int Season6CastleSiegeMinLevel = 200;
+
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
@@ -71,14 +91,17 @@ public class AddSeason21EventRulesUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 05, 14, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    /// <remarks>Version 2: the daily entry limits of S21Emu Event/EventEntryLimit.dat.</remarks>
-    public override int Version => 2;
+    /// <remarks>
+    /// Version 2: the daily entry limits of S21Emu Event/EventEntryLimit.dat.
+    /// Version 3: the Castle Siege registration of S21Emu GameServerInfo - Event.dat.
+    /// </remarks>
+    public override int Version => 3;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 07, 14, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 09, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21LevelCapsUpdatePlugIn).GUID];
+    public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21LevelCapsUpdatePlugIn).GUID, typeof(AddCastleSiegeDataUpdatePlugIn).GUID];
 
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
@@ -113,7 +136,27 @@ public class AddSeason21EventRulesUpdatePlugIn : UpdatePlugInBase
 
         SetPartyBonus(context, gameConfiguration);
         SetDailyEntryLimits(context, gameConfiguration);
+        SetCastleSiegeRegistration(gameConfiguration);
         return ValueTask.CompletedTask;
+    }
+
+    private static void SetCastleSiegeRegistration(GameConfiguration gameConfiguration)
+    {
+        if (gameConfiguration.CastleSiegeConfiguration is not { } siege)
+        {
+            return;
+        }
+
+        // Values the operator changed stay.
+        if (siege.RegisterMinMembers == Season6CastleSiegeMinMembers)
+        {
+            siege.RegisterMinMembers = CastleSiegeMinMembers;
+        }
+
+        if (siege.RegisterMinLevel == Season6CastleSiegeMinLevel)
+        {
+            siege.RegisterMinLevel = CastleSiegeMinLevel;
+        }
     }
 
     private static void SetDailyEntryLimits(IContext context, GameConfiguration gameConfiguration)
