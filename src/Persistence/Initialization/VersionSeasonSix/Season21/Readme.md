@@ -8,6 +8,11 @@ them, as optional updates of a Season 6 database:
   maps depend on: their entry levels and monsters keep the numbers of Season 21,
 * `AddSeason21GearUpdatePlugIn` adds the gear of Season 21 (`Season21GearInitializer`),
 * `AddSeason21ItemCatalogUpdatePlugIn` defines every other item of the data (`Season21ItemCatalogInitializer`).
+  Version 2 gives the Crusader's cloaks (group 21, which `Item.xml` lists without values) their wing values
+  (`Season21Cloaks`): level, defense and durability of the client's `item.bmd`, the required level of the wings of
+  their kind (150/400/800/1200), the damage increase and absorb of `ItemOptionWing.txt` and the options of Wings of Elf
+  (Protection) or Cape of Emperor (the others; the excellent wing options for Desire only). Values already set stay. The
+  required level rise per item level of `ItemOptionWing.txt` (4 for Protection) isn't modelled, as for every wing.
 * `AddSeason21SkillsUpdatePlugIn` adds the skills, master tree nodes, books and the skill enhancement tree
   (`Season21SkillsInitializer`); it needs the classes and the item catalog.
 * `AddSeason21EconomyUpdatePlugIn` adds Priest James and the Ruud shop and switches on the gremory case, Ruud and the

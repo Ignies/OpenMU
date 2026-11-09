@@ -95,6 +95,54 @@ public class AppearanceWideTest
     }
 
     /// <summary>
+    /// A worn cloak of the Crusader (item group 21, which only the wide format carries) reaches a Babylon client in the
+    /// wings slot, in view and when it's put on; the Season 6 packet before it shows no wings.
+    /// </summary>
+    [Test]
+    public async ValueTask WornCrusaderCloakIsInTheWideAppearanceAsync()
+    {
+        var (viewer, output) = CreateBabylonViewer();
+        var (other, sword) = await this.CreateEquippedPlayerAsync(128 + 56).ConfigureAwait(false); // Grow Lancer
+        await other.Inventory!.RemoveItemAsync(sword).ConfigureAwait(false);
+        var wingsOfElf = this._gameContext.Configuration.Items.First(i => i is { Group: 12, Number: 0 });
+        var definition = other.PersistenceContext.CreateNew<DataModel.Configuration.Items.ItemDefinition>();
+        definition.Group = 21; // Cloak of Desire
+        definition.Number = 1;
+        definition.Width = 2;
+        definition.Height = 3;
+        definition.ItemSlot = wingsOfElf.ItemSlot;
+        var cloak = other.PersistenceContext.CreateNew<Item>();
+        cloak.Definition = definition;
+        cloak.Level = 9;
+        cloak.Durability = 220;
+        await other.Inventory.AddItemAsync(InventoryConstants.WingsSlot, cloak).ConfigureAwait(false);
+        var expected = new byte[ItemSerializerW32.Length];
+        new ItemSerializerW32().SerializeItem(expected, cloak);
+
+        await new NewPlayersInScopeBabylonPlugIn(viewer).NewPlayersInScopeAsync([other]).ConfigureAwait(false);
+        var data = output.ToArray();
+        var offset = (data[1] << 8) | data[2];
+        var wide = new PlayerAppearanceWide(data.AsMemory(offset, (data[offset + 1] << 8) | data[offset + 2]));
+        Assert.That(wide.ItemCount, Is.EqualTo(1));
+        Assert.That(wide[0].Slot, Is.EqualTo(InventoryConstants.WingsSlot));
+        Assert.That(wide[0].ItemData.ToArray(), Is.EqualTo(expected));
+
+        var season6 = new byte[18];
+        new AppearanceSerializer().WriteAppearanceData(season6, other.AppearanceData, false);
+        var bare = new byte[18];
+        await other.Inventory.RemoveItemAsync(cloak).ConfigureAwait(false);
+        new AppearanceSerializer().WriteAppearanceData(bare, other.AppearanceData, false);
+        Assert.That(season6, Is.EqualTo(bare), "a Season 6 client sees no wings");
+        await other.Inventory.AddItemAsync(InventoryConstants.WingsSlot, cloak).ConfigureAwait(false);
+
+        output.SetLength(0);
+        await new AppearanceChangedBabylonPlugIn(viewer).AppearanceChangedAsync(other, cloak, true).ConfigureAwait(false);
+        var changed = new AppearanceChangedWide(output.ToArray());
+        Assert.That(changed.Slot, Is.EqualTo(InventoryConstants.WingsSlot));
+        Assert.That(changed.ItemData.ToArray(), Is.EqualTo(expected));
+    }
+
+    /// <summary>
     /// The Babylon client takes the wide plugins; a Season 6 client keeps its own.
     /// </summary>
     [Test]

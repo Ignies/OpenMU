@@ -42,6 +42,13 @@ public class AddSeason21ItemCatalogUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 05, 17, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
+    /// <remarks>Version 2 gives the cloaks of the Crusader their wing values (<see cref="Season21Cloaks"/>).</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 09, 12, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     /// <remarks>
     /// The gear of Season 21 comes first, so its items keep the templates which were chosen for them by hand.
     /// </remarks>
@@ -51,6 +58,7 @@ public class AddSeason21ItemCatalogUpdatePlugIn : UpdatePlugInBase
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         new Season21ItemCatalogInitializer(context, gameConfiguration).Initialize();
+        Season21Cloaks.Apply(context, gameConfiguration);
         ItemStatProfiles.Apply(context, gameConfiguration);
         return ValueTask.CompletedTask;
     }

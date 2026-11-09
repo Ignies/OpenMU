@@ -122,6 +122,76 @@ internal class Season21ItemCatalogTest
     }
 
     /// <summary>
+    /// The cloaks of the Crusader (group 21) are wings: level, defense and durability of the client's item table, the
+    /// required level of the wings of their kind and the damage rates of <c>ItemOptionWing.txt</c>.
+    /// </summary>
+    /// <param name="number">The cloak number.</param>
+    /// <param name="dropLevel">The item level.</param>
+    /// <param name="defense">The defense.</param>
+    /// <param name="defenseAtLevel15">The defense of a +15 cloak, or the plain defense without a level table.</param>
+    /// <param name="durability">The durability.</param>
+    /// <param name="level">The required level.</param>
+    /// <param name="increase">The damage increase factor.</param>
+    /// <param name="increaseAtLevel15">The damage increase factor of a +15 cloak.</param>
+    /// <param name="absorb">The damage receive factor.</param>
+    /// <param name="excellent">Whether the cloak takes the excellent options of the third wings.</param>
+    [TestCase(0, 100, 20, 86, 200, 150, 1.12f, 1.42f, 0.88f, false)] // Cloak of Protection
+    [TestCase(1, 150, 45, 126, 220, 400, 1.39f, 1.69f, 0.61f, true)] // Cloak of Desire
+    [TestCase(2, 150, 45, 126, 220, 400, 1.39f, 1.69f, 0.61f, true)] // [Bound] Cloak of Desire
+    [TestCase(3, 153, 155, 155, 220, 800, 1.55f, 1.70f, 0.57f, false)] // Cloak of Sanctuary
+    [TestCase(5, 156, 175, 175, 220, 1200, 1.55f, 1.70f, 0.57f, false)] // Cloak of Light
+    public async Task CrusaderCloaksAreWingsAsync(short number, int dropLevel, int defense, int defenseAtLevel15, int durability, int level, float increase, float increaseAtLevel15, float absorb, bool excellent)
+    {
+        var (context, gameConfiguration) = await CreateWithGearAsync().ConfigureAwait(false);
+
+        await new AddSeason21ItemCatalogUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var cloak = Item(gameConfiguration, 21, number);
+        float At(ItemBasePowerUpDefinition powerUp, int itemLevel) => powerUp.BaseValue + (powerUp.BonusPerLevelTable?.BonusPerLevel.FirstOrDefault(b => b.Level == itemLevel)?.AdditionalValue ?? 0);
+        ItemBasePowerUpDefinition PowerUp(AttributeSystem.AttributeDefinition attribute) => cloak.BasePowerUpAttributes.Single(p => p.TargetAttribute == attribute);
+        Assert.That(cloak.ItemSlot, Is.SameAs(Item(gameConfiguration, 12, 0).ItemSlot));
+        Assert.That(cloak.DropLevel, Is.EqualTo(dropLevel));
+        Assert.That(cloak.Durability, Is.EqualTo(durability));
+        Assert.That(cloak.MaximumItemLevel, Is.EqualTo(15));
+        Assert.That(cloak.Requirements.Single(r => r.Attribute == Stats.Level).MinimumValue, Is.EqualTo(level));
+        Assert.That(PowerUp(Stats.DefenseBase).BaseValue, Is.EqualTo(defense));
+        Assert.That(At(PowerUp(Stats.DefenseBase), 15), Is.EqualTo(defenseAtLevel15));
+        Assert.That(PowerUp(Stats.AttackDamageIncrease).BaseValue, Is.EqualTo(increase).Within(1e-5));
+        Assert.That(At(PowerUp(Stats.AttackDamageIncrease), 15), Is.EqualTo(increaseAtLevel15).Within(1e-5));
+        Assert.That(PowerUp(Stats.DamageReceiveDecrement).BaseValue, Is.EqualTo(absorb).Within(1e-5));
+        Assert.That(At(PowerUp(Stats.DamageReceiveDecrement), 15), Is.EqualTo(absorb - 0.3f).Within(1e-5));
+        Assert.That(PowerUp(Stats.CanFly).BaseValue, Is.EqualTo(1));
+        var optionTypes = cloak.PossibleItemOptions.SelectMany(o => o.PossibleOptions).Select(o => o.OptionType).ToList();
+        Assert.That(optionTypes, Does.Contain(ItemOptionTypes.Luck).And.Contain(ItemOptionTypes.Option));
+        Assert.That(optionTypes.Contains(ItemOptionTypes.Wing), Is.EqualTo(excellent));
+    }
+
+    /// <summary>
+    /// Version 2 of the update gives the cloaks of a database of version 1 their values, and keeps what an operator
+    /// changed on them.
+    /// </summary>
+    [Test]
+    public async Task CloakValuesKeepOperatorEditsAsync()
+    {
+        var (context, gameConfiguration) = await CreateWithGearAsync().ConfigureAwait(false);
+        new Season21ItemCatalogInitializer(context, gameConfiguration).Initialize();
+        var edited = Item(gameConfiguration, 21, 1);
+        edited.Durability = 5;
+        edited.DropLevel = 7;
+
+        await new AddSeason21ItemCatalogUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var powerUps = edited.BasePowerUpAttributes.Count;
+        edited.BasePowerUpAttributes.Remove(edited.BasePowerUpAttributes.First(p => p.TargetAttribute == Stats.DamageReceiveDecrement));
+        await new AddSeason21ItemCatalogUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(new AddSeason21ItemCatalogUpdatePlugIn().Version, Is.EqualTo(2));
+        Assert.That(edited.Durability, Is.EqualTo(5));
+        Assert.That(edited.DropLevel, Is.EqualTo(7));
+        Assert.That(edited.Requirements.Single(r => r.Attribute == Stats.Level).MinimumValue, Is.EqualTo(400));
+        Assert.That(edited.BasePowerUpAttributes, Has.Count.EqualTo(powerUps - 1));
+    }
+
+    /// <summary>
     /// Every new item knows the version which introduced it.
     /// </summary>
     [Test]
