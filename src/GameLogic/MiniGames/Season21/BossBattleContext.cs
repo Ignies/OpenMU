@@ -33,6 +33,11 @@ public sealed class BossBattleContext : MiniGameContext
     private Player? _lastHitter;
 
     /// <summary>
+    /// Whether the boss died: the end of the game clears it from the map before the results, so its state can't tell.
+    /// </summary>
+    private bool _bossKilled;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="BossBattleContext"/> class.
     /// </summary>
     /// <param name="key">The key of this context.</param>
@@ -108,6 +113,7 @@ public sealed class BossBattleContext : MiniGameContext
         }
 
         this._lastHitter = this.Map.GetObject(e.KillerId) as Player;
+        this._bossKilled = true;
         this.FinishEvent();
     }
 
@@ -115,7 +121,7 @@ public sealed class BossBattleContext : MiniGameContext
     protected override async ValueTask GameEndedAsync(ICollection<Player> finishers)
     {
         await base.GameEndedAsync(finishers).ConfigureAwait(false);
-        var killed = this.Boss is { IsAlive: false };
+        var killed = this._bossKilled;
         var ranked = finishers.OrderByDescending(this.GetDamage).ToList();
         var top = ranked.FirstOrDefault(p => this.GetDamage(p) > 0);
         for (var index = 0; index < ranked.Count; index++)

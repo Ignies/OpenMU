@@ -1,4 +1,4 @@
-// <copyright file="BossBattleTest.cs" company="MUnique">
+﻿// <copyright file="BossBattleTest.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -90,6 +90,33 @@ public class BossBattleTest
         Assert.That(Items(heavy, 110), Is.EqualTo(1 + 2), "the damage and top damage rewards");
         Assert.That(Items(light, 110), Is.EqualTo(2), "the last hit reward");
         Mock.Get(light.ViewPlugIns.GetPlugIn<ISeason21EventViewPlugIn>()!).Verify(v => v.ShowResultAsync(MiniGameType.BossBattle, true, It.IsAny<int>(), It.IsAny<int>(), 0), Times.Once);
+    }
+
+    /// <summary>
+    /// A battle whose time runs out with the boss alive is no success, although the end of the game clears the boss
+    /// from the map before the results.
+    /// </summary>
+    [Test]
+    public async ValueTask TimeOutWithTheBossAliveIsNoSuccessAsync()
+    {
+        // A world of its own: the battle of the other test may still hold the map.
+        var world = await Season21EventWorld.CreateAsync(new ActivateSeason21WideItemsUpdatePlugIn(), new AddSeason21BossBattleUpdatePlugIn()).ConfigureAwait(false);
+        world.AddFeaturePlugIn(new Season21EventsFeaturePlugIn { Configuration = world.GetStoredConfiguration<Season21EventsConfiguration>(typeof(Season21EventsFeaturePlugIn).GUID) });
+        world.Register<GameLogic.PlugIns.IAttackableGotHitPlugIn>(new BossBattleDamagePlugIn());
+        var player = await world.CreatePlayerAsync(CharacterClassNumber.BladeMaster, 400, 500).ConfigureAwait(false);
+        player.Money = 20_000_000;
+        await new EnterMiniGameAction().TryEnterMiniGameAsync(player, MiniGameType.BossBattle, 1, 0xFF).ConfigureAwait(false);
+        await Season21EventWorld.CompleteMapChangeAsync(player).ConfigureAwait(false);
+        var game = (BossBattleContext)player.CurrentMiniGame!;
+        await Season21EventWorld.SkipUntilPlayingAsync(game).ConfigureAwait(false);
+        await Season21EventWorld.WaitUntilAsync(() => game.Boss is not null).ConfigureAwait(false);
+
+        typeof(MiniGameContext).GetMethod("FinishEvent", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(game, null);
+        await Season21EventWorld.WaitUntilAsync(() => game.State is MiniGameState.Ended or MiniGameState.Disposed).ConfigureAwait(false);
+
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<ISeason21EventViewPlugIn>()!);
+        await Season21EventWorld.WaitUntilAsync(() => view.Invocations.Any(i => i.Method.Name == nameof(ISeason21EventViewPlugIn.ShowResultAsync))).ConfigureAwait(false);
+        view.Verify(v => v.ShowResultAsync(MiniGameType.BossBattle, false, It.IsAny<int>(), It.IsAny<int>(), 0), Times.Once);
     }
 
     private static int Boxes(Player player) => Items(player, 110);
