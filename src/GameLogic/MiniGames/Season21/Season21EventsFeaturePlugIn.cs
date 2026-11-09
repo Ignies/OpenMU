@@ -91,10 +91,12 @@ public class Season21EventsFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigu
             return;
         }
 
-        // The entry warps the player, which changes its state itself, so the talk action must leave it alone.
         eventArgs.HasBeenHandled = true;
-        eventArgs.LeavesDialogOpen = true;
         await new EnterMiniGameAction().TryEnterMiniGameAsync(player, entrance.Type, entrance.GameLevel, NoTicket).ConfigureAwait(false);
         player.OpenedNpc = null;
+
+        // The entry warps the player, which changes its state itself, so the talk action must leave it alone; a refused
+        // entry doesn't warp, and the talk action closes the dialog, otherwise the next talk gets no answer.
+        eventArgs.LeavesDialogOpen = player.PlayerState.CurrentState != PlayerState.NpcDialogOpened;
     }
 }

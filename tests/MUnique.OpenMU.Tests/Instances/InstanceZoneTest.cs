@@ -6,10 +6,12 @@ namespace MUnique.OpenMU.Tests.Instances;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.EvolutionQuests;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.MiniGames.Season21;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Rewards;
 using MUnique.OpenMU.GameLogic.Ruud;
@@ -64,6 +66,30 @@ public class InstanceZoneTest
         Assert.That(player.CurrentMap?.Definition.Number, Is.EqualTo(EvolutionQuestConfiguration.Season21TrialMap));
         await player.WarpToSafezoneAsync().ConfigureAwait(false);
         await Season21EventWorld.CompleteMapChangeAsync(player).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// A refused entry by the Portal of Dimension closes its dialog, so the next talk to it is answered.
+    /// </summary>
+    [Test]
+    public async ValueTask RefusedPortalEntryClosesTheDialogAsync()
+    {
+        var map = this._world.Configuration.Maps.Single(m => m.Number == 115 && m.Discriminator == 0);
+        var requirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.Level, MinimumValue = 100_000 };
+        map.MapRequirements.Add(requirement);
+        try
+        {
+            var player = await this._world.CreatePlayerAsync(CharacterClassNumber.BladeMaster, 400, 100, 114, 232, 57).ConfigureAwait(false);
+            var portal = player.CurrentMap!.GetNpcsInRange(player.Position, 255).First(n => n.Definition.Number == 758);
+            await new TalkNpcAction().TalkToNpcAsync(player, portal).ConfigureAwait(false);
+
+            Assert.That(player.CurrentMiniGame, Is.Null);
+            Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+        }
+        finally
+        {
+            map.MapRequirements.Remove(requirement);
+        }
     }
 
     /// <summary>
