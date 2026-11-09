@@ -62,6 +62,24 @@ public class LevelPenaltyPlugInTest
     }
 
     /// <summary>
+    /// A monster without a level (a castle gate, a guardian statue, a life stone) takes the damage unchanged and gives
+    /// the experience unchanged: the catapult impact on the gate failed on the missing level.
+    /// </summary>
+    [Test]
+    public async ValueTask MonsterWithoutLevelKeepsTheDamageAsync()
+    {
+        var (player, monster) = await CreatePlayerAndMonsterAsync().ConfigureAwait(false);
+        var plugIn = new LevelPenaltyPlugIn { Configuration = new LevelPenaltyConfiguration() };
+        player.GameContext.FeaturePlugIns.AddPlugIn(plugIn, true);
+        monster.Definition.Attributes.Remove(monster.Definition.Attributes.First(a => a.AttributeDefinition == Stats.Level));
+
+        Assert.That(LevelPenaltyPlugIn.ApplyToDamage(player, player, monster, 1000), Is.EqualTo(1000));
+        var args = new ExperienceCalculationArgs(monster, false, 1000);
+        await plugIn.CalculateExperienceAsync(player, args).ConfigureAwait(false);
+        Assert.That(args.Experience, Is.EqualTo(1000).Within(1e-6));
+    }
+
+    /// <summary>
     /// The plugin is off by default and the fork marker names it.
     /// </summary>
     [Test]

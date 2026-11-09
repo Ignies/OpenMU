@@ -46,7 +46,8 @@ public class LevelPenaltyPlugIn : IFeaturePlugIn, IExperienceCalculationPlugIn, 
             || monster is null
             || player.GameContext.FeaturePlugIns.GetPlugIn<LevelPenaltyPlugIn>()?.Configuration is not { } configuration
             || (attackerPlayer is null && !configuration.MonsterDamageBonusActive)
-            || player.Attributes is not { } attributes)
+            || player.Attributes is not { } attributes
+            || LevelOf(monster) is not { } monsterLevel)
         {
             return damage;
         }
@@ -59,7 +60,7 @@ public class LevelPenaltyPlugIn : IFeaturePlugIn, IExperienceCalculationPlugIn, 
             (int)attributes[Stats.Level],
             (int)attributes[Stats.MasterLevel],
             (int)attributes[Stats.Resets],
-            (int)monster.Definition[Stats.Level]);
+            monsterLevel);
         return LevelPenalties.ApplyToDamage(damage, percent, attackerPlayer is not null);
     }
 
@@ -71,7 +72,8 @@ public class LevelPenaltyPlugIn : IFeaturePlugIn, IExperienceCalculationPlugIn, 
     {
         if (this.Configuration is { } configuration
             && args.KilledObject is NonPlayerCharacter monster
-            && player.Attributes is { } attributes)
+            && player.Attributes is { } attributes
+            && LevelOf(monster) is { } monsterLevel)
         {
             var percent = LevelPenalties.GetExperiencePenaltyPercent(
                 configuration,
@@ -80,12 +82,16 @@ public class LevelPenaltyPlugIn : IFeaturePlugIn, IExperienceCalculationPlugIn, 
                 (int)attributes[Stats.Level],
                 (int)attributes[Stats.MasterLevel],
                 (int)attributes[Stats.Resets],
-                (int)monster.Definition[Stats.Level]);
+                monsterLevel);
             args.Experience *= 1 - (percent / 100.0);
         }
 
         return ValueTask.CompletedTask;
     }
+
+    /// <summary>The level of a monster; null for one without (a castle gate, a guardian statue, a life stone).</summary>
+    private static int? LevelOf(NonPlayerCharacter monster) =>
+        monster.Definition.Attributes.FirstOrDefault(a => a.AttributeDefinition == Stats.Level) is { } level ? (int)level.Value : null;
 
     private static ProgressionConfiguration? GetProgression(Player player) => ProgressionFeaturePlugIn.GetWorld(player.GameContext)?.Configuration;
 }
