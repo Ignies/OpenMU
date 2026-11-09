@@ -11,8 +11,10 @@ a copy of a map for each party, with its own monsters and timer. The game level 
 - Entry: `PartyInstances.EnterAsync` (or the Babylon `EE B1` request) goes through `EnterMiniGameAction`, so the usual
   rules apply (level bracket, maximum players, player killers, map requirements). The key is the party master, so the
   members of a party share one copy and another party gets its own; a player without a party gets a copy of its own.
-- Timer: a short entry phase (`EnterDuration`, 10 s), then the game runs for `GameDuration`. Members of the party may
-  join while it runs.
+- Timer: the game starts when the entrants stand on the map (at most 55 s for their clients to load it), then runs
+  for `GameDuration`. Members of the party may join while it runs. A plain `EnterDuration` (10 s) closed the copy of a
+  client which loaded longer: a player whose map change isn't acknowledged isn't alive, so it counted 0 players and
+  the end warped it to the safe zone (Lorencia for the Trial Area).
 - Monsters: the spawns of the map copy. Spawns with the trigger `OnceAtEventStart` or `OnceAtWaveStart` make the copy
   clearable: when all of them are dead after the last wave started, the instance ends with success and every player in
   it gets the rewards of the definition (rank 1). A copy without such spawns is only a place; the class quest trial

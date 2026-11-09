@@ -13,7 +13,8 @@ using MUnique.OpenMU.GameLogic.NPC;
 /// with its own monsters and timer.
 /// </summary>
 /// <remarks>
-/// The instance starts right after its short entry phase, and members of the party may join it while it runs. It ends
+/// The instance starts as soon as its entrants loaded the map (a loading client isn't alive yet, so an entry phase
+/// shorter than the loading would close the instance for lack of players), and members of the party may join it while it runs. It ends
 /// when the time is over, or as soon as the last player left it, so the party gets a fresh copy next time.
 /// An instance whose map has monsters which spawn once (at the event start or at a wave start) is cleared when all of
 /// them are dead after the last wave started; then the players succeeded and get the rewards of the definition.
@@ -58,6 +59,9 @@ public class PartyInstanceContext : MiniGameContext
 
     /// <inheritdoc />
     protected override TimeSpan MinimumEnterDuration => TimeSpan.Zero;
+
+    /// <inheritdoc />
+    protected override bool StartsWhenEntrantsAreOnTheMap => true;
 
     /// <inheritdoc />
     protected override TimeSpan RemainingTime

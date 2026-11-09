@@ -8,9 +8,11 @@ using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.EvolutionQuests;
 using MUnique.OpenMU.GameLogic.MiniGames;
 using MUnique.OpenMU.GameLogic.NPC;
+using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
@@ -137,6 +139,70 @@ public class PartyInstanceTest
         await Season21EventWorld.WaitUntilAsync(() => view.Invocations.Any(i => i.Method.Name == nameof(ISeason21EventViewPlugIn.ShowStateAsync))).ConfigureAwait(false);
         view.Verify(v => v.ShowStateAsync(MiniGameType.PartyInstance, 2, MiniGameState.Playing, It.Is<uint>(s => s > 1700)), Times.Once);
         await LeaveAsync(player).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// A client which still loads the Trial Area when the entry phase is over keeps its instance: the instance waits for
+    /// its entrants instead of closing for lack of players and warping the loading hero back to Lorencia.
+    /// </summary>
+    [Test]
+    public async ValueTask SlowLoadingClientKeepsItsInstanceAsync()
+    {
+        var definition = this._world.Configuration.MiniGameDefinitions.Single(d => d.Type == MiniGameType.PartyInstance && d.Entrance?.Map?.Number == EvolutionQuestConfiguration.Season21TrialMap);
+        var enterDuration = definition.EnterDuration;
+        definition.EnterDuration = TimeSpan.FromMilliseconds(100);
+        try
+        {
+            var player = await this._world.CreatePlayerAsync(CharacterClassNumber.BladeMaster, 400, 400).ConfigureAwait(false);
+            await TalkWithoutLoadingAsync(player, 764).ConfigureAwait(false);
+            var instance = player.CurrentMiniGame!;
+
+            await Task.Delay(TimeSpan.FromMilliseconds(500)).ConfigureAwait(false);
+            await Season21EventWorld.CompleteMapChangeAsync(player).ConfigureAwait(false);
+            await Season21EventWorld.WaitUntilAsync(() => instance.State == MiniGameState.Playing || instance.IsDisposed).ConfigureAwait(false);
+
+            Assert.That(instance.IsDisposed, Is.False);
+            Assert.That(player.CurrentMiniGame, Is.SameAs(instance));
+            Assert.That(player.CurrentMap, Is.SameAs(instance.Map));
+            await LeaveAsync(player).ConfigureAwait(false);
+        }
+        finally
+        {
+            definition.EnterDuration = enterDuration;
+        }
+    }
+
+    /// <summary>
+    /// A refused entry closes the dialog of the NPC, so the next talk to it is answered.
+    /// </summary>
+    [Test]
+    public async ValueTask RefusedEntryAnswersTheNextTalkAsync()
+    {
+        var map = this._world.Configuration.Maps.Single(m => m.Number == EvolutionQuestConfiguration.Season21TrialMap && m.Discriminator == 0);
+        var requirement = new Persistence.BasicModel.AttributeRequirement { Attribute = Stats.Level, MinimumValue = 100_000 };
+        map.MapRequirements.Add(requirement);
+        try
+        {
+            var player = await this._world.CreatePlayerAsync(CharacterClassNumber.BladeMaster, 400, 400).ConfigureAwait(false);
+            await TalkWithoutLoadingAsync(player, 764).ConfigureAwait(false);
+            Assert.That(player.PlayerState.CurrentState, Is.EqualTo(PlayerState.EnteredWorld));
+
+            map.MapRequirements.Remove(requirement);
+            await TalkWithoutLoadingAsync(player, 764).ConfigureAwait(false);
+            Assert.That(player.CurrentMiniGame?.Definition.Type, Is.EqualTo(MiniGameType.PartyInstance));
+            await Season21EventWorld.CompleteMapChangeAsync(player).ConfigureAwait(false);
+            await LeaveAsync(player).ConfigureAwait(false);
+        }
+        finally
+        {
+            map.MapRequirements.Remove(requirement);
+        }
+    }
+
+    private static async ValueTask TalkWithoutLoadingAsync(Player player, short npcNumber)
+    {
+        var npc = player.CurrentMap!.GetNpcsInRange(player.Position, 255).First(n => n.Definition.Number == npcNumber);
+        await new TalkNpcAction().TalkToNpcAsync(player, npc).ConfigureAwait(false);
     }
 
     private static async ValueTask LeaveAsync(params Player[] players)
