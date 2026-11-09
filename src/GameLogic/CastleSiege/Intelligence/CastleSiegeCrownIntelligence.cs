@@ -13,6 +13,9 @@ using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 /// </summary>
 public sealed class CastleSiegeCrownIntelligence : CastleSiegeNpcIntelligenceBase, IDisposable
 {
+    /// <summary>The original takes the Crown user within 3 tiles: the wartime attributes block the tiles next to its pedestal.</summary>
+    private const int CrownReach = 3;
+
     private static readonly TimeSpan TrackingInterval = TimeSpan.FromSeconds(1);
     private readonly CastleSiegeContext _context;
     private Timer? _timer;
@@ -64,7 +67,7 @@ public sealed class CastleSiegeCrownIntelligence : CastleSiegeNpcIntelligenceBas
 
         // Only attackers can seal the Crown, so a defender or bystander standing next to it must not block them.
         // The current user keeps the Crown while eligible; a newcomer with a lower object id must not interrupt them.
-        var candidates = crown.CurrentMap.GetAttackablesInRange(crown.Position, 1)
+        var candidates = crown.CurrentMap.GetAttackablesInRange(crown.Position, CrownReach)
             .OfType<Player>()
             .Where(player => player.IsAlive
                              && player.CurrentMap == crown.CurrentMap

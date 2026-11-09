@@ -830,6 +830,43 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// Verifies that an attacker on the stairs two tiles in front of the Crown claims it: the wartime attributes
+    /// (EncTerrain312.att) block every tile next to its pedestal, and the original takes the Crown user within 3 tiles.
+    /// </summary>
+    [Test]
+    public async ValueTask CrownIsReachableFromTheStairsAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        try
+        {
+            await fixture.Context.NpcController.PrepareAsync().ConfigureAwait(false);
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            var crown = fixture.Context.ActiveNpcs
+                .Select(runtime => runtime.SpawnedInstance)
+                .OfType<CastleSiegeCrown>()
+                .Single();
+            using var crownIntelligence = new CastleSiegeCrownIntelligence(fixture.Context)
+            {
+                Npc = crown,
+            };
+
+            await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, crown.Position.X, (byte)(crown.Position.Y + 4)).ConfigureAwait(false);
+            await crownIntelligence.TickAsync().ConfigureAwait(false);
+            Assert.That(fixture.Context.CrownUser, Is.Null);
+
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, crown.Position.X, (byte)(crown.Position.Y + 2)).ConfigureAwait(false);
+            await crownIntelligence.TickAsync().ConfigureAwait(false);
+            Assert.That(fixture.Context.CrownUser, Is.SameAs(fixture.Player));
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Verifies that defenders can't claim or block the Crown, and that the current Crown user keeps it
     /// when another attacker steps next to the Crown.
     /// </summary>
