@@ -3657,5 +3657,50 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("IllusionTempleStoneUnsealedFormat", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Usage: {0}.
+        /// </summary>
+        public static string ChatCommandUsage {
+            get {
+                return ResourceManager.GetString("ChatCommandUsage", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The Castle Siege is not active on this server..
+        /// </summary>
+        public static string CastleSiegeNotActive {
+            get {
+                return ResourceManager.GetString("CastleSiegeNotActive", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The Castle Siege enters the state {0} at its next tick..
+        /// </summary>
+        public static string CastleSiegeStateForced {
+            get {
+                return ResourceManager.GetString("CastleSiegeStateForced", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Crown test on: the switches are waived, one attacker alone can capture the Crown..
+        /// </summary>
+        public static string CastleSiegeCrownTestOn {
+            get {
+                return ResourceManager.GetString("CastleSiegeCrownTestOn", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Crown test off: the Crown needs both switches again..
+        /// </summary>
+        public static string CastleSiegeCrownTestOff {
+            get {
+                return ResourceManager.GetString("CastleSiegeCrownTestOff", resourceCulture);
+            }
+        }
     }
 }

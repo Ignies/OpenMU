@@ -2253,6 +2253,12 @@
   <data name="SetRuudChatCommandPlugIn_Description" xml:space="preserve">
     <value>Sets the Ruud of a character: /setruud &lt;character&gt; &lt;amount&gt;.</value>
   </data>
+  <data name="SiegeChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chat command: /siege</value>
+  </data>
+  <data name="SiegeChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Forces a state of the Castle Siege at its next tick (register, mark, notify, ready, start, end), or switches the crown test on or off (crown): it waives the two switches, so one attacker alone can capture the Crown.</value>
+  </data>
   <data name="GremoryGiftChatCommandPlugIn_Name" xml:space="preserve">
     <value>Chat command: /gremgif</value>
   </data>

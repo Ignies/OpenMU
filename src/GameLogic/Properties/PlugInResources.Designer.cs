@@ -6294,6 +6294,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("SetRuudChatCommandPlugIn_Description", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Chat command: /siege.
+        /// </summary>
+        public static string SiegeChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("SiegeChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Forces a state of the Castle Siege at its next tick, or switches the crown test on or off.
+        /// </summary>
+        public static string SiegeChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("SiegeChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Chat command: /gremgif.

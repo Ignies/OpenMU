@@ -1261,4 +1261,19 @@ Extensões de inventário: {18}</value>
   <data name="MuunNeedsNewerClient" xml:space="preserve">
     <value>A troca de Muuns precisa de um cliente de jogo mais novo.</value>
   </data>
+  <data name="ChatCommandUsage" xml:space="preserve">
+    <value>Uso: {0}</value>
+  </data>
+  <data name="CastleSiegeNotActive" xml:space="preserve">
+    <value>O Castle Siege não está ativo neste servidor.</value>
+  </data>
+  <data name="CastleSiegeStateForced" xml:space="preserve">
+    <value>O Castle Siege entra no estado {0} no próximo ciclo.</value>
+  </data>
+  <data name="CastleSiegeCrownTestOn" xml:space="preserve">
+    <value>Teste da coroa ativado: os interruptores são dispensados, um atacante sozinho pode capturar a coroa.</value>
+  </data>
+  <data name="CastleSiegeCrownTestOff" xml:space="preserve">
+    <value>Teste da coroa desativado: a coroa precisa novamente dos dois interruptores.</value>
+  </data>
 </root>

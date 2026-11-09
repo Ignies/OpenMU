@@ -12,6 +12,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.CastleSiege;
 using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
+using MUnique.OpenMU.GameLogic.PlugIns.ChatCommands;
 using MUnique.OpenMU.GameLogic.Views.CastleSiege;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.Interfaces;
@@ -708,6 +709,58 @@ public class CastleSiegeCrownMechanicsTests
             Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(hasCrownUser && hasFirstSwitchUser && hasSecondSwitchUser ? TimeSpan.FromSeconds(1) : TimeSpan.Zero));
             Assert.That(fixture.Context.SiegeData.OwnerGuildId, Is.EqualTo(fixture.DefensePersistentGuildId));
         });
+    }
+
+    /// <summary>
+    /// A game master forces a state of the siege like the Force State of the admin panel: it's entered at the next
+    /// tick; an unknown state requests nothing.
+    /// </summary>
+    /// <param name="argument">The argument of the command.</param>
+    /// <param name="expected">The requested state.</param>
+    [TestCase("register", CastleSiegeState.RegisterGuild)]
+    [TestCase("mark", CastleSiegeState.RegisterMark)]
+    [TestCase("notify", CastleSiegeState.Notify)]
+    [TestCase("ready", CastleSiegeState.Ready)]
+    [TestCase("start", CastleSiegeState.Start)]
+    [TestCase("end", CastleSiegeState.End)]
+    public async ValueTask SiegeCommandRequestsTheStateAsync(string argument, CastleSiegeState expected)
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var gameMaster = await fixture.CreatePlayerAsync(AttackGuildId, "Gm", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        gameMaster.SelectedCharacter!.CharacterStatus = CharacterStatus.GameMaster;
+        var command = new SiegeChatCommandPlugIn(_ => fixture.Context);
+
+        await command.HandleCommandAsync(gameMaster, "/siege unknown").ConfigureAwait(false);
+        Assert.That(fixture.Context.TryTakeRequestedState(out _), Is.False);
+
+        await command.HandleCommandAsync(gameMaster, $"/siege {argument}").ConfigureAwait(false);
+        Assert.That(fixture.Context.TryTakeRequestedState(out var state), Is.True);
+        Assert.That(state, Is.EqualTo(expected));
+    }
+
+    /// <summary>
+    /// The crown test of a game master waives the switches, so one attacker alone at the crown captures it; a second
+    /// call ends the test.
+    /// </summary>
+    [Test]
+    public async ValueTask SiegeCrownCommandLetsOneAttackerCaptureAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var gameMaster = await fixture.CreatePlayerAsync(AttackGuildId, "Gm", CastleSiegeJoinSide.Attack1, 60, 60).ConfigureAwait(false);
+        gameMaster.SelectedCharacter!.CharacterStatus = CharacterStatus.GameMaster;
+        fixture.Context.CrownUser = gameMaster;
+        var command = new SiegeChatCommandPlugIn(_ => fixture.Context);
+
+        await command.HandleCommandAsync(gameMaster, "/siege crown").ConfigureAwait(false);
+        await CastleSiegeSwitchMechanics.SendSwitchInfoAsync(fixture.Context).ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
+        Assert.That(fixture.Context.IsCrownAvailable, Is.True);
+        Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(TimeSpan.FromSeconds(1)));
+
+        await command.HandleCommandAsync(gameMaster, "/siege crown").ConfigureAwait(false);
+        await fixture.CheckCrownAsync().ConfigureAwait(false);
+        Assert.That(fixture.Context.SwitchesWaived, Is.False);
+        Assert.That(fixture.Context.CrownAccumulatedTime, Is.EqualTo(TimeSpan.FromSeconds(1)));
     }
 
     private static async ValueTask<TestFixture> CreateFixtureAsync()

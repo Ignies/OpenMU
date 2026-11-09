@@ -133,6 +133,12 @@ public class CastleSiegeContext : IEventStateProvider
     /// </summary>
     public bool IsCrownAvailable { get; set; }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether a game master's crown test waives the two switches (<c>/siege crown</c>),
+    /// so one attacker alone can capture the Crown. It isn't persisted: a restart ends it.
+    /// </summary>
+    public bool SwitchesWaived { get; set; }
+
     /// <inheritdoc />
     public bool IsEventRunning => this.CurrentState == CastleSiegeState.Start;
 

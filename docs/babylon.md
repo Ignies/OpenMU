@@ -103,6 +103,15 @@ Rules:
 | `ability_core` | The Ability Enhancement Core of the fifth evolution: 45 skill, option, elite and extra damage cards in 22 slots (`Character.AbilityCore`, migration `AddSeason21AbilityCore`), their options as item options by card level, the fifth evolution skills of the skill cards, level up and reduction, card crafting at the chaos goblin (update "Add the Ability Enhancement Core of Season 21", plugin "Ability Enhancement Core (Season 21)", off by default; slot levels mapped through the progression mode; `src/GameLogic/AbilityCore`; `EE 43`-`45`) |
 | `illusion_temple_league` | The Illusion Temple League of Season 21 (maps 98 and 99, event type 14 of `EE B1`, level 1 or 2): the renewed temple (the Cursed Statue 658 gives the Cursed Hollow, its carrier seals it into one of the ten Captured Stone Statues 659-668 for a point, the other team unseals a stone to take it back, 7 points or the most at the end win) for the parties of two guilds (5 members of one guild, total level 400 through the progression mode); eliminations on the 3rd-9th (5 matches a guild), ranked by occupied stones, kills and level sum; the best four play the semi-finals on the 11th (first against fourth, second against third), their winners the final on the 12th; the players of the champion in the final get the Wings of Conqueror (12/268) from the 13th (update "Add the Illusion Temple League of Season 21", plugins "Illusion Temple League (Season 21)" and "Illusion Temple League start", off by default; `src/GameLogic/MiniGames/Readme.md`; `EE BE`-`BF`) |
 
+## Game master commands
+
+Chat commands of the fork for testing its systems with one or two clients (minimum status `GameMaster`).
+
+| Command | What it does |
+|---|---|
+| `/siege <register\|mark\|notify\|ready\|start\|end>` | Forces the Castle Siege state at its next tick, like Force State of the admin panel (not persisted: a restart starts at the guild registration again) |
+| `/siege crown` | Crown test on or off: the two switches are waived, so one attacker alone at the Crown captures it (crown, life stone and ruins with one client); a restart ends it |
+
 ## Balance
 
 The Season 21 data keeps the original numbers. A computed normalization layer (a world setting choosing

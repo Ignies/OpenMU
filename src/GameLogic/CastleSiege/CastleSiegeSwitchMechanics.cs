@@ -131,6 +131,11 @@ public static class CastleSiegeSwitchMechanics
 
     private static bool AreSwitchesHeldBySameAttackingSide(CastleSiegeContext context)
     {
+        if (context.SwitchesWaived)
+        {
+            return true;
+        }
+
         if (context.SwitchUsers[0] is not { IsAlive: true, GuildStatus: not null } firstSwitchUser
             || context.SwitchUsers[1] is not { IsAlive: true, GuildStatus: not null } secondSwitchUser)
         {

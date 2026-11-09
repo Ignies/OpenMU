@@ -1327,4 +1327,19 @@ Inventory Extensions: {18}</value>
   <data name="IllusionTempleStoneUnsealedFormat" xml:space="preserve">
     <value>{0} unsealed a stone statue and took the Cursed Hollow!</value>
   </data>
+  <data name="ChatCommandUsage" xml:space="preserve">
+    <value>Usage: {0}</value>
+  </data>
+  <data name="CastleSiegeNotActive" xml:space="preserve">
+    <value>The Castle Siege is not active on this server.</value>
+  </data>
+  <data name="CastleSiegeStateForced" xml:space="preserve">
+    <value>The Castle Siege enters the state {0} at its next tick.</value>
+  </data>
+  <data name="CastleSiegeCrownTestOn" xml:space="preserve">
+    <value>Crown test on: the switches are waived, one attacker alone can capture the Crown.</value>
+  </data>
+  <data name="CastleSiegeCrownTestOff" xml:space="preserve">
+    <value>Crown test off: the Crown needs both switches again.</value>
+  </data>
 </root>

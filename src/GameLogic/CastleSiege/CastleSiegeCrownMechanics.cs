@@ -232,19 +232,23 @@ public static class CastleSiegeCrownMechanics
 
     private static CastleSiegeJoinSide? GetCaptureSide(CastleSiegeContext context, Player? crownUser)
     {
-        if (crownUser is not { IsAlive: true, GuildStatus: not null }
-            || context.SwitchUsers[0] is not { IsAlive: true, GuildStatus: not null } firstSwitchUser
-            || context.SwitchUsers[1] is not { IsAlive: true, GuildStatus: not null } secondSwitchUser)
+        if (crownUser is not { IsAlive: true, GuildStatus: not null })
         {
             return null;
         }
 
         var crownSide = context.GetPlayerJoinSide(crownUser);
-        return IsAttackingSide(crownSide)
-               && context.GetPlayerJoinSide(firstSwitchUser) == crownSide
-               && context.GetPlayerJoinSide(secondSwitchUser) == crownSide
+        return IsAttackingSide(crownSide) && (context.SwitchesWaived || AreSwitchesHeldBy(context, crownSide))
             ? crownSide
             : null;
+    }
+
+    private static bool AreSwitchesHeldBy(CastleSiegeContext context, CastleSiegeJoinSide side)
+    {
+        return context.SwitchUsers[0] is { IsAlive: true, GuildStatus: not null } firstSwitchUser
+               && context.SwitchUsers[1] is { IsAlive: true, GuildStatus: not null } secondSwitchUser
+               && context.GetPlayerJoinSide(firstSwitchUser) == side
+               && context.GetPlayerJoinSide(secondSwitchUser) == side;
     }
 
     private static bool IsAttackingSide(CastleSiegeJoinSide side)
