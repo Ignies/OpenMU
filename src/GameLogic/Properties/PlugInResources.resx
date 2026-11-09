@@ -2253,6 +2253,12 @@
   <data name="SetRuudChatCommandPlugIn_Description" xml:space="preserve">
     <value>Sets the Ruud of a character: /setruud &lt;character&gt; &lt;amount&gt;.</value>
   </data>
+  <data name="LabyrinthChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Chat command: /labyrinth</value>
+  </data>
+  <data name="LabyrinthChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Outside of the Labyrinth of Dimensions it enters a run without a ticket, at the given floor; inside, it clears the current floor and goes on with the given floor or the next one: /labyrinth [floor].</value>
+  </data>
   <data name="SiegeChatCommandPlugIn_Name" xml:space="preserve">
     <value>Chat command: /siege</value>
   </data>

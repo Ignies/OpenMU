@@ -44,6 +44,8 @@ public sealed class Season21RoundsContext : MiniGameContext
 
     private int _clearedRounds;
 
+    private int _requestedRound;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="Season21RoundsContext"/> class.
     /// </summary>
@@ -93,6 +95,22 @@ public sealed class Season21RoundsContext : MiniGameContext
     /// <param name="player">The player.</param>
     /// <returns>The points.</returns>
     public int GetScore(Player player) => this._scores.GetValueOrDefault(player);
+
+    /// <summary>
+    /// Clears the current round as if its monsters were killed and goes on with a round without the pause: a game
+    /// master's way through the floors of the labyrinth (<c>/labyrinth</c>). Before the first round, it picks the first.
+    /// </summary>
+    /// <param name="round">The round to go on with, starting at 1; 0 for the next one.</param>
+    public void Advance(int round = 0)
+    {
+        Volatile.Write(ref this._requestedRound, round > 0 ? round : this._round + 1);
+        if (this._round > 0)
+        {
+            // Only the pause between rounds is skipped: before the first, the entrants must arrive.
+            this._roundCleared.TrySetResult();
+            this.SkipCurrentWait();
+        }
+    }
 
     /// <inheritdoc />
     protected override async ValueTask OnGameStartAsync(ICollection<Player> players)
@@ -208,9 +226,13 @@ public sealed class Season21RoundsContext : MiniGameContext
         {
             for (var index = 0; index < this._rounds.Rounds.Count; index++)
             {
+                if (Interlocked.Exchange(ref this._requestedRound, 0) is var requested && requested > 0 && requested <= this._rounds.Rounds.Count)
+                {
+                    index = requested - 1;
+                }
+
                 var round = this._rounds.Rounds[index];
-                this._round = index + 1;
-                var cleared = await this.PlayRoundAsync(round, cancellationToken).ConfigureAwait(false);
+                var cleared = await this.PlayRoundAsync(index + 1, round, cancellationToken).ConfigureAwait(false);
                 if (cleared)
                 {
                     // Counted after the rewards, so a cleared round is a rewarded one.
@@ -226,7 +248,7 @@ public sealed class Season21RoundsContext : MiniGameContext
                     // The next round starts anyway.
                 }
 
-                if (index < this._rounds.Rounds.Count - 1)
+                if (index < this._rounds.Rounds.Count - 1 && Volatile.Read(ref this._requestedRound) == 0)
                 {
                     await this.DelayWithSkipAsync(round.IsBossRound ? this._rounds.PauseAfterBossRound : this._rounds.PauseAfterRound, cancellationToken).ConfigureAwait(false);
                 }
@@ -289,10 +311,12 @@ public sealed class Season21RoundsContext : MiniGameContext
         this._league?.AddPoints(player, points);
     }
 
-    private async ValueTask<bool> PlayRoundAsync(EventRound round, CancellationToken cancellationToken)
+    private async ValueTask<bool> PlayRoundAsync(int number, EventRound round, CancellationToken cancellationToken)
     {
+        // The round is cleared through this source, so it's in place before the round counts as running (Advance).
         var roundCleared = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         this._roundCleared = roundCleared;
+        this._round = number;
         this._roundEndsAt = DateTime.UtcNow.Add(this._rounds.RoundDuration);
         if (this._rooms is { } rooms)
         {

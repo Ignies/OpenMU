@@ -3702,5 +3702,14 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("CastleSiegeCrownTestOff", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The labyrinth goes on with floor {0}..
+        /// </summary>
+        public static string LabyrinthAdvanced {
+            get {
+                return ResourceManager.GetString("LabyrinthAdvanced", resourceCulture);
+            }
+        }
     }
 }

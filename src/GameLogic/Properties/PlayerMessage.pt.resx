@@ -1276,4 +1276,7 @@ Extensões de inventário: {18}</value>
   <data name="CastleSiegeCrownTestOff" xml:space="preserve">
     <value>Teste da coroa desativado: a coroa precisa novamente dos dois interruptores.</value>
   </data>
+  <data name="LabyrinthAdvanced" xml:space="preserve">
+    <value>O labirinto continua no andar {0}.</value>
+  </data>
 </root>

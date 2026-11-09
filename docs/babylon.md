@@ -111,6 +111,7 @@ Chat commands of the fork for testing its systems with one or two clients (minim
 |---|---|
 | `/siege <register\|mark\|notify\|ready\|start\|end>` | Forces the Castle Siege state at its next tick, like Force State of the admin panel (not persisted: a restart starts at the guild registration again) |
 | `/siege crown` | Crown test on or off: the two switches are waived, so one attacker alone at the Crown captures it (crown, life stone and ruins with one client); a restart ends it |
+| `/labyrinth [floor]` | Outside the Labyrinth of Dimensions: enters a run of its own without ticket, level or daily limit checks, at the floor when given (1-41); inside: clears the current floor (its rewards count) and goes on with the given floor or the next one, without the pause |
 
 ## Balance
 

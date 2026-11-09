@@ -6296,6 +6296,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Chat command: /labyrinth.
+        /// </summary>
+        public static string LabyrinthChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("LabyrinthChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Enters or advances a run of the Labyrinth of Dimensions: /labyrinth [floor]..
+        /// </summary>
+        public static string LabyrinthChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("LabyrinthChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Chat command: /siege.
         /// </summary>
         public static string SiegeChatCommandPlugIn_Name {
