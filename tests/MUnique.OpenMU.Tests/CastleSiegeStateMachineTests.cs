@@ -520,6 +520,37 @@ public class CastleSiegeStateMachineTests
     }
 
     /// <summary>
+    /// A game server which does not host the siege map never owns the siege, even when it runs the task first: the
+    /// hosting game server owns it at once (the battle's NPCs failed with "map 30 is not hosted by this game context").
+    /// </summary>
+    [Test]
+    public async ValueTask OnlyTheHostOfTheSiegeMapOwnsTheSiegeAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        fixture.GameConfiguration.CastleSiegeConfiguration!.CastleSiegeMapDefinition ??= new GameMapDefinition { Number = 30 };
+        var withoutMap = new Mock<IGameServerContext>();
+        withoutMap.SetupGet(game => game.Configuration).Returns(fixture.GameConfiguration);
+        withoutMap.SetupGet(game => game.PersistenceContextProvider).Returns(fixture.PersistenceContextProvider);
+        withoutMap.SetupGet(game => game.LoggerFactory).Returns(NullLoggerFactory.Instance);
+        withoutMap.SetupGet(game => game.ServerTimeZone).Returns(TimeZoneInfo.Utc);
+        var lorenciaOnly = new Mock<GameServerConfiguration>();
+        lorenciaOnly.SetupGet(server => server.Maps).Returns(new List<GameMapDefinition> { new() { Number = 0 } });
+        withoutMap.SetupGet(game => game.ServerConfiguration).Returns(lorenciaOnly.Object);
+        var timeProvider = new ManualTimeProvider(new DateTimeOffset(2026, 8, 3, 12, 0, 0, TimeSpan.Zero));
+        var plugIn = new CastleSiegePlugIn(timeProvider);
+
+        await plugIn.ExecuteTaskAsync(withoutMap.Object).ConfigureAwait(false);
+        await plugIn.ExecuteTaskAsync(fixture.GameContext.Object).ConfigureAwait(false);
+
+        var context = plugIn.GetContext(fixture.GameContext.Object)!;
+        Assert.Multiple(() =>
+        {
+            Assert.That(context.GameContext, Is.SameAs(fixture.GameContext.Object));
+            Assert.That(plugIn.GetContext(withoutMap.Object), Is.SameAs(context));
+        });
+    }
+
+    /// <summary>
     /// Verifies that a state transition is reported to the <see cref="ICastleSiegeStateChangedPlugIn"/>.
     /// </summary>
     [Test]

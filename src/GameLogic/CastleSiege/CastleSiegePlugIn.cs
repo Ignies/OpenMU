@@ -425,12 +425,18 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
     /// </summary>
     private CastleSiegeContext? GetOwnedContext(IGameContext gameContext, CastleSiegeConfiguration configuration, DateTime utcNow, ILogger logger)
     {
+        var hostsMap = HostsSiegeMap(gameContext, configuration);
         var world = this._worlds.GetOrAdd(
             GetWorldKey(configuration),
-            _ => new SiegeWorld(new CastleSiegeContext(gameContext, configuration, this._timeProvider), utcNow));
+            _ => new SiegeWorld(new CastleSiegeContext(gameContext, configuration, this._timeProvider), hostsMap ? utcNow : DateTime.MinValue));
         lock (world)
         {
             world.Context.AddWorldGameContext(gameContext);
+            if (!hostsMap)
+            {
+                return null;
+            }
+
             if (world.Context.GameContext != gameContext)
             {
                 if (utcNow - world.LastOwnerTickUtc < OwnerTimeout)
@@ -454,6 +460,12 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
             return world.Context;
         }
     }
+
+    /// <summary>A game server whose configuration lists maps without the siege map never runs the siege.</summary>
+    private static bool HostsSiegeMap(IGameContext gameContext, CastleSiegeConfiguration configuration) =>
+        gameContext is not IGameServerContext { ServerConfiguration.Maps: { Count: > 0 } maps }
+        || configuration.CastleSiegeMapDefinition is not { } map
+        || maps.Any(hosted => hosted.Number == map.Number);
 
     private async ValueTask SynchronizePlayerAsync(
         Player player,
