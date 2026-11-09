@@ -81,6 +81,20 @@ it from the maps of the other server configurations): the players of the other
 game servers then enter the hosting server's instance (see the server settings
 on shared maps).
 
+## Battle end and cycle end
+
+At `End` the alliance which holds the castle (the crown captor, else the
+defender) becomes the stored owner; a new owner starts with no taxes, tribute
+or hunt zone. Every participant who was on the battlefield for
+`ParticipantRewardMinSeconds` gets the reward item (queued for the next login
+when the inventory is full or the player is offline), the winning side's guilds
+get their guild score, the life stones die and the machines despawn. Five
+minutes later `EndCycle` clears the registrations, marks, selected guilds,
+sides, castle NPCs and a game master's crown test (`/siege crown`), and opens
+the next registration. A game master who forces a registration state after the
+guild selection (`/siege register` after `/siege end`) gets the same clean
+start.
+
 ## Restarting after a missed cycle end
 
 When the server wasn't running at the end of a cycle (`EndCycle`), it notices

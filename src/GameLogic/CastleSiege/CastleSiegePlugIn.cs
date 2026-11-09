@@ -338,6 +338,33 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
         return configuration is Persistence.IIdentifiable { Id: var id } && id != Guid.Empty ? id : configuration;
     }
 
+    /// <summary>
+    /// Ends a cycle: clears the registrations, the selected guilds, the sides and the battle state, and despawns the
+    /// castle NPCs.
+    /// </summary>
+    private static async ValueTask ResetCycleAsync(CastleSiegeContext context)
+    {
+        await context.ClearRegistrationsAsync().ConfigureAwait(false);
+        context.FinalGuildList.Clear();
+        await context.SaveFinalGuildListAsync().ConfigureAwait(false);
+        await context.SetPlayerJoinSideAsync().ConfigureAwait(false);
+        context.ClearPlayerJoinSides();
+        context.ParticipantTracking.Clear();
+        await context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        context.MiddleOwnerGuildId = null;
+        context.SwitchesWaived = false;
+        context.CrownUser = null;
+        context.PreviousCrownUser = null;
+        Array.Clear(context.SwitchUsers);
+        context.CrownAccumulatedTime = TimeSpan.Zero;
+        context.IsCrownAvailable = false;
+        context.LastCrownUpdateUtc = DateTime.MinValue;
+        context.LastBroadcastSwitchInfos.Clear();
+        context.LastBroadcastCrownAvailability = null;
+        context.NextParticipantUpdateUtc = DateTime.MaxValue;
+        context.NextMiniMapUpdateUtc = DateTime.MaxValue;
+    }
+
     private static TimeSpan? GetNotificationInterval(CastleSiegeState state)
     {
         return state switch
@@ -476,6 +503,13 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
 
         await this.OnExitStateAsync().ConfigureAwait(false);
 
+        // A forced state before the guild selection after it (e.g. /siege register after /siege end) skips the cycle
+        // end, so the new cycle would start with the old guilds, sides and castle NPCs.
+        if (period.State < CastleSiegeState.Notify && previousState is >= CastleSiegeState.Notify and <= CastleSiegeState.End)
+        {
+            await ResetCycleAsync(context).ConfigureAwait(false);
+        }
+
         context.SetPeriod(period);
         this.ConfigureNotifications(context, period.StartUtc);
         await this.OnEnterStateAsync(context, false).ConfigureAwait(false);
@@ -595,24 +629,7 @@ public class CastleSiegePlugIn : IPeriodicTaskPlugIn, IObjectAddedToMapPlugIn, I
                 await context.NpcController.DespawnMachinesAsync().ConfigureAwait(false);
                 break;
             case CastleSiegeState.EndCycle:
-                await context.ClearRegistrationsAsync().ConfigureAwait(false);
-                context.FinalGuildList.Clear();
-                await context.SaveFinalGuildListAsync().ConfigureAwait(false);
-                await context.SetPlayerJoinSideAsync().ConfigureAwait(false);
-                context.ClearPlayerJoinSides();
-                context.ParticipantTracking.Clear();
-                await context.NpcController.DespawnAllAsync().ConfigureAwait(false);
-                context.MiddleOwnerGuildId = null;
-                context.CrownUser = null;
-                context.PreviousCrownUser = null;
-                Array.Clear(context.SwitchUsers);
-                context.CrownAccumulatedTime = TimeSpan.Zero;
-                context.IsCrownAvailable = false;
-                context.LastCrownUpdateUtc = DateTime.MinValue;
-                context.LastBroadcastSwitchInfos.Clear();
-                context.LastBroadcastCrownAvailability = null;
-                context.NextParticipantUpdateUtc = DateTime.MaxValue;
-                context.NextMiniMapUpdateUtc = DateTime.MaxValue;
+                await ResetCycleAsync(context).ConfigureAwait(false);
                 break;
         }
 
