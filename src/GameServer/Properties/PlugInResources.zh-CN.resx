@@ -2362,6 +2362,12 @@
   <data name="CastleSiegeSwitchInfoPlugIn_Description" xml:space="preserve">
     <value>向游戏客户端发送攻城战开关占领信息信息。</value>
   </data>
+  <data name="CastleSiegeCrownSwitchStatePlugIn_Name" xml:space="preserve">
+    <value>攻城战王冠开关状态显示</value>
+  </data>
+  <data name="CastleSiegeCrownSwitchStatePlugIn_Description" xml:space="preserve">
+    <value>向游戏客户端发送按下攻城战王冠开关的结果。</value>
+  </data>
   <data name="CastleSiegeOwnershipChangePlugIn_Name" xml:space="preserve">
     <value>攻城战城主变更显示</value>
   </data>

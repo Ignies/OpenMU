@@ -83,6 +83,15 @@ it from the maps of the other server configurations): the players of the other
 game servers then enter the hosting server's instance (see the server settings
 on shared maps).
 
+## Crown switches
+
+As in the original, an attacker pushes one of the two Crown switches by talking
+to it within 3 tiles during the battle; defenders can't push them. Another
+player who talks to a pushed switch is told who pushes it. The switch is
+released (and its attacker told) when the attacker dies, walks more than 3
+tiles away or leaves the map. The Crown opens while both switches are pushed by
+the same attacking side.
+
 ## Battle end and cycle end
 
 At `End` the alliance which holds the castle (the crown captor, else the

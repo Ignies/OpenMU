@@ -741,6 +741,75 @@ public class CastleSiegeNpcTests
     }
 
     /// <summary>
+    /// An attacker pushes a Crown switch by talking to it, as in the original: a second player who talks to it is
+    /// told who holds it, a defender can't push it, standing on it alone doesn't push it, and the switch is
+    /// released (and its holder told) when the holder dies.
+    /// </summary>
+    [Test]
+    public async ValueTask CrownSwitchIsPushedByTalkingAndReleasedWhenItsHolderDiesAsync()
+    {
+        var fixture = await CreateFixtureAsync().ConfigureAwait(false);
+        var contender = await PlayerTestHelper.CreatePlayerAsync(fixture.GameServerContext).ConfigureAwait(false);
+        contender.SelectedCharacter!.Id = Guid.NewGuid();
+        var defender = await PlayerTestHelper.CreatePlayerAsync(fixture.GameServerContext).ConfigureAwait(false);
+        defender.SelectedCharacter!.Id = Guid.NewGuid();
+        try
+        {
+            await fixture.Context.NpcController.PrepareAsync().ConfigureAwait(false);
+            fixture.Context.CurrentState = CastleSiegeState.Start;
+            var siegeSwitch = fixture.Context.ActiveNpcs
+                .Select(runtime => runtime.SpawnedInstance)
+                .OfType<CastleSiegeSwitch>()
+                .First();
+            var x = siegeSwitch.Position.X;
+            var y = siegeSwitch.Position.Y;
+            await AddSiegePlayerAsync(fixture, CastleSiegeJoinSide.Attack1, x, y).ConfigureAwait(false);
+            await AddSiegePlayerAsync(fixture, contender, CastleSiegeJoinSide.Attack2, x, y).ConfigureAwait(false);
+            await AddSiegePlayerAsync(fixture, defender, CastleSiegeJoinSide.Defense, x, y).ConfigureAwait(false);
+            using var switchIntelligence = new CastleSiegeSwitchIntelligence(fixture.Context)
+            {
+                Npc = siegeSwitch,
+            };
+            var talkPlugIn = new CastleSiegeCrownSwitchTalkPlugIn(_ => fixture.Context);
+
+            await switchIntelligence.TickAsync().ConfigureAwait(false);
+            Assert.That(fixture.Context.SwitchUsers[siegeSwitch.SwitchIndex], Is.Null);
+
+            await talkPlugIn.PlayerTalksToNpcAsync(defender, siegeSwitch, new NpcTalkEventArgs()).ConfigureAwait(false);
+            Assert.That(fixture.Context.SwitchUsers[siegeSwitch.SwitchIndex], Is.Null);
+
+            var interaction = new NpcTalkEventArgs();
+            await talkPlugIn.PlayerTalksToNpcAsync(fixture.Player, siegeSwitch, interaction).ConfigureAwait(false);
+            await talkPlugIn.PlayerTalksToNpcAsync(contender, siegeSwitch, new NpcTalkEventArgs()).ConfigureAwait(false);
+            await switchIntelligence.TickAsync().ConfigureAwait(false);
+            Assert.Multiple(() =>
+            {
+                Assert.That(interaction.HasBeenHandled, Is.True);
+                Assert.That(interaction.LeavesDialogOpen, Is.False);
+                Assert.That(fixture.Context.SwitchUsers[siegeSwitch.SwitchIndex], Is.SameAs(fixture.Player));
+            });
+            var playerView = Mock.Get(fixture.Player.ViewPlugIns.GetPlugIn<ICastleSiegeCrownSwitchStatePlugIn>()!);
+            playerView.Verify(view => view.ShowCrownSwitchStateAsync(siegeSwitch.Id, null, CastleSiegeCrownSwitchAccess.Pushing), Times.Once);
+            Mock.Get(contender.ViewPlugIns.GetPlugIn<ICastleSiegeCrownSwitchStatePlugIn>()!)
+                .Verify(view => view.ShowCrownSwitchStateAsync(siegeSwitch.Id, fixture.Player, CastleSiegeCrownSwitchAccess.PushedByOther), Times.Once);
+            Mock.Get(defender.ViewPlugIns.GetPlugIn<ICastleSiegeCrownSwitchStatePlugIn>()!)
+                .Verify(view => view.ShowCrownSwitchStateAsync(It.IsAny<ushort>(), It.IsAny<Player?>(), It.IsAny<CastleSiegeCrownSwitchAccess>()), Times.Never);
+
+            fixture.Player.IsAlive = false;
+            await switchIntelligence.TickAsync().ConfigureAwait(false);
+            Assert.That(fixture.Context.SwitchUsers[siegeSwitch.SwitchIndex], Is.Null);
+            playerView.Verify(view => view.ShowCrownSwitchStateAsync(siegeSwitch.Id, null, CastleSiegeCrownSwitchAccess.Released), Times.Once);
+        }
+        finally
+        {
+            await fixture.GameServerContext.RemovePlayerAsync(defender).ConfigureAwait(false);
+            await fixture.GameServerContext.RemovePlayerAsync(contender).ConfigureAwait(false);
+            await fixture.GameServerContext.RemovePlayerAsync(fixture.Player).ConfigureAwait(false);
+            await fixture.Context.NpcController.DespawnAllAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
     /// Verifies Crown and switch proximity tracking without applying the later win-condition mechanics.
     /// Crown availability remains owned by the switch mechanics.
     /// </summary>
@@ -809,6 +878,9 @@ public class CastleSiegeNpcTests
             {
                 Npc = siegeSwitch,
             };
+            await new CastleSiegeCrownSwitchTalkPlugIn(_ => fixture.Context)
+                .PlayerTalksToNpcAsync(fixture.Player, siegeSwitch, new NpcTalkEventArgs())
+                .ConfigureAwait(false);
             await switchIntelligence.TickAsync().ConfigureAwait(false);
             Assert.That(fixture.Context.SwitchUsers[siegeSwitch.SwitchIndex], Is.SameAs(fixture.Player));
 

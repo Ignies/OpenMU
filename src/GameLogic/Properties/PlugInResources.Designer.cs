@@ -340,6 +340,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Lets an attacker push a Castle Siege Crown switch by talking to it..
+        /// </summary>
+        public static string CastleSiegeCrownSwitchTalkPlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeCrownSwitchTalkPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Crown Switch.
+        /// </summary>
+        public static string CastleSiegeCrownSwitchTalkPlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeCrownSwitchTalkPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Opens the operation interface for a Castle Siege gate lever..
         /// </summary>
         public static string CastleSiegeLeverTalkPlugIn_Description {

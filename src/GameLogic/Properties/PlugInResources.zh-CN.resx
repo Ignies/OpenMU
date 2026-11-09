@@ -64,6 +64,12 @@
   <data name="CastleSiegeLeverTalkPlugIn_Description" xml:space="preserve">
     <value>打开攻城战城门机关的操作界面。</value>
   </data>
+  <data name="CastleSiegeCrownSwitchTalkPlugIn_Name" xml:space="preserve">
+    <value>攻城战王冠开关</value>
+  </data>
+  <data name="CastleSiegeCrownSwitchTalkPlugIn_Description" xml:space="preserve">
+    <value>攻击方与攻城战王冠开关对话即可按下开关。</value>
+  </data>
   <data name="CastleSiegeMachineTalkPlugIn_Name" xml:space="preserve">
     <value>攻城战战争机器</value>
   </data>

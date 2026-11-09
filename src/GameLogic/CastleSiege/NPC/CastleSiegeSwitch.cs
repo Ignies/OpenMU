@@ -48,9 +48,4 @@ public sealed class CastleSiegeSwitch : CastleSiegeNpcBase
     /// Gets the zero-based switch index.
     /// </summary>
     public int SwitchIndex { get; }
-
-    /// <summary>
-    /// Gets or sets the player currently occupying the switch.
-    /// </summary>
-    public Player? Occupant { get; set; }
 }

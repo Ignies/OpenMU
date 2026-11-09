@@ -9,7 +9,7 @@ using System.Threading;
 using MUnique.OpenMU.GameLogic.CastleSiege.NPC;
 
 /// <summary>
-/// Tracks the player standing at a Castle Siege Crown switch.
+/// Releases a Castle Siege Crown switch whose attacker died or left it.
 /// </summary>
 public sealed class CastleSiegeSwitchIntelligence : CastleSiegeNpcIntelligenceBase, IDisposable
 {
@@ -50,31 +50,10 @@ public sealed class CastleSiegeSwitchIntelligence : CastleSiegeNpcIntelligenceBa
     /// <returns>A task that represents the asynchronous tracking operation.</returns>
     public ValueTask TickAsync()
     {
-        if (this.Npc is not CastleSiegeSwitch siegeSwitch)
-        {
-            return ValueTask.CompletedTask;
-        }
-
-        Player? candidate = null;
-        if (this._context.CurrentState == CastleSiegeState.Start)
-        {
-            // Both sides may hold a switch, but only siege participants. The current occupant keeps the switch
-            // while eligible, so a newcomer with a lower object id does not take it over.
-            var candidates = siegeSwitch.CurrentMap.GetAttackablesInRange(siegeSwitch.Position, 1)
-                .OfType<Player>()
-                .Where(player => player.IsAlive
-                                 && player.CurrentMap == siegeSwitch.CurrentMap
-                                 && this._context.GetPlayerJoinSide(player) != CastleSiegeJoinSide.None)
-                .ToList();
-            var currentOccupant = siegeSwitch.Occupant;
-            candidate = currentOccupant is not null && candidates.Contains(currentOccupant)
-                ? currentOccupant
-                : candidates.MinBy(player => player.Id);
-        }
-
-        siegeSwitch.Occupant = candidate;
-        this._context.SwitchUsers[siegeSwitch.SwitchIndex] = candidate;
-        return ValueTask.CompletedTask;
+        // An attacker pushes the switch by talking to it (CastleSiegeCrownSwitchTalkPlugIn); the tick releases it.
+        return this.Npc is CastleSiegeSwitch siegeSwitch
+            ? CastleSiegeSwitchMechanics.ReleaseIfLeftAsync(this._context, siegeSwitch)
+            : ValueTask.CompletedTask;
     }
 
     /// <inheritdoc />

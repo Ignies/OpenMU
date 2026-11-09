@@ -147,12 +147,6 @@ public static class CastleSiegeCrownMechanics
         context.CrownUser = null;
         context.PreviousCrownUser = null;
         Array.Clear(context.SwitchUsers);
-        foreach (var siegeSwitch in context.NpcController.GetRuntimeSnapshot()
-                     .Select(runtime => runtime.SpawnedInstance)
-                     .OfType<CastleSiegeSwitch>())
-        {
-            siegeSwitch.Occupant = null;
-        }
 
         await BroadcastOwnershipChangeAsync(context, winnerGuild.GuildName).ConfigureAwait(false);
     }

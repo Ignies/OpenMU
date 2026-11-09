@@ -835,6 +835,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sends the answer to a Castle Siege Crown switch push to the game client..
+        /// </summary>
+        public static string CastleSiegeCrownSwitchStatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("CastleSiegeCrownSwitchStatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Castle Siege Crown Switch State View.
+        /// </summary>
+        public static string CastleSiegeCrownSwitchStatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("CastleSiegeCrownSwitchStatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Sends the current Castle Siege Crown lock state to the game client..
         /// </summary>
         public static string CastleSiegeCrownStatePlugIn_Description {

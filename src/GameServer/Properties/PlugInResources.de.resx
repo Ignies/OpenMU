@@ -2415,6 +2415,12 @@
   <data name="CastleSiegeSwitchInfoPlugIn_Description" xml:space="preserve">
     <value>Sendet Informationen zur Besetzung der Kronenschalter von Castle Siege an den Spielclient.</value>
   </data>
+  <data name="CastleSiegeCrownSwitchStatePlugIn_Name" xml:space="preserve">
+    <value>Castle Siege: Ansicht des Kronenschalterzustands</value>
+  </data>
+  <data name="CastleSiegeCrownSwitchStatePlugIn_Description" xml:space="preserve">
+    <value>Sendet die Antwort auf das Drücken eines Kronenschalters von Castle Siege an den Spielclient.</value>
+  </data>
   <data name="CastleSiegeOwnershipChangePlugIn_Name" xml:space="preserve">
     <value>Castle Siege: Ansicht des Besitzerwechsels</value>
   </data>

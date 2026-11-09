@@ -191,43 +191,6 @@ public class CastleSiegeContext : IEventStateProvider
     internal IEnumerable<IGameContext> WorldGameContexts => this._worldGameContexts.Keys;
 
     /// <summary>
-    /// Adds a game server of the world which shares this siege.
-    /// </summary>
-    /// <param name="gameContext">The game context.</param>
-    internal void AddWorldGameContext(IGameContext gameContext)
-    {
-        this._worldGameContexts.TryAdd(gameContext, 0);
-    }
-
-    /// <summary>
-    /// Gets the players of all game servers of the world.
-    /// </summary>
-    /// <returns>The players.</returns>
-    internal async ValueTask<List<Player>> GetWorldPlayersAsync()
-    {
-        var players = new List<Player>();
-        foreach (var gameContext in this.WorldGameContexts)
-        {
-            players.AddRange(await gameContext.GetPlayersAsync().ConfigureAwait(false));
-        }
-
-        return players;
-    }
-
-    /// <summary>
-    /// Sends a golden notification to the players of all game servers of the world.
-    /// </summary>
-    /// <param name="message">The message.</param>
-    /// <returns>The task.</returns>
-    internal async ValueTask SendWorldNotificationAsync(string message)
-    {
-        foreach (var gameContext in this.WorldGameContexts)
-        {
-            await gameContext.SendGlobalNotificationAsync(message).ConfigureAwait(false);
-        }
-    }
-
-    /// <summary>
     /// Gets the clock used by Castle Siege runtime operations.
     /// </summary>
     internal TimeProvider TimeProvider => this._timeProvider;
@@ -514,6 +477,43 @@ public class CastleSiegeContext : IEventStateProvider
 
         await context.SaveChangesAsync().ConfigureAwait(false);
         this.RegisteredGuilds.Clear();
+    }
+
+    /// <summary>
+    /// Adds a game server of the world which shares this siege.
+    /// </summary>
+    /// <param name="gameContext">The game context.</param>
+    internal void AddWorldGameContext(IGameContext gameContext)
+    {
+        this._worldGameContexts.TryAdd(gameContext, 0);
+    }
+
+    /// <summary>
+    /// Gets the players of all game servers of the world.
+    /// </summary>
+    /// <returns>The players.</returns>
+    internal async ValueTask<List<Player>> GetWorldPlayersAsync()
+    {
+        var players = new List<Player>();
+        foreach (var gameContext in this.WorldGameContexts)
+        {
+            players.AddRange(await gameContext.GetPlayersAsync().ConfigureAwait(false));
+        }
+
+        return players;
+    }
+
+    /// <summary>
+    /// Sends a golden notification to the players of all game servers of the world.
+    /// </summary>
+    /// <param name="message">The message.</param>
+    /// <returns>The task.</returns>
+    internal async ValueTask SendWorldNotificationAsync(string message)
+    {
+        foreach (var gameContext in this.WorldGameContexts)
+        {
+            await gameContext.SendGlobalNotificationAsync(message).ConfigureAwait(false);
+        }
     }
 
     /// <summary>

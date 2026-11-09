@@ -123,6 +123,12 @@
   <data name="CastleSiegeLeverTalkPlugIn_Description" xml:space="preserve">
     <value>Öffnet die Bedienoberfläche für einen Torhebel von Castle Siege.</value>
   </data>
+  <data name="CastleSiegeCrownSwitchTalkPlugIn_Name" xml:space="preserve">
+    <value>Castle Siege: Kronenschalter</value>
+  </data>
+  <data name="CastleSiegeCrownSwitchTalkPlugIn_Description" xml:space="preserve">
+    <value>Ein Angreifer drückt einen Kronenschalter von Castle Siege, indem er ihn anspricht.</value>
+  </data>
   <data name="CastleSiegeMachineTalkPlugIn_Name" xml:space="preserve">
     <value>Castle Siege: Kriegsmaschine</value>
   </data>

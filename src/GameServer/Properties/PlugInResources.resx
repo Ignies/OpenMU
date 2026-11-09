@@ -2445,6 +2445,12 @@
   <data name="CastleSiegeSwitchInfoPlugIn_Description" xml:space="preserve">
     <value>Sends Castle Siege Crown switch occupancy information to the game client.</value>
   </data>
+  <data name="CastleSiegeCrownSwitchStatePlugIn_Name" xml:space="preserve">
+    <value>Castle Siege Crown Switch State View</value>
+  </data>
+  <data name="CastleSiegeCrownSwitchStatePlugIn_Description" xml:space="preserve">
+    <value>Sends the answer to a Castle Siege Crown switch push to the game client.</value>
+  </data>
   <data name="CastleSiegeOwnershipChangePlugIn_Name" xml:space="preserve">
     <value>Castle Siege Ownership Change View</value>
   </data>
