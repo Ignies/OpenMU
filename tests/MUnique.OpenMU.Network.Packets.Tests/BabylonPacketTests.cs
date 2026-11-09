@@ -2051,6 +2051,28 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for EventStateRequest.
+    /// </summary>
+    [Test]
+    public void EventStateRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 7;
+        var actualLength = EventStateRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'EventType' boundary
+        Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'EventType' exceeds packet boundary");
+        
+        // Validate field 'GameLevel' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'GameLevel' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for RankingPage.
     /// </summary>
     [Test]

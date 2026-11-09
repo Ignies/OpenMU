@@ -1404,6 +1404,36 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="EventStateRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="eventType">The mini game type of the server (docs/babylon.md, "Events").</param>
+    /// <param name="gameLevel">The game level.</param>
+    /// <remarks>
+    /// Is sent by the client when: The client shows the entry of a Season 21 event of a game level, e.g. its entry window or its row under the event timers.
+    /// Causes reaction on server side: The server answers with EventState: open with the seconds until the entrance closes, playing, or closed with the seconds until the next start.
+    /// </remarks>
+    public static async ValueTask SendEventStateRequestAsync(this IConnection? connection, ushort @eventType, byte @gameLevel)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = EventStateRequestRef.Length;
+            var packet = new EventStateRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.EventType = @eventType;
+            packet.GameLevel = @gameLevel;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="RankingRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

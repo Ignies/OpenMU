@@ -54,6 +54,7 @@
   * [C1 EE A6 - SoulConverterRewardRequest (by client)](C1-EE-A6-SoulConverterRewardRequest_by-client.md)
   * [C1 EE A7 - SoulConverterResult (by server)](C1-EE-A7-SoulConverterResult_by-server.md)
   * [C1 EE A8 - SoulConverterStateRequest (by client)](C1-EE-A8-SoulConverterStateRequest_by-client.md)
+  * [C1 EE A9 - EventStateRequest (by client)](C1-EE-A9-EventStateRequest_by-client.md)
   * [C1 EE B0 - EventState (by server)](C1-EE-B0-EventState_by-server.md)
   * [C1 EE B1 - EventEnterRequest (by client)](C1-EE-B1-EventEnterRequest_by-client.md)
   * [C1 EE B2 - EventScore (by server)](C1-EE-B2-EventScore_by-server.md)

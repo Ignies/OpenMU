@@ -115,6 +115,7 @@ Chat commands of the fork for testing its systems with one or two clients (minim
 | `/labyrinth [floor]` | Outside the Labyrinth of Dimensions: enters a run of its own without ticket, level or daily limit checks, at the floor when given (1-41); inside: clears the current floor (its rewards count) and goes on with the given floor or the next one, without the pause |
 | `/itleague <elim\|semi\|final\|reward\|off>` | Plays the Illusion Temple League stage on any day (`IllusionTempleLeaguePlugIn.ForcedStage`, not persisted) and force-starts the league temples (not for `reward`); while forced the temples open at every time of the timetable; `off` gives the stages back to the days of the month |
 | `/item ... sck= seeds= errtels= opts= muun=` | The Season 21 options of `/item` (all optional; with named arguments the group and number are named too: `/item group=12 number=200 errtels=0:3:5 opts=element:1`). `sck=<n>` sockets (default the maximum of the item); `seeds=<index>[:<level>],...` the seeds of the sockets in order, the index over all elements as the W32 item carries it (0-49), sphere level 1-10 (default 1); `errtels=<socket>:<ranks>[:<level>],...` errtels in the sockets of a pentagram (socket 0 anger to 4 radiance, 1-5 ranks of the first errtel of that kind, level 0-10), its pentagram options follow; `opts=<kind>:<number>[:<level>],...` options of the item by kind `mastery`, `bonus` (mastery bonus), `element`, `grade` (wing grade) or `earring`; `muun=<days>` starts the additional option of a Muun. An entry the item can't have is named and nothing is made. Lucky and bound are properties of the item definition (lucky item set, `IsBoundToCharacter`), not of the item: there is no flag to set |
+| `/startts`, `/startbb`, `/startag` | Force-start the Tormented Square, the Boss Battle Together and the Protector of Acheron like `/startbc` (`StartMiniGameEventChatCommandPlugInBase`): a running one is stopped, the entrance opens now; refused on a game server where the event's start plugin is off |
 | `/getruud [character]` | Shows the Ruud of a character, the own without a name (`/setruud <character> <amount>` sets it) |
 
 ## Balance
@@ -331,7 +332,11 @@ bytes in the connection's item format (W32); 0xFF for no item.
 
 ### Events (range B0-BF)
 
-The events and party instances of Season 21 share five packets; the event type is the server's `MiniGameType`
+The events and party instances of Season 21 share five packets, and a sixth that asks a state (the B range is full, so
+it sits in the world range: `C1 07 EE A9 EventStateRequest` (client), event type u16 LE at 4, game level at 6; the server
+answers `EventState` for that level: open with the seconds until the entrance closes, playing with 0, or closed with the
+seconds until the next start (0 when the event has no start plugin or timetable there); a level the event lacks gets no
+answer, `EventStateRequestAction`); the event type is the server's `MiniGameType`
 (8 party instance, 9 Tormented Square, 10 Labyrinth of Dimensions, 11 Boss Battle Together, 12 Protector of Acheron,
 13 Chaos Castle Survival, 14 Illusion Temple League). A Season 6 client gets none of them: it is told in words.
 

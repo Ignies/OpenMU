@@ -804,6 +804,24 @@
   <data name="StartKanturuEventChatCommandPlugIn_Description" xml:space="preserve">
     <value>Handles the chat command '/startkanturu'. Starts the kanturu event at the next possible time.</value>
   </data>
+  <data name="StartTormentedSquareEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Start Tormented Square Event Chat Command</value>
+  </data>
+  <data name="StartTormentedSquareEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/startts'. Starts the tormented square of Season 21 at the next possible time.</value>
+  </data>
+  <data name="StartBossBattleEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Start Boss Battle Event Chat Command</value>
+  </data>
+  <data name="StartBossBattleEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/startbb'. Starts the boss battle together of Season 21 at the next possible time.</value>
+  </data>
+  <data name="StartAcheronGuardianEventChatCommandPlugIn_Name" xml:space="preserve">
+    <value>Start Protector of Acheron Event Chat Command</value>
+  </data>
+  <data name="StartAcheronGuardianEventChatCommandPlugIn_Description" xml:space="preserve">
+    <value>Handles the chat command '/startag'. Starts the protector of acheron of Season 21 at the next possible time.</value>
+  </data>
   <data name="TeleportChatCommandPlugIn_Name" xml:space="preserve">
     <value>Teleport chat command</value>
   </data>

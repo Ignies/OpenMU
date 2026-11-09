@@ -3825,6 +3825,60 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/startts&apos;. Starts the tormented square of Season 21 at the next possible time..
+        /// </summary>
+        public static string StartTormentedSquareEventChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StartTormentedSquareEventChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Tormented Square Event Chat Command.
+        /// </summary>
+        public static string StartTormentedSquareEventChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StartTormentedSquareEventChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/startbb&apos;. Starts the boss battle together of Season 21 at the next possible time..
+        /// </summary>
+        public static string StartBossBattleEventChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StartBossBattleEventChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Boss Battle Event Chat Command.
+        /// </summary>
+        public static string StartBossBattleEventChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StartBossBattleEventChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the chat command &apos;/startag&apos;. Starts the protector of acheron of Season 21 at the next possible time..
+        /// </summary>
+        public static string StartAcheronGuardianEventChatCommandPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StartAcheronGuardianEventChatCommandPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start Protector of Acheron Event Chat Command.
+        /// </summary>
+        public static string StartAcheronGuardianEventChatCommandPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StartAcheronGuardianEventChatCommandPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the chat command &apos;/startkanturu&apos;. Starts the kanturu event at the next possible time..
         /// </summary>
         public static string StartKanturuEventChatCommandPlugIn_Description {

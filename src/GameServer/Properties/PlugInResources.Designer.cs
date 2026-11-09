@@ -8805,6 +8805,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the Babylon client for the state of a Season 21 event (EE A9)..
+        /// </summary>
+        public static string EventStateRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("EventStateRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Event state request (Babylon).
+        /// </summary>
+        public static string EventStateRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("EventStateRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Event enter request (Babylon).
         /// </summary>
         public static string EventEnterRequestHandlerPlugIn_Name {

@@ -2340,6 +2340,29 @@
       <Fields />
     </Packet>
     <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>A9</SubCode>
+      <Name>EventStateRequest</Name>
+      <Length>7</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The client shows the entry of a Season 21 event of a game level, e.g. its entry window or its row under the event timers.</SentWhen>
+      <CausedReaction>The server answers with EventState: open with the seconds until the entrance closes, playing, or closed with the seconds until the next start.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>EventType</Name>
+          <Description>The mini game type of the server (docs/babylon.md, "Events").</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>GameLevel</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C2HeaderWithSubCode</HeaderType>
       <Code>EE</Code>
       <SubCode>D0</SubCode>

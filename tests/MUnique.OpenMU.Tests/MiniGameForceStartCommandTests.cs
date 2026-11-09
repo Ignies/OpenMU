@@ -1,4 +1,4 @@
-// <copyright file="MiniGameForceStartCommandTests.cs" company="MUnique">
+﻿// <copyright file="MiniGameForceStartCommandTests.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -62,6 +62,27 @@ public class MiniGameForceStartCommandTests
         var (player, strategyMock, _) = await this.CreatePlayerOnServerAsync(isEnabled: true).ConfigureAwait(false);
 
         await new StartBloodCastleEventChatCommandPlugIn().HandleCommandAsync(player, "/startbc").ConfigureAwait(false);
+
+        strategyMock.Verify(s => s.ForceStart(), Times.Once);
+    }
+
+    /// <summary>
+    /// The start commands of the Season 21 events force-start their own event.
+    /// </summary>
+    /// <param name="command">The command.</param>
+    /// <param name="type">The event it starts.</param>
+    [TestCase("/startts", MiniGameType.TormentedSquare)]
+    [TestCase("/startbb", MiniGameType.BossBattle)]
+    [TestCase("/startag", MiniGameType.AcheronGuardian)]
+    public async Task Season21StartCommandsForceStartTheirEventAsync(string command, MiniGameType type)
+    {
+        var plugIn = typeof(StartMiniGameEventChatCommandPlugInBase).Assembly.GetTypes()
+            .Where(t => t.IsSubclassOf(typeof(StartMiniGameEventChatCommandPlugInBase)) && !t.IsAbstract)
+            .Select(t => (StartMiniGameEventChatCommandPlugInBase)Activator.CreateInstance(t)!)
+            .Single(p => p.Key == command);
+        var (player, strategyMock, _) = await this.CreatePlayerOnServerAsync(isEnabled: true, type).ConfigureAwait(false);
+
+        await plugIn.HandleCommandAsync(player, command).ConfigureAwait(false);
 
         strategyMock.Verify(s => s.ForceStart(), Times.Once);
     }
@@ -159,7 +180,7 @@ public class MiniGameForceStartCommandTests
         return strategyMock;
     }
 
-    private async ValueTask<(Player Player, Mock<IPeriodicMiniGameStartPlugIn> Strategy, GameServerContext Context)> CreatePlayerOnServerAsync(bool isEnabled)
+    private async ValueTask<(Player Player, Mock<IPeriodicMiniGameStartPlugIn> Strategy, GameServerContext Context)> CreatePlayerOnServerAsync(bool isEnabled, MiniGameType type = MiniGameType.BloodCastle)
     {
         var gameConfigurationMock = new Mock<GameConfiguration>();
         var mapMock = new Mock<GameMapDefinition>();
@@ -185,7 +206,7 @@ public class MiniGameForceStartCommandTests
         };
 
         var strategyMock = new Mock<IPeriodicMiniGameStartPlugIn>();
-        strategyMock.SetupGet(s => s.Key).Returns(MiniGameType.BloodCastle);
+        strategyMock.SetupGet(s => s.Key).Returns(type);
         strategyMock.Setup(s => s.IsEventActive(It.IsAny<IGameContext>())).Returns(false);
         strategyMock.Setup(s => s.IsEnabledOn(It.IsAny<IGameContext>())).Returns(isEnabled);
 

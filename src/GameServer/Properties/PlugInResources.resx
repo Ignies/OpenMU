@@ -3083,6 +3083,12 @@
   <data name="EventEnterRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of the Babylon client to enter a Season 21 event or party instance (EE B1).</value>
   </data>
+  <data name="EventStateRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Event state request (Babylon)</value>
+  </data>
+  <data name="EventStateRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the Babylon client for the state of a Season 21 event (EE A9).</value>
+  </data>
   <data name="SeasonPassBabylonPlugIn_Name" xml:space="preserve">
     <value>Babylon: season pass</value>
   </data>
