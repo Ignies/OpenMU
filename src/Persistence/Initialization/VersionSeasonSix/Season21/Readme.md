@@ -216,7 +216,7 @@ Two more optional updates, both after the maps:
   entrance and the elite spot of the spawn file (else 6 tiles around the entrance); its elites spawn there and every
   other spawn of them on the map goes. Crimson Icarus keeps 6 elites a zone of its 187 spread ones; Ignis, Kardamahal
   Swamp of Doom and Aquilas get their elites (914-916, 966-968, 972-974, 978-980), which the data defines but never
-  spawns, 6 a zone.
+  spawns, 6 a zone; they drop the drop list of the data which names them with their map's monsters (version 4).
   Twisted Karutan's zones are walled in on the server terrain of the data but walkable on the terrain of the Season
   21 client (its tiles carry 0x0800 there): the update opens those 1,347 tiles, and its 45 elites spawn back on them.
   Arenil Temple (no published zones) and Old Kethotum (no elites) have none.

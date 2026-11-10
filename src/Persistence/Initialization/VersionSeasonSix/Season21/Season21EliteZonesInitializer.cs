@@ -73,6 +73,7 @@ internal class Season21EliteZonesInitializer
     public void Initialize()
     {
         this.CreateMonsters();
+        new Season21DropGroups(this._context, this._gameConfiguration).Apply();
         this.OpenTwistedKarutan();
         foreach (var group in Season21EliteZoneData.Zones.GroupBy(z => z.Map))
         {

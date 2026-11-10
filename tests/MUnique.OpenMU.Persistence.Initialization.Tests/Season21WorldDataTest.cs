@@ -82,6 +82,31 @@ internal class Season21WorldDataTest
     }
 
     /// <summary>
+    /// The elites which only a zone spawns (Ignis, Kardamahal, Swamp of Doom, Aquilas) drop the drop list of the data
+    /// which names them, as the other monsters of their map do; the update's second run changes nothing.
+    /// </summary>
+    /// <param name="elite">The elite.</param>
+    /// <param name="normal">A normal monster of the same drop list.</param>
+    [TestCase(914, 911)]
+    [TestCase(968, 963)]
+    [TestCase(974, 969)]
+    [TestCase(978, 975)]
+    public async Task ZoneElitesDropTheListOfTheirMapAsync(short elite, short normal)
+    {
+        var (context, gameConfiguration) = await CreateWithMapsAsync().ConfigureAwait(false);
+        var zones = new AddSeason21EliteZonesUpdatePlugIn();
+
+        await zones.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await zones.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var eliteRow = gameConfiguration.Monsters.Single(m => m.Number == elite);
+        var normalRow = gameConfiguration.Monsters.Single(m => m.Number == normal);
+        Assert.That(VersionSeasonSix.Season21.Season21DropData.All.Any(l => l.Monsters.Contains(elite) && l.Monsters.Contains(normal)), Is.True, "One list names both.");
+        Assert.That(eliteRow.DropItemGroups, Is.Not.Empty);
+        Assert.That(eliteRow.DropItemGroups, Is.EquivalentTo(normalRow.DropItemGroups));
+    }
+
+    /// <summary>
     /// The field bosses update defines the bosses, spawns them only by the plugin, gives them their item bags and
     /// configures the plugin; the progression normalizes them with their map.
     /// </summary>

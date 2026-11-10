@@ -13,7 +13,8 @@ using MUnique.OpenMU.Interfaces;
 /// </summary>
 /// <remarks>
 /// Being groups of the monster, they aren't filtered by the monster level, which is above any drop level on the later
-/// maps. Only the monsters of the data get them, so a Season 6 monster which a later map spawns keeps its drops.
+/// maps. Only the monsters of the data get them (the map sets' and the zone elites of <see cref="Season21EliteZoneData"/>),
+/// so a Season 6 monster which a later map spawns keeps its drops.
 /// Items which the configuration doesn't have are left out; applying it again after more items were defined adds them
 /// to the groups. A group's chance counts the active items only, as only these drop; it's set again when items join,
 /// unless the operator changed it.
@@ -57,7 +58,10 @@ internal sealed class Season21DropGroups
     public void Apply()
     {
         var items = this._gameConfiguration.Items.ToDictionary(KeyOf);
-        var ownMonsters = Season21MapData.All.SelectMany(set => set.Monsters).Select(row => row.Number).ToHashSet();
+        var ownMonsters = Season21MapData.All.SelectMany(set => set.Monsters)
+            .Concat(Season21EliteZoneData.Monsters.Select(elite => elite.Row))
+            .Select(row => row.Number)
+            .ToHashSet();
         short listNumber = 0;
         foreach (var list in Season21DropData.All)
         {

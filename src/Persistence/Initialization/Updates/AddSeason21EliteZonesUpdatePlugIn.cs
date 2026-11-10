@@ -41,11 +41,12 @@ public class AddSeason21EliteZonesUpdatePlugIn : UpdatePlugInBase
     /// <remarks>
     /// Version 2: the elites of the Swamp of Doom (972-974) derived from its normals instead of the placeholder rows.
     /// Version 3: the five zones of the Sanctuary of Aquilas (Webzen guide 430) with its elites 978-980.
+    /// Version 4: the elites which only a zone spawns (914-916, 966-968, 972-974, 978-980) drop their map's drop list.
     /// </remarks>
-    public override int Version => 3;
+    public override int Version => 4;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 08, 9, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 10, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21MapsUpdatePlugIn).GUID];
