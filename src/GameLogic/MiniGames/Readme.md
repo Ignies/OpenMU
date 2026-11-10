@@ -11,8 +11,9 @@ a copy of a map for each party, with its own monsters and timer. The game level 
 - Entry: `PartyInstances.EnterAsync` (or the Babylon `EE B1` request) goes through `EnterMiniGameAction`, so the usual
   rules apply (level bracket, maximum players, player killers, map requirements). The key is the party master, so the
   members of a party share one copy and another party gets its own; a player without a party gets a copy of its own.
-- Timer: the game starts when the entrants stand on the map (at most 55 s for their clients to load it), then runs
-  for `GameDuration`. Members of the party may join while it runs. A plain `EnterDuration` (10 s) closed the copy of a
+- Timer: the game starts when the entrants stand on the map (their clients sent F3 12), then runs for `GameDuration`.
+  It waits 55 s for every entrant; after that only while an entrant's client still loads (connected, `ChangingMap`),
+  at most 5 minutes, so a client loading longer than 55 s isn't sent back (a disconnected loader isn't waited for). Members of the party may join while it runs. A plain `EnterDuration` (10 s) closed the copy of a
   client which loaded longer: a player whose map change isn't acknowledged isn't alive, so it counted 0 players and
   the end warped it to the safe zone (Lorencia for the Trial Area). An empty game counts as not arrived: its loop
   starts before its creator entered, and an empty "all entrants on the map" closed it at once (`NotOpen`).
@@ -81,7 +82,7 @@ each the mission monsters (Great Sword 754 x2, Soldier 755 x3, Lancer 756 x3 of 
 50 points per floor number, the Ruud of the first seven floors (30 to 400) and at the floors 10, 20 and 30 one item of the
 lower, medium and higher Maze of Dimensions box (bags 240-242); a floor which runs out ends the run.
 Not ported: Elena's Letter. The rooms of a floor are the next section.
-A run starts when the client of its runner loaded map 115 (`StartsWhenEntrantsAreOnTheMap`, at most 55 s), not after the
+A run starts when the client of its runner loaded map 115 (`StartsWhenEntrantsAreOnTheMap`: 55 s, longer while it still loads), not after the
 10 s entering phase: the first floor places the runner in its entrance room, and a client still on the loader was placed
 on a blocked tile and sent back to the Instance Zone.
 

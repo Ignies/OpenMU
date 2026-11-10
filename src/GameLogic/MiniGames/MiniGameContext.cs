@@ -26,10 +26,14 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     private static readonly TimeSpan CountdownMessageDuration = TimeSpan.FromSeconds(30);
 
     /// <summary>
-    /// How long a game of <see cref="StartsWhenEntrantsAreOnTheMap"/> waits at most for the clients of its entrants to load the map.
-    /// Below a minute, so the entering phase shows no "starts in minutes" message.
+    /// How long a game whose entrants still load the map waits at most for them, however slow their clients are.
     /// </summary>
-    private static readonly TimeSpan EntrantLoadingAllowance = TimeSpan.FromSeconds(55);
+    private static readonly TimeSpan EntrantLoadingLimit = TimeSpan.FromMinutes(5);
+
+    /// <summary>
+    /// How often a game checks, after the <see cref="EntrantLoadingAllowance"/>, whether an entrant still loads the map.
+    /// </summary>
+    private static readonly TimeSpan EntrantLoadingCheckPeriod = TimeSpan.FromSeconds(1);
 
     private readonly IGameContext _gameContext;
     private readonly IMapInitializer _mapInitializer;
@@ -140,6 +144,13 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     public bool IsEventRunning => this.State == MiniGameState.Playing;
 
     /// <summary>
+    /// Gets or sets how long a game of <see cref="StartsWhenEntrantsAreOnTheMap"/> waits for the clients of its entrants to
+    /// load the map; after it, only for entrants still changing the map (up to <see cref="EntrantLoadingLimit"/>).
+    /// Below a minute, so the entering phase shows no "starts in minutes" message. Settable for tests.
+    /// </summary>
+    internal static TimeSpan EntrantLoadingAllowance { get; set; } = TimeSpan.FromSeconds(55);
+
+    /// <summary>
     /// Gets the player count.
     /// </summary>
     public int PlayerCount => this._players.CountAlive();
@@ -184,7 +195,8 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
 
     /// <summary>
     /// Gets a value indicating whether the entering phase ends as soon as every entered player stands on the map, i.e. its
-    /// client loaded it, instead of after the <see cref="MiniGameDefinition.EnterDuration"/> (at most <see cref="EntrantLoadingAllowance"/>).
+    /// client loaded it (F3 12), instead of after the <see cref="MiniGameDefinition.EnterDuration"/>: at most
+    /// <see cref="EntrantLoadingAllowance"/>, longer while an entrant still changes the map (a slow loader isn't sent back).
     /// A game whose start places its players (e.g. the rooms of the labyrinth) must not start while a client still loads.
     /// </summary>
     protected virtual bool StartsWhenEntrantsAreOnTheMap => false;
@@ -997,20 +1009,32 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
     }
 
     /// <summary>
-    /// Waits until every entered player stands on the map, at most for the duration.
+    /// Waits until every entered player stands on the map: at most for the duration, then as long as an entrant's client
+    /// still loads the map (its connection is alive and it changes the map), up to <see cref="EntrantLoadingLimit"/>.
     /// </summary>
-    /// <param name="duration">The longest wait.</param>
+    /// <param name="duration">The wait for every entrant.</param>
     /// <param name="cancellationToken">The token of the game.</param>
     private async ValueTask WaitForEntrantsAsync(TimeSpan duration, CancellationToken cancellationToken)
     {
         using var arrived = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         this._entrantsArrived = arrived;
+        var waited = Stopwatch.StartNew();
         try
         {
             // Checked after the source is set: an entrant which arrives in between cancels it.
-            if (!await this.AreEntrantsOnTheMapAsync().ConfigureAwait(false))
+            while (!await this.AreEntrantsOnTheMapAsync().ConfigureAwait(false))
             {
-                await this.DelayWithSkipAsync(duration, arrived.Token).ConfigureAwait(false);
+                var allowanceLeft = duration - waited.Elapsed;
+                if (allowanceLeft <= TimeSpan.Zero
+                    && (waited.Elapsed >= EntrantLoadingLimit || !await this.IsAnEntrantLoadingAsync().ConfigureAwait(false)))
+                {
+                    break;
+                }
+
+                if (await this.DelayWithSkipAsync(allowanceLeft > TimeSpan.Zero ? allowanceLeft : EntrantLoadingCheckPeriod, arrived.Token).ConfigureAwait(false))
+                {
+                    break;
+                }
             }
         }
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
@@ -1022,6 +1046,11 @@ public class MiniGameContext : AsyncDisposable, IEventStateProvider
             this._entrantsArrived = null;
         }
     }
+
+    private async ValueTask<bool> IsAnEntrantLoadingAsync()
+        => (await this._players.GetSnapshotAsync().ConfigureAwait(false)).Any(player => player.CurrentMap is null
+            && player.CurrentMiniGame == this
+            && player.PlayerState.CurrentState == PlayerState.ChangingMap);
 
     private async ValueTask<bool> AreEntrantsOnTheMapAsync()
     {

@@ -174,6 +174,67 @@ public class PartyInstanceTest
     }
 
     /// <summary>
+    /// A client which loads the Trial Area for longer than the loading allowance (55 s) keeps its instance as long as it
+    /// is still changing the map: the instance starts when the client is ready (F3 12) instead of sending it back.
+    /// </summary>
+    [Test]
+    public async ValueTask ClientLoadingPastTheAllowanceKeepsItsInstanceAsync()
+    {
+        var definition = this._world.Configuration.MiniGameDefinitions.Single(d => d.Type == MiniGameType.PartyInstance && d.Entrance?.Map?.Number == EvolutionQuestConfiguration.Season21TrialMap);
+        var enterDuration = definition.EnterDuration;
+        var allowance = MiniGameContext.EntrantLoadingAllowance;
+        definition.EnterDuration = TimeSpan.FromMilliseconds(100);
+        MiniGameContext.EntrantLoadingAllowance = TimeSpan.FromMilliseconds(200);
+        try
+        {
+            var player = await this._world.CreatePlayerAsync(CharacterClassNumber.BladeMaster, 400, 400).ConfigureAwait(false);
+            await TalkWithoutLoadingAsync(player, 764).ConfigureAwait(false);
+            var instance = player.CurrentMiniGame!;
+
+            await Task.Delay(TimeSpan.FromMilliseconds(1500)).ConfigureAwait(false);
+            Assert.That(instance.IsDisposed, Is.False, "the client still loads");
+            await Season21EventWorld.CompleteMapChangeAsync(player).ConfigureAwait(false);
+            await Season21EventWorld.WaitUntilAsync(() => instance.State == MiniGameState.Playing || instance.IsDisposed).ConfigureAwait(false);
+
+            Assert.That(instance.IsDisposed, Is.False);
+            Assert.That(player.CurrentMap, Is.SameAs(instance.Map));
+            await LeaveAsync(player).ConfigureAwait(false);
+        }
+        finally
+        {
+            definition.EnterDuration = enterDuration;
+            MiniGameContext.EntrantLoadingAllowance = allowance;
+        }
+    }
+
+    /// <summary>
+    /// An entrant which lost its connection while loading isn't waited for past the allowance: the empty instance closes.
+    /// </summary>
+    [Test]
+    public async ValueTask DisconnectedLoaderIsNotWaitedForAsync()
+    {
+        var definition = this._world.Configuration.MiniGameDefinitions.Single(d => d.Type == MiniGameType.PartyInstance && d.Entrance?.Map?.Number == EvolutionQuestConfiguration.Season21TrialMap);
+        var enterDuration = definition.EnterDuration;
+        var allowance = MiniGameContext.EntrantLoadingAllowance;
+        definition.EnterDuration = TimeSpan.FromMilliseconds(100);
+        MiniGameContext.EntrantLoadingAllowance = TimeSpan.FromMilliseconds(200);
+        try
+        {
+            var player = await this._world.CreatePlayerAsync(CharacterClassNumber.BladeMaster, 400, 400).ConfigureAwait(false);
+            await TalkWithoutLoadingAsync(player, 764).ConfigureAwait(false);
+            var instance = player.CurrentMiniGame!;
+            await player.PlayerState.TryAdvanceToAsync(PlayerState.Disconnected).ConfigureAwait(false);
+
+            await Season21EventWorld.WaitUntilAsync(() => instance.IsDisposed).ConfigureAwait(false);
+        }
+        finally
+        {
+            definition.EnterDuration = enterDuration;
+            MiniGameContext.EntrantLoadingAllowance = allowance;
+        }
+    }
+
+    /// <summary>
     /// A new instance waits for its first entrant: an empty instance isn't one whose entrants all stand on the map, so
     /// its game loop doesn't close it before the player who created it got in.
     /// </summary>
