@@ -143,6 +143,26 @@ public class PartyInstanceTest
     }
 
     /// <summary>
+    /// A trial step shows its time limit like the original's quest survival time (S21 client text 5189): an event score
+    /// of the party instance with the quest number as the round, and 0 seconds when the step ended.
+    /// </summary>
+    [Test]
+    public async ValueTask TrialStepShowsItsTimeAsync()
+    {
+        var player = await this._world.CreatePlayerAsync(CharacterClassNumber.BladeMaster, 400, 400).ConfigureAwait(false);
+        await this._world.TalkAsync(player, 764).ConfigureAwait(false);
+        await this._world.TalkAsync(player, 766).ConfigureAwait(false);
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<ISeason21EventViewPlugIn>()!);
+        view.Invocations.Clear();
+
+        await new QuestStartAction().StartQuestAsync(player, Group, 7).ConfigureAwait(false);
+        view.Verify(v => v.ShowScoreAsync(MiniGameType.PartyInstance, 7, 0, 0, 1, It.Is<uint>(s => s > 590 && s <= 600)), Times.Once);
+
+        await LeaveAsync(player).ConfigureAwait(false);
+        view.Verify(v => v.ShowScoreAsync(MiniGameType.PartyInstance, 7, 0, 0, 1, 0), Times.Once);
+    }
+
+    /// <summary>
     /// A client which still loads the Trial Area when the entry phase is over keeps its instance: the instance waits for
     /// its entrants instead of closing for lack of players and warping the loading hero back to Lorencia.
     /// </summary>

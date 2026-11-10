@@ -371,6 +371,9 @@ C1 14 EE B2  EventScore (server)             6  u8      0 success, 1 failed, 2 n
   16 u32 LE  seconds left                        16 u32 LE  experience of the reward
 ```
 
+A class quest trial step (event type 8) sends `EventScore` with the quest number (7-12) as the round and the step's time
+left: when it starts, when it's asked again and with 0 seconds when it ended (the original's "Quest Survival Time").
+
 ```
 C1 0E EE B5  LabyrinthLeague (server, on entering the labyrinth and after the run; fork id labyrinth_league)
   4  u8      tier: 0 Bronze, 1 Silver, 2 Gold, 3 Legend

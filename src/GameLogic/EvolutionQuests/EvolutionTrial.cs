@@ -30,6 +30,8 @@ internal sealed class EvolutionTrial : IEventStateProvider
 
     private volatile bool _ended;
 
+    private DateTime _startedAt = DateTime.UtcNow;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="EvolutionTrial"/> class.
     /// </summary>
@@ -54,6 +56,18 @@ internal sealed class EvolutionTrial : IEventStateProvider
     public bool IsEventRunning => !this._ended;
 
     /// <summary>
+    /// Gets the time left until the time limit ends the trial; zero when it ended.
+    /// </summary>
+    public TimeSpan TimeLeft
+    {
+        get
+        {
+            var left = this._startedAt.Add(this.Step.TimeLimit) - DateTime.UtcNow;
+            return this._ended || left < TimeSpan.Zero ? TimeSpan.Zero : left;
+        }
+    }
+
+    /// <summary>
     /// Gets the monsters of the trial.
     /// </summary>
     public IReadOnlyList<Monster> Monsters => this._monsters;
@@ -74,6 +88,7 @@ internal sealed class EvolutionTrial : IEventStateProvider
     public async ValueTask StartAsync()
     {
         var gameContext = this._owner.GameContext;
+        this._startedAt = DateTime.UtcNow;
         foreach (var spawn in this.Step.Spawns)
         {
             if (gameContext.Configuration.Monsters.FirstOrDefault(m => m.Number == spawn.MonsterNumber) is not { } definition)

@@ -38,7 +38,9 @@ Season 21 data (S21Emu `Quest/Quest.xml` 7-12, `QuestObjective.txt`, `QuestRewar
   evolution with a quest, and who meets its level rule, gains no experience until it evolved (a blue message once per
   session). It only applies to classes which have such a quest, so a world without the update is not affected.
 - Babylon client: `C1 EE C4 EvolutionQuestState` on every map entry, completion and when the hold starts;
-  `C1 EE 13 ClassEvolved` to the player and its observers (docs/babylon.md). The Season 6 client uses the quest
+  `C1 EE 13 ClassEvolved` to the player and its observers (docs/babylon.md). A trial step shows its time left as the
+  original's "Quest Survival Time" (S21 client text 5189, its Scaleform TimeCounter): `C1 EE B2 EventScore` of event
+  type 8 with the quest number as the round, when it starts, when it's asked again and with 0 seconds when it ended. The Season 6 client uses the quest
   packets it knows (F6) and shows the fourth and fifth evolution as the third.
 
 ## Party instance

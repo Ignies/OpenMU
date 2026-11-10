@@ -101,6 +101,7 @@ public class EvolutionQuestFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigu
         if (this._trials.TryRemove(player, out var trial))
         {
             await trial.EndAsync().ConfigureAwait(false);
+            await ShowTrialTimeAsync(player, trial).ConfigureAwait(false);
         }
     }
 
@@ -219,6 +220,13 @@ public class EvolutionQuestFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigu
     /// <returns>The trial, or <c>null</c>.</returns>
     internal EvolutionTrial? GetTrial(Player player) => this._trials.GetValueOrDefault(player);
 
+    /// <summary>
+    /// Shows the time left of the trial step, as the original's quest survival time (S21 client text 5189,
+    /// Interface/GFx/TimeCounter): an event score of the party instance whose round is the quest number; 0 when it ended.
+    /// </summary>
+    private static ValueTask ShowTrialTimeAsync(Player player, EvolutionTrial trial)
+        => player.InvokeViewPlugInAsync<ISeason21EventViewPlugIn>(p => p.ShowScoreAsync(MiniGameType.PartyInstance, (byte)trial.Step.QuestNumber, 0, 0, 1, (uint)Math.Ceiling(trial.TimeLeft.TotalSeconds)));
+
     private static ValueTask ShowNpcMessageAsync(Player player, NonPlayerCharacter npc, string message)
         => player.InvokeViewPlugInAsync<IShowMessageOfObjectPlugIn>(p => p.ShowMessageOfObjectAsync(message, npc));
 
@@ -240,6 +248,7 @@ public class EvolutionQuestFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigu
         {
             if (running.Step == step && running.IsEventRunning)
             {
+                await ShowTrialTimeAsync(owner, running).ConfigureAwait(false);
                 return;
             }
 
@@ -250,6 +259,7 @@ public class EvolutionQuestFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigu
         if (this._trials.TryAdd(owner, trial))
         {
             await trial.StartAsync().ConfigureAwait(false);
+            await ShowTrialTimeAsync(owner, trial).ConfigureAwait(false);
         }
     }
 }
