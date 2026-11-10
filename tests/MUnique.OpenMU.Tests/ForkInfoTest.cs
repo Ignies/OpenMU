@@ -39,6 +39,7 @@ public class ForkInfoTest
         Assert.That(ForkInfo.Features, Is.Unique);
         Assert.That(ForkInfo.Features, Has.All.Matches("^[a-z][a-z0-9_]{0,39}$"));
         Assert.That(ForkInfo.Has("s21_maps"), Is.True);
+        Assert.That(ForkInfo.Has("gens"), Is.True);
         Assert.That(ForkInfo.Has("not-a-feature"), Is.False);
     }
 

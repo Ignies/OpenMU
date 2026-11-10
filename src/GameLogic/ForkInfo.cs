@@ -93,6 +93,7 @@ public static class ForkInfo
         "illusion_temple_league",
         "s21_bag_items",
         "muquest",
+        "gens",
     ];
 
     /// <summary>
