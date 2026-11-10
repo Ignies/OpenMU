@@ -601,6 +601,7 @@ merchant an operator gives them to, and can be given by a game master to a Babyl
 | Crafting number | Mix | Source |
 |---|---|---|
 | 110 | Mastery item combination: 2,476 mixes (unsealing, tier upgrades, mastery jewelry), found by the items; success rate, zen and what the result keeps per mix | S21Emu MasteryItemMix.xml (`Generator/season21-mixes.mjs` -> `Resources/Season21/MasteryMixes.json`); the 6 mixes with a random result bag are left out |
+| 110 | Socket item upgrade: 118 mixes (ids 9201+), a socket item +11 to +15 with two or more sockets, all empty, a Socket Upgrade Note (14/364), 5 Bless, 5 Soul and a Chaos give the next socket item +0; 80 %, 10 M zen, skill and luck 20 % each, 1 to 3 sockets (4/23: 1 to 5); a failure keeps the item | S21Emu SocketSystemCombinationMixUpgrade.xml (`Season21MixData.SocketUpgradeMixes`, code mixes of the item mixes update) |
 | 111 | Fourth wings: Garuda's Feather, Garuda's Flame, Golden Crest x50, jewels of bless, soul, chaos and creation x30 each (as packed jewels x30), a higher magic stone; 40 %, 20 M zen | S21Emu GoblinCombination.xml mix 507 |
 | 112 | Fourth wings: Lv.4 Wing Relic and a higher magic stone; 24 %, 20 M zen | GoblinCombination.xml mix 2010 |
 | 120-134 | Wing core enhancement +1 to +15: the core, 1-5 wing core upgrade stones, 1-8 M zen, 100 % | WingCore.xml MixLevelUP kind 107 |
