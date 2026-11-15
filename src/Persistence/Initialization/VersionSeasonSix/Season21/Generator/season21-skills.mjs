@@ -99,11 +99,19 @@ const names = s => [s.name, s.name.replace(/\([^)]*\)/g, ''), ...[...s.name.matc
 const matches = (s, item) => keys(item.name).some(k => names(s).includes(k));
 const learnable = s => s.use === 0 || s.use === 1 || s.use === 14;
 const pick = (candidates, shares) => (candidates.some(shares) ? candidates.filter(shares) : candidates).sort((a, b) => a.number - b.number)[0];
+// Books whose skill Skill.xml names otherwise (Sahamutt, Beginner Care); the later client's Skill(Kor).txt names them as
+// the books do, and its SkillTooltipText says which book teaches each.
+const RENAMED_BOOKS = {
+  '12/170': 2026, '12/487': 1502, '12/488': 1503, '15/40': 286, '15/42': 223, '15/43': 224, '15/44': 225,
+  '15/51': 245, '15/52': 246, '15/54': 2007, '15/55': 2009, '15/56': 2010, '15/57': 2008, '15/58': 2011,
+};
 const books = [];
 for (const item of items.filter(i => i.slot < 0)) {
   const required = requireRows.find(r => r[1] === item.group && r[2] === item.number);
+  const renamed = RENAMED_BOOKS[`${item.group}/${item.number}`];
   const shares = s => s.classes.some((v, i) => v > 0 && item.classes[i] > 0);
   const skill = required ? skills.find(s => s.number === required[0])
+    : renamed ? skills.find(s => s.number === renamed)
     : pick(skills.filter(s => learnable(s) && matches(s, item)), shares);
   if (skill) {
     books.push({ group: item.group, number: item.number, skill: skill.number, ...(required ? { requiredSkill: required[3], requiredMasterSkill: required[4], requiredPoints: required[5] } : {}) });

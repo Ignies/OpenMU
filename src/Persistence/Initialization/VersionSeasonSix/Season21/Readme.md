@@ -335,8 +335,10 @@ the elemental and legendary columns and the buy prices.
   points at the nodes beside them,
 * `Effect.txt` (names and groups of the effects), `Character/CharacterSkillInit.xml` (the first skills of a class),
 * the books: `Skill/SkillRequire.txt` names the 22 which need a master skill; the others are matched to their skill by
-  name (`Item.xml` has no skill on a book). 104 books teach a skill; the unmatched ones are Season 6 books, which
-  keep the skill of their Season 6 data, and a few without a skill row (Marble Burst, Unleash Marble).
+  name (`Item.xml` has no skill on a book), and 14 whose skill `Skill.xml` names otherwise (Sahamutt for Explosion,
+  Marvel Burst, Beginner Care for Basic Healing) by the generator's `RENAMED_BOOKS`, from the later client's skill names
+  and tooltips. 118 books teach a skill; the unmatched ones are Season 6 books, which keep the skill of their Season 6
+  data.
 
 `Season21SkillsInitializer` maps the rows onto the configuration:
 

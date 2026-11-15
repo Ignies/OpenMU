@@ -144,6 +144,39 @@ internal class Season21SkillsDataTest
     }
 
     /// <summary>
+    /// The books whose skills the server data names otherwise (Sahamutt for Explosion, Beginner Care for Basic Healing)
+    /// teach the skills the later client names as the books do.
+    /// </summary>
+    /// <param name="group">The group of the book.</param>
+    /// <param name="number">The number of the book.</param>
+    /// <param name="skill">The skill it teaches.</param>
+    [TestCase(12, 170, 2026)]
+    [TestCase(12, 487, 1502)]
+    [TestCase(12, 488, 1503)]
+    [TestCase(15, 40, 286)]
+    [TestCase(15, 42, 223)]
+    [TestCase(15, 43, 224)]
+    [TestCase(15, 44, 225)]
+    [TestCase(15, 51, 245)]
+    [TestCase(15, 52, 246)]
+    [TestCase(15, 54, 2007)]
+    [TestCase(15, 55, 2009)]
+    [TestCase(15, 56, 2010)]
+    [TestCase(15, 57, 2008)]
+    [TestCase(15, 58, 2011)]
+    public async Task RenamedBooksTeachTheirSkillsAsync(byte group, short number, short skill)
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        await new AddSeason21ClassesUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21ItemCatalogUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        await new AddSeason21SkillsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var book = gameConfiguration.Items.Single(i => i.Group == group && i.Number == number);
+        Assert.That(book.Skill?.Number, Is.EqualTo(skill));
+    }
+
+    /// <summary>
     /// Applying the update twice changes nothing, and an operator's change is kept.
     /// </summary>
     [Test]
@@ -183,6 +216,31 @@ internal class Season21SkillsDataTest
 
         Assert.That(explosions[0].DamageType, Is.EqualTo(DamageType.Physical));
         Assert.That(explosions[1].DamageType, Is.EqualTo(DamageType.Curse), "the operator's");
+    }
+
+    /// <summary>
+    /// A world on version 5 links the renamed books on its next update, and an operator's own skill of a book stays.
+    /// </summary>
+    [Test]
+    public async Task Version6LinksTheRenamedBooksOfAnInstalledWorldAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        await new AddSeason21ClassesUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21ItemCatalogUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21SkillsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        var basicHealing = gameConfiguration.Items.Single(i => i is { Group: 15, Number: 54 });
+        var burst = gameConfiguration.Items.Single(i => i is { Group: 15, Number: 40 });
+        var operatorSkill = gameConfiguration.Skills.Single(s => s.Number == 2008);
+        basicHealing.Skill = null;
+        burst.Skill = operatorSkill;
+        var entry = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(u => u.Key == new AddSeason21SkillsUpdatePlugIn().Key);
+        entry.Version = 5;
+
+        await new AddSeason21SkillsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(entry.Version, Is.EqualTo(6));
+        Assert.That(basicHealing.Skill?.Number, Is.EqualTo(2007));
+        Assert.That(burst.Skill, Is.SameAs(operatorSkill), "the operator's");
     }
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateWithSkillsAsync()
