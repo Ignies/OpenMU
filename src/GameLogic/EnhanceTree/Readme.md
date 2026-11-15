@@ -16,8 +16,19 @@ turns it on.
 - **Passive effects**: the passives which raise an attribute (Add Max HP 1137, physical 1141, magic 1142, curse 1157,
   both 1146, skill damage 1144) carry a `MasterSkillDefinition` without a root: its value formula is the S21Emu formula
   of the level (one formula up to 30 points, the second above) and its passive power-up adds it, like a passive master
-  skill. No root means no master points go into it and the master skill list leaves it out. The stat point, impenetrable
-  defense and 4th wing passives stay data.
+  skill. No root means no master points go into it and the master skill list leaves it out. Meanings from the later
+  client's tooltips (`4ThTreeSkillTooltip.txt`) and Webzen guide 42:
+  - Add Impenetrable Defense 1139 (154 "15*level", 223 above 30): raises the basic defense, and is the part of it a hit
+    ignoring the defense still meets (`Stats.ImpenetrableDefense`, `AttackableExtensions.CalculateDamageAsync`: "cannot
+    be penetrated with options such as Enemy DEF Ignore, to the extent of that option's value").
+  - 4th wing passives, "7*level" each, while a fourth wing or cape (item kind 76) is worn: 1140 the defense, 1145 the
+    damage (physical, wizardry, curse), 1193 wizardry, 1194 physical and wizardry, 1195 wizardry and curse. The wings carry
+    `Stats.IsFourthWingEquipped`; every class adds the `FourthWing*Bonus` attributes while it is set, like the shield
+    bonuses. S21Emu's 4th wing damage (`Lv.4 Wing Damage`, "100+(level^1.2*11.8)") is flat, so the passives add flat.
+  - Add Stat Point 1138/1143 and 4th Stat Increase 1241/1242 (153/158 "8+(level*0)"): each enhancement gives 8 stat points
+    to spend ("Gain %d Stat Point(s) upon enhancement"; `AddEnhanceTreePointAction`). A reset which sets the points anew
+    gives them back like the quest points (`EnhanceTreeEffects.GetStatPoints`, `ResetPointsExtensions`).
+  - Skills update version 7 adds the attributes, the wing flag, the class bonuses and these power-ups to an installed world.
 - **Node effects** (`EnhanceTreeEffects`): "Add Ext Skill Damage" (1001) adds the value of its formula at its level to
   the damage of the skill which the extension node of its sheet (index 0, e.g. Meteor Strike Extended 1075 for Meteor
   Strike 724) improves, while that extension is learned (`AttackableExtensions.GetDamage`). The node is one skill in
@@ -40,8 +51,11 @@ turns it on.
   - Extra damage rate 1007 (formulas 50-53, tree tool "+1.12 % Mastery DMG Chance" at 1): the chance in percent of a
     Mastery DMG hit of the skill. No source has the amount of the Mastery DMG, so it is the setting
     `MasteryDamagePercent` (percent of the hit, 0 by default: the node does nothing until an operator sets it).
-  - Left as data: speed 1008 (the skill's animation speed, which only the client plays; the server has no speed of a
-    skill to raise) and cooldown 1019 (OpenMU's skills have no cooldown to remove: S21Emu's `Delay` isn't imported).
+  - Speed 1008 (formula 54 = level; tooltip "Increases the attack speed of the connected skill by %d"): adds to the attack
+    or magic speed with which the speed check limits that skill (`AttackSpeedModel`); the Babylon client plays the skill
+    that much faster.
+  - Cooldown 1019 (learned at 10; "Removes the cooldown time."): OpenMU's server keeps no skill cooldown (no skill's
+    `Delay` is checked), so only the client has one to remove; the Babylon client drops the delay of the sheet's skill.
 
 ## Debuffs (`EnhanceTreeDebuffs`)
 
@@ -68,9 +82,10 @@ sheet (extension learned, like the node effects):
     Effect"; Frostbite: "moving speed and attack speed will decrease by % of the effect", so its improved value nodes
     add to both).
 - No source, so settings: the circle's base targets and range (1 each), the rate scale and the movement slow of
-  Chilling (`ChillMovementSlow`, 50 %, like OpenMU's iced slow). Left as data: the shock/stun line (S21Emu
-  `Effect.txt` has the effects 276 Shock and 280 Shock Improved, but no field, node or value of any source places them;
-  Webzen guide 112 names Shock, Stun and Stun Boom without numbers).
+  Chilling (`ChillMovementSlow`, 50 %, like OpenMU's iced slow). No shock/stun: neither S21Emu's tree
+  (`EnhanceSkillTree.xml`, `EnhanceSkillTreeMagicField.xml`) nor the later client's tree tooltips have a shock node, field
+  or value; S21Emu `Effect.txt` only names the effects 276 Shock and 280 Shock Improved, and Webzen guides 42 and 112
+  describe Shock, Stun and Stun Boom of an older tree without numbers. There is no Season 21 node to make work.
 
 ## Explosions (`EnhanceTreeExplosions`)
 

@@ -1453,6 +1453,31 @@ public class Stats
     public static AttributeDefinition ImpenetrableDefense { get; } = new(new Guid("7C2F4E1A-3B9D-4A6E-9F05-81D2C7B4E3A6"), "Impenetrable Defense", "The defense which a hit ignoring the defense still meets.");
 
     /// <summary>
+    /// Gets the 'is fourth wing equipped' attribute definition: 1 while a wing or cape of the fourth level is worn.
+    /// </summary>
+    public static AttributeDefinition IsFourthWingEquipped { get; } = new(new Guid("2E8B6D14-9C3A-4F70-B5E2-6A1D9F4C8B37"), "Is Fourth Wing Equipped", string.Empty);
+
+    /// <summary>
+    /// Gets the defense which the enhance tree adds while a fourth wing is worn.
+    /// </summary>
+    public static AttributeDefinition FourthWingDefenseBonus { get; } = new(new Guid("B41C7E93-2D5F-4A86-8E1B-3F9A6C2D7E54"), "Fourth Wing Defense Bonus", "The defense which is added while a fourth wing is worn.");
+
+    /// <summary>
+    /// Gets the physical damage which the enhance tree adds while a fourth wing is worn.
+    /// </summary>
+    public static AttributeDefinition FourthWingPhysicalDamageBonus { get; } = new(new Guid("5D93A2E7-1B4C-4F68-A07E-8C2B5D9E1F36"), "Fourth Wing Physical Damage Bonus", "The physical base damage which is added while a fourth wing is worn.");
+
+    /// <summary>
+    /// Gets the wizardry damage which the enhance tree adds while a fourth wing is worn.
+    /// </summary>
+    public static AttributeDefinition FourthWingWizardryDamageBonus { get; } = new(new Guid("E6A14C82-7F3D-4B95-9D2A-1C8E6B3F5A70"), "Fourth Wing Wizardry Damage Bonus", "The wizardry base damage which is added while a fourth wing is worn.");
+
+    /// <summary>
+    /// Gets the curse damage which the enhance tree adds while a fourth wing is worn.
+    /// </summary>
+    public static AttributeDefinition FourthWingCurseDamageBonus { get; } = new(new Guid("93F7B2D5-4E1A-4C68-B3D9-7A5E2C8F1B46"), "Fourth Wing Curse Damage Bonus", "The curse base damage which is added while a fourth wing is worn.");
+
+    /// <summary>
     /// Gets the shield bypass chance attribute definition.
     /// </summary>
     public static AttributeDefinition ShieldBypassChance { get; } = new(new Guid("7F6F1804-271E-40DF-A970-0CE19064A54B"), "Shield Bypass Chance", string.Empty);

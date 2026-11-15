@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.DataModel.Configuration;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.EnhanceTree;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
@@ -238,9 +239,46 @@ internal class Season21SkillsDataTest
 
         await new AddSeason21SkillsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
-        Assert.That(entry.Version, Is.EqualTo(6));
+        Assert.That(entry.Version, Is.EqualTo(new AddSeason21SkillsUpdatePlugIn().Version));
         Assert.That(basicHealing.Skill?.Number, Is.EqualTo(2007));
         Assert.That(burst.Skill, Is.SameAs(operatorSkill), "the operator's");
+    }
+
+    /// <summary>
+    /// A world without the attributes of the tree passives (made before them) gets them; the fourth wings carry their flag,
+    /// every class adds the 4th wing bonuses while it is set, and a world on version 6 gives the passives their power-up.
+    /// </summary>
+    [Test]
+    public async Task Version7GivesTheDefenseAndWingPassivesTheirEffectAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
+        var added = new[] { Stats.ImpenetrableDefense.Id, Stats.IsFourthWingEquipped.Id, Stats.FourthWingDefenseBonus.Id, Stats.FourthWingPhysicalDamageBonus.Id, Stats.FourthWingWizardryDamageBonus.Id, Stats.FourthWingCurseDamageBonus.Id };
+        foreach (var attribute in gameConfiguration.Attributes.Where(a => added.Contains(a.Id)).ToList())
+        {
+            gameConfiguration.Attributes.Remove(attribute);
+        }
+
+        await new AddSeason21ClassesUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21ItemCatalogUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21SkillsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(added.All(id => gameConfiguration.Attributes.Any(a => a.Id == id)), Is.True);
+        var wing = gameConfiguration.Items.Single(i => i is { Group: 12, Number: 414 });
+        Assert.That(wing.BasePowerUpAttributes.Count(p => p.TargetAttribute?.Id == Stats.IsFourthWingEquipped.Id), Is.EqualTo(1));
+        Assert.That(gameConfiguration.Items.Single(i => i is { Group: 12, Number: 36 }).BasePowerUpAttributes.Any(p => p.TargetAttribute?.Id == Stats.IsFourthWingEquipped.Id), Is.False, "a third wing");
+        Assert.That(gameConfiguration.CharacterClasses.All(c => c.AttributeCombinations.Count(r => r.OperandAttribute?.Id == Stats.IsFourthWingEquipped.Id) == 4), Is.True);
+
+        var impenetrable = gameConfiguration.Skills.Single(s => s.Number == 1139);
+        impenetrable.MasterDefinition = null;
+        var entry = (await context.GetAsync<ConfigurationUpdate>().ConfigureAwait(false)).Single(u => u.Key == new AddSeason21SkillsUpdatePlugIn().Key);
+        entry.Version = 6;
+
+        await new AddSeason21SkillsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(entry.Version, Is.EqualTo(7));
+        Assert.That(impenetrable.MasterDefinition?.PassivePowerUps.Select(p => p.TargetAttribute!.Id), Is.EquivalentTo(new[] { Stats.DefenseBase.Id, Stats.ImpenetrableDefense.Id }));
+        Assert.That(wing.BasePowerUpAttributes.Count(p => p.TargetAttribute?.Id == Stats.IsFourthWingEquipped.Id), Is.EqualTo(1), "once");
+        Assert.That(gameConfiguration.CharacterClasses.All(c => c.AttributeCombinations.Count(r => r.OperandAttribute?.Id == Stats.IsFourthWingEquipped.Id) == 4), Is.True, "once");
     }
 
     private static async Task<(IContext Context, GameConfiguration GameConfiguration)> CreateWithSkillsAsync()

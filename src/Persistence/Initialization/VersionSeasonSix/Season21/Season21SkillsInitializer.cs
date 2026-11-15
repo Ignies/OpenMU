@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
 using MUnique.OpenMU.AttributeSystem;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.EnhanceTree;
@@ -29,6 +30,11 @@ internal sealed class Season21SkillsInitializer : SkillsInitializerBase
     /// The slots of one root of the client's master tree: 4 columns, 9 ranks.
     /// </summary>
     private const int SlotsPerRoot = 36;
+
+    /// <summary>
+    /// The kind of the fourth wings and capes in the item data (<c>Item.xml</c> KindA).
+    /// </summary>
+    private const int FourthWingKind = 76;
 
     /// <summary>
     /// The slots of one rank of the client's master tree.
@@ -58,12 +64,28 @@ internal sealed class Season21SkillsInitializer : SkillsInitializerBase
     {
         { 1137, [Stats.MaximumHealth] },
         { 1139, [Stats.DefenseBase, Stats.ImpenetrableDefense] },
+        { 1140, [Stats.FourthWingDefenseBonus] },
+        { 1145, [Stats.FourthWingPhysicalDamageBonus, Stats.FourthWingWizardryDamageBonus, Stats.FourthWingCurseDamageBonus] },
+        { 1193, [Stats.FourthWingWizardryDamageBonus] },
+        { 1194, [Stats.FourthWingPhysicalDamageBonus, Stats.FourthWingWizardryDamageBonus] },
+        { 1195, [Stats.FourthWingWizardryDamageBonus, Stats.FourthWingCurseDamageBonus] },
         { 1141, [Stats.PhysicalBaseDmg] },
         { 1142, [Stats.WizardryBaseDmg] },
         { 1144, [Stats.SkillDamageBonus] },
         { 1146, [Stats.PhysicalBaseDmg, Stats.WizardryBaseDmg] },
         { 1157, [Stats.CurseBaseDmg] },
     };
+
+    /// <summary>
+    /// The bonuses of the 4th wing passives and the attributes they raise while a fourth wing is worn.
+    /// </summary>
+    private static readonly (AttributeDefinition Target, AttributeDefinition Bonus)[] FourthWingBonuses =
+    [
+        (Stats.DefenseBase, Stats.FourthWingDefenseBonus),
+        (Stats.PhysicalBaseDmg, Stats.FourthWingPhysicalDamageBonus),
+        (Stats.WizardryBaseDmg, Stats.FourthWingWizardryDamageBonus),
+        (Stats.CurseBaseDmg, Stats.FourthWingCurseDamageBonus),
+    ];
 
     private readonly Season21SkillData _data = Season21SkillCatalog.Data;
 
@@ -121,6 +143,45 @@ internal sealed class Season21SkillsInitializer : SkillsInitializerBase
         foreach (var skill in this.GameConfiguration.Skills.Where(s => ExplosionSkills.Contains(s.Number) && s.DamageType == DamageType.Wizardry))
         {
             skill.DamageType = DamageType.Physical;
+        }
+    }
+
+    /// <summary>
+    /// Adds what the attribute passives of the enhance tree need: the attributes which a world installed before them lacks,
+    /// the flag of the fourth wings and capes (<see cref="Stats.IsFourthWingEquipped"/>) and, for every class, the bonuses
+    /// of the 4th wing passives which count while it is worn.
+    /// </summary>
+    public void AddTreePassiveAttributes()
+    {
+        foreach (var attribute in FourthWingBonuses.Select(b => b.Bonus).Append(Stats.ImpenetrableDefense).Append(Stats.IsFourthWingEquipped))
+        {
+            if (this.GameConfiguration.Attributes.All(a => a.Id != attribute.Id))
+            {
+                this.GameConfiguration.Attributes.Add(this.Context.CreateNew<AttributeDefinition>(attribute.Id, attribute.Designation, attribute.Description));
+            }
+        }
+
+        var flag = Stats.IsFourthWingEquipped.GetPersistent(this.GameConfiguration);
+        foreach (var wing in Season21ItemCatalog.Items.Where(row => row.KindA == FourthWingKind)
+                     .Select(row => this.GameConfiguration.Items.FirstOrDefault(i => i.Group == row.Group && i.Number == row.Number))
+                     .OfType<ItemDefinition>()
+                     .Where(wing => wing.BasePowerUpAttributes.All(p => p.TargetAttribute != flag)))
+        {
+            var powerUp = this.Context.CreateNew<ItemBasePowerUpDefinition>();
+            powerUp.TargetAttribute = flag;
+            powerUp.BaseValue = 1;
+            wing.BasePowerUpAttributes.Add(powerUp);
+        }
+
+        foreach (var characterClass in this.GameConfiguration.CharacterClasses)
+        {
+            foreach (var (target, bonus) in FourthWingBonuses)
+            {
+                if (!characterClass.AttributeCombinations.Any(r => r.InputAttribute?.Id == bonus.Id && r.OperandAttribute?.Id == flag.Id))
+                {
+                    characterClass.AttributeCombinations.Add(CharacterClassHelper.CreateConditionalRelationship(this.Context, this.GameConfiguration, target, flag, bonus));
+                }
+            }
         }
     }
 

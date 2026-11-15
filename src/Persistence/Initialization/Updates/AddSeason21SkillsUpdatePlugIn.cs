@@ -70,6 +70,7 @@ public class AddSeason21SkillsUpdatePlugIn : UpdatePlugInBase
 
         if (installedVersion is null or < 7)
         {
+            initializer.AddTreePassiveAttributes();
             initializer.AddTreePassivePowerUps();
         }
 
