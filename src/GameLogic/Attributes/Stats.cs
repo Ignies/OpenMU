@@ -1447,6 +1447,12 @@ public class Stats
     public static AttributeDefinition DefenseIgnoreChance { get; } = new(new Guid("56BDC72E-9D37-4EDA-8AC8-9E12473966FC"), "Defense Ignore Chance", string.Empty);
 
     /// <summary>
+    /// Gets the impenetrable defense attribute definition: the part of the defense which a hit ignoring the defense
+    /// still meets (Season 21 enhance tree passive "Add Impenetrable Defense").
+    /// </summary>
+    public static AttributeDefinition ImpenetrableDefense { get; } = new(new Guid("7C2F4E1A-3B9D-4A6E-9F05-81D2C7B4E3A6"), "Impenetrable Defense", "The defense which a hit ignoring the defense still meets.");
+
+    /// <summary>
     /// Gets the shield bypass chance attribute definition.
     /// </summary>
     public static AttributeDefinition ShieldBypassChance { get; } = new(new Guid("7F6F1804-271E-40DF-A970-0CE19064A54B"), "Shield Bypass Chance", string.Empty);

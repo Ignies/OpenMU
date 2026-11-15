@@ -6,10 +6,11 @@ namespace MUnique.OpenMU.GameLogic.PlugIns;
 
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.EnhanceTree;
 
 /// <summary>
 /// Resolves the minimum delay between two attacks from the common attack/magic speed
-/// settings and the optional per-skill profiles.
+/// settings and the optional per-skill profiles; the speed nodes of the enhance tree add to the speed of their skill.
 /// </summary>
 internal static class AttackSpeedModel
 {
@@ -24,7 +25,7 @@ internal static class AttackSpeedModel
     {
         if (FindProfile(config, skill) is { } profile)
         {
-            var speed = GetSpeed(player, profile.SpeedSource);
+            var speed = GetSpeed(player, profile.SpeedSource, skill);
             return new AttackSpeedLimit(
                 GetInterval(profile.BaseDelayMs, profile.ScalingFactor, profile.MinimumIntervalMs, speed),
                 profile.SpeedSource,
@@ -41,7 +42,7 @@ internal static class AttackSpeedModel
         var minimumIntervalMs = speedSource is AttackSpeedSource.MagicSpeed
             ? config.MagicSpeedMinIntervalMs
             : config.AttackSpeedMinIntervalMs;
-        var commonSpeed = GetSpeed(player, speedSource);
+        var commonSpeed = GetSpeed(player, speedSource, skill);
 
         return new AttackSpeedLimit(
             GetInterval(baseDelayMs, scalingFactor, minimumIntervalMs, commonSpeed),
@@ -86,16 +87,17 @@ internal static class AttackSpeedModel
             ? AttackSpeedSource.MagicSpeed
             : AttackSpeedSource.AttackSpeed;
 
-    private static double GetSpeed(Player player, AttackSpeedSource speedSource)
+    private static double GetSpeed(Player player, AttackSpeedSource speedSource, Skill? skill)
     {
         if (player.Attributes is not { } attributes)
         {
             return 0;
         }
 
-        return speedSource is AttackSpeedSource.MagicSpeed
+        var treeSpeed = skill is null ? 0 : EnhanceTreeEffects.GetSkillSpeed(player, skill);
+        return treeSpeed + (speedSource is AttackSpeedSource.MagicSpeed
             ? attributes[Stats.MagicSpeed]
-            : attributes[Stats.AttackSpeed];
+            : attributes[Stats.AttackSpeed]);
     }
 
     private static double GetInterval(double baseDelayMs, double scalingFactor, double minimumIntervalMs, double speed)

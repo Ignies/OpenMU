@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.Resets;
 
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.EnhanceTree;
 using MUnique.OpenMU.GameLogic.PlayerActions.Quests;
 using MUnique.OpenMU.GameLogic.Progression;
 
@@ -22,7 +23,7 @@ public static class ResetPointsExtensions
     /// <remarks>
     /// When the stats go back to their base values and the points are replaced, the points of the finished quests are
     /// added again: the quests stay finished and can't be repeated, so without this every reset would lose them
-    /// (80 points in Season 6).
+    /// (80 points in Season 6). The stat points of the enhance tree passives come back the same way.
     /// In the stars mode of the progression, a reset is a star: its points are levels' worth of the class's points per
     /// level (<see cref="StarRules.GetPointsForStar"/>), and it gives master tree points.
     /// </remarks>
@@ -58,7 +59,7 @@ public static class ResetPointsExtensions
         }
 
         var questPoints = configuration.ResetStats
-            ? character.GetEarnedLevelUpPoints(player.GameContext.Configuration.Monsters.SelectMany(m => m.Quests))
+            ? character.GetEarnedLevelUpPoints(player.GameContext.Configuration.Monsters.SelectMany(m => m.Quests)) + EnhanceTreeEffects.GetStatPoints(player)
             : 0;
         character.LevelUpPoints = questPoints + (stars is null
             ? progression.TotalPointsAfterReset

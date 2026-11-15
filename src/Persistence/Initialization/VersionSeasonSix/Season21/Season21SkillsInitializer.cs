@@ -50,12 +50,14 @@ internal sealed class Season21SkillsInitializer : SkillsInitializerBase
     private static readonly HashSet<short> ExplosionSkills = Season21SkillCatalog.Data.EnhanceNodes.Where(n => n.Skill == n.Related).Select(n => n.Skill).ToHashSet();
 
     /// <summary>
-    /// The attributes of the enhance tree passives (S21Emu Skill.xml names). The stat points, the impenetrable defense and
-    /// the 4th wing passives have no attribute of their own and stay data.
+    /// The attributes of the enhance tree passives (S21Emu Skill.xml names, later client tooltips). The impenetrable defense
+    /// raises the basic defense and is the part of it a hit ignoring the defense still meets. The stat points are given on
+    /// each enhancement (<c>EnhanceTreeEffects.GetStatPoints</c>).
     /// </summary>
     private static readonly Dictionary<short, AttributeDefinition[]> TreePassiveTargets = new()
     {
         { 1137, [Stats.MaximumHealth] },
+        { 1139, [Stats.DefenseBase, Stats.ImpenetrableDefense] },
         { 1141, [Stats.PhysicalBaseDmg] },
         { 1142, [Stats.WizardryBaseDmg] },
         { 1144, [Stats.SkillDamageBonus] },

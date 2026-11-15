@@ -90,19 +90,12 @@ public static class AttackableExtensions
         bool isExcellentHit = Rand.NextRandomBool(attacker.Attributes[Stats.ExcellentDamageChance]);
         bool isIgnoringDefense = Rand.NextRandomBool(attacker.Attributes[Stats.DefenseIgnoreChance]);
 
-        var defense = 0;
+        var defenseAttribute = defender.GetDefenseAttribute(attacker);
+        var defense = Math.Max(0, (int)((defender.Attributes[defenseAttribute] + defender.Attributes[Stats.GreaterDefenseBonus]) * defender.Attributes[Stats.DefenseDecrement]));
         if (isIgnoringDefense)
         {
             attributes |= DamageAttributes.IgnoreDefense;
-        }
-        else
-        {
-            var defenseAttribute = defender.GetDefenseAttribute(attacker);
-            defense = (int)((defender.Attributes[defenseAttribute] + defender.Attributes[Stats.GreaterDefenseBonus]) * defender.Attributes[Stats.DefenseDecrement]);
-            if (defense < 0)
-            {
-                defense = 0;
-            }
+            defense = Math.Min(defense, (int)defender.Attributes[Stats.ImpenetrableDefense]);
         }
 
         attacker.GetBaseDmg(skill, out int baseMinDamage, out int baseMaxDamage, out DamageType damageType);

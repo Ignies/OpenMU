@@ -174,6 +174,25 @@ public class EnhanceTreeEffectsTest
         Assert.That(EnhanceTreeEffects.GetMasteryDamageFactor(new EnhanceTreeConfiguration { MasteryDamagePercent = 50 }, isMasteryHit: false), Is.EqualTo(1));
     }
 
+    /// <summary>
+    /// "Add Ext Skill Speed" (1008, formula 54 = level) raises the attack speed of the skill of its sheet by its level
+    /// (later client tooltip: "Increases the attack speed of the connected skill by %d").
+    /// </summary>
+    [Test]
+    public void SpeedNodeRaisesTheSpeedOfTheImprovedSkill()
+    {
+        var configuration = CreateSheet(new EnhanceTreeNode { Index = 3, Skill = EnhanceTreeEffects.SkillSpeed, FormulaId = 54 });
+        configuration.Formulas[54] = "level*1";
+        var levels = new Dictionary<short, int> { [MeteorStrikeExtended] = 1, [EnhanceTreeEffects.SkillSpeed] = 7 };
+        int? LevelOf(short skill) => levels.TryGetValue(skill, out var level) ? level : null;
+
+        Assert.That(EnhanceTreeEffects.GetSkillSpeed(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf), Is.EqualTo(7));
+        Assert.That(EnhanceTreeEffects.GetSkillSpeed(configuration, BaseClassCode.DarkWizard, 9, LevelOf), Is.Zero, "another skill");
+
+        levels.Remove(MeteorStrikeExtended);
+        Assert.That(EnhanceTreeEffects.GetSkillSpeed(configuration, BaseClassCode.DarkWizard, MeteorStrike, LevelOf), Is.Zero, "the extension isn't learned");
+    }
+
     private static EnhanceTreeConfiguration CreateSheet(params EnhanceTreeNode[] nodes)
     {
         var configuration = new EnhanceTreeConfiguration

@@ -16,6 +16,7 @@ using MUnique.OpenMU.GameLogic.EnhanceTree;
 using MUnique.OpenMU.GameLogic.PlayerActions.Character;
 using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlugIns;
+using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated;
@@ -182,6 +183,87 @@ public class Season21SkillsInGameTest
     }
 
     /// <summary>
+    /// "Add Impenetrable Defense" (1139) raises the basic defense (later client tooltip "Increases the basic DEF of the
+    /// player by %d"; Formula.txt SkillTree 154 "15*level" up to 30 points, 223 "450+((level-30)*9)" above).
+    /// </summary>
+    [Test]
+    public async ValueTask ImpenetrableDefenseRaisesTheBasicDefenseAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.DarkWizard, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(player).ConfigureAwait(false);
+        var defense = player.Attributes![Stats.DefenseBase];
+        await player.SkillList!.AddLearnedSkillAsync(this._gameConfiguration.Skills.Single(s => s.Number == 1139)).ConfigureAwait(false);
+        var passive = player.SelectedCharacter!.LearnedSkills.Single(s => s.Skill!.Number == 1139);
+
+        passive.Level = 10;
+        Assert.That(player.Attributes[Stats.DefenseBase], Is.EqualTo(defense + 150).Within(0.01));
+        Assert.That(player.Attributes[Stats.ImpenetrableDefense], Is.EqualTo(150).Within(0.01));
+
+        passive.Level = 35;
+        Assert.That(player.Attributes[Stats.DefenseBase], Is.EqualTo(defense + 450 + (5 * 9)).Within(0.01));
+    }
+
+    /// <summary>
+    /// "Add Stat Point" (1138) gives its formula's points (153 "8+(level*0)": 8) on each enhancement, to spend on a stat
+    /// (later client tooltip "Gain %d Stat Point(s) upon enhancement"; Webzen guide 42 "Add Variable Stat").
+    /// </summary>
+    [Test]
+    public async ValueTask StatPointPassiveGivesPointsOnEachEnhancementAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.DarkWizard, ClassEvolution.Fourth).ConfigureAwait(false);
+        player.Attributes![Stats.Level] = 400;
+        player.Attributes[Stats.MasterLevel] = 450;
+        await this.LearnAsync(player, 1075, 20).ConfigureAwait(false);
+        await this.LearnAsync(player, EnhanceTreeEffects.ExtSkillDamage, 20).ConfigureAwait(false);
+        var points = player.SelectedCharacter!.LevelUpPoints;
+        var action = new AddEnhanceTreePointAction();
+
+        Assert.That(await action.AddPointAsync(player, 1138).ConfigureAwait(false), Is.EqualTo(EnhanceTreePointResult.Added));
+        Assert.That(await action.AddPointAsync(player, 1138).ConfigureAwait(false), Is.EqualTo(EnhanceTreePointResult.Added));
+
+        Assert.That(player.SelectedCharacter.LevelUpPoints, Is.EqualTo(points + 16));
+        Assert.That(EnhanceTreeEffects.GetStatPoints(player), Is.EqualTo(16));
+    }
+
+    /// <summary>
+    /// A reset which sets the points anew keeps the stat points of the tree passives, like those of the quests: the
+    /// passives stay learned and can't give them twice.
+    /// </summary>
+    [Test]
+    public async ValueTask ResetKeepsTheStatPointsOfTheTreeAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.DarkWizard, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.LearnAsync(player, 1138, 2).ConfigureAwait(false);
+
+        player.ApplyResetPoints(new ResetConfiguration { ResetStats = true, ReplacePointsPerReset = true }, new ResetProgression(1, 0, 0, 500, 500));
+
+        Assert.That(player.SelectedCharacter!.LevelUpPoints, Is.EqualTo(500 + 16));
+        Assert.That(EnhanceTreeEffects.GetStatPoints(player), Is.EqualTo(16));
+    }
+
+    /// <summary>
+    /// "Add Ext Skill Speed" (1008, formula 54 = level) of the Dark Wizard's second sheet (Evil Spirit 9, extension 1078)
+    /// raises the attack speed with which the server checks that skill (later client tooltip "Increases the attack speed
+    /// of the connected skill by %d").
+    /// </summary>
+    [Test]
+    public async ValueTask SpeedNodeRaisesTheSpeedOfTheImprovedSkillAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.DarkWizard, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(player).ConfigureAwait(false);
+        var evilSpirit = this._gameConfiguration.Skills.Single(s => s.Number == 9);
+        var speedConfiguration = new SpeedHackDetectConfiguration();
+        var speed = AttackSpeedModel.Resolve(speedConfiguration, player, evilSpirit).Speed;
+        await this.LearnAsync(player, 1008, 7).ConfigureAwait(false);
+        Assert.That(AttackSpeedModel.Resolve(speedConfiguration, player, evilSpirit).Speed, Is.EqualTo(speed), "the extension isn't learned");
+
+        await this.LearnAsync(player, 1078, 1).ConfigureAwait(false);
+
+        Assert.That(AttackSpeedModel.Resolve(speedConfiguration, player, evilSpirit).Speed, Is.EqualTo(speed + 7));
+        Assert.That(AttackSpeedModel.Resolve(speedConfiguration, player, this._gameConfiguration.Skills.Single(s => s.Number == 724)).Speed, Is.EqualTo(speed), "another sheet");
+    }
+
+    /// <summary>
     /// "Add Ext Skill Damage" (1001) of the Dark Wizard's first sheet adds formula 44 at its level (20: 600) to Meteor
     /// Strike (724), once its extension (1075) is learned.
     /// </summary>
@@ -261,6 +343,12 @@ public class Season21SkillsInGameTest
         target.Setup(t => t.Position).Returns(player.Position);
         target.Setup(t => t.Attributes).Returns(new Mock<IAttributeSystem>().Object);
         await new TargetedSkillDefaultPlugin().PerformSkillAsync(player, target.Object, (ushort)skill.Number).ConfigureAwait(false);
+    }
+
+    private async ValueTask LearnAsync(Player player, short skillNumber, int level)
+    {
+        await player.SkillList!.AddLearnedSkillAsync(this._gameConfiguration.Skills.Single(s => s.Number == skillNumber)).ConfigureAwait(false);
+        player.SelectedCharacter!.LearnedSkills.Single(s => s.Skill!.Number == skillNumber).Level = level;
     }
 
     private async ValueTask EnterWorldAsync(Player player)

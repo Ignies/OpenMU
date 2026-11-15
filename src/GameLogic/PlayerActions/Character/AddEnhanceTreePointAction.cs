@@ -99,6 +99,12 @@ public class AddEnhanceTreePointAction
         }
 
         learned.Level += cost;
+        if (EnhanceTreeEffects.GetStatPoints(configuration, baseClass, skillNumber, level, learned.Level) is > 0 and var statPoints)
+        {
+            character.LevelUpPoints += statPoints;
+            await player.InvokeViewPlugInAsync<IUpdateCharacterBaseStatsPlugIn>(p => p.UpdateCharacterBaseStatsAsync()).ConfigureAwait(false);
+        }
+
         return (EnhanceTreePointResult.Added, learned.Level);
     }
 }

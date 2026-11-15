@@ -88,7 +88,20 @@ public static class EnhanceTreeEffects
     /// </summary>
     public const short WeaponCurseDamage = 1156;
 
+    /// <summary>
+    /// The number of "Add Ext Skill Speed": the attack speed of the skill rises by its value.
+    /// </summary>
+    public const short SkillSpeed = 1008;
+
     private const byte ExtensionNodeIndex = 0;
+
+    /// <summary>
+    /// The passives "Add Stat Point" and "4th Stat Increase": each enhancement gives the value of their formula as points
+    /// to spend on a stat.
+    /// </summary>
+    private static readonly short[] StatPointPassives = [1138, 1143, 1241, 1242];
+
+    private static readonly short[] SpeedNodes = [SkillSpeed];
 
     private const int BaseSplashRadius = 1;
 
@@ -242,6 +255,68 @@ public static class EnhanceTreeEffects
     /// <returns>The percentage.</returns>
     public static float GetWeaponRise(EnhanceTreeConfiguration configuration, BaseClassCode baseClass, short skill, Func<short, int?> levelOf, DamageType damageType)
         => GetValue(configuration, baseClass, skill, levelOf, LevelOfLookup, WeaponNodes(damageType));
+
+    /// <summary>
+    /// Gets the attack speed which the learned speed nodes of a player add to a skill, when the tree is on.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="skill">The used skill.</param>
+    /// <returns>The added attack speed.</returns>
+    public static float GetSkillSpeed(Player player, Skill skill)
+        => GetValue(player, skill, SpeedNodes);
+
+    /// <summary>
+    /// Gets the attack speed which the learned speed nodes add to a skill.
+    /// </summary>
+    /// <param name="configuration">The configuration of the tree.</param>
+    /// <param name="baseClass">The base class of the character.</param>
+    /// <param name="skill">The number of the used skill.</param>
+    /// <param name="levelOf">The level of a learned tree skill, <c>null</c> when it isn't learned.</param>
+    /// <returns>The added attack speed.</returns>
+    public static float GetSkillSpeed(EnhanceTreeConfiguration configuration, BaseClassCode baseClass, short skill, Func<short, int?> levelOf)
+        => GetValue(configuration, baseClass, skill, levelOf, LevelOfLookup, SpeedNodes);
+
+    /// <summary>
+    /// Gets the stat points which the learned stat point passives of a player gave, when the tree is on: the value of
+    /// their formula for each level.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>The stat points.</returns>
+    public static int GetStatPoints(Player player)
+        => player.SelectedCharacter is { CharacterClass: { } characterClass } character
+           && ClassCodes.GetBaseClass(characterClass.Number) is { } baseClass
+           && EnhanceTreeFeaturePlugIn.GetConfiguration(player.GameContext) is { } configuration
+            ? StatPointPassives.Sum(number => GetStatPoints(configuration, baseClass, number, 0, character.LearnedSkills.FirstOrDefault(s => s.Skill?.Number == number)?.Level ?? 0))
+            : 0;
+
+    /// <summary>
+    /// Gets the stat points which the levels of a passive give, when it is a stat point passive.
+    /// </summary>
+    /// <param name="configuration">The configuration of the tree.</param>
+    /// <param name="baseClass">The base class of the character.</param>
+    /// <param name="passive">The number of the passive.</param>
+    /// <param name="fromLevel">The level before, exclusive.</param>
+    /// <param name="toLevel">The level after, inclusive.</param>
+    /// <returns>The stat points.</returns>
+    public static int GetStatPoints(EnhanceTreeConfiguration configuration, BaseClassCode baseClass, short passive, int fromLevel, int toLevel)
+    {
+        if (Array.IndexOf(StatPointPassives, passive) < 0 || configuration.FindPassive(baseClass, passive) is not { Stages.Count: > 0 } definition)
+        {
+            return 0;
+        }
+
+        var points = 0f;
+        for (var level = fromLevel + 1; level <= toLevel; level++)
+        {
+            var stage = definition.Stages.FirstOrDefault(s => level <= s.MaximumLevel) ?? definition.Stages[^1];
+            if (configuration.Formulas.TryGetValue(stage.FormulaId, out var formula))
+            {
+                points += Values.GetOrAdd((formula, level), static key => (float)new Expression(key.Formula, new Argument("level", key.Level)).calculate());
+            }
+        }
+
+        return (int)points;
+    }
 
     /// <summary>
     /// Gets the chance in percent of a Mastery DMG hit of a skill.

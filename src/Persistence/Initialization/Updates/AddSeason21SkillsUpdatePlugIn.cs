@@ -23,7 +23,8 @@ using MUnique.OpenMU.PlugIns;
 /// the books of <c>SkillRequire.txt</c> to the plugin "Learnables" (<see cref="Season21SkillsInitializer.AddBookRequirements"/>). Version 4 gives the enhance tree
 /// passives with an attribute their power-up (<see cref="Season21SkillsInitializer.AddTreePassivePowerUps"/>). Version 5 makes the
 /// explosion skills of the tree physical (<see cref="Season21SkillsInitializer.MakeExplosionsPhysical"/>). Version 6 links the books whose skill
-/// <c>Skill.xml</c> names otherwise (Basic Healing, Explosion; the initializer links books on every run). Fork feature ids <c>s21_skills</c> and <c>enhance_tree</c>.
+/// <c>Skill.xml</c> names otherwise (Basic Healing, Explosion; the initializer links books on every run). Version 7 gives the
+/// impenetrable defense and the 4th wing passives their power-up. Fork feature ids <c>s21_skills</c> and <c>enhance_tree</c>.
 /// </remarks>
 [PlugIn]
 [Display(Name = nameof(Properties.PlugInResources.AddSeason21SkillsUpdatePlugIn_Name), Description = nameof(Properties.PlugInResources.AddSeason21SkillsUpdatePlugIn_Description), ResourceType = typeof(Properties.PlugInResources))]
@@ -49,10 +50,10 @@ public class AddSeason21SkillsUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 06, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    public override int Version => 6;
+    public override int Version => 7;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 15, 18, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 16, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21ClassesUpdatePlugIn).GUID, typeof(AddSeason21ItemCatalogUpdatePlugIn).GUID];
@@ -67,7 +68,7 @@ public class AddSeason21SkillsUpdatePlugIn : UpdatePlugInBase
             initializer.MakeExplosionsPhysical();
         }
 
-        if (installedVersion is null or < 4)
+        if (installedVersion is null or < 7)
         {
             initializer.AddTreePassivePowerUps();
         }
