@@ -57,11 +57,12 @@ public class AddSeason21MapsUpdatePlugIn : UpdatePlugInBase
     /// Version 11: the four same-map shortcuts of Dungeon (gates 475-482).
     /// Version 12: the Temple of Arnil entrance 635 moves to Elbeland 209,133-211,135 (<see cref="Season21MovedGates"/>).
     /// Version 13: the Sanctuary of Aquilas entrance 719 moves to Kanturu Ruins 124,171-125,172 (<see cref="Season21MovedGates"/>).
+    /// Version 14: Ferea, Old Kethotum, Ignis Vulcanus, Blood Tarkan and Twisted Karutan take the 59 tiles of the client's terrain (<see cref="Season21ClientTerrainTiles"/>).
     /// </remarks>
-    public override int Version => 13;
+    public override int Version => 14;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 08, 23, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 15, 18, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override IEnumerable<UpdateDependency> DependsOn => [typeof(AddSeason21LevelCapsUpdatePlugIn).GUID];
@@ -74,6 +75,7 @@ public class AddSeason21MapsUpdatePlugIn : UpdatePlugInBase
         Season21PlaceholderRows.Repair(gameConfiguration);
         Season21MapsInitializer.RepairEntryLevels(gameConfiguration);
         Season21MovedGates.Repair(gameConfiguration);
+        Season21ClientTerrainTiles.Repair(gameConfiguration);
         Season21ClassicSpawns.Repair(context, gameConfiguration);
         Season21ClassicSpawns.PlaceTownNpcs(context, gameConfiguration);
         EnableOwnMapRespawn(context, gameConfiguration);

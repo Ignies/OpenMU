@@ -174,6 +174,17 @@ Jerint 522 also in Lorencia, where Season 21 gathered the event entrances. Wizar
 shop `Shop/027` (shops update version 2, Lorencia 119/111). The versions of the new NPCs aren't in any source: Season 7
 (Acheron) for Captain Slough, Season 21 for the others.
 
+## Client terrains
+
+Five server terrains of the data differ from the walk grids of the Season 21 client (1.15.17, compared with the Babylon
+client's `tools/walk_grid`), and the files of `Resources/Season21` now are the client's: Ferea (`Terrain113.att`, an NPC
+mark at 230,146 instead of 24,124), Old Kethotum (136, 3 tiles), Ignis Vulcanus (139) and Blood Tarkan (141), which
+have holes (no ground) where the data had walls, and Twisted Karutan (143), which the client opens in its five elite
+zones (`Season21EliteZoneData.TwistedKarutanOpenings`) and in 18 more tiles. `Season21ClientTerrainTiles` lists the 59
+tiles with the value of the data and of the client (Twisted Karutan's after the openings); the maps update (version 14)
+sets a database's tile which still has the data's value, a value the operator chose stays. No gate and no spawn area of
+those maps loses its last walkable tile.
+
 ## What is applied
 
 * The monster level is the experience level of the data, as for the other maps.
