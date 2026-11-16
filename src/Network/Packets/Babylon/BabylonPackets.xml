@@ -685,7 +685,7 @@
           <Index>0</Index>
           <Type>Byte</Type>
           <Name>Storage</Name>
-          <Description>0 worn by the object, 1 the own inventory (worn and bag), 2 the own vault, 3 the trade offer of the object, 4 the personal shop of the object, 5 the own Gremory case.</Description>
+          <Description>0 worn by the object, 1 the own inventory (worn and bag), 2 the own vault, 3 the trade offer of the object, 4 the personal shop of the object, 5 the own Gremory cases (object id 0 the character's, 1 the account's).</Description>
         </Field>
         <Field>
           <Index>1</Index>

@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.ItemCustomization;
 
 using MUnique.OpenMU.DataModel;
+using MUnique.OpenMU.GameLogic.GremoryCase;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.Persistence;
 
@@ -53,6 +54,14 @@ public static class ItemCustomizationCollector
         return items.FirstOrDefault(item => item.ItemSlot == slot) is IIdentifiable { Id: var id } && id != Guid.Empty ? id : null;
     }
 
+    /// <summary>
+    /// Gets the Gremory case a request names by its object id.
+    /// </summary>
+    /// <param name="objectId">The object id.</param>
+    /// <returns>The case, or null.</returns>
+    public static GremoryCaseKind? GremoryCaseOf(ushort objectId) =>
+        Enum.IsDefined((GremoryCaseKind)objectId) && objectId <= byte.MaxValue ? (GremoryCaseKind)objectId : null;
+
     private static async ValueTask<IEnumerable<Item>> ItemsOfAsync(Player player, ItemCustomizationStorage storage, ushort objectId)
     {
         var target = PlayerOf(player, (ushort)(objectId & 0x7FFF));
@@ -69,7 +78,12 @@ public static class ItemCustomizationCollector
             case ItemCustomizationStorage.PersonalShop when target is { ShopStorage.StoreOpen: true } && await InViewAsync(player, target).ConfigureAwait(false):
                 return target.ShopStorage.Items;
             case ItemCustomizationStorage.GremoryCase:
-                return player.SelectedCharacter?.GremoryCase?.Items ?? [];
+                return GremoryCaseOf(objectId) switch
+                {
+                    GremoryCaseKind.Character => player.SelectedCharacter?.GremoryCase?.Items ?? [],
+                    GremoryCaseKind.Account => player.Account?.GremoryCase?.Items ?? [],
+                    _ => [],
+                };
             default:
                 return [];
         }

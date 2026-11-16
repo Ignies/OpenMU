@@ -24,6 +24,6 @@ public enum ItemCustomizationStorage : byte
     /// <summary>The open personal shop of a player in view.</summary>
     PersonalShop = 4,
 
-    /// <summary>The own character's Gremory case.</summary>
+    /// <summary>The own Gremory cases: object id 0 the character's, 1 the account's.</summary>
     GremoryCase = 5,
 }

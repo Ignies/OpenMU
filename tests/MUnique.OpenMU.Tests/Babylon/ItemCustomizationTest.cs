@@ -92,6 +92,17 @@ public class ItemCustomizationTest
     }
 
     /// <summary>
+    /// The Gremory case storage names its case by the object id, as the client asks: 0 the character's, 1 the account's.
+    /// </summary>
+    [Test]
+    public void GremoryCaseByObjectId()
+    {
+        Assert.That(ItemCustomizationCollector.GremoryCaseOf(0), Is.EqualTo(GameLogic.GremoryCase.GremoryCaseKind.Character));
+        Assert.That(ItemCustomizationCollector.GremoryCaseOf(1), Is.EqualTo(GameLogic.GremoryCase.GremoryCaseKind.Account));
+        Assert.That(ItemCustomizationCollector.GremoryCaseOf(7), Is.Null);
+    }
+
+    /// <summary>
     /// The flags say what an entry carries.
     /// </summary>
     [Test]
