@@ -553,6 +553,32 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the structure size calculation for GuideQuestRewardItem.
+    /// </summary>
+    [Test]
+    public void GuideQuestRewardItem_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 4;
+        var actualLength = GuideQuestRewardItem.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Group' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Group' exceeds structure boundary");
+        
+        // Validate field 'Count' boundary
+        Assert.That(1 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Count' exceeds structure boundary");
+        
+        // Validate field 'Number' boundary
+        Assert.That(2 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Number' exceeds structure boundary");
+    }
+
+    /// <summary>
     /// Tests the structure size calculation for LabyrinthGoalState.
     /// </summary>
     [Test]
@@ -1083,6 +1109,118 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for GuideQuestState.
+    /// </summary>
+    [Test]
+    public void GuideQuestState_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'Status' starts at index 4 with size 1
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Status' has invalid negative index");
+        
+        // Field 'Result' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Result' has invalid negative index");
+        
+        // Field 'StepNumber' starts at index 6 with size 2
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'StepNumber' has invalid negative index");
+        
+        // Field 'StepIndex' starts at index 8 with size 2
+        Assert.That(8, Is.GreaterThanOrEqualTo(0), 
+            "Field 'StepIndex' has invalid negative index");
+        
+        // Field 'StepCount' starts at index 10 with size 2
+        Assert.That(10, Is.GreaterThanOrEqualTo(0), 
+            "Field 'StepCount' has invalid negative index");
+        
+        // Field 'Chapter' starts at index 12 with size 1
+        Assert.That(12, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Chapter' has invalid negative index");
+        
+        // Field 'Objective' starts at index 13 with size 1
+        Assert.That(13, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Objective' has invalid negative index");
+        
+        // Field 'MinimumLevel' starts at index 14 with size 2
+        Assert.That(14, Is.GreaterThanOrEqualTo(0), 
+            "Field 'MinimumLevel' has invalid negative index");
+        
+        // Field 'Target' starts at index 16 with size 4
+        Assert.That(16, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Target' has invalid negative index");
+        
+        // Field 'TargetNumber' starts at index 20 with size 2
+        Assert.That(20, Is.GreaterThanOrEqualTo(0), 
+            "Field 'TargetNumber' has invalid negative index");
+        
+        // Field 'RequiredCount' starts at index 22 with size 2
+        Assert.That(22, Is.GreaterThanOrEqualTo(0), 
+            "Field 'RequiredCount' has invalid negative index");
+        
+        // Field 'Progress' starts at index 24 with size 2
+        Assert.That(24, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Progress' has invalid negative index");
+        
+        // Field 'MapNumber' starts at index 26 with size 2
+        Assert.That(26, Is.GreaterThanOrEqualTo(0), 
+            "Field 'MapNumber' has invalid negative index");
+        
+        // Field 'X' starts at index 28 with size 1
+        Assert.That(28, Is.GreaterThanOrEqualTo(0), 
+            "Field 'X' has invalid negative index");
+        
+        // Field 'Y' starts at index 29 with size 1
+        Assert.That(29, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Y' has invalid negative index");
+        
+        // Field 'Gate' starts at index 30 with size 2
+        Assert.That(30, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Gate' has invalid negative index");
+        
+        // Field 'Experience' starts at index 32 with size 4
+        Assert.That(32, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Experience' has invalid negative index");
+        
+        // Field 'Money' starts at index 36 with size 4
+        Assert.That(36, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Money' has invalid negative index");
+        
+        // Field 'Name' starts at index 40 with size 40
+        Assert.That(40, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Name' has invalid negative index");
+        
+        // Field 'RewardItemCount' starts at index 80 with size 1
+        Assert.That(80, Is.GreaterThanOrEqualTo(0), 
+            "Field 'RewardItemCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for GuideQuestRequest.
+    /// </summary>
+    [Test]
+    public void GuideQuestRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = GuideQuestRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Action' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Action' exceeds packet boundary");
+        
+        // Validate field 'StepNumber' boundary
+        Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'StepNumber' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for EvolutionQuestState.
     /// </summary>
     [Test]
@@ -1196,6 +1334,36 @@ public class PacketStructureTests
         // Validate field 'ItemNumber' boundary
         Assert.That(7 + 2, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'ItemNumber' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for MagicEffectStatusWide.
+    /// </summary>
+    [Test]
+    public void MagicEffectStatusWide_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 13;
+        var actualLength = MagicEffectStatusWideRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'IsActive' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IsActive' exceeds packet boundary");
+        
+        // Validate field 'ObjectId' boundary
+        Assert.That(5 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ObjectId' exceeds packet boundary");
+        
+        // Validate field 'EffectNumber' boundary
+        Assert.That(7 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'EffectNumber' exceeds packet boundary");
+        
+        // Validate field 'SecondsLeft' boundary
+        Assert.That(9 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SecondsLeft' exceeds packet boundary");
     }
 
     /// <summary>
