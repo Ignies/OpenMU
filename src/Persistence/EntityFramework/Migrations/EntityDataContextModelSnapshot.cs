@@ -10,7 +10,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 {
-    [DbContext(typeof(MUnique.OpenMU.Persistence.EntityFramework.EntityDataContext))]
+    [DbContext(typeof(EntityDataContext))]
     partial class EntityDataContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -2564,6 +2564,47 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.HasIndex("SimpleCraftingSettingsId");
 
                     b.ToTable("ItemCraftingResultItem", "config");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCustomization", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Look")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Lore")
+                        .HasMaxLength(140)
+                        .HasColumnType("character varying(140)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(24)
+                        .HasColumnType("character varying(24)");
+
+                    b.Property<byte>("Rarity")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId")
+                        .IsUnique();
+
+                    b.ToTable("ItemCustomization", "data");
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", b =>
@@ -5708,6 +5749,15 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("RawItemDefinition");
+                });
+
+            modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCustomization", b =>
+                {
+                    b.HasOne("MUnique.OpenMU.Persistence.EntityFramework.Model.Item", null)
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("MUnique.OpenMU.Persistence.EntityFramework.Model.ItemDefinition", b =>

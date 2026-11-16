@@ -555,6 +555,74 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="ItemCustomizationDetailRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="storage">The storage.</param>
+    /// <param name="objectId">The object id.</param>
+    /// <param name="slot">The slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: A tooltip opens for an item whose customisation says its lore is waiting, and the client has no lore at that version.
+    /// Causes reaction on server side: The server answers with ItemCustomizationDetail.
+    /// </remarks>
+    public static async ValueTask SendItemCustomizationDetailRequestAsync(this IConnection? connection, byte @storage, ushort @objectId, byte @slot)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ItemCustomizationDetailRequestRef.Length;
+            var packet = new ItemCustomizationDetailRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Storage = @storage;
+            packet.ObjectId = @objectId;
+            packet.Slot = @slot;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ItemCustomizationDetail" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="storage">The storage.</param>
+    /// <param name="objectId">The object id.</param>
+    /// <param name="slot">The slot.</param>
+    /// <param name="version">The version.</param>
+    /// <param name="lore">The lore, UTF-8, at most 140 characters on at most 3 lines, zero padded; empty when the item has none.</param>
+    /// <remarks>
+    /// Is sent by the server when: The answer to ItemCustomizationDetailRequest.
+    /// Causes reaction on client side: The client shows the item's lore in its tooltip.
+    /// </remarks>
+    public static async ValueTask SendItemCustomizationDetailAsync(this IConnection? connection, byte @storage, ushort @objectId, byte @slot, uint @version, Memory<byte> @lore)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ItemCustomizationDetailRef.Length;
+            var packet = new ItemCustomizationDetailRef(connection.Output.GetSpan(length)[..length]);
+            packet.Storage = @storage;
+            packet.ObjectId = @objectId;
+            packet.Slot = @slot;
+            packet.Version = @version;
+            @lore.Span.CopyTo(packet.Lore);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="MuunItemMove" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

@@ -105,6 +105,7 @@ internal sealed class BasicModelConverter
             ItemCrafting value => this.Convert(value),
             ItemCraftingRequiredItem value => this.Convert(value),
             ItemCraftingResultItem value => this.Convert(value),
+            ItemCustomization value => this.Convert(value),
             ItemDefinition value => this.Convert(value),
             ItemLevelBonusTable value => this.Convert(value),
             ItemLevelPrice value => this.Convert(value),
@@ -1948,6 +1949,27 @@ internal sealed class BasicModelConverter
         target.Durability = source.Durability;
         target.Reference = source.Reference;
         target.AddLevel = source.AddLevel;
+        return target;
+    }
+
+    private BasicModel.ItemCustomization Convert(ItemCustomization source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.ItemCustomization)converted;
+        }
+
+        var target = new BasicModel.ItemCustomization();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.ItemId = source.ItemId;
+        target.Name = source.Name;
+        target.Lore = source.Lore;
+        target.Rarity = source.Rarity;
+        target.Look = source.Look;
+        target.Version = source.Version;
+        target.CreatedBy = source.CreatedBy;
+        target.UpdatedAt = source.UpdatedAt;
         return target;
     }
 

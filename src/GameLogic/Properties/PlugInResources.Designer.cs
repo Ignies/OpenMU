@@ -9687,5 +9687,23 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("BlessingOfEuniceConsumeHandlerPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item looks and names.
+        /// </summary>
+        public static string ItemCustomizationFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("ItemCustomizationFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tells the Babylon client which items of the places a player sees carry a recolour look, a custom name, a rarity or a lore (the website gives them; Star Smithing makes them)..
+        /// </summary>
+        public static string ItemCustomizationFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("ItemCustomizationFeaturePlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

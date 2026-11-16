@@ -51,6 +51,7 @@ public static class ForkFeatures
         "artifacts",
         "legendary_craft",
         "evolution_quests",
+        "item_custom",
     ];
 
     /// <summary>

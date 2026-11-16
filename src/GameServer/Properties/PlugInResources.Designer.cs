@@ -9073,5 +9073,59 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("IllusionTempleLeagueBabylonPlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item customisations (Babylon).
+        /// </summary>
+        public static string ItemCustomizationBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ItemCustomizationBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sends the looks, names, rarities and lore of customised items to the Babylon client..
+        /// </summary>
+        public static string ItemCustomizationBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ItemCustomizationBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item customisation request handler.
+        /// </summary>
+        public static string ItemCustomizationRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ItemCustomizationRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the Babylon client for the customised items of the places it shows..
+        /// </summary>
+        public static string ItemCustomizationRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ItemCustomizationRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item customisation detail request handler.
+        /// </summary>
+        public static string ItemCustomizationDetailRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ItemCustomizationDetailRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the request of the Babylon client for the lore of a customised item..
+        /// </summary>
+        public static string ItemCustomizationDetailRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ItemCustomizationDetailRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
     }
 }

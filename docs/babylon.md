@@ -153,7 +153,7 @@ C1 08 EE F2  ForkFeaturesChanged (server)  11 u8      ClassEncoding: 0 Season 6,
   3 `evolutions_45`, 4 `enhance_tree`, 5 `ability_core`, 6 `mastery`, 7 `wing_grades`, 8 `sockets_10`,
   9 `pentagram_elements`, 10 `earrings`, 11 `muun`, 12 `gremory`, 13 `ruud`, 14 `mining`, 15 `elite_zones`,
   16 `world_bosses`, 17 `events_s21`, 18 `muquest`, 19 `helper_plus`, 20 `ranking`, 21 `battle_pass`,
-  22 `artifacts`, 23 `legendary_craft`, 24 `evolution_quests`, 25-31 reserved. A bit is available when `fork.json`
+  22 `artifacts`, 23 `legendary_craft`, 24 `evolution_quests`, 25 `item_custom`, 26-31 reserved. A bit is available when `fork.json`
   lists the id of the same name. `fork_protocol` (no bit) says the fork speaks this protocol at all.
 - **Head code 0xEE**, always with a sub code (not 0xFB: the Babylon proxy relays its map pings on C1 FB, and FA-FD are its own), reserved by range so tracks never collide: F0-F7 core, 10-1F
   characters, 20-2F appearance, 30-3F items, 40-4F skill trees, 50-5F Muun, 60-6F Gremory Case, 70-7F currency

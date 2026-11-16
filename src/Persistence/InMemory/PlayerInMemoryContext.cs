@@ -378,6 +378,17 @@ public class PlayerInMemoryContext : InMemoryContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.ItemCustomization>> GetItemCustomizationsAsync(
+        IReadOnlyCollection<Guid> itemIds,
+        CancellationToken cancellationToken = default)
+    {
+        var all = await this.Provider.GetRepository<ItemCustomization>()
+            .GetAllAsync(cancellationToken)
+            .ConfigureAwait(false);
+        return all.Where(customization => itemIds.Contains(customization.ItemId)).ToList();
+    }
+
+    /// <inheritdoc />
     public async ValueTask<IReadOnlyList<CharacterSummary>> GetCharacterRankingAsync(
         Guid levelAttributeId,
         Guid masterLevelAttributeId,

@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
     public partial class TradeContextModel
     {
         private TradeContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("02f3cf43-a806-416c-9b16-d640445f50ea"), entityTypeCount: 48)
+            : base(skipDetectChanges: false, modelId: new Guid("bcaf6d1b-2fb7-402d-bc3f-c11fd8efb863"), entityTypeCount: 49)
         {
         }
 
@@ -48,6 +48,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             var itemAppearanceItemOptionType = ItemAppearanceItemOptionTypeEntityType.Create(this);
             var itemCraftingRequiredItemItemDefinition = ItemCraftingRequiredItemItemDefinitionEntityType.Create(this);
             var itemCraftingRequiredItemItemOptionType = ItemCraftingRequiredItemItemOptionTypeEntityType.Create(this);
+            var itemCustomization = ItemCustomizationEntityType.Create(this);
             var itemDefinitionCharacterClass = ItemDefinitionCharacterClassEntityType.Create(this);
             var itemDefinitionItemOptionDefinition = ItemDefinitionItemOptionDefinitionEntityType.Create(this);
             var itemDefinitionItemSetGroup = ItemDefinitionItemSetGroupEntityType.Create(this);
@@ -84,6 +85,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             GensMemberEntityType.CreateForeignKey1(gensMember, character);
             ItemAppearanceEntityType.CreateForeignKey1(itemAppearance, appearanceData);
             ItemAppearanceItemOptionTypeEntityType.CreateForeignKey1(itemAppearanceItemOptionType, itemAppearance);
+            ItemCustomizationEntityType.CreateForeignKey1(itemCustomization, item);
             ItemItemOfItemSetEntityType.CreateForeignKey1(itemItemOfItemSet, item);
             ItemOptionLinkEntityType.CreateForeignKey1(itemOptionLink, item);
             LetterBodyEntityType.CreateForeignKey1(letterBody, letterHeader);
@@ -126,6 +128,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
             ItemAppearanceItemOptionTypeEntityType.CreateAnnotations(itemAppearanceItemOptionType);
             ItemCraftingRequiredItemItemDefinitionEntityType.CreateAnnotations(itemCraftingRequiredItemItemDefinition);
             ItemCraftingRequiredItemItemOptionTypeEntityType.CreateAnnotations(itemCraftingRequiredItemItemOptionType);
+            ItemCustomizationEntityType.CreateAnnotations(itemCustomization);
             ItemDefinitionCharacterClassEntityType.CreateAnnotations(itemDefinitionCharacterClass);
             ItemDefinitionItemOptionDefinitionEntityType.CreateAnnotations(itemDefinitionItemOptionDefinition);
             ItemDefinitionItemSetGroupEntityType.CreateAnnotations(itemDefinitionItemSetGroup);

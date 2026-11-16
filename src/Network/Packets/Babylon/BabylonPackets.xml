@@ -676,6 +676,94 @@
         </Field>
       </Fields>
     </Structure>
+    <Structure>
+      <Name>ItemCustomizationAsk</Name>
+      <Description>A place whose items the client asks the customisation of.</Description>
+      <Length>3</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>Storage</Name>
+          <Description>0 worn by the object, 1 the own inventory (worn and bag), 2 the own vault, 3 the trade offer of the object, 4 the personal shop of the object, 5 the own Gremory case.</Description>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>ObjectId</Name>
+          <Description>The player the storage belongs to; the own id for the own storages.</Description>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
+      <Name>ItemCustomizationEntry</Name>
+      <Description>The customisation of one item: its look, name and rarity (docs/babylon.md, "Item customisation").</Description>
+      <Length>123</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>Storage</Name>
+          <Description>The storage of the item, as in ItemCustomizationAsk.</Description>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>ObjectId</Name>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+          <Description>The slot of the item in its storage.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Version</Name>
+          <Description>Goes up on every change of the customisation; the client keeps the detail by it.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>Flags</Name>
+          <Description>1 look, 2 name, 4 lore waiting (ask ItemCustomizationDetailRequest), 8 aura, 16 particles.</Description>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>Byte</Type>
+          <Name>Rarity</Name>
+          <Description>0 Common, 1 Uncommon, 2 Rare, 3 Epic, 4 Legendary, 5 Mythic.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Binary</Type>
+          <Name>Look</Name>
+          <Description>The recolour look: mode, flags, tone RGB, strength, hue (2, big endian), keep from (2, big endian), keep range, glow RGB, weapon fx, fx colour count, 3 fx colours, 6 fx tuning values.</Description>
+          <Length>31</Length>
+        </Field>
+        <Field>
+          <Index>41</Index>
+          <Type>Binary</Type>
+          <Name>Name</Name>
+          <Description>The custom name, UTF-8, zero padded.</Description>
+          <Length>72</Length>
+        </Field>
+        <Field>
+          <Index>113</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>AuraId</Name>
+          <Description>The aura look of the item, 0 when none.</Description>
+        </Field>
+        <Field>
+          <Index>115</Index>
+          <Type>Binary</Type>
+          <Name>Particles</Name>
+          <Description>The particle layer of the item: kind, RGB, density, rate, size, reserved; zero when none.</Description>
+          <Length>8</Length>
+        </Field>
+      </Fields>
+    </Structure>
   </Structures>
   <Packets>
     <Packet>
@@ -1547,6 +1635,118 @@
           <Type>IntegerLittleEndian</Type>
           <Name>SecondsLeft</Name>
           <Description>The remaining seconds of the effect, 0 when it's removed or its duration isn't sent.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>33</SubCode>
+      <Name>ItemCustomizationRequest</Name>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>Players come into view or change their appearance, the own inventory changes, or a window with another storage (vault, trade, personal shop, Gremory case) shows its items. At most 32 places; one request is out at a time.</SentWhen>
+      <CausedReaction>The server answers with ItemCustomizations, covering exactly the asked places.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Structure[]</Type>
+          <TypeName>ItemCustomizationAsk</TypeName>
+          <Name>Asks</Name>
+          <ItemCountField>Count</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>34</SubCode>
+      <Name>ItemCustomizations</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The answer to ItemCustomizationRequest.</SentWhen>
+      <CausedReaction>For each asked place, the client replaces what it knew with the listed items; an asked place with no entry has no customised item.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Structure[]</Type>
+          <TypeName>ItemCustomizationEntry</TypeName>
+          <Name>Entries</Name>
+          <ItemCountField>Count</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>35</SubCode>
+      <Name>ItemCustomizationDetailRequest</Name>
+      <Length>8</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A tooltip opens for an item whose customisation says its lore is waiting, and the client has no lore at that version.</SentWhen>
+      <CausedReaction>The server answers with ItemCustomizationDetail.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Storage</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>ObjectId</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>36</SubCode>
+      <Name>ItemCustomizationDetail</Name>
+      <Length>433</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The answer to ItemCustomizationDetailRequest.</SentWhen>
+      <CausedReaction>The client shows the item's lore in its tooltip.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Storage</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>ObjectId</Name>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+        </Field>
+        <Field>
+          <Index>9</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Version</Name>
+        </Field>
+        <Field>
+          <Index>13</Index>
+          <Type>Binary</Type>
+          <Name>Lore</Name>
+          <Description>The lore, UTF-8, at most 140 characters on at most 3 lines, zero padded; empty when the item has none.</Description>
+          <Length>420</Length>
         </Field>
       </Fields>
     </Packet>

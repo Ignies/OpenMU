@@ -1318,6 +1318,157 @@ public readonly ref struct IllusionTempleStoneStateRef
 
 
 /// <summary>
+/// A place whose items the client asks the customisation of..
+/// </summary>
+public readonly ref struct ItemCustomizationAskRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCustomizationAskRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ItemCustomizationAskRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 3;
+
+    /// <summary>
+    /// Gets or sets 0 worn by the object, 1 the own inventory (worn and bag), 2 the own vault, 3 the trade offer of the object, 4 the personal shop of the object, 5 the own Gremory case.
+    /// </summary>
+    public byte Storage
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the player the storage belongs to; the own id for the own storages.
+    /// </summary>
+    public ushort ObjectId
+    {
+        get => ReadUInt16BigEndian(this._data[1..]);
+        set => WriteUInt16BigEndian(this._data[1..], value);
+    }
+}
+
+
+/// <summary>
+/// The customisation of one item: its look, name and rarity (docs/babylon.md, "Item customisation")..
+/// </summary>
+public readonly ref struct ItemCustomizationEntryRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCustomizationEntryRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ItemCustomizationEntryRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 123;
+
+    /// <summary>
+    /// Gets or sets the storage of the item, as in ItemCustomizationAsk.
+    /// </summary>
+    public byte Storage
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the object id.
+    /// </summary>
+    public ushort ObjectId
+    {
+        get => ReadUInt16BigEndian(this._data[1..]);
+        set => WriteUInt16BigEndian(this._data[1..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the slot of the item in its storage.
+    /// </summary>
+    public byte Slot
+    {
+        get => this._data[3];
+        set => this._data[3] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets goes up on every change of the customisation; the client keeps the detail by it.
+    /// </summary>
+    public uint Version
+    {
+        get => ReadUInt32LittleEndian(this._data[4..]);
+        set => WriteUInt32LittleEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets 1 look, 2 name, 4 lore waiting (ask ItemCustomizationDetailRequest), 8 aura, 16 particles.
+    /// </summary>
+    public byte Flags
+    {
+        get => this._data[8];
+        set => this._data[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 0 Common, 1 Uncommon, 2 Rare, 3 Epic, 4 Legendary, 5 Mythic.
+    /// </summary>
+    public byte Rarity
+    {
+        get => this._data[9];
+        set => this._data[9] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the recolour look: mode, flags, tone RGB, strength, hue (2, big endian), keep from (2, big endian), keep range, glow RGB, weapon fx, fx colour count, 3 fx colours, 6 fx tuning values.
+    /// </summary>
+    public Span<byte> Look
+    {
+        get => this._data.Slice(10, 31);
+    }
+
+    /// <summary>
+    /// Gets or sets the custom name, UTF-8, zero padded.
+    /// </summary>
+    public Span<byte> Name
+    {
+        get => this._data.Slice(41, 72);
+    }
+
+    /// <summary>
+    /// Gets or sets the aura look of the item, 0 when none.
+    /// </summary>
+    public ushort AuraId
+    {
+        get => ReadUInt16LittleEndian(this._data[113..]);
+        set => WriteUInt16LittleEndian(this._data[113..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the particle layer of the item: kind, RGB, density, rate, size, reserved; zero when none.
+    /// </summary>
+    public Span<byte> Particles
+    {
+        get => this._data.Slice(115, 8);
+    }
+}
+
+
+/// <summary>
 /// Is sent by the client when: After the login succeeded, when the client logged in with the version of the Babylon client.
 /// Causes reaction on server side: The server answers with the ForkWelcome which tells the client the wire format and the features which are active.
 /// </summary>
@@ -4119,6 +4270,417 @@ public readonly ref struct MagicEffectStatusWideRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(MagicEffectStatusWideRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: Players come into view or change their appearance, the own inventory changes, or a window with another storage (vault, trade, personal shop, Gremory case) shows its items. At most 32 places; one request is out at a time.
+/// Causes reaction on server side: The server answers with ItemCustomizations, covering exactly the asked places.
+/// </summary>
+public readonly ref struct ItemCustomizationRequestRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCustomizationRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ItemCustomizationRequestRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCustomizationRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ItemCustomizationRequestRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x33;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the count.
+    /// </summary>
+    public byte Count
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="ItemCustomizationAskRef"/> of the specified index.
+    /// </summary>
+        public ItemCustomizationAskRef this[int index] => new (this._data[(5 + index * ItemCustomizationAskRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ItemCustomizationRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ItemCustomizationRequestRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ItemCustomizationRequest"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ItemCustomizationRequestRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="ItemCustomizationAskRef"/>.
+    /// </summary>
+    /// <param name="asksCount">The count of <see cref="ItemCustomizationAskRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int asksCount) => asksCount * ItemCustomizationAskRef.Length + 5;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The answer to ItemCustomizationRequest.
+/// Causes reaction on client side: For each asked place, the client replaces what it knew with the listed items; an asked place with no entry has no customised item.
+/// </summary>
+public readonly ref struct ItemCustomizationsRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCustomizationsRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ItemCustomizationsRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCustomizationsRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ItemCustomizationsRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x34;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the count.
+    /// </summary>
+    public ushort Count
+    {
+        get => ReadUInt16LittleEndian(this._data[5..]);
+        set => WriteUInt16LittleEndian(this._data[5..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="ItemCustomizationEntryRef"/> of the specified index.
+    /// </summary>
+        public ItemCustomizationEntryRef this[int index] => new (this._data[(7 + index * ItemCustomizationEntryRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ItemCustomizations"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ItemCustomizationsRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ItemCustomizations"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ItemCustomizationsRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="ItemCustomizationEntryRef"/>.
+    /// </summary>
+    /// <param name="entriesCount">The count of <see cref="ItemCustomizationEntryRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int entriesCount) => entriesCount * ItemCustomizationEntryRef.Length + 7;
+}
+
+
+/// <summary>
+/// Is sent by the client when: A tooltip opens for an item whose customisation says its lore is waiting, and the client has no lore at that version.
+/// Causes reaction on server side: The server answers with ItemCustomizationDetail.
+/// </summary>
+public readonly ref struct ItemCustomizationDetailRequestRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCustomizationDetailRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ItemCustomizationDetailRequestRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCustomizationDetailRequestRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ItemCustomizationDetailRequestRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x35;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the storage.
+    /// </summary>
+    public byte Storage
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the object id.
+    /// </summary>
+    public ushort ObjectId
+    {
+        get => ReadUInt16BigEndian(this._data[5..]);
+        set => WriteUInt16BigEndian(this._data[5..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the slot.
+    /// </summary>
+    public byte Slot
+    {
+        get => this._data[7];
+        set => this._data[7] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ItemCustomizationDetailRequest"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ItemCustomizationDetailRequestRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ItemCustomizationDetailRequest"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ItemCustomizationDetailRequestRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The answer to ItemCustomizationDetailRequest.
+/// Causes reaction on client side: The client shows the item's lore in its tooltip.
+/// </summary>
+public readonly ref struct ItemCustomizationDetailRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCustomizationDetailRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ItemCustomizationDetailRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCustomizationDetailRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ItemCustomizationDetailRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x36;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 433;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the storage.
+    /// </summary>
+    public byte Storage
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the object id.
+    /// </summary>
+    public ushort ObjectId
+    {
+        get => ReadUInt16BigEndian(this._data[6..]);
+        set => WriteUInt16BigEndian(this._data[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the slot.
+    /// </summary>
+    public byte Slot
+    {
+        get => this._data[8];
+        set => this._data[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the version.
+    /// </summary>
+    public uint Version
+    {
+        get => ReadUInt32LittleEndian(this._data[9..]);
+        set => WriteUInt32LittleEndian(this._data[9..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the lore, UTF-8, at most 140 characters on at most 3 lines, zero padded; empty when the item has none.
+    /// </summary>
+    public Span<byte> Lore
+    {
+        get => this._data.Slice(13, 420);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ItemCustomizationDetail"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ItemCustomizationDetailRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ItemCustomizationDetail"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ItemCustomizationDetailRef packet) => packet._data; 
 }
 
 

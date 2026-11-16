@@ -94,6 +94,7 @@ public static class ForkInfo
         "s21_bag_items",
         "muquest",
         "gens",
+        "item_custom",
     ];
 
     /// <summary>

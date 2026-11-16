@@ -91,6 +91,11 @@ public class EntityDataContext : ExtendedTypeContext
     internal DbSet<GensMember> GensMembers => this.Set<GensMember>();
 
     /// <summary>
+    /// Gets the customisations of the items.
+    /// </summary>
+    internal DbSet<ItemCustomization> ItemCustomizations => this.Set<ItemCustomization>();
+
+    /// <summary>
     /// Gets the counts of the recent kills between gens members.
     /// </summary>
     internal DbSet<GensAbuse> GensAbuses => this.Set<GensAbuse>();
@@ -150,6 +155,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<GameMapDefinition>().Apply();
         modelBuilder.Entity<GensMember>().Apply();
         modelBuilder.Entity<GensAbuse>().Apply();
+        modelBuilder.Entity<ItemCustomization>().Apply();
         modelBuilder.Entity<ItemCrafting>().Apply();
         modelBuilder.Entity<ItemDefinition>().Apply();
         modelBuilder.Entity<ItemLevelBonusTable>().Apply();

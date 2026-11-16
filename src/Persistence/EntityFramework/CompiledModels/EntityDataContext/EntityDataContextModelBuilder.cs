@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("3b71978d-ce38-496f-b42b-7b6bed71c01d"), entityTypeCount: 130)
+            : base(skipDetectChanges: false, modelId: new Guid("403847ce-e015-49b0-8c2c-e6ab758604c9"), entityTypeCount: 131)
         {
         }
 
@@ -87,6 +87,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var itemCraftingRequiredItemItemDefinition = ItemCraftingRequiredItemItemDefinitionEntityType.Create(this);
             var itemCraftingRequiredItemItemOptionType = ItemCraftingRequiredItemItemOptionTypeEntityType.Create(this);
             var itemCraftingResultItem = ItemCraftingResultItemEntityType.Create(this);
+            var itemCustomization = ItemCustomizationEntityType.Create(this);
             var itemDefinition = ItemDefinitionEntityType.Create(this);
             var itemDefinitionCharacterClass = ItemDefinitionCharacterClassEntityType.Create(this);
             var itemDefinitionItemOptionDefinition = ItemDefinitionItemOptionDefinitionEntityType.Create(this);
@@ -285,6 +286,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemCraftingRequiredItemItemOptionTypeEntityType.CreateForeignKey2(itemCraftingRequiredItemItemOptionType, itemOptionType);
             ItemCraftingResultItemEntityType.CreateForeignKey1(itemCraftingResultItem, itemDefinition);
             ItemCraftingResultItemEntityType.CreateForeignKey2(itemCraftingResultItem, simpleCraftingSettings);
+            ItemCustomizationEntityType.CreateForeignKey1(itemCustomization, item);
             ItemDefinitionEntityType.CreateForeignKey1(itemDefinition, magicEffectDefinition);
             ItemDefinitionEntityType.CreateForeignKey2(itemDefinition, gameConfiguration);
             ItemDefinitionEntityType.CreateForeignKey3(itemDefinition, itemSlotType);
@@ -480,6 +482,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemCraftingRequiredItemItemDefinitionEntityType.CreateAnnotations(itemCraftingRequiredItemItemDefinition);
             ItemCraftingRequiredItemItemOptionTypeEntityType.CreateAnnotations(itemCraftingRequiredItemItemOptionType);
             ItemCraftingResultItemEntityType.CreateAnnotations(itemCraftingResultItem);
+            ItemCustomizationEntityType.CreateAnnotations(itemCustomization);
             ItemDefinitionEntityType.CreateAnnotations(itemDefinition);
             ItemDefinitionCharacterClassEntityType.CreateAnnotations(itemDefinitionCharacterClass);
             ItemDefinitionItemOptionDefinitionEntityType.CreateAnnotations(itemDefinitionItemOptionDefinition);

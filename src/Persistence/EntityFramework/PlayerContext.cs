@@ -567,6 +567,27 @@ internal class PlayerContext : CachingEntityFrameworkContext, IPlayerContext
     }
 
     /// <inheritdoc />
+    public async ValueTask<IReadOnlyList<DataModel.Entities.ItemCustomization>> GetItemCustomizationsAsync(
+        IReadOnlyCollection<Guid> itemIds,
+        CancellationToken cancellationToken = default)
+    {
+        if (itemIds.Count == 0)
+        {
+            return [];
+        }
+
+        using var l = await this.LockAsync(cancellationToken).ConfigureAwait(false);
+        using (this.RepositoryProvider.ContextStack.UseContext(this))
+        {
+            return await this.Context.Set<ItemCustomization>()
+                .AsNoTracking()
+                .Where(customization => itemIds.Contains(customization.ItemId))
+                .ToListAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
     public async ValueTask<IReadOnlyList<CharacterSummary>> GetCharacterRankingAsync(
         Guid levelAttributeId,
         Guid masterLevelAttributeId,

@@ -329,6 +329,16 @@ public interface IPlayerContext : IContext
         CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets the customisations of items.
+    /// </summary>
+    /// <param name="itemIds">The persistent item identifiers.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The customisations of the items which have one.</returns>
+    ValueTask<IReadOnlyList<ItemCustomization>> GetItemCustomizationsAsync(
+        IReadOnlyCollection<Guid> itemIds,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets the count of the recent kills of a gens member by another gens member.
     /// </summary>
     /// <param name="killerId">The persistent identifier of the killing character.</param>

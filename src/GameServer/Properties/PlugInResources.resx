@@ -3167,4 +3167,22 @@
   <data name="IllusionTempleLeagueBabylonPlugIn_Description" xml:space="preserve">
     <value>Sends the league of the guild (EE BE) and the stones of the renewed Illusion Temple (EE BF) to the Babylon client.</value>
   </data>
+  <data name="ItemCustomizationBabylonPlugIn_Name" xml:space="preserve">
+    <value>Item customisations (Babylon)</value>
+  </data>
+  <data name="ItemCustomizationBabylonPlugIn_Description" xml:space="preserve">
+    <value>Sends the looks, names, rarities and lore of customised items to the Babylon client.</value>
+  </data>
+  <data name="ItemCustomizationRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Item customisation request handler</value>
+  </data>
+  <data name="ItemCustomizationRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the Babylon client for the customised items of the places it shows.</value>
+  </data>
+  <data name="ItemCustomizationDetailRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Item customisation detail request handler</value>
+  </data>
+  <data name="ItemCustomizationDetailRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the request of the Babylon client for the lore of a customised item.</value>
+  </data>
 </root>

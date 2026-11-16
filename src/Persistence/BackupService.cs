@@ -37,6 +37,7 @@ public class BackupService : IBackupService
         ("ConfigurationUpdateState_", typeof(BasicModel.ConfigurationUpdateState)),
         ("Account_", typeof(BasicModel.Account)),
         ("GensMember_", typeof(BasicModel.GensMember)),
+        ("ItemCustomization_", typeof(BasicModel.ItemCustomization)),
         ("GensAbuse_", typeof(BasicModel.GensAbuse)),
         ("CastleSiegeData_", typeof(BasicModel.CastleSiegeData)),
         ("CrywolfData_", typeof(BasicModel.CrywolfData)),
@@ -91,6 +92,7 @@ public class BackupService : IBackupService
         {
             await ExportAsync<Account, BasicModel.Account>(archive, "Account_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
             await ExportAsync<GensMember, BasicModel.GensMember>(archive, "GensMember_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
+            await ExportAsync<ItemCustomization, BasicModel.ItemCustomization>(archive, "ItemCustomization_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
             await ExportAsync<GensAbuse, BasicModel.GensAbuse>(archive, "GensAbuse_", context, sharedHandler, cancellationToken).ConfigureAwait(false);
         }
 
@@ -278,6 +280,11 @@ public class BackupService : IBackupService
         if (basicModelType == typeof(BasicModel.GensMember))
         {
             return deserializer.Deserialize<BasicModel.GensMember>(ms, referenceHandler);
+        }
+
+        if (basicModelType == typeof(BasicModel.ItemCustomization))
+        {
+            return deserializer.Deserialize<BasicModel.ItemCustomization>(ms, referenceHandler);
         }
 
         if (basicModelType == typeof(BasicModel.GensAbuse))

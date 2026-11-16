@@ -339,6 +339,14 @@ internal partial class CrywolfData : IConvertibleTo<BasicModel.CrywolfData>
     }
 }
 
+internal partial class ItemCustomization : IConvertibleTo<BasicModel.ItemCustomization>
+{
+    public BasicModel.ItemCustomization Convert()
+    {
+        return BasicModelConverter.Convert<BasicModel.ItemCustomization>(this);
+    }
+}
+
 internal partial class GensMember : IConvertibleTo<BasicModel.GensMember>
 {
     public BasicModel.GensMember Convert()
