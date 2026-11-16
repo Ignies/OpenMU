@@ -1740,5 +1740,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21BagItemsUpdatePlugIn_Description", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Looks up a localized string similar to Fix the Rune Wizard buffs Burst and Haste (Season 21 data).
+        /// </summary>
+        public static string FixSeason21RuneWizardBuffsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("FixSeason21RuneWizardBuffsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gives the effects of Burst (Might) and Haste and of their Strengthener and Mastery their duration and value (S21Emu: 30 + energy / 20, for 15 + energy / 10 seconds; Might adds to the base damage, Haste to the attack and magic speed) and makes the skills buffs: Burst on the caster, Haste on the party within 7. An operator's own duration or skill type stays. Optional..
+        /// </summary>
+        public static string FixSeason21RuneWizardBuffsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("FixSeason21RuneWizardBuffsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
     }
 }
