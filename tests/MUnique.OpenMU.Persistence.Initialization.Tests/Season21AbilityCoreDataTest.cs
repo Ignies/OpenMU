@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
