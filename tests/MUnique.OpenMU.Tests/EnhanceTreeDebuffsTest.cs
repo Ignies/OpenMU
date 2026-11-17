@@ -195,6 +195,36 @@ public class EnhanceTreeDebuffsTest
     }
 
     /// <summary>
+    /// The ability card options "Bleeding / Severe Bleeding / Poison / Toxic DMG Increase" (37, 38, 39, 40) add their
+    /// value to the damage of the attacker's debuff of their name: each bleed and each poison tick.
+    /// </summary>
+    /// <param name="kind">The debuff kind.</param>
+    /// <param name="improved">If set to <c>true</c>, the upgraded debuff (Toxic, Bleeding Severe).</param>
+    /// <param name="attribute">The name of the attribute of the option.</param>
+    /// <param name="effectNumber">The number of the debuff's effect.</param>
+    /// <param name="minimum">The least damage with the bonus of 300.</param>
+    /// <param name="maximum">The most damage with the bonus of 300.</param>
+    [TestCase(EnhanceTreeDebuffKind.Bleed, false, "BleedingDamageIncrease", (short)275, 300, 300)]
+    [TestCase(EnhanceTreeDebuffKind.Bleed, true, "SevereBleedingDamageIncrease", (short)279, 300, 300)]
+    [TestCase(EnhanceTreeDebuffKind.Poison, false, "PoisonDebuffDamageIncrease", (short)273, 2300, 2300)]
+    [TestCase(EnhanceTreeDebuffKind.Poison, true, "ToxicDamageIncrease", (short)277, 4300, 4300)]
+    public async ValueTask AbilityCardOptionsAddToTheirDebuffAsync(EnhanceTreeDebuffKind kind, bool improved, string attribute, short effectNumber, int minimum, int maximum)
+    {
+        var bonus = typeof(Stats).GetProperty(attribute)?.GetValue(null) as AttributeDefinition;
+        Assert.That(bonus, Is.Not.Null, attribute);
+        var (attacker, target) = await CreatePlayersAsync().ConfigureAwait(false);
+        // as a card option gives it: a power-up element on the attacker's attribute
+        attacker.Attributes!.AddElement(new ConstantElement(300), bonus!);
+
+        var configuration = CreateConfiguration();
+        configuration.Debuffs.ForEach(d => d.ValueRange = 0); // a fixed poison tick: 2000, Toxic twice that
+        await EnhanceTreeDebuffs.PlaceAsync(configuration, kind, improved, attacker, target).ConfigureAwait(false);
+
+        Assert.That(target.MagicEffectList.TryGetEffect(effectNumber, out var effect), Is.True);
+        Assert.That(((EnhanceTreeDebuffEffect)effect!).Damage, Is.InRange(minimum, maximum));
+    }
+
+    /// <summary>
     /// The default rows are the debuffs of S21Emu <c>EnhanceSkillTreeMagicField.xml</c> (MagicFieldBuffInfo).
     /// </summary>
     [Test]

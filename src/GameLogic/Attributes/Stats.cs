@@ -1493,6 +1493,26 @@ public class Stats
     public static AttributeDefinition MasterySkillCurseBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F53"), "Mastery Skill Curse Bonus", "The damage which is added to a curse master skill.");
 
     /// <summary>
+    /// Gets the damage each bleed of the attacker's Bleeding (275) gets on top ("Bleeding DMG Increase" of an ability card).
+    /// </summary>
+    public static AttributeDefinition BleedingDamageIncrease { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F54"), "Bleeding Damage Increase", "The damage which is added to each bleed of the attacker's Bleeding.");
+
+    /// <summary>
+    /// Gets the damage each bleed of the attacker's Bleeding Severe (279) gets on top ("Severe Bleeding DMG Increase").
+    /// </summary>
+    public static AttributeDefinition SevereBleedingDamageIncrease { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F55"), "Severe Bleeding Damage Increase", "The damage which is added to each bleed of the attacker's Bleeding Severe.");
+
+    /// <summary>
+    /// Gets the damage each tick of the attacker's Poisoning (273) gets on top ("Poison DMG Increase" of an ability card).
+    /// </summary>
+    public static AttributeDefinition PoisonDebuffDamageIncrease { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F56"), "Poison Debuff Damage Increase", "The damage which is added to each tick of the attacker's Poisoning.");
+
+    /// <summary>
+    /// Gets the damage each tick of the attacker's Toxic (277) gets on top ("Toxic DMG Increase" of an ability card).
+    /// </summary>
+    public static AttributeDefinition ToxicDamageIncrease { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F57"), "Toxic Damage Increase", "The damage which is added to each tick of the attacker's Toxic.");
+
+    /// <summary>
     /// Gets the shield bypass chance attribute definition.
     /// </summary>
     public static AttributeDefinition ShieldBypassChance { get; } = new(new Guid("7F6F1804-271E-40DF-A970-0CE19064A54B"), "Shield Bypass Chance", string.Empty);
