@@ -39,6 +39,13 @@ public class ItemCustomizationFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault
 
     private readonly ItemCustomizationReportGate _reports = new();
 
+    private readonly ItemCustomizationWatchers<Player> _watchers = new();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCustomizationFeaturePlugIn"/> class.
+    /// </summary>
+    public ItemCustomizationFeaturePlugIn() => ItemCustomizationCache.Forgotten += this.OnForgotten;
+
     /// <summary>
     /// Gets the active plugin of a game context.
     /// </summary>
@@ -60,12 +67,7 @@ public class ItemCustomizationFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault
             return;
         }
 
-        var items = await ItemCustomizationCollector.CollectAsync(player, asks.Take(MaximumAsks)).ConfigureAwait(false);
-        var customizations = await this.GetAsync(player, items.Select(i => i.ItemId).Distinct().ToList()).ConfigureAwait(false);
-        var answer = items
-            .Where(i => customizations.ContainsKey(i.ItemId))
-            .Select(i => new ItemCustomizationEntryData(i.Storage, i.ObjectId, i.Slot, customizations[i.ItemId]))
-            .ToList();
+        var answer = await this.AnswerAsync(player, asks.Take(MaximumAsks)).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemCustomizationViewPlugIn>(p => p.SendCustomizationsAsync(answer)).ConfigureAwait(false);
     }
 
@@ -104,6 +106,58 @@ public class ItemCustomizationFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault
     {
         var result = await this.ReportAsync(player, storage, objectId, slot).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemCustomizationViewPlugIn>(p => p.SendReportResultAsync(result)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Tells everyone who was told about a changed item again, at once (EE 39): the place they asked about, as it is now.
+    /// </summary>
+    /// <param name="itemId">The changed item.</param>
+    private void OnForgotten(Guid itemId)
+    {
+        var places = this._watchers.Take(itemId);
+        if (places.Count > 0)
+        {
+            _ = Task.Run(() => this.PushAsync(places));
+        }
+    }
+
+    private async Task PushAsync(IReadOnlyList<(Player Watcher, ItemCustomizationStorage Storage, ushort ObjectId)> places)
+    {
+        foreach (var (player, storage, objectId) in places)
+        {
+            try
+            {
+                if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
+                {
+                    continue;
+                }
+
+                var answer = await this.AnswerAsync(player, [(storage, objectId)]).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IItemCustomizationViewPlugIn>(p => p.SendChangedAsync(answer)).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                player.Logger.LogDebug(ex, "Pushing a changed item customisation to {Player} failed.", player);
+            }
+        }
+    }
+
+    /// <summary>The customised items of the asked places, each noted as told to the player.</summary>
+    private async ValueTask<List<ItemCustomizationEntryData>> AnswerAsync(Player player, IEnumerable<(ItemCustomizationStorage Storage, ushort ObjectId)> asks)
+    {
+        var items = await ItemCustomizationCollector.CollectAsync(player, asks).ConfigureAwait(false);
+        var customizations = await this.GetAsync(player, items.Select(i => i.ItemId).Distinct().ToList()).ConfigureAwait(false);
+        var answer = new List<ItemCustomizationEntryData>();
+        foreach (var item in items)
+        {
+            if (customizations.TryGetValue(item.ItemId, out var customization))
+            {
+                answer.Add(new ItemCustomizationEntryData(item.Storage, item.ObjectId, item.Slot, customization));
+                this._watchers.Add(item.ItemId, player, item.Storage, item.ObjectId);
+            }
+        }
+
+        return answer;
     }
 
     private async ValueTask<ItemCustomizationReportResult> ReportAsync(Player player, ItemCustomizationStorage storage, ushort objectId, byte slot)

@@ -45,17 +45,7 @@ public class ItemCustomizationBabylonPlugIn : IItemCustomizationViewPlugIn
             var packet = new ItemCustomizationsRef(connection.Output.GetSpan(size)[..size]) { Count = (ushort)count };
             for (var i = 0; i < count; i++)
             {
-                var data = entries[i];
-                var c = data.Customization;
-                var entry = packet[i];
-                entry.Storage = (byte)data.Storage;
-                entry.ObjectId = data.ObjectId;
-                entry.Slot = data.Slot;
-                entry.Version = (uint)c.Version;
-                entry.Rarity = c.Rarity;
-                var hasLook = ItemLookBytes.TryWrite(c.Look, entry.Look);
-                ItemCustomizationText.WriteName(c.Name, entry.Name);
-                entry.Flags = ItemCustomizationText.Flags(hasLook, c.Name, c.Lore);
+                Fill(packet[i], entries[i]);
             }
 
             return size;
@@ -105,5 +95,42 @@ public class ItemCustomizationBabylonPlugIn : IItemCustomizationViewPlugIn
         }
 
         await connection.SendAsync(Write).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask SendChangedAsync(IReadOnlyList<ItemCustomizationEntryData> entries)
+    {
+        if (this._player.Connection is not { } connection)
+        {
+            return;
+        }
+
+        var count = Math.Min(entries.Count, (ushort.MaxValue - 7) / ItemCustomizationEntryRef.Length);
+        int Write()
+        {
+            var size = ItemCustomizationsChangedRef.GetRequiredSize(count);
+            var packet = new ItemCustomizationsChangedRef(connection.Output.GetSpan(size)[..size]) { Count = (ushort)count };
+            for (var i = 0; i < count; i++)
+            {
+                Fill(packet[i], entries[i]);
+            }
+
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
+    }
+
+    private static void Fill(ItemCustomizationEntryRef entry, ItemCustomizationEntryData data)
+    {
+        var c = data.Customization;
+        entry.Storage = (byte)data.Storage;
+        entry.ObjectId = data.ObjectId;
+        entry.Slot = data.Slot;
+        entry.Version = (uint)c.Version;
+        entry.Rarity = c.Rarity;
+        var hasLook = ItemLookBytes.TryWrite(c.Look, entry.Look);
+        ItemCustomizationText.WriteName(c.Name, entry.Name);
+        entry.Flags = ItemCustomizationText.Flags(hasLook, c.Name, c.Lore);
     }
 }

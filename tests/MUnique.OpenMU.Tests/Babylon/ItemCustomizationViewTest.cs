@@ -53,6 +53,22 @@ public class ItemCustomizationViewTest
     }
 
     /// <summary>
+    /// EE 39 pushes a changed place unasked, laid out as EE 34.
+    /// </summary>
+    [Test]
+    public async ValueTask AChangeIsPushedAsEe39Async()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(GameServer.BabylonClient.Version);
+        var send = typeof(ItemCustomizationBabylonPlugIn).GetMethod("SendChangedAsync");
+        Assert.That(send, Is.Not.Null);
+        IReadOnlyList<ItemCustomizationEntryData> entries = [new ItemCustomizationEntryData(ItemCustomizationStorage.Inventory, 0x0200, 47, new DataModel.Entities.ItemCustomization { Lore = "Kept.", Version = 2 })];
+        await ((ValueTask)send!.Invoke(new ItemCustomizationBabylonPlugIn(player), [entries])!).ConfigureAwait(false);
+        var bytes = output.ToArray();
+        Assert.That(bytes.Take(7), Is.EqualTo(new byte[] { 0xC2, 0x00, 7 + 123, 0xEE, 0x39, 1, 0 }));
+        Assert.That(bytes.Skip(7).Take(10), Is.EqualTo(new byte[] { 1, 0x02, 0x00, 47, 2, 0, 0, 0, 4, 0 }));
+    }
+
+    /// <summary>
     /// EE 38 answers a report with one byte.
     /// </summary>
     [Test]

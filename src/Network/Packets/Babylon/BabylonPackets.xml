@@ -1798,6 +1798,29 @@
     <Packet>
       <HeaderType>C2HeaderWithSubCode</HeaderType>
       <Code>EE</Code>
+      <SubCode>39</SubCode>
+      <Name>ItemCustomizationsChanged</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A customised item's record changed (a moderator's reset, a new look) while this client had been told about it.</SentWhen>
+      <CausedReaction>The client replaces what it knows of each listed place with these entries, without taking it as the answer to its own request.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Structure[]</Type>
+          <TypeName>ItemCustomizationEntry</TypeName>
+          <Name>Entries</Name>
+          <ItemCountField>Count</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
       <SubCode>50</SubCode>
       <Name>MuunInventoryList</Name>
       <Direction>ServerToClient</Direction>

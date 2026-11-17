@@ -48,3 +48,10 @@ with `ItemCustomizationCache.Forget(itemId)`, reached by name (the Hidden plugin
 resets later), and bumps `Version`, so the client fetches the new lore.
 
 Names and lore are cut to their fields on a character, never inside one (`ItemCustomizationText`).
+
+## Changes
+Every answer notes who was told about each customised item and for which place (`ItemCustomizationWatchers`, weak, at
+most 64 places an item). `ItemCustomizationCache.Forget` raises `Forgotten`; the channel then pushes each of those places
+as it is now, unasked, as `C2 EE 39 ItemCustomizationsChanged` (laid out as EE 34). A moderator's reset or a new delivery look
+reaches the owner and everyone looking at it at once, not on their next ask. EE 39 answers no request, so the
+client keeps its own request pending.

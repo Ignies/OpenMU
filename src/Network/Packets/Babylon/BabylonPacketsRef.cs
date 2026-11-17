@@ -4875,6 +4875,99 @@ public readonly ref struct ItemCustomizationReportResultRef
 
 
 /// <summary>
+/// Is sent by the server when: A customised item's record changed (a moderator's reset, a new look) while this client had been told about it.
+/// Causes reaction on client side: The client replaces what it knows of each listed place with these entries, without taking it as the answer to its own request.
+/// </summary>
+public readonly ref struct ItemCustomizationsChangedRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCustomizationsChangedRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ItemCustomizationsChangedRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCustomizationsChangedRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ItemCustomizationsChangedRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x39;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the count.
+    /// </summary>
+    public ushort Count
+    {
+        get => ReadUInt16LittleEndian(this._data[5..]);
+        set => WriteUInt16LittleEndian(this._data[5..], value);
+    }
+
+    /// <summary>
+    /// Gets the <see cref="ItemCustomizationEntryRef"/> of the specified index.
+    /// </summary>
+        public ItemCustomizationEntryRef this[int index] => new (this._data[(7 + index * ItemCustomizationEntryRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ItemCustomizationsChanged"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ItemCustomizationsChangedRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ItemCustomizationsChanged"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ItemCustomizationsChangedRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="ItemCustomizationEntryRef"/>.
+    /// </summary>
+    /// <param name="entriesCount">The count of <see cref="ItemCustomizationEntryRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int entriesCount) => entriesCount * ItemCustomizationEntryRef.Length + 7;
+}
+
+
+/// <summary>
 /// Is sent by the server when: When the character enters a map while the Muun system is on.
 /// Causes reaction on client side: The client shows the Muun inventory.
 /// </summary>
