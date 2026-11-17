@@ -53,6 +53,19 @@ public class ItemCustomizationViewTest
     }
 
     /// <summary>
+    /// EE 38 answers a report with one byte.
+    /// </summary>
+    [Test]
+    public async ValueTask TheReportResultIsOneByteAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(GameServer.BabylonClient.Version);
+        var send = typeof(ItemCustomizationBabylonPlugIn).GetMethod("SendReportResultAsync");
+        Assert.That(send, Is.Not.Null);
+        await ((ValueTask)send!.Invoke(new ItemCustomizationBabylonPlugIn(player), [GameLogic.ItemCustomization.ItemCustomizationReportResult.TooFast])!).ConfigureAwait(false);
+        Assert.That(output.ToArray(), Is.EqualTo(new byte[] { 0xC1, 5, 0xEE, 0x38, 3 }));
+    }
+
+    /// <summary>
     /// EE 36 carries the lore of one item at its version.
     /// </summary>
     [Test]

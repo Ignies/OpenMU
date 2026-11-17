@@ -37,6 +37,8 @@ public class ItemCustomizationFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault
 
     private readonly ConditionalWeakTable<Player, StrongBox<(long Start, int Count)>> _windows = new();
 
+    private readonly ItemCustomizationReportGate _reports = new();
+
     /// <summary>
     /// Gets the active plugin of a game context.
     /// </summary>
@@ -87,6 +89,57 @@ public class ItemCustomizationFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault
         {
             var entry = new ItemCustomizationEntryData(storage, objectId, slot, customization);
             await player.InvokeViewPlugInAsync<IItemCustomizationViewPlugIn>(p => p.SendDetailAsync(entry)).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Answers a report (EE 37): the item's name and lore as they are now go into a report for the website's
+    /// moderation, once per reporter, item and version (<see cref="ItemCustomizationReportGate"/>).
+    /// </summary>
+    /// <param name="player">The reporting player.</param>
+    /// <param name="storage">The storage.</param>
+    /// <param name="objectId">The object id.</param>
+    /// <param name="slot">The slot.</param>
+    public async ValueTask HandleReportAsync(Player player, ItemCustomizationStorage storage, ushort objectId, byte slot)
+    {
+        var result = await this.ReportAsync(player, storage, objectId, slot).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IItemCustomizationViewPlugIn>(p => p.SendReportResultAsync(result)).ConfigureAwait(false);
+    }
+
+    private async ValueTask<ItemCustomizationReportResult> ReportAsync(Player player, ItemCustomizationStorage storage, ushort objectId, byte slot)
+    {
+        if (player.SelectedCharacter?.Name is not { Length: > 0 } reporter
+            || await ItemCustomizationCollector.ItemIdAsync(player, storage, objectId, slot).ConfigureAwait(false) is not { } itemId
+            || (await this.GetAsync(player, [itemId]).ConfigureAwait(false)).GetValueOrDefault(itemId) is not { } customization
+            || (string.IsNullOrWhiteSpace(customization.Name) && string.IsNullOrWhiteSpace(customization.Lore)))
+        {
+            return ItemCustomizationReportResult.NotFound;
+        }
+
+        var result = this._reports.Try(reporter, itemId, customization.Version, Environment.TickCount64);
+        if (result != ItemCustomizationReportResult.Sent)
+        {
+            return result;
+        }
+
+        try
+        {
+            using var context = player.GameContext.PersistenceContextProvider.CreateNewContext();
+            var report = context.CreateNew<DataModel.Entities.ItemCustomizationReport>();
+            report.ItemId = itemId;
+            report.Reporter = reporter;
+            report.Version = customization.Version;
+            report.Name = customization.Name;
+            report.Lore = customization.Lore;
+            report.CreatedAt = DateTime.UtcNow;
+            await context.SaveChangesAsync().ConfigureAwait(false);
+            return ItemCustomizationReportResult.Sent;
+        }
+        catch (Exception ex)
+        {
+            // The unique index: this reporter reported this version before the server last started.
+            player.Logger.LogDebug(ex, "Report of item {ItemId} by {Reporter} not stored.", itemId, reporter);
+            return ItemCustomizationReportResult.Already;
         }
     }
 

@@ -1531,6 +1531,50 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for ItemCustomizationReportRequest.
+    /// </summary>
+    [Test]
+    public void ItemCustomizationReportRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = ItemCustomizationReportRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Storage' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Storage' exceeds packet boundary");
+        
+        // Validate field 'ObjectId' boundary
+        Assert.That(5 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ObjectId' exceeds packet boundary");
+        
+        // Validate field 'Slot' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Slot' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ItemCustomizationReportResult.
+    /// </summary>
+    [Test]
+    public void ItemCustomizationReportResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = ItemCustomizationReportResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for MuunInventoryList.
     /// </summary>
     [Test]

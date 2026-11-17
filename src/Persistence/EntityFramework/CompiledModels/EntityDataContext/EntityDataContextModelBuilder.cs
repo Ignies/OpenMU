@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
     public partial class EntityDataContextModel
     {
         private EntityDataContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("403847ce-e015-49b0-8c2c-e6ab758604c9"), entityTypeCount: 131)
+            : base(skipDetectChanges: false, modelId: new Guid("b435f45c-98e2-4e3c-bd5c-22e5f20fc635"), entityTypeCount: 132)
         {
         }
 
@@ -88,6 +88,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             var itemCraftingRequiredItemItemOptionType = ItemCraftingRequiredItemItemOptionTypeEntityType.Create(this);
             var itemCraftingResultItem = ItemCraftingResultItemEntityType.Create(this);
             var itemCustomization = ItemCustomizationEntityType.Create(this);
+            var itemCustomizationReport = ItemCustomizationReportEntityType.Create(this);
             var itemDefinition = ItemDefinitionEntityType.Create(this);
             var itemDefinitionCharacterClass = ItemDefinitionCharacterClassEntityType.Create(this);
             var itemDefinitionItemOptionDefinition = ItemDefinitionItemOptionDefinitionEntityType.Create(this);
@@ -287,6 +288,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemCraftingResultItemEntityType.CreateForeignKey1(itemCraftingResultItem, itemDefinition);
             ItemCraftingResultItemEntityType.CreateForeignKey2(itemCraftingResultItem, simpleCraftingSettings);
             ItemCustomizationEntityType.CreateForeignKey1(itemCustomization, item);
+            ItemCustomizationReportEntityType.CreateForeignKey1(itemCustomizationReport, item);
             ItemDefinitionEntityType.CreateForeignKey1(itemDefinition, magicEffectDefinition);
             ItemDefinitionEntityType.CreateForeignKey2(itemDefinition, gameConfiguration);
             ItemDefinitionEntityType.CreateForeignKey3(itemDefinition, itemSlotType);
@@ -483,6 +485,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
             ItemCraftingRequiredItemItemOptionTypeEntityType.CreateAnnotations(itemCraftingRequiredItemItemOptionType);
             ItemCraftingResultItemEntityType.CreateAnnotations(itemCraftingResultItem);
             ItemCustomizationEntityType.CreateAnnotations(itemCustomization);
+            ItemCustomizationReportEntityType.CreateAnnotations(itemCustomizationReport);
             ItemDefinitionEntityType.CreateAnnotations(itemDefinition);
             ItemDefinitionCharacterClassEntityType.CreateAnnotations(itemDefinitionCharacterClass);
             ItemDefinitionItemOptionDefinitionEntityType.CreateAnnotations(itemDefinitionItemOptionDefinition);

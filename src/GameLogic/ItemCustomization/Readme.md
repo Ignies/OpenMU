@@ -36,6 +36,10 @@ and copied the site's older `web_item_tint` rows once. Readers: `IPlayerContext.
   particle layer (both zero until Star Smithing adds them).
 - `EE 35 ItemCustomizationDetailRequest` / `EE 36 ItemCustomizationDetail`: the lore of one item (420 bytes UTF-8),
   asked when a tooltip opens.
+- `EE 37 ItemCustomizationReportRequest` / `EE 38 ItemCustomizationReportResult`: a player reports the name or lore of
+  one item (Ctrl + right click on its tooltip). The text as it is now goes into `ItemCustomizationReport` for the
+  website (`GameLogic/TextModeration/Readme.md`); once per reporter, item and version, one every ten seconds
+  (`ItemCustomizationReportGate`, and a unique index across restarts). The answer: 0 sent, 1 already, 2 not found, 3 too fast.
 
 One request is out at a time on the client, so an answer covers exactly the request it answers. Requests are answered
 four a second per player; the rest are dropped. Records are cached five minutes, a missing one thirty seconds

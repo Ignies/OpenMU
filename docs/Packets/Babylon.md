@@ -13,6 +13,8 @@
   * [C2 EE 34 - ItemCustomizations (by server)](C2-EE-34-ItemCustomizations_by-server.md)
   * [C1 EE 35 - ItemCustomizationDetailRequest (by client)](C1-EE-35-ItemCustomizationDetailRequest_by-client.md)
   * [C2 EE 36 - ItemCustomizationDetail (by server)](C2-EE-36-ItemCustomizationDetail_by-server.md)
+  * [C1 EE 37 - ItemCustomizationReportRequest (by client)](C1-EE-37-ItemCustomizationReportRequest_by-client.md)
+  * [C1 EE 38 - ItemCustomizationReportResult (by server)](C1-EE-38-ItemCustomizationReportResult_by-server.md)
   * [C2 EE 40 - EnhanceTreeState (by server)](C2-EE-40-EnhanceTreeState_by-server.md)
   * [C1 EE 41 - EnhanceTreeAddPoint (by client)](C1-EE-41-EnhanceTreeAddPoint_by-client.md)
   * [C1 EE 42 - EnhanceTreeAddPointResult (by server)](C1-EE-42-EnhanceTreeAddPointResult_by-server.md)

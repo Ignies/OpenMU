@@ -11,6 +11,7 @@ using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.Babylon;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
+using ReportResult = MUnique.OpenMU.GameLogic.ItemCustomization.ItemCustomizationReportResult;
 
 /// <summary>
 /// Sends the item customisations to the Babylon client (EE 34, EE 36).
@@ -82,6 +83,24 @@ public class ItemCustomizationBabylonPlugIn : IItemCustomizationViewPlugIn
                 Version = (uint)entry.Customization.Version,
             };
             ItemCustomizationText.WriteLore(entry.Customization.Lore, packet.Lore);
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    public async ValueTask SendReportResultAsync(ReportResult result)
+    {
+        if (this._player.Connection is not { } connection)
+        {
+            return;
+        }
+
+        int Write()
+        {
+            var size = ItemCustomizationReportResultRef.Length;
+            _ = new ItemCustomizationReportResultRef(connection.Output.GetSpan(size)[..size]) { Result = (byte)result };
             return size;
         }
 

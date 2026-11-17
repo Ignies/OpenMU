@@ -22,4 +22,10 @@ public interface IItemCustomizationViewPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="entry">The item.</param>
     ValueTask SendDetailAsync(ItemCustomizationEntryData entry);
+
+    /// <summary>
+    /// Answers a report.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    ValueTask SendReportResultAsync(ItemCustomizationReportResult result);
 }
