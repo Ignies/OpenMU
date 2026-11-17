@@ -210,6 +210,10 @@ internal class Season21AbilityCoreDataTest
     [TestCase((short)216, (short)2, "FifthWingDefenseBonus", 64f)]
     [TestCase((short)213, (short)35, "DoubleDamageIncrease", 240f)]
     [TestCase((short)230, (short)60, "TripleDamageChance", 0.03f)]
+    [TestCase((short)214, (short)51, "SkillpowerSlotOneBonus", 180f)]
+    [TestCase((short)219, (short)56, "SkillpowerSlotTwoBonus", 180f)]
+    [TestCase((short)224, (short)61, "SkillpowerSlotThreeBonus", 180f)]
+    [TestCase((short)230, (short)63, "StrengthenerAbilitySkillDamageRate", 0.055f)]
     public async Task VersionFourMapsTheOptionsWithoutAttributeAsync(short card, short option, string attribute, float levelFive)
     {
         var (context, gameConfiguration) = await CreateWithCoreAsync().ConfigureAwait(false);

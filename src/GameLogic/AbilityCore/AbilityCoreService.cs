@@ -72,6 +72,32 @@ public static class AbilityCoreService
     }
 
     /// <summary>
+    /// Gets what the card options add to a skill's damage: the "Skillpower n-Slot" of the skill slot a card skill sits in
+    /// (flat), and the "(Strengthener Skill, Ability Skill) Additional DMG Rate" of a master skill or a card skill (a rate).
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="skill">The used skill.</param>
+    /// <returns>The flat damage and the rate.</returns>
+    public static (float Flat, float Rate) GetSkillBonus(Player player, Skill skill)
+    {
+        if (player.Attributes is not { } attributes)
+        {
+            return (0, 0);
+        }
+
+        var slot = States.TryGetValue(player, out var state) && state.SkillSlots.TryGetValue(skill.Number, out var s) ? s : (byte?)null;
+        var flat = slot switch
+        {
+            AbilityCoreSlots.FirstSkill => attributes[Stats.SkillpowerSlotOneBonus],
+            AbilityCoreSlots.FirstSkill + 1 => attributes[Stats.SkillpowerSlotTwoBonus],
+            AbilityCoreSlots.FirstSkill + 2 => attributes[Stats.SkillpowerSlotThreeBonus],
+            _ => 0,
+        };
+        var rate = slot is not null || skill.MasterDefinition is not null ? attributes[Stats.StrengthenerAbilitySkillDamageRate] : 0;
+        return (flat, rate);
+    }
+
+    /// <summary>
     /// Applies the options and skills of the cards which take effect, and takes away those which no longer do.
     /// </summary>
     /// <param name="player">The player.</param>
@@ -96,6 +122,12 @@ public static class AbilityCoreService
         }
 
         var skills = active.Where(e => e.Card.Skill > 0).Select(e => e.Card.Skill).ToHashSet();
+        state.SkillSlots.Clear();
+        foreach (var (item, card) in active.Where(e => e.Card.Skill > 0))
+        {
+            state.SkillSlots[card.Skill] = item.ItemSlot;
+        }
+
         if (player.SkillList is not { } skillList)
         {
             return;
@@ -458,5 +490,10 @@ public static class AbilityCoreService
         public List<PowerUpWrapper> PowerUps { get; } = [];
 
         public HashSet<short> Skills { get; } = [];
+
+        /// <summary>
+        /// Gets the core slot of each card skill which takes effect.
+        /// </summary>
+        public Dictionary<short, byte> SkillSlots { get; } = [];
     }
 }

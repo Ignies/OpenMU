@@ -257,6 +257,12 @@ public static class AttackableExtensions
             }
 
             dmg = (int)(dmg * multiplier * damageFactor);
+
+            // "(Strengthener Skill, Ability Skill) Additional DMG Rate" of the ability cards.
+            if (attackerPlayer is not null && skill.Skill is { } ratedSkill && AbilityCore.AbilityCoreService.GetSkillBonus(attackerPlayer, ratedSkill).Rate is var rate and > 0)
+            {
+                dmg = (int)(dmg * (1 + rate));
+            }
             if (attacker is Player skillPlayer && skill.Skill is { } usedSkill)
             {
                 dmg = (int)(dmg * EnhanceTreeEffects.RollMasteryDamageFactor(skillPlayer, usedSkill));
@@ -900,6 +906,13 @@ public static class AttackableExtensions
         {
             skillMinimumDamage += (int)attackerStats[masteryBonus];
             skillMaximumDamage += (int)attackerStats[masteryBonus];
+        }
+
+        // The "Skillpower n-Slot" options add to the card skill of that skill slot.
+        if (attacker is Player cardPlayer && AbilityCore.AbilityCoreService.GetSkillBonus(cardPlayer, skill).Flat is var skillpower and > 0)
+        {
+            skillMinimumDamage += (int)skillpower;
+            skillMaximumDamage += (int)skillpower;
         }
 
         if (skillEntry.EnsureSkillAttributes(attackerStats) is { } skillAttributes)

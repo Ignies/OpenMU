@@ -1518,6 +1518,27 @@ public class Stats
     public static AttributeDefinition DoubleDamageIncrease { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F5D"), "Double Damage Increase", "The damage which is added to a hit that deals double (or triple) damage.");
 
     /// <summary>
+    /// Gets the damage the ability card skill in the first skill slot of the core gets ("Skillpower 1-Slot Increase").
+    /// </summary>
+    public static AttributeDefinition SkillpowerSlotOneBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F60"), "Skillpower Slot 1 Bonus", "The damage which is added to the card skill of the first skill slot of the ability core.");
+
+    /// <summary>
+    /// Gets the damage the ability card skill in the second skill slot of the core gets ("Skillpower 2-Slot Increase").
+    /// </summary>
+    public static AttributeDefinition SkillpowerSlotTwoBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F61"), "Skillpower Slot 2 Bonus", "The damage which is added to the card skill of the second skill slot of the ability core.");
+
+    /// <summary>
+    /// Gets the damage the ability card skill in the third skill slot of the core gets ("Skillpower 3-Slot Increase").
+    /// </summary>
+    public static AttributeDefinition SkillpowerSlotThreeBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F62"), "Skillpower Slot 3 Bonus", "The damage which is added to the card skill of the third skill slot of the ability core.");
+
+    /// <summary>
+    /// Gets the damage rate (0-1) a master skill or an ability card skill gets on top ("(Strengthener Skill, Ability Skill)
+    /// Additional DMG Rate" of an ability card).
+    /// </summary>
+    public static AttributeDefinition StrengthenerAbilitySkillDamageRate { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F63"), "Strengthener and Ability Skill Damage Rate", "The damage rate which is added to master skills and ability card skills.");
+
+    /// <summary>
     /// Gets the chance (0-1) that a hit deals triple damage ("Triple DMG Rate" of an ability card).
     /// </summary>
     public static AttributeDefinition TripleDamageChance { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F5E"), "Triple Damage Chance", "The chance that a hit deals triple damage.");

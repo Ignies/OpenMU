@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Tests.AbilityCore;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -131,6 +133,74 @@ public class AbilityCoreInGameTest
 
         await AbilityCoreService.RequestAsync(player, AbilityCoreAction.Remove, AbilityCoreSlots.FirstSkill, AbilityCoreService.AnySlot).ConfigureAwait(false);
         Assert.That(player.SkillList.ContainsSkill((ushort)MeteorStorm), Is.False);
+    }
+
+    /// <summary>
+    /// A card skill gets the "Skillpower n-Slot Increase" (51, 56, 61) of the skill slot it sits in, and with a master
+    /// skill the "(Strengthener Skill, Ability Skill) Additional DMG Rate" (63); other skills get neither.
+    /// </summary>
+    [Test]
+    public async ValueTask CardSkillGetsTheSkillpowerOfItsSlotAsync()
+    {
+        var getBonus = typeof(AbilityCoreService).GetMethod("GetSkillBonus");
+        var slotOne = typeof(Stats).GetProperty("SkillpowerSlotOneBonus")?.GetValue(null) as AttributeDefinition;
+        var rate = typeof(Stats).GetProperty("StrengthenerAbilitySkillDamageRate")?.GetValue(null) as AttributeDefinition;
+        Assert.That(getBonus, Is.Not.Null);
+        Assert.That(slotOne, Is.Not.Null);
+        Assert.That(rate, Is.Not.Null);
+
+        var player = await this.CreatePlayerAsync(ClassEvolution.Fifth, 800).ConfigureAwait(false);
+        await player.SkillList!.AddLearnedSkillAsync(this._gameConfiguration.Skills.Single(s => s.Number == MeteorStormFourth)).ConfigureAwait(false);
+        var card = await this.AddCardAsync(player, MeteorStormCard, 0, 65).ConfigureAwait(false);
+        Assert.That(await AbilityCoreService.RequestAsync(player, AbilityCoreAction.Insert, AbilityCoreSlots.FirstSkill, card.ItemSlot).ConfigureAwait(false), Is.EqualTo(AbilityCoreResult.Success));
+        player.Attributes!.AddElement(new ConstantElement(100), slotOne!);
+        player.Attributes.AddElement(new ConstantElement(0.05f), rate!);
+
+        var meteorStorm = this._gameConfiguration.Skills.Single(s => s.Number == MeteorStorm);
+        var other = this._gameConfiguration.Skills.First(s => s.MasterDefinition is null && s.Number != MeteorStorm);
+        var master = this._gameConfiguration.Skills.First(s => s.MasterDefinition is not null);
+        Assert.That(getBonus!.Invoke(null, [player, meteorStorm]), Is.EqualTo((100f, 0.05f)));
+        Assert.That(getBonus.Invoke(null, [player, other]), Is.EqualTo((0f, 0f)));
+        Assert.That(getBonus.Invoke(null, [player, master]), Is.EqualTo((0f, 0.05f)));
+
+        await AbilityCoreService.RequestAsync(player, AbilityCoreAction.Remove, AbilityCoreSlots.FirstSkill, AbilityCoreService.AnySlot).ConfigureAwait(false);
+        Assert.That(getBonus.Invoke(null, [player, meteorStorm]), Is.EqualTo((0f, 0f)));
+    }
+
+    /// <summary>
+    /// The card skill's hits carry the skillpower of its slot: with a bonus far above the skill's damage every hit with it
+    /// is above every hit without it, whatever the rolls.
+    /// </summary>
+    [Test]
+    public async ValueTask CardSkillHitsCarryTheSkillpowerAsync()
+    {
+        var slotOne = typeof(Stats).GetProperty("SkillpowerSlotOneBonus")?.GetValue(null) as AttributeDefinition;
+        Assert.That(slotOne, Is.Not.Null);
+        var player = await this.CreatePlayerAsync(ClassEvolution.Fifth, 800).ConfigureAwait(false);
+        await player.SkillList!.AddLearnedSkillAsync(this._gameConfiguration.Skills.Single(s => s.Number == MeteorStormFourth)).ConfigureAwait(false);
+        var card = await this.AddCardAsync(player, MeteorStormCard, 0, 65).ConfigureAwait(false);
+        await AbilityCoreService.RequestAsync(player, AbilityCoreAction.Insert, AbilityCoreSlots.FirstSkill, card.ItemSlot).ConfigureAwait(false);
+        player.Attributes![Stats.AttackRatePvm] = 1_000_000;
+        var skill = new SkillEntry { Skill = this._gameConfiguration.Skills.Single(s => s.Number == MeteorStorm) };
+        var defender = new Mock<IAttackable>();
+        var defenderAttributes = new Mock<IAttributeSystem>();
+        defenderAttributes.Setup(a => a[It.IsAny<AttributeDefinition>()]).Returns<AttributeDefinition>(d => d == Stats.DefenseDecrement || d == Stats.DamageReceiveDecrement ? 1 : 0);
+        defender.Setup(d => d.Attributes).Returns(defenderAttributes.Object);
+
+        var without = new List<uint>();
+        for (var i = 0; i < 20; i++)
+        {
+            without.Add((await player.CalculateDamageAsync(defender.Object, skill, false).ConfigureAwait(false)).HealthDamage);
+        }
+
+        player.Attributes.AddElement(new ConstantElement(1_000_000), slotOne!);
+        var with = new List<uint>();
+        for (var i = 0; i < 20; i++)
+        {
+            with.Add((await player.CalculateDamageAsync(defender.Object, skill, false).ConfigureAwait(false)).HealthDamage);
+        }
+
+        Assert.That(with.Min(), Is.GreaterThan(without.Max()));
     }
 
     /// <summary>
