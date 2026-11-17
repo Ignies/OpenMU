@@ -291,7 +291,10 @@ internal class Season21ItemCatalogInitializer
 
     /// <summary>
     /// Gives a weapon with magic power that no Season 6 template gave a rise (the rune maces, the magic guns) the
-    /// wizardry rise of a staff: half its magic power, with the staff level table of its parity.
+    /// wizardry rise of a staff: half its magic power, with the staff level table of its parity. Sources: the client halves
+    /// the magic power for the line (Source Main 5.2 <c>ZzzInventory.cpp:901-918</c>, printed at :4977-4986), as the Season 6
+    /// staffs do here (<c>Weapons.cs:444</c>, tables :36-37); S21Emu <c>Item.xml:179</c> gives 2/28 MagicDamageRate 58 (+29%),
+    /// <c>Item.xml:306</c> 4/42 40 (+20%).
     /// </summary>
     private void AddWizardryRises()
     {

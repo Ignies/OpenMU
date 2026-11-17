@@ -172,8 +172,9 @@ Town NPCs (`Season21ClassicSpawns.TownNpcs`, maps update version 6) at their `Mo
 leaf event has only its switch in `GameServerInfo - Event.dat`) in Noria; Apostle Devin 406, Moss 492, Lugard 540 and
 Jerint 522 also in Lorencia, where Season 21 gathered the event entrances. Wizard Gillard 891 is a merchant with the
 shop `Shop/027` (shops update version 2, Lorencia 119/111). Jin 583, the Arca War potion merchant, is a merchant with his
-shop (`ShopManager.txt` 25) where `091 - Acheron 1.xml` places him (shops update version 3, Acheron 56/202); his Acheron 2
-copy 604 stands only on the Arca War map, which isn't ported. The versions of the new NPCs aren't in any source: Season 7
+shop (`ShopManager.txt` 25) where `091 - Acheron 1.xml` places him (shops update version 3, Acheron 56/202); his copy 604
+(`ShopManager.txt` 26) stands at the same spot on Acheron's event copy, map 92 (`092 - Acheron 2.xml`), which the Protector
+of Acheron update adds: whichever of the two updates runs second places him (Protector of Acheron version 2). The versions of the new NPCs aren't in any source: Season 7
 (Acheron) for Captain Slough, Season 21 for the others.
 
 ## Client terrains

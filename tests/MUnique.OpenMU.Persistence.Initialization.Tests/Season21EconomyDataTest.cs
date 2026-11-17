@@ -154,6 +154,31 @@ internal class Season21EconomyDataTest
     }
 
     /// <summary>
+    /// Jin's copy 604 stands on Acheron's event copy (map 92, S21Emu "092 - Acheron 2.xml": 56/202, direction 2) with his
+    /// shop, whichever of the shops and the Protector of Acheron updates comes first.
+    /// </summary>
+    /// <param name="shopsFirst">Whether the shops update runs before the one which adds map 92.</param>
+    [TestCase(true)]
+    [TestCase(false)]
+    public async Task ArcaJinStandsOnAcheronsEventCopyAsync(bool shopsFirst)
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+        await new AddSeason21LevelCapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        IConfigurationUpdatePlugIn[] updates = [new AddSeason21ShopsUpdatePlugIn(), new AddSeason21AcheronGuardianUpdatePlugIn()];
+        foreach (var update in shopsFirst ? updates : updates.Reverse())
+        {
+            await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        }
+
+        var jin = gameConfiguration.Monsters.Single(m => m.Number == 604);
+        Assert.That((jin.Designation.ValueInNeutralLanguage, jin.NpcWindow), Is.EqualTo(("Jin", NpcWindow.Merchant)));
+        Assert.That(jin.MerchantStore?.Items.Select(i => (i.Definition!.Group, i.Definition.Number)), Is.EquivalentTo(Season21Economy.Data.Shops.Where(r => r.Npc == 604 && r.Tab == 0).Select(r => (r.Group, r.Number))));
+        var arca = gameConfiguration.Maps.Single(m => m.Number == 92);
+        Assert.That(arca.MonsterSpawns.Count(s => s.MonsterDefinition == jin && s.X1 == 56 && s.Y1 == 202 && s.Direction == (Direction)2), Is.EqualTo(1));
+    }
+
+    /// <summary>
     /// A later run of the shops update (a new version) keeps a shop item the operator changed, while a missing shop is
     /// still added.
     /// </summary>

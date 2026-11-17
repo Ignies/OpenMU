@@ -36,6 +36,12 @@ internal class Season21ShopsInitializer
 
     private const byte AcheronMap = 91;
 
+    private const short ArcaJinNumber = 604;
+
+    private const short ArcaJinSpawnNumber = 6040;
+
+    private const byte AcheronArcaMap = 92;
+
     private readonly IContext _context;
 
     private readonly GameConfiguration _gameConfiguration;
@@ -217,13 +223,15 @@ internal class Season21ShopsInitializer
     }
 
     /// <summary>
-    /// Places Jin, the Arca War potion merchant, where S21Emu does ("091 - Acheron 1.xml": 56/202, direction 2); his
-    /// Acheron 2 copy (604) stands only on the Arca War map, which isn't ported.
+    /// Places Jin, the Arca War potion merchant, where S21Emu does: 583 in Acheron ("091 - Acheron 1.xml") and his copy 604 on
+    /// its event copy, map 92 ("092 - Acheron 2.xml"), both at 56/202, direction 2. Map 92 comes with the Protector of
+    /// Acheron update, which runs this again when the shops are in.
     /// </summary>
     private void PlaceJin()
     {
         Season21NpcSpawns.Place(this._context, this._gameConfiguration, JinSpawnNumber, AcheronMap, JinNumber, LocalizedString.FromResource(() => MonsterNames.Jin), 56, 202, (Direction)2);
-        if (this._gameConfiguration.Monsters.FirstOrDefault(m => m.Number == JinNumber) is { NpcWindow: NpcWindow.Undefined } jin)
+        Season21NpcSpawns.Place(this._context, this._gameConfiguration, ArcaJinSpawnNumber, AcheronArcaMap, ArcaJinNumber, LocalizedString.FromResource(() => MonsterNames.Jin), 56, 202, (Direction)2);
+        foreach (var jin in this._gameConfiguration.Monsters.Where(m => m.Number is JinNumber or ArcaJinNumber && m.NpcWindow == NpcWindow.Undefined))
         {
             jin.NpcWindow = NpcWindow.Merchant;
         }
