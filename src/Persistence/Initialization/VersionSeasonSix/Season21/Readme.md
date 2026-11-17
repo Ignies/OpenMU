@@ -541,10 +541,10 @@ server data has none.
 * Values: every `%d` of a formula is the card level; the generator evaluates the levels 0 to 5. Options of the client type
   1 are rates in percent and are stored as factors (2 % = 0.02).
 * Item options: one definition per card (`0x1900` + item number) with an option of the type "Ability Card Option" per
-  option (number = the static option index, `LevelType.ItemLevel`, a value per card level). 46 of the 87 options have an
-  OpenMU attribute (`Season21AbilityCoreInitializer.Effects`); "every 20 levels" ones follow the total level. The nuke,
-  bolt and wide options, the fifth wings, mastery, bleeding, poison, splash and the static skill card options have no
-  attribute yet: they are data without effect.
+  option (number = the static option index, `LevelType.ItemLevel`, a value per card level). 63 of the 82 options have an
+  OpenMU attribute (`Season21AbilityCoreInitializer.Effects`, version 4 of the update); "every 20 levels" ones follow the
+  total level. The nuke, bolt and wide options, shock defense and the static skill card options have none yet: they are
+  data without effect (`src/GameLogic/AbilityCore/Readme.md`).
 * Prices: `AbilityLevelUP.xml` (levels 0-4 per kind: cards, zen, Ability Upgrade Stones 20/239) and
   `AbilityReduction.xml` (zen, stones per kind). `Unk1` of the reduction and `RISection/RIType` beyond the stone are not
   read.

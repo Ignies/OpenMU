@@ -34,9 +34,20 @@ by the card level = the item level). `AbilityCoreService.RefreshAsync` applies t
 cards (an option takes effect for the classes of `AbilityCardOption.BaseClasses`), and gives the fifth evolution skill of a
 skill card as an item skill (`ISkillList.AddItemSkillAsync`), taken away with the card. It runs on every map join and
 after every successful action. The extra defense adds to the defense, the pentagram defense and attack to the elemental
-defense and damage (version 3 of the update). Options without an OpenMU attribute (nuke, bolt and wide skill options, the
-fifth wings, mastery, bleeding, poison, triple damage, skill slots, AG recovery, shock defense, splash, and the static
-skill card options) are data without effect.
+defense and damage (version 3 of the update). Version 4 adds the rest that the Season 21 data defines:
+
+- Mastery (25-27) adds to the master skills of its damage type (`AttackableExtensions.GetSkillDmg`).
+- Bleeding, severe bleeding, poison and toxic (37-40) add to the damage of the Enhance Tree debuffs 275/279/273/277.
+- Double damage increase (35) adds to a double hit; triple damage (60) rolls before the double damage chance.
+- The Lv.5 wing options (2, 36, 83, 84) count only while a fifth wing (catalog `KindA` 106) is worn: the wing carries
+  `IsFifthWingEquipped`, and each class adds the bonuses through a conditional relationship.
+- Skillpower 1/2/3-slot (51, 56, 61) add to the damage of the card skill in that skill card slot; the strengthener and
+  ability skill rate (63) multiplies the damage of a card skill or a master skill (`AbilityCoreService.GetSkillBonus`).
+- AG recovery (62) is stored in hundredths, like the client shows it.
+
+19 of the 82 options stay data without effect: the 18 nuke, bolt and wide options need the fifth class "New Power" skills
+(2086-2088), which the server doesn't have, and shock defense (64) has no shock that monsters cause. The static skill card
+options are data too.
 
 ## Actions (`AbilityCoreService.RequestAsync`)
 
