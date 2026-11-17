@@ -20,9 +20,11 @@ public class MagicEffectsList : AsyncDisposable
 
     /// <summary>
     /// The last of OpenMU's own invisible effects (from <see cref="InvisibleEffectStartIndex"/>); the numbers past it are
-    /// effects of later seasons (S21Emu Effect.txt, such as the Blessing of Eunice 447), which the client shows.
+    /// effects of later seasons (S21Emu Effect.txt, such as Evasion 214, the Grow Lancer's Circle Shield 216 and Obsidian 217,
+    /// Archangel Will 246 or the Blessing of Eunice 447), which the client shows. OpenMU's own end with the Illusion Temple's
+    /// Restraint (211).
     /// </summary>
-    private const byte InvisibleEffectEndIndex = byte.MaxValue;
+    private const byte InvisibleEffectEndIndex = 211;
 
     /// <summary>
     /// The effect numbers the list tracks: Season 21 numbers its effects up to 458 (S21Emu Effect.txt).
