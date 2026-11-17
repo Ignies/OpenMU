@@ -1,0 +1,68 @@
+// <copyright file="ItemCustomizationViewTest.cs" company="MUnique">
+// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// </copyright>
+
+namespace MUnique.OpenMU.Tests.Babylon;
+
+using System.Text;
+using MUnique.OpenMU.GameLogic.ItemCustomization;
+using MUnique.OpenMU.GameLogic.Views.ItemCustomization;
+using MUnique.OpenMU.GameServer.RemoteView.ItemCustomization;
+using MUnique.OpenMU.Network.Packets.Babylon;
+
+/// <summary>
+/// The bytes the Babylon client gets: EE 34 with each customised item, EE 36 with a lore.
+/// </summary>
+[TestFixture]
+public class ItemCustomizationViewTest
+{
+    private static readonly DataModel.Entities.ItemCustomization Frost = new()
+    {
+        Name = "Frost Edge",
+        Lore = "Forged in ice.\nNever thawed.",
+        Rarity = 4,
+        Look = """{"mode":"tone","color":"#1e90ff","strength":90,"glow":"#3366ff"}""",
+        Version = 7,
+    };
+
+    /// <summary>
+    /// EE 34 lists each item with its place, slot, version, flags, rarity, look and name.
+    /// </summary>
+    [Test]
+    public async ValueTask TheCustomizationsCarryEachItemAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(GameServer.BabylonClient.Version);
+        var plain = new DataModel.Entities.ItemCustomization { Rarity = 0, Version = 1 };
+        await new ItemCustomizationBabylonPlugIn(player).SendCustomizationsAsync(
+        [
+            new ItemCustomizationEntryData(ItemCustomizationStorage.Worn, 0x1234, 3, Frost),
+            new ItemCustomizationEntryData(ItemCustomizationStorage.Inventory, 0x0200, 40, plain),
+        ]).ConfigureAwait(false);
+
+        var bytes = output.ToArray();
+        Assert.That(bytes.Take(5), Is.EqualTo(new byte[] { 0xC2, 0x00, 7 + (2 * 123), 0xEE, 0x34 }));
+        var packet = new ItemCustomizationsRef(bytes);
+        Assert.That(packet.Count, Is.EqualTo(2));
+        var first = packet[0];
+        Assert.That((first.Storage, first.ObjectId, first.Slot, first.Version, first.Flags, first.Rarity), Is.EqualTo(((byte)0, (ushort)0x1234, (byte)3, 7u, (byte)(1 | 2 | 4), (byte)4)));
+        Assert.That(first.Look[..6].ToArray(), Is.EqualTo(new byte[] { 1, 2, 0x1E, 0x90, 0xFF, 90 }));
+        Assert.That(Encoding.UTF8.GetString(first.Name).TrimEnd('\0'), Is.EqualTo("Frost Edge"));
+        var second = packet[1];
+        Assert.That((second.Storage, second.Slot, second.Flags), Is.EqualTo(((byte)1, (byte)40, (byte)0)));
+        Assert.That(second.Look.ToArray(), Is.All.EqualTo(0));
+    }
+
+    /// <summary>
+    /// EE 36 carries the lore of one item at its version.
+    /// </summary>
+    [Test]
+    public async ValueTask TheDetailCarriesTheLoreAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(GameServer.BabylonClient.Version);
+        await new ItemCustomizationBabylonPlugIn(player).SendDetailAsync(new ItemCustomizationEntryData(ItemCustomizationStorage.Vault, 0x0200, 12, Frost)).ConfigureAwait(false);
+
+        var packet = new ItemCustomizationDetailRef(output.ToArray());
+        Assert.That((packet.Storage, packet.ObjectId, packet.Slot, packet.Version), Is.EqualTo(((byte)2, (ushort)0x0200, (byte)12, 7u)));
+        Assert.That(Encoding.UTF8.GetString(packet.Lore).TrimEnd('\0'), Is.EqualTo("Forged in ice.\nNever thawed."));
+    }
+}
