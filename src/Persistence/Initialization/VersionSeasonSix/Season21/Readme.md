@@ -375,6 +375,11 @@ the elemental and legendary columns and the buy prices.
   character has, the master skill and its points, 10 for every row); such a book teaches only when they are met.
 * The skill enhancement tree is stored as the configuration of `EnhanceTreeFeaturePlugIn` (GameLogic `EnhanceTree`),
   which the update turns on.
+* A Season 21 effect has no duration, so its buff would be an `Other`. The Rune Wizard's Burst and Haste get theirs from
+  the update "Fix the Rune Wizard buffs" (`Season21RuneWizardBuffs`): S21Emu `GameServerInfo - Skill.dat` Might and
+  Haste, 30 + energy / 20 for 15 + energy / 10 seconds (its constants read as its Greater Damage 3 / 7 is OpenMU's
+  3 + energy / 7). No data names the stat: Might adds to the base damage, Haste to the attack and magic speed. Burst
+  buffs the caster, Haste the party within 7.
 
 Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
 damage reduction table, the Ability Enhancement Core (track T, later).

@@ -670,4 +670,10 @@
   <data name="AddSeason21BagItemsUpdatePlugIn_Description" xml:space="preserve">
     <value>Fills the Pandora Box, the Red and Blue Card, the Premium Muun Box and the Red Card [Elemental] with their items, lets David exchange the [Lvl. 0] lucky tickets, puts the pentagram and elemental talismans into the elemental refinery and gives the Blessing of Eunice its experience bonus. The bags open with the item rules of Season 21.</value>
   </data>
+  <data name="FixSeason21RuneWizardBuffsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Fix the Rune Wizard buffs Burst and Haste (Season 21 data)</value>
+  </data>
+  <data name="FixSeason21RuneWizardBuffsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Gives the effects of Burst (Might) and Haste and of their Strengthener and Mastery their duration and value (S21Emu: 30 + energy / 20, for 15 + energy / 10 seconds; Might adds to the base damage, Haste to the attack and magic speed) and makes the skills buffs: Burst on the caster, Haste on the party within 7. An operator's own duration or skill type stays. Optional.</value>
+  </data>
 </root>
