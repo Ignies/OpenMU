@@ -380,6 +380,17 @@ the elemental and legendary columns and the buy prices.
   Haste, 30 + energy / 20 for 15 + energy / 10 seconds (its constants read as its Greater Damage 3 / 7 is OpenMU's
   3 + energy / 7). No data names the stat: Might adds to the base damage, Haste to the attack and magic speed. Burst
   buffs the caster, Haste the party within 7.
+* The Slayer's Detection and Demolish get theirs from the update "Fix the Slayer buffs" (`Season21SlayerBuffs`): S21Emu
+  `GameServerInfo - Skill.dat` Detection 60 seconds (its ConstA 45 has no stat to raise: nothing models sensing life
+  forms), Demolish 60 seconds and (20 + energy / 50)% `DefenseIgnoreChance` ("ignores %d of enemy Defense", the one
+  OpenMU stat that lowers a target's defense). Detection buffs the caster, Demolish the party within 5 (Skill.xml Radio);
+  Demolish's skill power drain (effect 321) has no OpenMU mechanism.
+* The Rage Fighter's Blood Howling (565) and its Strengthener (567) are buffs on the caster in S21Emu (Skill.xml Type 0,
+  Radio 0); the same update makes them so (`Season21RageFighterBuffs`), with BloodHowlingTimeConstA's 60 seconds where an
+  effect has none. Its bleed on hit (10 + energy / 200) has no OpenMU mechanism.
+* 88 more Season 21 skills are still an `Other` with an effect that has no duration (Grow Lancer's Circle Shield,
+  Obsidian and Wrath, the Dark Knight's Sword's Fury, the Magic Gladiator's charges, ...): they are listed in
+  `Season21BuffRowsTest.Pending`, a list that only shrinks; each is fixed as the Rune Wizard's and the Slayer's were.
 
 Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
 damage reduction table, the Ability Enhancement Core (track T, later).
