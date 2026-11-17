@@ -1478,6 +1478,21 @@ public class Stats
     public static AttributeDefinition FourthWingCurseDamageBonus { get; } = new(new Guid("93F7B2D5-4E1A-4C68-B3D9-7A5E2C8F1B46"), "Fourth Wing Curse Damage Bonus", "The curse base damage which is added while a fourth wing is worn.");
 
     /// <summary>
+    /// Gets the damage a master skill of the physical type gets on top ("Mastery DMG Increase" of an ability card).
+    /// </summary>
+    public static AttributeDefinition MasterySkillDamageBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F51"), "Mastery Skill Damage Bonus", "The damage which is added to a physical master skill.");
+
+    /// <summary>
+    /// Gets the damage a master skill of the wizardry type gets on top ("Mastery Wizardry Increase" of an ability card).
+    /// </summary>
+    public static AttributeDefinition MasterySkillWizardryBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F52"), "Mastery Skill Wizardry Bonus", "The damage which is added to a wizardry master skill.");
+
+    /// <summary>
+    /// Gets the damage a master skill of the curse type gets on top ("Mastery Curse Increase" of an ability card).
+    /// </summary>
+    public static AttributeDefinition MasterySkillCurseBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F53"), "Mastery Skill Curse Bonus", "The damage which is added to a curse master skill.");
+
+    /// <summary>
     /// Gets the shield bypass chance attribute definition.
     /// </summary>
     public static AttributeDefinition ShieldBypassChance { get; } = new(new Guid("7F6F1804-271E-40DF-A970-0CE19064A54B"), "Shield Bypass Chance", string.Empty);

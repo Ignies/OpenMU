@@ -852,6 +852,14 @@ public static class AttackableExtensions
         return result;
     }
 
+    private static AttributeDefinition? MasteryBonus(DamageType damageType) => damageType switch
+    {
+        DamageType.Physical => Stats.MasterySkillDamageBonus,
+        DamageType.Wizardry => Stats.MasterySkillWizardryBonus,
+        DamageType.Curse => Stats.MasterySkillCurseBonus,
+        _ => null,
+    };
+
     private static void GetSkillDmg(this IAttacker attacker, SkillEntry? skillEntry, out int skillMinimumDamage, out int skillMaximumDamage, out DamageType damageType, out bool isSummonerSkill)
     {
         skillMinimumDamage = 0;
@@ -882,6 +890,13 @@ public static class AttackableExtensions
             // For Summoner, the skill bonus gets added last
             skillMinimumDamage += (int)attackerStats[Stats.SkillDamageBonus];
             skillMaximumDamage += (int)attackerStats[Stats.SkillDamageBonus];
+        }
+
+        // The "Mastery" options of the ability cards add to the master skills of their damage type.
+        if (skill.MasterDefinition is not null && MasteryBonus(damageType) is { } masteryBonus)
+        {
+            skillMinimumDamage += (int)attackerStats[masteryBonus];
+            skillMaximumDamage += (int)attackerStats[masteryBonus];
         }
 
         if (skillEntry.EnsureSkillAttributes(attackerStats) is { } skillAttributes)
