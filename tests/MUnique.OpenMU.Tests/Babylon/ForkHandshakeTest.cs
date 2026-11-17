@@ -6,17 +6,21 @@ namespace MUnique.OpenMU.Tests.Babylon;
 
 using System.IO;
 using System.Text.Json;
+using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.PlayerActions.Babylon;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.PlayerShop;
+using MUnique.OpenMU.GameLogic.WideItems;
 using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.GameServer.RemoteView.Babylon;
 using MUnique.OpenMU.GameServer.RemoteView.Inventory;
 using MUnique.OpenMU.GameServer.RemoteView.PlayerShop;
 using MUnique.OpenMU.Network.Packets.Babylon;
+using MUnique.OpenMU.Persistence.InMemory;
 
 /// <summary>
 /// Tests the hello and welcome of the Babylon protocol (docs/babylon.md, "Protocol").
@@ -90,6 +94,37 @@ public class ForkHandshakeTest
     /// <summary>
     /// Tests that a client of an unknown wire version gets no feature, so it stays on Season 6.
     /// </summary>
+    /// <summary>
+    /// PAR-145: a world without the wide items update (no "Wide Item Format" marker) still negotiates W32, and its
+    /// Season 6 items stay visible and are carried in the wide layout, so players in scope keep their gear.
+    /// </summary>
+    [Test]
+    public async ValueTask WithoutTheWideItemsUpdateW32CarriesTheSeason6ItemsAsync()
+    {
+        var (player, output) = CreateBabylonPlayer();
+        using var context = new InMemoryPersistenceContextProvider().CreateNewContext();
+        var sword = context.CreateNew<ItemDefinition>();
+        sword.Group = 0;
+        sword.Number = 0;
+        var item = context.CreateNew<Item>();
+        item.Definition = sword;
+        item.Level = 7;
+
+        await new ForkHelloAction().HelloAsync(player, ForkFeatures.WireVersion, WireW32 | ClassCodeBit).ConfigureAwait(false);
+
+        var serializer = player.ViewPlugIns.GetPlugIn<IItemSerializer>()!;
+        var data = new byte[serializer.NeededSpace];
+        serializer.SerializeItem(data, item);
+        Assert.Multiple(() =>
+        {
+            Assert.That(new ForkWelcome(output.ToArray()).ActiveFeatures & WireW32, Is.EqualTo(WireW32));
+            Assert.That(serializer, Is.InstanceOf<ItemSerializerW32>());
+            Assert.That(WideItemRules.IsWideOnly(sword), Is.False);
+            Assert.That(data[0], Is.EqualTo(0));
+            Assert.That(data[1] | (data[2] << 8), Is.EqualTo(0));
+        });
+    }
+
     [Test]
     public async ValueTask OldWireGetsNoFeatureAsync()
     {
