@@ -1539,6 +1539,12 @@ public class Stats
     public static AttributeDefinition StrengthenerAbilitySkillDamageRate { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F63"), "Strengthener and Ability Skill Damage Rate", "The damage rate which is added to master skills and ability card skills.");
 
     /// <summary>
+    /// Gets the chance (0-1) to resist the hit shock of a monster's hit ("Shock Defense Success Rate (Not applicable to
+    /// PvP)" of an ability card).
+    /// </summary>
+    public static AttributeDefinition MonsterHitShockResistanceChance { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F64"), "Monster Hit Shock Resistance Chance", "The chance between 0 and 1 to resist the hit shock of a monster's hit.");
+
+    /// <summary>
     /// Gets the chance (0-1) that a hit deals triple damage ("Triple DMG Rate" of an ability card).
     /// </summary>
     public static AttributeDefinition TripleDamageChance { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F5E"), "Triple Damage Chance", "The chance that a hit deals triple damage.");

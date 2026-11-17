@@ -214,6 +214,7 @@ internal class Season21AbilityCoreDataTest
     [TestCase((short)219, (short)56, "SkillpowerSlotTwoBonus", 180f)]
     [TestCase((short)224, (short)61, "SkillpowerSlotThreeBonus", 180f)]
     [TestCase((short)230, (short)63, "StrengthenerAbilitySkillDamageRate", 0.055f)]
+    [TestCase((short)217, (short)64, "MonsterHitShockResistanceChance", 0.050625f)]
     public async Task VersionFourMapsTheOptionsWithoutAttributeAsync(short card, short option, string attribute, float levelFive)
     {
         var (context, gameConfiguration) = await CreateWithCoreAsync().ConfigureAwait(false);

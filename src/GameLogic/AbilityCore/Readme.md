@@ -44,10 +44,25 @@ defense and damage (version 3 of the update). Version 4 adds the rest that the S
 - Skillpower 1/2/3-slot (51, 56, 61) add to the damage of the card skill in that skill card slot; the strengthener and
   ability skill rate (63) multiplies the damage of a card skill or a master skill (`AbilityCoreService.GetSkillBonus`).
 - AG recovery (62) is stored in hundredths, like the client shows it.
+- Shock defense (64, "Not applicable to PvP") is the chance to resist the hit shock (the flinch) of a monster's hit
+  (`MonsterHitShockResistanceChance`). The data value is read in ten thousandths (0.4 % at level 0 to 9.1 % at level 5);
+  no source states the unit.
 
-19 of the 82 options stay data without effect: the 18 nuke, bolt and wide options need the fifth class "New Power" skills
-(2086-2088), which the server doesn't have, and shock defense (64) has no shock that monsters cause. The static skill card
-options are data too.
+The fixed option of a skill card (`AbilityCardDefinition.StaticOption`) changes its skill while the card takes effect, with
+the Enhance Tree on or off (`EnhanceTreeEffects.GetSkillSpeed`, `GetReach`, `GetSplash` for a player):
+
+- 1 ATK Speed Increase: the attack speed of the skill rises by the value of the card level, like the tree's Speed node
+  (Webzen guide 112: "Attack Speed of main skill will increase as much as the number").
+- 2 AOE Increase: a tile more of the skill's area (Webzen guides 329 and 348: "Skill Attack range increases by 1 tile").
+- 3 Add Splash Damage: one splash hit on each monster within a tile of the target, or one more with the tree's splash
+  (Webzen guide 348: the card applies "Splash Damage +1"; guide 112: the splash range is 1 tile).
+
+No source gives the meaning of the AOE and splash values by card level, so only their presence counts; the options 0
+(hits) and 4 (enemy defense) are on no card.
+
+18 of the 82 options stay data without effect: the nuke, bolt and wide options need the fifth class "New Power" skills
+(2086-2088), which the server doesn't have; they are their own track (`handoff/s21/new_power_5th_class.md` in the client
+repository).
 
 ## Actions (`AbilityCoreService.RequestAsync`)
 

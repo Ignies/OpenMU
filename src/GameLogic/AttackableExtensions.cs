@@ -263,6 +263,7 @@ public static class AttackableExtensions
             {
                 dmg = (int)(dmg * (1 + rate));
             }
+
             if (attacker is Player skillPlayer && skill.Skill is { } usedSkill)
             {
                 dmg = (int)(dmg * EnhanceTreeEffects.RollMasteryDamageFactor(skillPlayer, usedSkill));
@@ -354,7 +355,7 @@ public static class AttackableExtensions
     /// <returns>The calculated hit info.</returns>
     public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker, uint manaToll = 0, SkillEntry? skill = null, uint petDamage = 0)
     {
-        var triggersHitShock = defender.GetsHitShocked(damage);
+        var triggersHitShock = defender.GetsHitShocked(damage, attacker);
 
         if (skill?.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes
             && Rand.NextRandomBool(skillAttributes[Stats.DragonSlasherShieldDamageChance]))
@@ -1182,9 +1183,17 @@ public static class AttackableExtensions
     /// </summary>
     /// <param name="defender">The defending player.</param>
     /// <param name="damage">The damage caused.</param>
+    /// <param name="attacker">The attacker; the hit shock of a monster's hit can be resisted.</param>
     /// <returns><c>true</c> if the hit should shock the defender; <c>false</c> otherwise.</returns>
-    private static bool GetsHitShocked(this IAttackable defender, float damage)
+    private static bool GetsHitShocked(this IAttackable defender, float damage, IAttacker attacker)
     {
+        if (attacker is not Player
+            && defender.Attributes[Stats.MonsterHitShockResistanceChance] is > 0 and var resistance
+            && Rand.NextRandomBool(resistance))
+        {
+            return false;
+        }
+
         if (defender is not Player
             || defender.Attributes[Stats.IsUniriaEquipped] > 0
             || defender.Attributes[Stats.IsDinorantEquipped] > 0

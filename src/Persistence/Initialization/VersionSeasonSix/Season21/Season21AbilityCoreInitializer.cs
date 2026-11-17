@@ -62,6 +62,12 @@ internal class Season21AbilityCoreInitializer
     private static readonly HashSet<short> HundredthOptions = [62];
 
     /// <summary>
+    /// The options whose data value is a chance in ten thousandths ("Shock Defense Success Rate", 37.5-911.25 by level:
+    /// 0.4 % to 9.1 %).
+    /// </summary>
+    private static readonly HashSet<short> TenThousandthOptions = [64];
+
+    /// <summary>
     /// The bonuses of the Lv.5 wing options and what each adds to while a fifth wing is worn.
     /// </summary>
     private static readonly (AttributeDefinition Target, AttributeDefinition Bonus)[] FifthWingBonuses =
@@ -138,6 +144,7 @@ internal class Season21AbilityCoreInitializer
         { 61, (Stats.SkillpowerSlotThreeBonus, false) },
         { 62, (Stats.AbilityRecoveryMultiplier, false) },
         { 63, (Stats.StrengthenerAbilitySkillDamageRate, false) },
+        { 64, (Stats.MonsterHitShockResistanceChance, false) },
         { 65, (Stats.MaximumHealth, false) },
         { 66, (Stats.MaximumMana, false) },
         { 67, (Stats.MaximumAbility, false) },
@@ -392,7 +399,9 @@ internal class Season21AbilityCoreInitializer
             return;
         }
 
-        var values = row.Values.Select(v => row.IsRate || HundredthOptions.Contains(row.Number) ? v * Percent : v).ToArray();
+        var values = row.Values.Select(v => row.IsRate || HundredthOptions.Contains(row.Number) ? v * Percent
+            : TenThousandthOptions.Contains(row.Number) ? v * Percent * Percent
+            : v).ToArray();
         for (var level = 0; level < values.Length; level++)
         {
             var optionOfLevel = this._context.CreateNew<ItemOptionOfLevel>();
