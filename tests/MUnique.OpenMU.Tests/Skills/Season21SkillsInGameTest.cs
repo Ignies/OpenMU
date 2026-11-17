@@ -18,6 +18,7 @@ using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Resets;
 using MUnique.OpenMU.GameLogic.Views;
+using MUnique.OpenMU.GameLogic.Views.Character;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.Persistence.Initialization.PlugIns.CharacterCreated;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
@@ -223,6 +224,9 @@ public class Season21SkillsInGameTest
 
         Assert.That(player.SelectedCharacter.LevelUpPoints, Is.EqualTo(points + 16));
         Assert.That(EnhanceTreeEffects.GetStatPoints(player), Is.EqualTo(16));
+
+        // The client sees the new free points at once: the level update carries them (base stats don't).
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IUpdateLevelPlugIn>()!).Verify(p => p.UpdateLevelAsync(), Times.Exactly(2));
     }
 
     /// <summary>

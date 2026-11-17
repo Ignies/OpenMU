@@ -102,7 +102,8 @@ public class AddEnhanceTreePointAction
         if (EnhanceTreeEffects.GetStatPoints(configuration, baseClass, skillNumber, level, learned.Level) is > 0 and var statPoints)
         {
             character.LevelUpPoints += statPoints;
-            await player.InvokeViewPlugInAsync<IUpdateCharacterBaseStatsPlugIn>(p => p.UpdateCharacterBaseStatsAsync()).ConfigureAwait(false);
+            // The level update carries the free points (the base stats don't), like the level-up points chat command.
+            await player.InvokeViewPlugInAsync<IUpdateLevelPlugIn>(p => p.UpdateLevelAsync()).ConfigureAwait(false);
         }
 
         return (EnhanceTreePointResult.Added, learned.Level);
