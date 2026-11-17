@@ -208,6 +208,8 @@ internal class Season21AbilityCoreDataTest
     [TestCase((short)217, (short)40, "ToxicDamageIncrease", 500f)]
     [TestCase((short)229, (short)62, "AbilityRecoveryMultiplier", 0.18f)]
     [TestCase((short)216, (short)2, "FifthWingDefenseBonus", 64f)]
+    [TestCase((short)213, (short)35, "DoubleDamageIncrease", 240f)]
+    [TestCase((short)230, (short)60, "TripleDamageChance", 0.03f)]
     public async Task VersionFourMapsTheOptionsWithoutAttributeAsync(short card, short option, string attribute, float levelFive)
     {
         var (context, gameConfiguration) = await CreateWithCoreAsync().ConfigureAwait(false);

@@ -1513,6 +1513,16 @@ public class Stats
     public static AttributeDefinition ToxicDamageIncrease { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F57"), "Toxic Damage Increase", "The damage which is added to each tick of the attacker's Toxic.");
 
     /// <summary>
+    /// Gets the damage a doubled hit gets on top ("Double DMG Increase" of an ability card).
+    /// </summary>
+    public static AttributeDefinition DoubleDamageIncrease { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F5D"), "Double Damage Increase", "The damage which is added to a hit that deals double (or triple) damage.");
+
+    /// <summary>
+    /// Gets the chance (0-1) that a hit deals triple damage ("Triple DMG Rate" of an ability card).
+    /// </summary>
+    public static AttributeDefinition TripleDamageChance { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F5E"), "Triple Damage Chance", "The chance that a hit deals triple damage.");
+
+    /// <summary>
     /// Gets the flag which is set while a fifth wing (S21Emu <c>KindA</c> 106, the "Lv.5" wings) is worn.
     /// </summary>
     public static AttributeDefinition IsFifthWingEquipped { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F58"), "Is Fifth Wing Equipped", "Set while a fifth wing is worn.");

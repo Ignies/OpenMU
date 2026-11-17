@@ -39,6 +39,52 @@ public class AbilityOptionEffectsTest
         Assert.That(plain, Is.EqualTo(withoutBonus));
     }
 
+    /// <summary>
+    /// "Double DMG Increase" (35) adds its value to a doubled hit, "Triple DMG Rate" (60) triples a hit by its chance.
+    /// </summary>
+    [Test]
+    public async ValueTask DoubleIncreaseAndTripleChanceAsync()
+    {
+        var increase = typeof(Stats).GetProperty("DoubleDamageIncrease")?.GetValue(null) as AttributeDefinition;
+        var triple = typeof(Stats).GetProperty("TripleDamageChance")?.GetValue(null) as AttributeDefinition;
+        Assert.That(increase, Is.Not.Null);
+        Assert.That(triple, Is.Not.Null);
+
+        var plain = await PlainHitAsync(new()).ConfigureAwait(false);
+        var doubled = await PlainHitAsync(new() { [Stats.DoubleDamageChance] = 1, [increase!] = 300 }).ConfigureAwait(false);
+        var tripled = await PlainHitAsync(new() { [triple!] = 1 }).ConfigureAwait(false);
+
+        Assert.That(doubled, Is.EqualTo((plain * 2) + 300));
+        Assert.That(tripled, Is.EqualTo(plain * 3));
+    }
+
+    private static async ValueTask<uint> PlainHitAsync(Dictionary<AttributeDefinition, float> extra)
+    {
+        var values = new Dictionary<AttributeDefinition, float>
+        {
+            [Stats.AttackRatePvm] = 1_000_000,
+            [Stats.MinimumPhysBaseDmg] = 1000,
+            [Stats.MaximumPhysBaseDmg] = 1000,
+            [Stats.Level] = 100,
+            [Stats.AttackDamageIncrease] = 1,
+        };
+        foreach (var (attribute, value) in extra)
+        {
+            values[attribute] = value;
+        }
+
+        var attacker = new Mock<IAttacker>();
+        attacker.Setup(a => a.Attributes).Returns(Attributes(values));
+        var defender = new Mock<IAttackable>();
+        defender.Setup(d => d.Attributes).Returns(Attributes(new()
+        {
+            [Stats.DefenseDecrement] = 1,
+            [Stats.DamageReceiveDecrement] = 1,
+        }));
+        var hit = await attacker.Object.CalculateDamageAsync(defender.Object, null, false).ConfigureAwait(false);
+        return hit.HealthDamage;
+    }
+
     private static async ValueTask<uint> DamageAsync(DamageType damageType, bool isMasterSkill, AttributeDefinition? bonus)
     {
         var values = new Dictionary<AttributeDefinition, float>

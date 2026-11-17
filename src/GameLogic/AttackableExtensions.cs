@@ -308,10 +308,13 @@ public static class AttackableExtensions
                 attributes |= DamageAttributes.Combo;
             }
 
-            bool isDoubleDamage = Rand.NextRandomBool(attacker.Attributes[Stats.DoubleDamageChance]);
-            if (isDoubleDamage)
+            // The ability cards' triple damage (60) comes first; the double damage increase (35) adds to either. The client
+            // has no triple flag, so a tripled hit shows as a double one.
+            var multiple = Rand.NextRandomBool(attacker.Attributes[Stats.TripleDamageChance]) ? 3
+                : Rand.NextRandomBool(attacker.Attributes[Stats.DoubleDamageChance]) ? 2 : 1;
+            if (multiple > 1)
             {
-                dmg *= 2;
+                dmg = (dmg * multiple) + (int)attacker.Attributes[Stats.DoubleDamageIncrease];
                 attributes |= DamageAttributes.Double;
             }
 
