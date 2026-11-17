@@ -689,6 +689,82 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the structure size calculation for ItemCustomizationAsk.
+    /// </summary>
+    [Test]
+    public void ItemCustomizationAsk_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 3;
+        var actualLength = ItemCustomizationAsk.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Storage' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Storage' exceeds structure boundary");
+        
+        // Validate field 'ObjectId' boundary
+        Assert.That(1 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ObjectId' exceeds structure boundary");
+    }
+
+    /// <summary>
+    /// Tests the structure size calculation for ItemCustomizationEntry.
+    /// </summary>
+    [Test]
+    public void ItemCustomizationEntry_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 123;
+        var actualLength = ItemCustomizationEntry.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Storage' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Storage' exceeds structure boundary");
+        
+        // Validate field 'ObjectId' boundary
+        Assert.That(1 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ObjectId' exceeds structure boundary");
+        
+        // Validate field 'Slot' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Slot' exceeds structure boundary");
+        
+        // Validate field 'Version' boundary
+        Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Version' exceeds structure boundary");
+        
+        // Validate field 'Flags' boundary
+        Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Flags' exceeds structure boundary");
+        
+        // Validate field 'Rarity' boundary
+        Assert.That(9 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Rarity' exceeds structure boundary");
+        
+        // Validate field 'Look' boundary
+        Assert.That(10 + 31, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Look' exceeds structure boundary");
+        
+        // Validate field 'Name' boundary
+        Assert.That(41 + 72, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Name' exceeds structure boundary");
+        
+        // Validate field 'AuraId' boundary
+        Assert.That(113 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'AuraId' exceeds structure boundary");
+        
+        // Validate field 'Particles' boundary
+        Assert.That(115 + 8, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Particles' exceeds structure boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for ForkHello.
     /// </summary>
     [Test]
@@ -1364,6 +1440,94 @@ public class PacketStructureTests
         // Validate field 'SecondsLeft' boundary
         Assert.That(9 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'SecondsLeft' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ItemCustomizationRequest.
+    /// </summary>
+    [Test]
+    public void ItemCustomizationRequest_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'Count' starts at index 4 with size 1
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Count' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ItemCustomizations.
+    /// </summary>
+    [Test]
+    public void ItemCustomizations_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'Count' starts at index 5 with size 2
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Count' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ItemCustomizationDetailRequest.
+    /// </summary>
+    [Test]
+    public void ItemCustomizationDetailRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = ItemCustomizationDetailRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Storage' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Storage' exceeds packet boundary");
+        
+        // Validate field 'ObjectId' boundary
+        Assert.That(5 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ObjectId' exceeds packet boundary");
+        
+        // Validate field 'Slot' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Slot' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ItemCustomizationDetail.
+    /// </summary>
+    [Test]
+    public void ItemCustomizationDetail_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 433;
+        var actualLength = ItemCustomizationDetailRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Storage' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Storage' exceeds packet boundary");
+        
+        // Validate field 'ObjectId' boundary
+        Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ObjectId' exceeds packet boundary");
+        
+        // Validate field 'Slot' boundary
+        Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Slot' exceeds packet boundary");
+        
+        // Validate field 'Version' boundary
+        Assert.That(9 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Version' exceeds packet boundary");
+        
+        // Validate field 'Lore' boundary
+        Assert.That(13 + 420, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Lore' exceeds packet boundary");
     }
 
     /// <summary>
