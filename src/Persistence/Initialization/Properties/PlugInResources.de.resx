@@ -922,4 +922,6 @@
   <data name="AddHitShockSettingsPlugIn_Description" xml:space="preserve">
     <value>Fügt die globalen Einstellungen für Treffer-Schock-Chance und Schadensschwelle sowie die Uniria-Kennzeichnung hinzu, damit Spieler mit ausgerüsteter Uniria keinen Treffer-Schock erleiden.</value>
   </data>
+  <data name="RemoveOrphanPlugInConfigurationsPlugInBase_Name" xml:space="preserve"><value>Konfigurationen entfernter Plugins entfernen</value></data>
+  <data name="RemoveOrphanPlugInConfigurationsPlugInBase_Description" xml:space="preserve"><value>Dieses Update entfernt die Konfigurationen von Plugins, die dieser Server nicht mehr hat; der Server warnte bei jedem Start vor jeder einzelnen.</value></data>
 </root>

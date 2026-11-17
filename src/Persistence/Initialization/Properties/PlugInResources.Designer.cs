@@ -749,6 +749,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddMovementSpeedAttributesPlugInBase_Description text.</summary>
         public static string AddMovementSpeedAttributesPlugInBase_Description => ResourceManager.GetString("AddMovementSpeedAttributesPlugInBase_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized RemoveOrphanPlugInConfigurationsPlugInBase_Name text.</summary>
+        public static string RemoveOrphanPlugInConfigurationsPlugInBase_Name => ResourceManager.GetString("RemoveOrphanPlugInConfigurationsPlugInBase_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized RemoveOrphanPlugInConfigurationsPlugInBase_Description text.</summary>
+        public static string RemoveOrphanPlugInConfigurationsPlugInBase_Description => ResourceManager.GetString("RemoveOrphanPlugInConfigurationsPlugInBase_Description", resourceCulture)!;
+
         /// <summary>Gets the localized SystemConfigurationAddedPlugInBase_Name text.</summary>
         public static string SystemConfigurationAddedPlugInBase_Name => ResourceManager.GetString("SystemConfigurationAddedPlugInBase_Name", resourceCulture)!;
 
