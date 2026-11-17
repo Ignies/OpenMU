@@ -1741,6 +1741,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
         /// <summary>
+        ///   Looks up a localized string similar to Fix the Grow Lancer buffs (Season 21 data).
+        /// </summary>
+        public static string FixSeason21GrowLancerBuffsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("FixSeason21GrowLancerBuffsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to the Grow Lancer buffs fix description.
+        /// </summary>
+        public static string FixSeason21GrowLancerBuffsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("FixSeason21GrowLancerBuffsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Fix the Slayer buffs and the Rage Fighter Blood Howling (Season 21 data).
         /// </summary>
         public static string FixSeason21SlayerAndRageFighterBuffsUpdatePlugIn_Name {
