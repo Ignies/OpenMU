@@ -79,10 +79,10 @@ public static class ItemLookBytes
         target[1] = (byte)((keepFrom is null ? 0 : 1) | (glow < 0 ? 0 : 2));
         WriteColor(target[2..], color);
         target[5] = (byte)strength;
-        BinaryPrimitives.WriteUInt16BigEndian(target[6..], (ushort)(((Number(look, "hue") ?? 0) % 360 + 360) % 360));
+        BinaryPrimitives.WriteUInt16BigEndian(target[6..], (ushort)((((Number(look, "hue") ?? 0) % 360) + 360) % 360));
         if (keepFrom is { } from)
         {
-            BinaryPrimitives.WriteUInt16BigEndian(target[8..], (ushort)((from % 360 + 360) % 360));
+            BinaryPrimitives.WriteUInt16BigEndian(target[8..], (ushort)(((from % 360) + 360) % 360));
             target[10] = (byte)Math.Clamp(Number(look, "keep_range") ?? DefaultKeepRange, 5, 75);
         }
 

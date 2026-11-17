@@ -38,7 +38,9 @@ and copied the site's older `web_item_tint` rows once. Readers: `IPlayerContext.
   asked when a tooltip opens.
 
 One request is out at a time on the client, so an answer covers exactly the request it answers. Requests are answered
-four a second per player; the rest are dropped. Records are cached five minutes, a missing one thirty seconds (a
-delivery writes the record right after it makes the item).
+four a second per player; the rest are dropped. Records are cached five minutes, a missing one thirty seconds
+(`ItemCustomizationCache`, shared by the game servers of a process). A writer outside the fork drops an item at once
+with `ItemCustomizationCache.Forget(itemId)`, reached by name (the Hidden plugin after a site delivery; moderation
+resets later), and bumps `Version`, so the client fetches the new lore.
 
 Names and lore are cut to their fields on a character, never inside one (`ItemCustomizationText`).

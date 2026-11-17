@@ -4,7 +4,6 @@
 
 namespace MUnique.OpenMU.GameLogic.ItemCustomization;
 
-using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.Views.ItemCustomization;
@@ -31,14 +30,10 @@ public class ItemCustomizationFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault
 
     private const int RequestsPerSecond = 4;
 
-    private const int MaximumCached = 50_000;
-
     private static readonly long HitTime = (long)TimeSpan.FromMinutes(5).TotalMilliseconds;
 
     /// <summary>A delivery writes the record right after it makes the item, so a miss is kept only briefly.</summary>
     private static readonly long MissTime = (long)TimeSpan.FromSeconds(30).TotalMilliseconds;
-
-    private readonly ConcurrentDictionary<Guid, (DataModel.Entities.ItemCustomization? Customization, long Expires)> _cache = new();
 
     private readonly ConditionalWeakTable<Player, StrongBox<(long Start, int Count)>> _windows = new();
 
@@ -102,9 +97,9 @@ public class ItemCustomizationFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault
         var missing = new List<Guid>();
         foreach (var id in itemIds)
         {
-            if (this._cache.TryGetValue(id, out var cached) && cached.Expires > now)
+            if (ItemCustomizationCache.TryGet(id, now, out var cached))
             {
-                if (cached.Customization is { } hit)
+                if (cached is { } hit)
                 {
                     found[id] = hit;
                 }
@@ -117,16 +112,11 @@ public class ItemCustomizationFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault
 
         if (missing.Count > 0)
         {
-            if (this._cache.Count > MaximumCached)
-            {
-                this._cache.Clear();
-            }
-
             var loaded = (await player.PersistenceContext.GetItemCustomizationsAsync(missing).ConfigureAwait(false)).ToDictionary(c => c.ItemId);
             foreach (var id in missing)
             {
                 var customization = loaded.GetValueOrDefault(id);
-                this._cache[id] = (customization, now + (customization is null ? MissTime : HitTime));
+                ItemCustomizationCache.Store(id, customization, now + (customization is null ? MissTime : HitTime));
                 if (customization is not null)
                 {
                     found[id] = customization;
