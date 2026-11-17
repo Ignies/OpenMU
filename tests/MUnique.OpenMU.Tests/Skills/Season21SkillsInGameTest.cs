@@ -81,6 +81,7 @@ public class Season21SkillsInGameTest
         this._gameConfiguration = (await context.GetAsync<GameConfiguration>().ConfigureAwait(false)).First();
         await new AddSeason21ClassesUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new AddSeason21SkillsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21GrowLancerBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
 
         var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
@@ -332,6 +333,27 @@ public class Season21SkillsInGameTest
         player.Attributes[Stats.MasterLevel] = 420;
 
         Assert.That(await new AddEnhanceTreePointAction().AddPointAsync(player, 1007).ConfigureAwait(false), Is.EqualTo(EnhanceTreePointResult.NotAvailable));
+    }
+
+    /// <summary>
+    /// The Grow Lancer's Circle Shield (effect 216), Obsidian (217) and Wrath (424), cast on himself, put their effect on him.
+    /// </summary>
+    [Test]
+    public async ValueTask GrowLancerBuffsPutTheirEffectOnTheCasterAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.GrowLancer, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(player).ConfigureAwait(false);
+        player.Attributes![Stats.BaseStrength] = 400;
+        foreach (var (skill, effect) in new (short, short)[] { (272, 216), (273, 217), (278, 424) })
+        {
+            await this.LearnAsync(player, skill, 0).ConfigureAwait(false);
+            player.Attributes[Stats.CurrentMana] = 1000;
+            player.Attributes[Stats.CurrentAbility] = 200;
+
+            await new TargetedSkillDefaultPlugin().PerformSkillAsync(player, player, (ushort)skill).ConfigureAwait(false);
+
+            Assert.That(player.MagicEffectList.ContainsEffect(effect), Is.True, $"skill {skill}, effect {effect}");
+        }
     }
 
     private static async ValueTask UseAsync(Player player, Skill skill)
