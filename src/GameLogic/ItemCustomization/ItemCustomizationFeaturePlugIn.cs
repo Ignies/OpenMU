@@ -37,6 +37,15 @@ public class ItemCustomizationFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault
 
     private readonly ConditionalWeakTable<Player, StrongBox<(long Start, int Count)>> _windows = new();
 
+    private readonly ItemCustomizationReportGate _reports = new();
+
+    private readonly ItemCustomizationWatchers<Player> _watchers = new();
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ItemCustomizationFeaturePlugIn"/> class.
+    /// </summary>
+    public ItemCustomizationFeaturePlugIn() => ItemCustomizationCache.Forgotten += this.OnForgotten;
+
     /// <summary>
     /// Gets the active plugin of a game context.
     /// </summary>
@@ -58,12 +67,7 @@ public class ItemCustomizationFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault
             return;
         }
 
-        var items = await ItemCustomizationCollector.CollectAsync(player, asks.Take(MaximumAsks)).ConfigureAwait(false);
-        var customizations = await this.GetAsync(player, items.Select(i => i.ItemId).Distinct().ToList()).ConfigureAwait(false);
-        var answer = items
-            .Where(i => customizations.ContainsKey(i.ItemId))
-            .Select(i => new ItemCustomizationEntryData(i.Storage, i.ObjectId, i.Slot, customizations[i.ItemId]))
-            .ToList();
+        var answer = await this.AnswerAsync(player, asks.Take(MaximumAsks)).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemCustomizationViewPlugIn>(p => p.SendCustomizationsAsync(answer)).ConfigureAwait(false);
     }
 
@@ -87,6 +91,109 @@ public class ItemCustomizationFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault
         {
             var entry = new ItemCustomizationEntryData(storage, objectId, slot, customization);
             await player.InvokeViewPlugInAsync<IItemCustomizationViewPlugIn>(p => p.SendDetailAsync(entry)).ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Answers a report (EE 37): the item's name and lore as they are now go into a report for the website's
+    /// moderation, once per reporter, item and version (<see cref="ItemCustomizationReportGate"/>).
+    /// </summary>
+    /// <param name="player">The reporting player.</param>
+    /// <param name="storage">The storage.</param>
+    /// <param name="objectId">The object id.</param>
+    /// <param name="slot">The slot.</param>
+    public async ValueTask HandleReportAsync(Player player, ItemCustomizationStorage storage, ushort objectId, byte slot)
+    {
+        var result = await this.ReportAsync(player, storage, objectId, slot).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IItemCustomizationViewPlugIn>(p => p.SendReportResultAsync(result)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Tells everyone who was told about a changed item again, at once (EE 39): the place they asked about, as it is now.
+    /// </summary>
+    /// <param name="itemId">The changed item.</param>
+    private void OnForgotten(Guid itemId)
+    {
+        var places = this._watchers.Take(itemId);
+        if (places.Count > 0)
+        {
+            _ = Task.Run(() => this.PushAsync(places));
+        }
+    }
+
+    private async Task PushAsync(IReadOnlyList<(Player Watcher, ItemCustomizationStorage Storage, ushort ObjectId)> places)
+    {
+        foreach (var (player, storage, objectId) in places)
+        {
+            try
+            {
+                if (player.PlayerState.CurrentState != PlayerState.EnteredWorld)
+                {
+                    continue;
+                }
+
+                var answer = await this.AnswerAsync(player, [(storage, objectId)]).ConfigureAwait(false);
+                await player.InvokeViewPlugInAsync<IItemCustomizationViewPlugIn>(p => p.SendChangedAsync(answer)).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                player.Logger.LogDebug(ex, "Pushing a changed item customisation to {Player} failed.", player);
+            }
+        }
+    }
+
+    /// <summary>The customised items of the asked places, each noted as told to the player.</summary>
+    private async ValueTask<List<ItemCustomizationEntryData>> AnswerAsync(Player player, IEnumerable<(ItemCustomizationStorage Storage, ushort ObjectId)> asks)
+    {
+        var items = await ItemCustomizationCollector.CollectAsync(player, asks).ConfigureAwait(false);
+        var customizations = await this.GetAsync(player, items.Select(i => i.ItemId).Distinct().ToList()).ConfigureAwait(false);
+        var answer = new List<ItemCustomizationEntryData>();
+        foreach (var item in items)
+        {
+            if (customizations.TryGetValue(item.ItemId, out var customization))
+            {
+                answer.Add(new ItemCustomizationEntryData(item.Storage, item.ObjectId, item.Slot, customization));
+                this._watchers.Add(item.ItemId, player, item.Storage, item.ObjectId);
+            }
+        }
+
+        return answer;
+    }
+
+    private async ValueTask<ItemCustomizationReportResult> ReportAsync(Player player, ItemCustomizationStorage storage, ushort objectId, byte slot)
+    {
+        if (player.SelectedCharacter?.Name is not { Length: > 0 } reporter
+            || await ItemCustomizationCollector.ItemIdAsync(player, storage, objectId, slot).ConfigureAwait(false) is not { } itemId
+            || (await this.GetAsync(player, [itemId]).ConfigureAwait(false)).GetValueOrDefault(itemId) is not { } customization
+            || (string.IsNullOrWhiteSpace(customization.Name) && string.IsNullOrWhiteSpace(customization.Lore)))
+        {
+            return ItemCustomizationReportResult.NotFound;
+        }
+
+        var result = this._reports.Try(reporter, itemId, customization.Version, Environment.TickCount64);
+        if (result != ItemCustomizationReportResult.Sent)
+        {
+            return result;
+        }
+
+        try
+        {
+            using var context = player.GameContext.PersistenceContextProvider.CreateNewContext();
+            var report = context.CreateNew<DataModel.Entities.ItemCustomizationReport>();
+            report.ItemId = itemId;
+            report.Reporter = reporter;
+            report.Version = customization.Version;
+            report.Name = customization.Name;
+            report.Lore = customization.Lore;
+            report.CreatedAt = DateTime.UtcNow;
+            await context.SaveChangesAsync().ConfigureAwait(false);
+            return ItemCustomizationReportResult.Sent;
+        }
+        catch (Exception ex)
+        {
+            // The unique index: this reporter reported this version before the server last started.
+            player.Logger.LogDebug(ex, "Report of item {ItemId} by {Reporter} not stored.", itemId, reporter);
+            return ItemCustomizationReportResult.Already;
         }
     }
 

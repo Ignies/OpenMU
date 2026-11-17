@@ -9120,6 +9120,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Handles C1 EE 37: a player reports the name or lore of a customised item for the website's moderation..
+        /// </summary>
+        public static string ItemCustomizationReportRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ItemCustomizationReportRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Item customisation report handler (Babylon).
+        /// </summary>
+        public static string ItemCustomizationReportRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ItemCustomizationReportRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the request of the Babylon client for the lore of a customised item..
         /// </summary>
         public static string ItemCustomizationDetailRequestHandlerPlugIn_Description {

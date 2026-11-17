@@ -3179,6 +3179,12 @@
   <data name="ItemCustomizationRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of the Babylon client for the customised items of the places it shows.</value>
   </data>
+  <data name="ItemCustomizationReportRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Item customisation report handler (Babylon)</value>
+  </data>
+  <data name="ItemCustomizationReportRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles C1 EE 37: a player reports the name or lore of a customised item for the website's moderation.</value>
+  </data>
   <data name="ItemCustomizationDetailRequestHandlerPlugIn_Name" xml:space="preserve">
     <value>Item customisation detail request handler</value>
   </data>

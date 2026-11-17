@@ -1121,4 +1121,7 @@
   <data name="WizardGillard" xml:space="preserve">
     <value>Wizard Gillard</value>
   </data>
+  <data name="Jin" xml:space="preserve">
+    <value>Jin</value>
+  </data>
 </root>

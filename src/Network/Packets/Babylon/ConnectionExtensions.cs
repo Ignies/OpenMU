@@ -623,6 +623,66 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="ItemCustomizationReportRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="storage">The storage.</param>
+    /// <param name="objectId">The object id.</param>
+    /// <param name="slot">The slot.</param>
+    /// <remarks>
+    /// Is sent by the client when: A player reports the name or lore of a customised item from its tooltip.
+    /// Causes reaction on server side: The server stores a report for the website's moderation and answers with ItemCustomizationReportResult.
+    /// </remarks>
+    public static async ValueTask SendItemCustomizationReportRequestAsync(this IConnection? connection, byte @storage, ushort @objectId, byte @slot)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ItemCustomizationReportRequestRef.Length;
+            var packet = new ItemCustomizationReportRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Storage = @storage;
+            packet.ObjectId = @objectId;
+            packet.Slot = @slot;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ItemCustomizationReportResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">0 sent, 1 reported already (this item at this version), 2 not found (or no name or lore), 3 too fast (one report every ten seconds).</param>
+    /// <remarks>
+    /// Is sent by the server when: The answer to ItemCustomizationReportRequest.
+    /// Causes reaction on client side: The client says whether the report was sent.
+    /// </remarks>
+    public static async ValueTask SendItemCustomizationReportResultAsync(this IConnection? connection, byte @result)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ItemCustomizationReportResultRef.Length;
+            var packet = new ItemCustomizationReportResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="MuunItemMove" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

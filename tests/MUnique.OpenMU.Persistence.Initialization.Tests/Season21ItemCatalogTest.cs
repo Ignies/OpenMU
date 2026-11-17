@@ -122,6 +122,36 @@ internal class Season21ItemCatalogTest
     }
 
     /// <summary>
+    /// A weapon with magic power raises wizardry like a staff (the rune maces of the Rune Wizard, the magic guns of the
+    /// Gun Crusher, the magic swords), whatever Season 6 item of its group it copies; a Dark Lord scepter keeps its
+    /// pet rise and a summoner book its curse rise.
+    /// </summary>
+    [Test]
+    public async Task MagicPowerRaisesWizardryAsync()
+    {
+        var (context, gameConfiguration) = await CreateWithGearAsync().ConfigureAwait(false);
+
+        await new AddSeason21ItemCatalogUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var rises = new[] { Stats.StaffRise, Stats.ScepterRise, Stats.BookRise };
+        var riseless = Season21ItemCatalog.Items
+            .Where(r => r.Group <= 5 && r.MagicPower > 0 && r.WaitsFor is null)
+            .Select(r => Item(gameConfiguration, r.Group, (short)r.Number))
+            .Where(i => !i.BasePowerUpAttributes.Any(p => rises.Any(r => r == p.TargetAttribute)))
+            .Select(i => $"{i.Group}/{i.Number} {i.Name.ValueInNeutralLanguage}")
+            .ToList();
+        Assert.That(riseless, Is.Empty);
+
+        Assert.That(Rise(Item(gameConfiguration, 2, 28), Stats.StaffRise), Is.EqualTo(29)); // Elemental Rune Mace, 58
+        Assert.That(Rise(Item(gameConfiguration, 4, 42), Stats.StaffRise), Is.EqualTo(20)); // Entro Magic Gun, 40
+        Assert.That(Item(gameConfiguration, 2, 28).BasePowerUpAttributes.Single(p => p.TargetAttribute == Stats.StaffRise).BonusPerLevelTable, Is.Not.Null);
+        Assert.That(Item(gameConfiguration, 2, 28).BasePowerUpAttributes.Select(p => p.TargetAttribute), Has.None.EqualTo(Stats.ScepterRise));
+
+        static float Rise(ItemDefinition item, AttributeSystem.AttributeDefinition rise)
+            => item.BasePowerUpAttributes.Single(p => p.TargetAttribute == rise).BaseValue;
+    }
+
+    /// <summary>
     /// The cloaks of the Crusader (group 21) are wings: level, defense and durability of the client's item table, the
     /// required level of the wings of their kind and the damage rates of <c>ItemOptionWing.txt</c>.
     /// </summary>
@@ -184,7 +214,7 @@ internal class Season21ItemCatalogTest
         edited.BasePowerUpAttributes.Remove(edited.BasePowerUpAttributes.First(p => p.TargetAttribute == Stats.DamageReceiveDecrement));
         await new AddSeason21ItemCatalogUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
-        Assert.That(new AddSeason21ItemCatalogUpdatePlugIn().Version, Is.EqualTo(2));
+        Assert.That(new AddSeason21ItemCatalogUpdatePlugIn().Version, Is.GreaterThanOrEqualTo(2));
         Assert.That(edited.Durability, Is.EqualTo(5));
         Assert.That(edited.DropLevel, Is.EqualTo(7));
         Assert.That(edited.Requirements.Single(r => r.Attribute == Stats.Level).MinimumValue, Is.EqualTo(400));

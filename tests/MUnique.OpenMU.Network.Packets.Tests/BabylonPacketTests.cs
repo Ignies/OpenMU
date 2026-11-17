@@ -1531,6 +1531,64 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for ItemCustomizationReportRequest.
+    /// </summary>
+    [Test]
+    public void ItemCustomizationReportRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = ItemCustomizationReportRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Storage' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Storage' exceeds packet boundary");
+        
+        // Validate field 'ObjectId' boundary
+        Assert.That(5 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ObjectId' exceeds packet boundary");
+        
+        // Validate field 'Slot' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Slot' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ItemCustomizationReportResult.
+    /// </summary>
+    [Test]
+    public void ItemCustomizationReportResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = ItemCustomizationReportResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ItemCustomizationsChanged.
+    /// </summary>
+    [Test]
+    public void ItemCustomizationsChanged_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'Count' starts at index 5 with size 2
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Count' has invalid negative index");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for MuunInventoryList.
     /// </summary>
     [Test]

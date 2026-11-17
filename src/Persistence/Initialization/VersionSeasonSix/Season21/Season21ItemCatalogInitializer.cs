@@ -115,6 +115,7 @@ internal class Season21ItemCatalogInitializer
             item.Value = row.Value;
         }
 
+        this.AddWizardryRises();
         new Season21DropGroups(this._context, this._gameConfiguration).Apply();
         this.QualifyClasses();
     }
@@ -285,6 +286,38 @@ internal class Season21ItemCatalogInitializer
             && !item.PossibleItemOptions.Contains(option))
         {
             item.PossibleItemOptions.Add(option);
+        }
+    }
+
+    /// <summary>
+    /// Gives a weapon with magic power that no Season 6 template gave a rise (the rune maces, the magic guns) the
+    /// wizardry rise of a staff: half its magic power, with the staff level table of its parity. Sources: the client halves
+    /// the magic power for the line (Source Main 5.2 <c>ZzzInventory.cpp:901-918</c>, printed at :4977-4986), as the Season 6
+    /// staffs do here (<c>Weapons.cs:444</c>, tables :36-37); S21Emu <c>Item.xml:179</c> gives 2/28 MagicDamageRate 58 (+29%),
+    /// <c>Item.xml:306</c> 4/42 40 (+20%).
+    /// </summary>
+    private void AddWizardryRises()
+    {
+        AttributeDefinition[] rises = [Stats.StaffRise, Stats.ScepterRise, Stats.BookRise];
+        var staffRises = this._gameConfiguration.Items.SelectMany(i => i.BasePowerUpAttributes)
+            .Where(p => p.TargetAttribute == Stats.StaffRise && p.BonusPerLevelTable is not null)
+            .ToList();
+        foreach (var item in this._gameConfiguration.Items.Where(i => i.Group <= 5))
+        {
+            if (!this._rows.TryGetValue((item.Group, item.Number), out var row) || row.MagicPower <= 0
+                || item.BasePowerUpAttributes.Any(p => rises.Any(r => r == p.TargetAttribute)))
+            {
+                continue;
+            }
+
+            var odd = row.MagicPower % 2 == 1;
+            var source = staffRises.FirstOrDefault(p => ((int)(p.BaseValue * 2) % 2 == 1) == odd) ?? staffRises.FirstOrDefault();
+            var powerUp = this._context.CreateNew<ItemBasePowerUpDefinition>();
+            powerUp.TargetAttribute = Stats.StaffRise.GetPersistent(this._gameConfiguration);
+            powerUp.BaseValue = row.MagicPower / 2f;
+            powerUp.AggregateType = source?.AggregateType ?? AggregateType.AddRaw;
+            powerUp.BonusPerLevelTable = source?.BonusPerLevelTable;
+            item.BasePowerUpAttributes.Add(powerUp);
         }
     }
 }

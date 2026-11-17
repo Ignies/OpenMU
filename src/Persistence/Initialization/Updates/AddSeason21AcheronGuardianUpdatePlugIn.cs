@@ -34,6 +34,13 @@ public class AddSeason21AcheronGuardianUpdatePlugIn : UpdatePlugInBase
     public override bool RunsOnNewDatabase => true;
 
     /// <inheritdoc />
+    /// <remarks>Version 2 places Jin's copy (604) with his shop on map 92 when the shops update is in.</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 17, 18, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 11, 07, 4, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
@@ -44,5 +51,11 @@ public class AddSeason21AcheronGuardianUpdatePlugIn : UpdatePlugInBase
     {
         var gameServers = (await context.GetAsync<GameServerConfiguration>().ConfigureAwait(false)).ToList();
         new Season21EventsInitializer(context, gameConfiguration, gameServers).AddAcheronGuardian();
+
+        // Jin (583) comes only with the shops update; with it in, his copy 604 joins map 92 (filled tabs stay the operator's).
+        if (gameConfiguration.Monsters.Any(m => m.Number == 583))
+        {
+            await new Season21ShopsInitializer(context, gameConfiguration).InitializeAsync(keepFilledTabs: true).ConfigureAwait(false);
+        }
     }
 }

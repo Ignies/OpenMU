@@ -47,6 +47,7 @@ public class ExtendedTypeContext : Microsoft.EntityFrameworkCore.DbContext
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.Item>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.ItemAppearance>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.ItemCustomization>();
+        modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.ItemCustomizationReport>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.ItemOptionLink>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.ItemStorage>();
         modelBuilder.Ignore<MUnique.OpenMU.DataModel.Entities.LetterBody>();

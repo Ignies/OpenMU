@@ -1751,6 +1751,74 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>37</SubCode>
+      <Name>ItemCustomizationReportRequest</Name>
+      <Length>8</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player reports the name or lore of a customised item from its tooltip.</SentWhen>
+      <CausedReaction>The server stores a report for the website's moderation and answers with ItemCustomizationReportResult.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Storage</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>ObjectId</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>38</SubCode>
+      <Name>ItemCustomizationReportResult</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The answer to ItemCustomizationReportRequest.</SentWhen>
+      <CausedReaction>The client says whether the report was sent.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 sent, 1 reported already (this item at this version), 2 not found (or no name or lore), 3 too fast (one report every ten seconds).</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>39</SubCode>
+      <Name>ItemCustomizationsChanged</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A customised item's record changed (a moderator's reset, a new look) while this client had been told about it.</SentWhen>
+      <CausedReaction>The client replaces what it knows of each listed place with these entries, without taking it as the answer to its own request.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Structure[]</Type>
+          <TypeName>ItemCustomizationEntry</TypeName>
+          <Name>Entries</Name>
+          <ItemCountField>Count</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C2HeaderWithSubCode</HeaderType>
       <Code>EE</Code>
       <SubCode>50</SubCode>

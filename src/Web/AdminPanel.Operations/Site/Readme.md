@@ -8,7 +8,7 @@ Startup attaches it to the host when the admin panel runs (`SiteBridge.Attach`).
 
 ## Operations
 `ops` lists them: every `[AdminOperation]` method of the configuration, plugin, server, account, guild, mini game and
-audit operations, named `area.method` (`config.search`, `plugins.list`, ...), with the role each needs. The site names
+audit operations and the item moderation of Star Smithing (`items.checkText`, `items.words`, `items.setWords`, `items.resetText`, `GameLogic/TextModeration/Readme.md`), named `area.method` (`config.search`, `plugins.list`, ...), with the role each needs. The site names
 the role of its admin; a call below the operation's role is refused. The single-object writes (`config_update`, ...)
 stay out: every site write is a changeset.
 

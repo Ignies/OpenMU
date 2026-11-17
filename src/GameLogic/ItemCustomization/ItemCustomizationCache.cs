@@ -17,6 +17,11 @@ public static class ItemCustomizationCache
     private static readonly ConcurrentDictionary<Guid, (DataModel.Entities.ItemCustomization? Customization, long Expires)> Records = new();
 
     /// <summary>
+    /// Raised after an item is forgotten: its record changed, so whoever was told about it is told again.
+    /// </summary>
+    public static event Action<Guid>? Forgotten;
+
+    /// <summary>
     /// Stores a record, or a miss (null), until the given tick.
     /// </summary>
     /// <param name="itemId">The item id.</param>
@@ -50,5 +55,9 @@ public static class ItemCustomizationCache
     /// Drops an item, so the next request reads its record again.
     /// </summary>
     /// <param name="itemId">The item id.</param>
-    public static void Forget(Guid itemId) => Records.TryRemove(itemId, out _);
+    public static void Forget(Guid itemId)
+    {
+        Records.TryRemove(itemId, out _);
+        Forgotten?.Invoke(itemId);
+    }
 }
