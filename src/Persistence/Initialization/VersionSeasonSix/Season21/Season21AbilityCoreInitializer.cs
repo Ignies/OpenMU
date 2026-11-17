@@ -11,6 +11,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.AbilityCore;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
+using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
 /// <summary>
 /// Adds the Ability Enhancement Core of Season 21 (<see cref="Season21AbilityCoreData"/>): the options of the ability
@@ -50,15 +51,39 @@ internal class Season21AbilityCoreInitializer
     private static readonly (byte Crystals, byte Blesses, int Money) EliteCardPrice = (25, 5, 50_000_000);
 
     /// <summary>
-    /// The attribute of each option which has one in OpenMU, by the static option index; the other options (the
-    /// nuke, bolt and wide skill options, the fifth wings, mastery, bleeding and poison, triple damage, skill slots, AG
-    /// recovery, shock defense) are data without effect. The extra defense adds to the defense, the pentagram defense
-    /// and attack to the elemental defense and damage.
+    /// The catalog kind of the fifth wings (S21Emu Item.xml <c>KindA</c> 106; 76 is the fourth), the "Lv.5" wings of
+    /// the card options.
+    /// </summary>
+    private const int FifthWingKind = 106;
+
+    /// <summary>
+    /// The options whose data value is a percentage of an attribute which OpenMU keeps as a fraction (AG recovery).
+    /// </summary>
+    private static readonly HashSet<short> HundredthOptions = [62];
+
+    /// <summary>
+    /// The bonuses of the Lv.5 wing options and what each adds to while a fifth wing is worn.
+    /// </summary>
+    private static readonly (AttributeDefinition Target, AttributeDefinition Bonus)[] FifthWingBonuses =
+    [
+        (Stats.DefenseBase, Stats.FifthWingDefenseBonus),
+        (Stats.PhysicalBaseDmg, Stats.FifthWingPhysicalDamageBonus),
+        (Stats.WizardryBaseDmg, Stats.FifthWingWizardryDamageBonus),
+        (Stats.CurseBaseDmg, Stats.FifthWingCurseDamageBonus),
+    ];
+
+    /// <summary>
+    /// The attribute of each option which has one in OpenMU, by the static option index (S21Emu AbilityOption.xml
+    /// <c>OptionIndex</c>; 1, 49, 54 and 59 occur in none of its rows); the other options (the nuke, bolt and wide
+    /// skill options, triple damage, skill slots, shock defense) are data without effect. The extra defense adds to the
+    /// defense, the pentagram defense and attack to the elemental defense and damage, mastery to the master skills of
+    /// its damage type, the debuff options to the tree debuffs of their name, the Lv.5 wing options while a fifth wing is
+    /// worn.
     /// </summary>
     private static readonly Dictionary<short, (AttributeDefinition Attribute, bool PerTwentyLevels)> Effects = new()
     {
         { 0, (Stats.DefenseBase, false) },
-        { 1, (Stats.DefenseShield, false) },
+        { 2, (Stats.FifthWingDefenseBonus, false) },
         { 3, (Stats.DefenseBase, false) },
         { 4, (Stats.ElementDefense, false) },
         { 5, (Stats.ElementDefenseAgainstFire, false) },
@@ -81,9 +106,17 @@ internal class Season21AbilityCoreInitializer
         { 22, (Stats.MaximumPhysBaseDmg, false) },
         { 23, (Stats.MaximumWizBaseDmg, false) },
         { 24, (Stats.MaximumCurseBaseDmg, false) },
+        { 25, (Stats.MasterySkillDamageBonus, false) },
+        { 26, (Stats.MasterySkillWizardryBonus, false) },
+        { 27, (Stats.MasterySkillCurseBonus, false) },
         { 28, (Stats.PhysicalBaseDmg, true) },
         { 33, (Stats.CriticalDamageBonus, false) },
         { 34, (Stats.ExcellentDamageBonus, false) },
+        { 36, (Stats.FifthWingPhysicalDamageBonus, false) },
+        { 37, (Stats.BleedingDamageIncrease, false) },
+        { 38, (Stats.SevereBleedingDamageIncrease, false) },
+        { 39, (Stats.PoisonDebuffDamageIncrease, false) },
+        { 40, (Stats.ToxicDamageIncrease, false) },
         { 41, (Stats.SkillDamageBonus, false) },
         { 42, (Stats.ElementDamageAgainstFire, false) },
         { 43, (Stats.ElementDamageAgainstWater, false) },
@@ -92,18 +125,18 @@ internal class Season21AbilityCoreInitializer
         { 46, (Stats.ElementDamageAgainstDarkness, false) },
         { 47, (Stats.ElementDamageBonus, false) },
         { 48, (Stats.ElementDamageBonus, false) },
-        { 49, (Stats.CriticalDamageChance, false) },
         { 50, (Stats.CriticalDamageChance, false) },
         { 52, (Stats.FullyRecoverHealthAfterHitChance, false) },
         { 53, (Stats.DoubleDamageChance, false) },
-        { 54, (Stats.ExcellentDamageChance, false) },
         { 55, (Stats.ExcellentDamageChance, false) },
         { 57, (Stats.FullyRecoverManaAfterHitChance, false) },
         { 58, (Stats.DefenseIgnoreChance, false) },
-        { 59, (Stats.DoubleDamageChance, false) },
+        { 62, (Stats.AbilityRecoveryMultiplier, false) },
         { 65, (Stats.MaximumHealth, false) },
         { 66, (Stats.MaximumMana, false) },
         { 67, (Stats.MaximumAbility, false) },
+        { 83, (Stats.FifthWingWizardryDamageBonus, false) },
+        { 84, (Stats.FifthWingCurseDamageBonus, false) },
         { 85, (Stats.WizardryBaseDmg, true) },
         { 86, (Stats.CurseBaseDmg, true) },
     };
@@ -191,6 +224,36 @@ internal class Season21AbilityCoreInitializer
         }
 
         this.AddCraftings();
+        this.AddFifthWingFlag();
+    }
+
+    /// <summary>
+    /// Gives the fifth wings the flag of the Lv.5 wing options and every class the bonuses which count while it is set,
+    /// as the enhance tree does for the fourth wings. What exists stays.
+    /// </summary>
+    private void AddFifthWingFlag()
+    {
+        var flag = this.GetPersistent(Stats.IsFifthWingEquipped);
+        foreach (var wing in Season21ItemCatalog.Items.Where(row => row.KindA == FifthWingKind)
+                     .Select(row => this._gameConfiguration.Items.FirstOrDefault(i => i.Group == row.Group && i.Number == row.Number))
+                     .OfType<ItemDefinition>()
+                     .Where(wing => wing.BasePowerUpAttributes.All(p => p.TargetAttribute != flag)))
+        {
+            var powerUp = this._context.CreateNew<ItemBasePowerUpDefinition>();
+            powerUp.TargetAttribute = flag;
+            powerUp.BaseValue = 1;
+            wing.BasePowerUpAttributes.Add(powerUp);
+        }
+
+        foreach (var (target, bonus) in FifthWingBonuses)
+        {
+            this.GetPersistent(bonus);
+            foreach (var characterClass in this._gameConfiguration.CharacterClasses
+                         .Where(c => !c.AttributeCombinations.Any(r => r.InputAttribute?.Id == bonus.Id && r.OperandAttribute?.Id == flag.Id)))
+            {
+                characterClass.AttributeCombinations.Add(CharacterClassHelper.CreateConditionalRelationship(this._context, this._gameConfiguration, target, flag, bonus));
+            }
+        }
     }
 
     /// <summary>
@@ -323,7 +386,7 @@ internal class Season21AbilityCoreInitializer
             return;
         }
 
-        var values = row.Values.Select(v => row.IsRate ? v * Percent : v).ToArray();
+        var values = row.Values.Select(v => row.IsRate || HundredthOptions.Contains(row.Number) ? v * Percent : v).ToArray();
         for (var level = 0; level < values.Length; level++)
         {
             var optionOfLevel = this._context.CreateNew<ItemOptionOfLevel>();

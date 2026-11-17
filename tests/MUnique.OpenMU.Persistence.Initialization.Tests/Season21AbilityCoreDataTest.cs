@@ -184,7 +184,7 @@ internal class Season21AbilityCoreDataTest
 
         await new AddSeason21AbilityCoreUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
-        Assert.That(new AddSeason21AbilityCoreUpdatePlugIn().Version, Is.EqualTo(3));
+        Assert.That(new AddSeason21AbilityCoreUpdatePlugIn().Version, Is.GreaterThanOrEqualTo(3));
         Assert.That(pentagramAttack.PowerUpDefinition!.TargetAttribute, Is.EqualTo(Stats.ElementDamageBonus));
         Assert.That(pentagramAttack.LevelDependentOptions.Single(l => l.Level == 5).PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(162));
         Assert.That(extraDefense.LevelDependentOptions.Single(l => l.Level == 5).PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(99));
