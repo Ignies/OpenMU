@@ -171,7 +171,9 @@ Town NPCs (`Season21ClassicSpawns.TownNpcs`, maps update version 6) at their `Mo
 (the Acheron guide, passive; no shop or Spirit Map in the data), Maple Spirit 873 and Maple Tree 874 (passive; the maple
 leaf event has only its switch in `GameServerInfo - Event.dat`) in Noria; Apostle Devin 406, Moss 492, Lugard 540 and
 Jerint 522 also in Lorencia, where Season 21 gathered the event entrances. Wizard Gillard 891 is a merchant with the
-shop `Shop/027` (shops update version 2, Lorencia 119/111). The versions of the new NPCs aren't in any source: Season 7
+shop `Shop/027` (shops update version 2, Lorencia 119/111). Jin 583, the Arca War potion merchant, is a merchant with his
+shop (`ShopManager.txt` 25) where `091 - Acheron 1.xml` places him (shops update version 3, Acheron 56/202); his Acheron 2
+copy 604 stands only on the Arca War map, which isn't ported. The versions of the new NPCs aren't in any source: Season 7
 (Acheron) for Captain Slough, Season 21 for the others.
 
 ## Client terrains
@@ -316,6 +318,9 @@ chosen for them by hand:
 * rings and pendants copy the Season 6 ring or pendant of their options,
 * pets get the pet slot, everything else the values of its row only (size, durability or stack, level, value,
   bans, skill, requirements, classes).
+* a weapon with magic power whose template has no rise (no Season 6 mace or bow raises wizardry: the Rune
+  Wizard's rune maces, the Gun Crusher's magic guns) gets a staff's wizardry rise, half its magic power with the
+  staff level table of its parity (update version 3 adds it to an installed world too).
 
 The class ranks of the Season 6 classes (1 and 2 any class, 3 the master class) give the qualified classes; ranks
 4 and 5 (fourth and fifth class) and the nine later classes stay in the catalog until those classes exist.

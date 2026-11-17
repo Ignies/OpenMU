@@ -12,6 +12,7 @@ using MUnique.OpenMU.GameLogic.GremoryCase;
 using MUnique.OpenMU.GameLogic.ItemExpiry;
 using MUnique.OpenMU.GameLogic.Ruud;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 using MUnique.OpenMU.Persistence.InMemory;
 using MUnique.OpenMU.PlugIns;
 
@@ -128,6 +129,28 @@ internal class Season21EconomyDataTest
         Assert.That(gillard.MerchantStore?.Items, Is.Not.Empty);
         var lorencia = gameConfiguration.Maps.Single(m => m.Number == 0);
         Assert.That(lorencia.MonsterSpawns.Count(s => s.MonsterDefinition == gillard && s.X1 == 119 && s.Y1 == 111), Is.EqualTo(1));
+    }
+
+    /// <summary>
+    /// The shops update adds Jin (583), the Arca War potion merchant, where S21Emu places him in Acheron
+    /// (MonsterSetBase "091 - Acheron 1.xml": 56/202, direction 2), with the potions of his shop (ShopManager.txt 25).
+    /// His Acheron 2 copy (604) stands only on the Arca War map, which the fork leaves out.
+    /// </summary>
+    [Test]
+    public async Task ShopsUpdateAddsJinInAcheronAsync()
+    {
+        var (context, gameConfiguration) = await CreateAsync().ConfigureAwait(false);
+        await new AddSeason21LevelCapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21MapsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        await new AddSeason21ShopsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var jin = gameConfiguration.Monsters.Single(m => m.Number == 583);
+        Assert.That((jin.Designation.ValueInNeutralLanguage, jin.ObjectKind, jin.NpcWindow), Is.EqualTo(("Jin", NpcObjectKind.PassiveNpc, NpcWindow.Merchant)));
+        Assert.That(jin.MerchantStore?.Items.Select(i => (i.Definition!.Group, i.Definition.Number)), Is.EquivalentTo(Season21Economy.Data.Shops.Where(r => r.Npc == 583 && r.Tab == 0).Select(r => (r.Group, r.Number))));
+        var acheron = gameConfiguration.Maps.Single(m => m.Number == 91);
+        Assert.That(acheron.MonsterSpawns.Count(s => s.MonsterDefinition == jin && s.X1 == 56 && s.Y1 == 202 && s.Direction == (Direction)2), Is.EqualTo(1));
+        Assert.That(new AddSeason21ShopsUpdatePlugIn().DependsOn.Select(d => d.Key), Does.Contain(typeof(AddSeason21MapsUpdatePlugIn).GUID));
     }
 
     /// <summary>
