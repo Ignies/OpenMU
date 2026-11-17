@@ -39,59 +39,60 @@ internal static class Season21GrowLancerBuffs
     /// <summary>The radius of Obsidian's party (S21Emu Skill.xml <c>Radio</c> 5).</summary>
     private const short ObsidianRadius = 5;
 
+    private static readonly short[] CircleShieldEffects = [216, 221, 222];
+    private static readonly short[] ObsidianEffects = [217, 220];
+    private static readonly short[] WrathEffects = [424, 223, 224, 225, 425];
     private static readonly short[] CircleShieldSkills = [272, 703, 706];
     private static readonly short[] ObsidianSkills = [273, 693];
     private static readonly short[] WrathSkills = [278, 708, 709, 710, 895];
 
     /// <summary>
-    /// Gives the effects of these skills which have no duration theirs and their value, and makes the skills which are no
-    /// buff yet buffs: Circle Shield and Wrath on the caster, Obsidian on the party. An operator's own duration or skill
-    /// type stays.
+    /// Gives the effects which have no duration theirs and their value, and makes the skills which are no buff yet buffs:
+    /// Circle Shield and Wrath on the caster, Obsidian on the party. An operator's own duration or skill type stays.
     /// </summary>
     /// <param name="context">The context.</param>
     /// <param name="gameConfiguration">The game configuration.</param>
     public static void Apply(IContext context, GameConfiguration gameConfiguration)
     {
-        foreach (var skill in gameConfiguration.Skills.Where(s => s.MagicEffectDef is not null))
+        foreach (var effect in gameConfiguration.MagicEffects.Where(e => e.Duration is null))
         {
-            var effect = skill.MagicEffectDef!;
-            if (CircleShieldSkills.Contains(skill.Number))
+            if (CircleShieldEffects.Contains(effect.Number))
+            {
+                SetDuration(context, effect, CircleShieldSeconds);
+            }
+            else if (ObsidianEffects.Contains(effect.Number))
+            {
+                SetDuration(context, effect, ObsidianSeconds);
+                var powerUp = AddPowerUp(context, gameConfiguration, effect, Stats.SkillDamageBonus, 0, AggregateType.AddRaw);
+                var perStrength = context.CreateNew<AttributeRelationship>();
+                perStrength.InputAttribute = Stats.TotalStrength.GetPersistent(gameConfiguration);
+                perStrength.InputOperator = InputOperator.Multiply;
+                perStrength.InputOperand = 1f / StrengthPerSkillDamage;
+                powerUp.Boost!.RelatedValues.Add(perStrength);
+            }
+            else if (WrathEffects.Contains(effect.Number))
+            {
+                SetDuration(context, effect, WrathSeconds);
+                AddPowerUp(context, gameConfiguration, effect, Stats.AttackDamageIncrease, WrathDamage, AggregateType.Multiplicate);
+                AddPowerUp(context, gameConfiguration, effect, Stats.DefenseDecrement, WrathDefense, AggregateType.Multiplicate);
+            }
+        }
+
+        foreach (var skill in gameConfiguration.Skills.Where(s => s.SkillType == SkillType.Other))
+        {
+            if (CircleShieldSkills.Contains(skill.Number) || WrathSkills.Contains(skill.Number))
             {
                 MakeBuff(skill, SkillTarget.ImplicitPlayer);
-                SetDuration(context, effect, CircleShieldSeconds);
             }
             else if (ObsidianSkills.Contains(skill.Number))
             {
                 MakeBuff(skill, SkillTarget.ImplicitParty);
-                if (SetDuration(context, effect, ObsidianSeconds))
-                {
-                    var powerUp = AddPowerUp(context, gameConfiguration, effect, Stats.SkillDamageBonus, 0, AggregateType.AddRaw);
-                    var perStrength = context.CreateNew<AttributeRelationship>();
-                    perStrength.InputAttribute = Stats.TotalStrength.GetPersistent(gameConfiguration);
-                    perStrength.InputOperator = InputOperator.Multiply;
-                    perStrength.InputOperand = 1f / StrengthPerSkillDamage;
-                    powerUp.Boost!.RelatedValues.Add(perStrength);
-                }
-            }
-            else if (WrathSkills.Contains(skill.Number))
-            {
-                MakeBuff(skill, SkillTarget.ImplicitPlayer);
-                if (SetDuration(context, effect, WrathSeconds))
-                {
-                    AddPowerUp(context, gameConfiguration, effect, Stats.AttackDamageIncrease, WrathDamage, AggregateType.Multiplicate);
-                    AddPowerUp(context, gameConfiguration, effect, Stats.DefenseDecrement, WrathDefense, AggregateType.Multiplicate);
-                }
             }
         }
     }
 
     private static void MakeBuff(Skill skill, SkillTarget target)
     {
-        if (skill.SkillType != SkillType.Other)
-        {
-            return;
-        }
-
         skill.SkillType = SkillType.Buff;
         skill.Target = target;
         if (target == SkillTarget.ImplicitParty)
@@ -105,17 +106,10 @@ internal static class Season21GrowLancerBuffs
         }
     }
 
-    /// <summary>Sets the duration of an effect which has none; false when an operator set one (its power-ups are then left alone).</summary>
-    private static bool SetDuration(IContext context, MagicEffectDefinition effect, float seconds)
+    private static void SetDuration(IContext context, MagicEffectDefinition effect, float seconds)
     {
-        if (effect.Duration is not null)
-        {
-            return false;
-        }
-
         effect.Duration = context.CreateNew<PowerUpDefinitionValue>();
         effect.Duration.ConstantValue.Value = seconds;
-        return true;
     }
 
     private static PowerUpDefinition AddPowerUp(IContext context, GameConfiguration gameConfiguration, MagicEffectDefinition effect, AttributeDefinition attribute, float value, AggregateType aggregateType)
