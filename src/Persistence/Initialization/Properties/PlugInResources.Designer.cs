@@ -1741,6 +1741,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
         /// <summary>
+        ///   Looks up a localized string similar to Fix the Slayer buffs and the Rage Fighter Blood Howling (Season 21 data).
+        /// </summary>
+        public static string FixSeason21SlayerAndRageFighterBuffsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("FixSeason21SlayerAndRageFighterBuffsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Gives the effects of Detection and Demolish and of their Strengthener and Mastery their duration and value (S21Emu: 60 seconds; Demolish adds (20 + energy / 50)% defense ignore chance) and makes the skills buffs: Detection on the caster, Demolish on the party within 5. Blood Howling and its Strengthener become buffs on the caster (60 seconds where none is set). An operator's own duration or skill type stays. Optional..
+        /// </summary>
+        public static string FixSeason21SlayerAndRageFighterBuffsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("FixSeason21SlayerAndRageFighterBuffsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Fix the Rune Wizard buffs Burst and Haste (Season 21 data).
         /// </summary>
         public static string FixSeason21RuneWizardBuffsUpdatePlugIn_Name {
