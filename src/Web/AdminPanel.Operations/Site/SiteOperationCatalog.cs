@@ -24,6 +24,7 @@ internal static class SiteOperationCatalog
         (typeof(GuildReadOperations), "guilds"),
         (typeof(MiniGameReadOperations), "minigames"),
         (typeof(AuditReadOperations), "audit"),
+        (typeof(ItemModerationOperations), "items"),
     ];
 
     /// <summary>Gets every operation by name.</summary>

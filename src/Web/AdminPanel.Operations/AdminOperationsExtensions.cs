@@ -23,6 +23,7 @@ public static class AdminOperationsExtensions
         services.TryAddSingleton<AdminChangeConfirmation>();
         services.AddScoped<ConfigurationWriteOperations>();
         services.AddScoped<PluginWriteOperations>();
+        services.AddScoped<ItemModerationOperations>();
         services.AddScoped<ContentActivationOperations>();
         services.AddScoped<ConfigurationTaskOperations>();
         services.AddScoped<CharacterWriteOperations>();

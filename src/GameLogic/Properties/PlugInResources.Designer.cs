@@ -9689,6 +9689,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Text moderation.
+        /// </summary>
+        public static string TextModerationPlugIn_Name {
+            get {
+                return ResourceManager.GetString("TextModerationPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keeps the word list that item names and lore are checked against (letters that look alike are folded first). The website edits the list..
+        /// </summary>
+        public static string TextModerationPlugIn_Description {
+            get {
+                return ResourceManager.GetString("TextModerationPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Item looks and names.
         /// </summary>
         public static string ItemCustomizationFeaturePlugIn_Name {

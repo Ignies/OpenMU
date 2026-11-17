@@ -5,7 +5,7 @@
 namespace MUnique.OpenMU.GameLogic.TextModeration;
 
 /// <summary>
-/// The word list of <c>TextModerationPlugIn</c>, which the website edits.
+/// The word list of <see cref="TextModerationPlugIn"/>, which the website edits.
 /// </summary>
 public class TextModerationConfiguration
 {
