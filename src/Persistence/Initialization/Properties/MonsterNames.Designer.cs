@@ -4775,6 +4775,13 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
 
+        /// <summary>Gets Jin from the configuration name resources.</summary>
+        public static string Jin {
+            get {
+                return ResourceManager.GetString("Jin", resourceCulture);
+            }
+        }
+
         /// <summary>Gets Wizard Gillard from the configuration name resources.</summary>
         public static string WizardGillard {
             get {

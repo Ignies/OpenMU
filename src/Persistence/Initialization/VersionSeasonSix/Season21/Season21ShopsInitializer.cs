@@ -30,6 +30,18 @@ internal class Season21ShopsInitializer
 
     private const short WizardGillardSpawnNumber = 8910;
 
+    private const short JinNumber = 583;
+
+    private const short JinSpawnNumber = 5830;
+
+    private const byte AcheronMap = 91;
+
+    private const short ArcaJinNumber = 604;
+
+    private const short ArcaJinSpawnNumber = 6040;
+
+    private const byte AcheronArcaMap = 92;
+
     private readonly IContext _context;
 
     private readonly GameConfiguration _gameConfiguration;
@@ -55,6 +67,7 @@ internal class Season21ShopsInitializer
     public async ValueTask InitializeAsync(bool keepFilledTabs = false)
     {
         this.PlaceWizardGillard();
+        this.PlaceJin();
         foreach (var merchantRows in Season21Economy.Data.Shops.GroupBy(row => row.Npc))
         {
             if (this._gameConfiguration.Monsters.FirstOrDefault(m => m.Number == merchantRows.Key) is not { } merchant)
@@ -206,6 +219,21 @@ internal class Season21ShopsInitializer
         if (this._gameConfiguration.Monsters.FirstOrDefault(m => m.Number == WizardGillardNumber) is { NpcWindow: NpcWindow.Undefined } gillard)
         {
             gillard.NpcWindow = NpcWindow.Merchant;
+        }
+    }
+
+    /// <summary>
+    /// Places Jin, the Arca War potion merchant, where S21Emu does: 583 in Acheron ("091 - Acheron 1.xml") and his copy 604 on
+    /// its event copy, map 92 ("092 - Acheron 2.xml"), both at 56/202, direction 2. Map 92 comes with the Protector of
+    /// Acheron update, which runs this again when the shops are in.
+    /// </summary>
+    private void PlaceJin()
+    {
+        Season21NpcSpawns.Place(this._context, this._gameConfiguration, JinSpawnNumber, AcheronMap, JinNumber, LocalizedString.FromResource(() => MonsterNames.Jin), 56, 202, (Direction)2);
+        Season21NpcSpawns.Place(this._context, this._gameConfiguration, ArcaJinSpawnNumber, AcheronArcaMap, ArcaJinNumber, LocalizedString.FromResource(() => MonsterNames.Jin), 56, 202, (Direction)2);
+        foreach (var jin in this._gameConfiguration.Monsters.Where(m => m.Number is JinNumber or ArcaJinNumber && m.NpcWindow == NpcWindow.Undefined))
+        {
+            jin.NpcWindow = NpcWindow.Merchant;
         }
     }
 }

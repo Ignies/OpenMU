@@ -42,11 +42,11 @@ public class AddSeason21ItemCatalogUpdatePlugIn : UpdatePlugInBase
     public override DateTime CreatedAt => new(2026, 11, 05, 17, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    /// <remarks>Version 2 gives the cloaks of the Crusader their wing values (<see cref="Season21Cloaks"/>).</remarks>
-    public override int Version => 2;
+    /// <remarks>Version 2 gives the cloaks of the Crusader their wing values (<see cref="Season21Cloaks"/>); version 3 gives the rune maces and magic guns their wizardry rise.</remarks>
+    public override int Version => 3;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 09, 12, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 17, 12, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     /// <remarks>
