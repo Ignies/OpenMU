@@ -215,7 +215,7 @@ internal class ItemStatProfilesDataTest
             "shield: 22",
             "smallWing: 6",
             "thirdTierWing: 7",
-            "weapon: 113",
+            "weapon: 114", // with the Star Smith's Hammer (2/1000)
         }));
     }
 

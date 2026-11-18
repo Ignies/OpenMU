@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Properties;
+using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
 /// <summary>
 /// The NPC shops of Season 21 with up to five tabs: the first tab is the merchant store which every client shows,
@@ -86,15 +87,13 @@ internal class Season21ShopsInitializer
         }
     }
 
-    private static bool Matches(ItemStorage storage, IReadOnlyList<(Season21Economy.ShopRow Row, ItemDefinition Definition)> rows)
-    {
-        static string Key(ItemDefinition? definition, byte level) => $"{definition?.Group}/{definition?.Number}/{level}";
-        var current = storage.Items.Select(i => Key(i.Definition, i.Level)).Order().ToList();
-        var wanted = rows.Select(r => Key(r.Definition, r.Row.Level)).Order().ToList();
-        return current.SequenceEqual(wanted);
-    }
-
-    private static byte? FindPlace(bool[,] grid, ItemDefinition definition)
+    /// <summary>
+    /// Finds the first free place of an item in a store grid of <see cref="Columns"/> x <see cref="Rows"/>, and occupies it.
+    /// </summary>
+    /// <param name="grid">The occupied cells of the store.</param>
+    /// <param name="definition">The definition of the item.</param>
+    /// <returns>The slot of the place, or <c>null</c> if the store is full.</returns>
+    internal static byte? FindPlace(bool[,] grid, ItemDefinition definition)
     {
         var width = Math.Max((int)definition.Width, 1);
         var height = Math.Max((int)definition.Height, 1);
@@ -138,6 +137,14 @@ internal class Season21ShopsInitializer
         return true;
     }
 
+    private static bool Matches(ItemStorage storage, IReadOnlyList<(Season21Economy.ShopRow Row, ItemDefinition Definition)> rows, IReadOnlyCollection<Item> ownOffers)
+    {
+        static string Key(ItemDefinition? definition, byte level) => $"{definition?.Group}/{definition?.Number}/{level}";
+        var current = storage.Items.Except(ownOffers).Select(i => Key(i.Definition, i.Level)).Order().ToList();
+        var wanted = rows.Select(r => Key(r.Definition, r.Row.Level)).Order().ToList();
+        return current.SequenceEqual(wanted);
+    }
+
     private ItemDefinition? FindDefinition(Season21Economy.ShopRow row)
         => this._gameConfiguration.Items.FirstOrDefault(d => d.Group == row.Group && d.Number == row.Number);
 
@@ -160,12 +167,14 @@ internal class Season21ShopsInitializer
             merchant.MerchantStoreTabs.Add(newTab);
         }
 
-        if (Matches(storage, rows) || (keepFilledTabs && storage.Items.Count > 0))
+        // The fork's own offers, e.g. the Star Smith's Hammer at Hanzo, aren't part of the data and stay.
+        var ownOffers = storage.Items.Where(item => item.Definition is { } definition && StarSmithHammer.IsHammer(definition)).ToList();
+        if (Matches(storage, rows, ownOffers) || (keepFilledTabs && storage.Items.Count > ownOffers.Count))
         {
             return;
         }
 
-        foreach (var item in storage.Items.ToList())
+        foreach (var item in storage.Items.Except(ownOffers).ToList())
         {
             storage.Items.Remove(item);
             await this._context.DeleteAsync(item).ConfigureAwait(false);
@@ -180,6 +189,19 @@ internal class Season21ShopsInitializer
             }
 
             storage.Items.Add(this.CreateItem(row, definition, slot));
+        }
+
+        foreach (var offer in ownOffers)
+        {
+            if (FindPlace(grid, offer.Definition!) is { } slot)
+            {
+                offer.ItemSlot = slot;
+            }
+            else
+            {
+                storage.Items.Remove(offer);
+                await this._context.DeleteAsync(offer).ConfigureAwait(false);
+            }
         }
     }
 

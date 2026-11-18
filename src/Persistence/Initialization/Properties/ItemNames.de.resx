@@ -2253,4 +2253,7 @@
   <data name="ScrollOfHealing" xml:space="preserve">
     <value>Schriftrolle der Heilung</value>
   </data>
+  <data name="StarSmithsHammer" xml:space="preserve">
+    <value>Hammer des Sternenschmieds</value>
+  </data>
 </root>

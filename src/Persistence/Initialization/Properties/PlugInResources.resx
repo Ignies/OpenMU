@@ -682,4 +682,10 @@
   <data name="FixSeason21RuneWizardBuffsUpdatePlugIn_Description" xml:space="preserve">
     <value>Gives the effects of Burst (Might) and Haste and of their Strengthener and Mastery their duration and value (S21Emu: 30 + energy / 20, for 15 + energy / 10 seconds; Might adds to the base damage, Haste to the attack and magic speed) and makes the skills buffs: Burst on the caster, Haste on the party within 7. An operator's own duration or skill type stays. Optional.</value>
   </data>
+  <data name="AddStarSmithHammerUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the Star Smith's Hammer</value>
+  </data>
+  <data name="AddStarSmithHammerUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update adds the Star Smith's Hammer (2/1000), the tool of the star smithing, and puts it on sale at Hanzo the Blacksmith in Lorencia for about 1,000,000 Zen. An existing hammer or offer stays.</value>
+  </data>
 </root>
