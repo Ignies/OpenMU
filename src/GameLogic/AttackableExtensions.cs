@@ -257,6 +257,13 @@ public static class AttackableExtensions
             }
 
             dmg = (int)(dmg * multiplier * damageFactor);
+
+            // "(Strengthener Skill, Ability Skill) Additional DMG Rate" of the ability cards.
+            if (attackerPlayer is not null && skill.Skill is { } ratedSkill && AbilityCore.AbilityCoreService.GetSkillBonus(attackerPlayer, ratedSkill).Rate is var rate and > 0)
+            {
+                dmg = (int)(dmg * (1 + rate));
+            }
+
             if (attacker is Player skillPlayer && skill.Skill is { } usedSkill)
             {
                 dmg = (int)(dmg * EnhanceTreeEffects.RollMasteryDamageFactor(skillPlayer, usedSkill));
@@ -308,10 +315,13 @@ public static class AttackableExtensions
                 attributes |= DamageAttributes.Combo;
             }
 
-            bool isDoubleDamage = Rand.NextRandomBool(attacker.Attributes[Stats.DoubleDamageChance]);
-            if (isDoubleDamage)
+            // The ability cards' triple damage (60) comes first; the double damage increase (35) adds to either. The client
+            // has no triple flag, so a tripled hit shows as a double one.
+            var multiple = Rand.NextRandomBool(attacker.Attributes[Stats.TripleDamageChance]) ? 3
+                : Rand.NextRandomBool(attacker.Attributes[Stats.DoubleDamageChance]) ? 2 : 1;
+            if (multiple > 1)
             {
-                dmg *= 2;
+                dmg = (dmg * multiple) + (int)attacker.Attributes[Stats.DoubleDamageIncrease];
                 attributes |= DamageAttributes.Double;
             }
 
@@ -345,7 +355,7 @@ public static class AttackableExtensions
     /// <returns>The calculated hit info.</returns>
     public static HitInfo GetHitInfo(this IAttackable defender, uint damage, DamageAttributes attributes, IAttacker attacker, uint manaToll = 0, SkillEntry? skill = null, uint petDamage = 0)
     {
-        var triggersHitShock = defender.GetsHitShocked(damage);
+        var triggersHitShock = defender.GetsHitShocked(damage, attacker);
 
         if (skill?.EnsureSkillAttributes(attacker.Attributes) is { } skillAttributes
             && Rand.NextRandomBool(skillAttributes[Stats.DragonSlasherShieldDamageChance]))
@@ -852,6 +862,14 @@ public static class AttackableExtensions
         return result;
     }
 
+    private static AttributeDefinition? MasteryBonus(DamageType damageType) => damageType switch
+    {
+        DamageType.Physical => Stats.MasterySkillDamageBonus,
+        DamageType.Wizardry => Stats.MasterySkillWizardryBonus,
+        DamageType.Curse => Stats.MasterySkillCurseBonus,
+        _ => null,
+    };
+
     private static void GetSkillDmg(this IAttacker attacker, SkillEntry? skillEntry, out int skillMinimumDamage, out int skillMaximumDamage, out DamageType damageType, out bool isSummonerSkill)
     {
         skillMinimumDamage = 0;
@@ -882,6 +900,20 @@ public static class AttackableExtensions
             // For Summoner, the skill bonus gets added last
             skillMinimumDamage += (int)attackerStats[Stats.SkillDamageBonus];
             skillMaximumDamage += (int)attackerStats[Stats.SkillDamageBonus];
+        }
+
+        // The "Mastery" options of the ability cards add to the master skills of their damage type.
+        if (skill.MasterDefinition is not null && MasteryBonus(damageType) is { } masteryBonus)
+        {
+            skillMinimumDamage += (int)attackerStats[masteryBonus];
+            skillMaximumDamage += (int)attackerStats[masteryBonus];
+        }
+
+        // The "Skillpower n-Slot" options add to the card skill of that skill slot.
+        if (attacker is Player cardPlayer && AbilityCore.AbilityCoreService.GetSkillBonus(cardPlayer, skill).Flat is var skillpower and > 0)
+        {
+            skillMinimumDamage += (int)skillpower;
+            skillMaximumDamage += (int)skillpower;
         }
 
         if (skillEntry.EnsureSkillAttributes(attackerStats) is { } skillAttributes)
@@ -1151,9 +1183,17 @@ public static class AttackableExtensions
     /// </summary>
     /// <param name="defender">The defending player.</param>
     /// <param name="damage">The damage caused.</param>
+    /// <param name="attacker">The attacker; the hit shock of a monster's hit can be resisted.</param>
     /// <returns><c>true</c> if the hit should shock the defender; <c>false</c> otherwise.</returns>
-    private static bool GetsHitShocked(this IAttackable defender, float damage)
+    private static bool GetsHitShocked(this IAttackable defender, float damage, IAttacker attacker)
     {
+        if (attacker is not Player
+            && defender.Attributes[Stats.MonsterHitShockResistanceChance] is > 0 and var resistance
+            && Rand.NextRandomBool(resistance))
+        {
+            return false;
+        }
+
         if (defender is not Player
             || defender.Attributes[Stats.IsUniriaEquipped] > 0
             || defender.Attributes[Stats.IsDinorantEquipped] > 0

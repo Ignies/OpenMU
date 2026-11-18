@@ -20,6 +20,7 @@ public static class GameMasterItemOptions
         ["element"] = Season21ItemOptionTypes.Element,
         ["grade"] = Season21ItemOptionTypes.WingGrade,
         ["earring"] = Season21ItemOptionTypes.EarringOption,
+        ["card"] = Season21ItemOptionTypes.AbilityCardOption,
     };
 
     /// <summary>

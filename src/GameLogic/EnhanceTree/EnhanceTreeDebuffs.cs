@@ -240,9 +240,11 @@ public static class EnhanceTreeDebuffs
         {
             case EnhanceTreeDebuffKind.Poison:
                 var tick = basic.Value + Rand.NextInt(0, (int)basic.ValueRange + 1) + value;
-                return new EnhanceTreeDebuffEffect(definition, duration, debuff, attacker, target, (tick * multiplier) + improvedValue, 0);
+                var poisonBonus = attacker.Attributes[debuff.Improved ? Stats.ToxicDamageIncrease : Stats.PoisonDebuffDamageIncrease];
+                return new EnhanceTreeDebuffEffect(definition, duration, debuff, attacker, target, (tick * multiplier) + improvedValue + poisonBonus, 0);
             case EnhanceTreeDebuffKind.Bleed:
-                return new EnhanceTreeDebuffEffect(definition, duration, debuff, attacker, target, (value * multiplier) + improvedValue, basic.Value * multiplier);
+                var bleedBonus = attacker.Attributes[debuff.Improved ? Stats.SevereBleedingDamageIncrease : Stats.BleedingDamageIncrease];
+                return new EnhanceTreeDebuffEffect(definition, duration, debuff, attacker, target, (value * multiplier) + improvedValue + bleedBonus, basic.Value * multiplier);
             default:
                 var defense = new MagicEffect.ElementWithTarget(new ConstantElement(-(debuff.Value + value)), Stats.DefenseBase);
                 var slow = new MagicEffect.ElementWithTarget(SlowBy(sheet.Configuration.ChillMovementSlow + improvedValue), Stats.MovementSpeedFactor);

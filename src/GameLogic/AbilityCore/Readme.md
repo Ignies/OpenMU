@@ -34,9 +34,40 @@ by the card level = the item level). `AbilityCoreService.RefreshAsync` applies t
 cards (an option takes effect for the classes of `AbilityCardOption.BaseClasses`), and gives the fifth evolution skill of a
 skill card as an item skill (`ISkillList.AddItemSkillAsync`), taken away with the card. It runs on every map join and
 after every successful action. The extra defense adds to the defense, the pentagram defense and attack to the elemental
-defense and damage (version 3 of the update). Options without an OpenMU attribute (nuke, bolt and wide skill options, the
-fifth wings, mastery, bleeding, poison, triple damage, skill slots, AG recovery, shock defense, splash, and the static
-skill card options) are data without effect.
+defense and damage (version 3 of the update). Version 4 adds the rest that the Season 21 data defines:
+
+- Mastery (25-27) adds to the master skills of its damage type (`AttackableExtensions.GetSkillDmg`).
+- Bleeding, severe bleeding, poison and toxic (37-40) add to the damage of the Enhance Tree debuffs 275/279/273/277.
+- Double damage increase (35) adds to a double hit; triple damage (60) rolls before the double damage chance.
+- The Lv.5 wing options (2, 36, 83, 84) count only while a fifth wing (catalog `KindA` 106) is worn: the wing carries
+  `IsFifthWingEquipped`, and each class adds the bonuses through a conditional relationship.
+- Skillpower 1/2/3-slot (51, 56, 61) add to the damage of the card skill in that skill card slot; the strengthener and
+  ability skill rate (63) multiplies the damage of a card skill or a master skill (`AbilityCoreService.GetSkillBonus`).
+- AG recovery (62) is stored in hundredths, like the client shows it.
+- Shock defense (64, "Not applicable to PvP") is the chance to resist the hit shock (the flinch) of a monster's hit
+  (`MonsterHitShockResistanceChance`). The data value is read in ten thousandths (0.4 % at level 0 to 9.1 % at level 5).
+  This is a pick: no source states the unit, read as a percentage the higher levels would pass 100 %, and ten
+  thousandths gives a chance in the range of the other rate options. A later source is a one-row change
+  (`Season21AbilityCoreInitializer.TenThousandthOptions`).
+
+The fixed option of a skill card (`AbilityCardDefinition.StaticOption`) changes its skill while the card takes effect, with
+the Enhance Tree on or off (`EnhanceTreeEffects.GetSkillSpeed`, `GetReach`, `GetSplash` for a player):
+
+- 1 ATK Speed Increase: the attack speed of the skill rises by the value of the card level, like the tree's Speed node
+  (Webzen guide 112: "Attack Speed of main skill will increase as much as the number").
+- 2 AOE Increase: a tile more of the skill's area (Webzen guides 329 and 348: "Skill Attack range increases by 1 tile").
+- 3 Add Splash Damage: one splash hit on each monster within a tile of the target, or one more with the tree's splash
+  (Webzen guide 348: the card applies "Splash Damage +1"; guide 112: the splash range is 1 tile).
+
+No source gives the meaning of the AOE and splash values by card level (32-486 and 46-338), so only their presence
+counts, as the Webzen texts describe a fixed tile and a fixed hit. This is a pick; a later source is a change in
+`EnhanceTreeEffects.AddCardArea` and `GetSplash`. The options 0 (hits) and 4 (enemy defense) are on no card.
+
+A game master gives a card with a chosen option by `/item 20 <number> <level> opts=card:<option>`.
+
+18 of the 82 options stay data without effect: the nuke, bolt and wide options need the fifth class "New Power" skills
+(2086-2088), which the server doesn't have; they are their own track (`handoff/s21/new_power_5th_class.md` in the client
+repository).
 
 ## Actions (`AbilityCoreService.RequestAsync`)
 

@@ -63,7 +63,7 @@ public class AbilityCardDefinition
 
     /// <summary>
     /// Gets or sets the static option of a skill card, which changes its skill (0 hits, 1 attack speed, 2 range,
-    /// 3 splash damage, 4 enemy defense); data only, no skill reads it yet.
+    /// 3 splash damage, 4 enemy defense); 1-3 take effect (<see cref="AbilityCoreService.GetSkillCardOption"/>).
     /// </summary>
     [Display(ResourceType = typeof(PlugInResources), Name = nameof(PlugInResources.AbilityCardDefinition_StaticOption_Name))]
     public byte StaticOption { get; set; }

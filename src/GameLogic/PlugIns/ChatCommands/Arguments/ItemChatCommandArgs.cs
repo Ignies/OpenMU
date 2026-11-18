@@ -92,7 +92,8 @@ public class ItemChatCommandArgs : ArgumentsBase
 
     /// <summary>
     /// Gets or sets more options of the item: <c>kind:number[:level]</c> separated by commas; the kinds are
-    /// <c>mastery</c>, <c>bonus</c> (mastery bonus), <c>element</c>, <c>grade</c> (wing grade) and <c>earring</c>.
+    /// <c>mastery</c>, <c>bonus</c> (mastery bonus), <c>element</c>, <c>grade</c> (wing grade), <c>earring</c> and
+    /// <c>card</c> (ability card option).
     /// </summary>
     [Argument("opts", false)]
     public string? Options { get; set; }

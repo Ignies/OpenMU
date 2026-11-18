@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.EnhanceTree;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using MUnique.OpenMU.GameLogic.AbilityCore;
 using MUnique.OpenMU.GameLogic.Classes;
 using org.mariuszgromada.math.mxparser;
 
@@ -185,15 +186,22 @@ public static class EnhanceTreeEffects
         => (int)GetValue(configuration, baseClass, skill, levelOf, LevelOfLookup, DamageCountNodes);
 
     /// <summary>
-    /// Gets the splash of a skill by the learned nodes of a player, when the tree is on.
+    /// Gets the splash of a skill by the learned nodes of a player, when the tree is on, and the "Add Splash Damage" of
+    /// its skill card (one hit more).
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="skill">The used skill.</param>
-    /// <returns>The hits on each monster around the target and the radius in tiles; no hits without the splash node.</returns>
+    /// <returns>The hits on each monster around the target and the radius in tiles; no hits without a splash.</returns>
     public static (int Hits, int Radius) GetSplash(Player player, Skill skill)
-        => GetValue(player, skill, SplashDamageNodes) <= 0
-            ? default
-            : ((int)GetValue(player, skill, SplashCountNodes), BaseSplashRadius + (int)GetValue(player, skill, SplashRadiusNodes));
+    {
+        var cardHits = AbilityCoreService.GetSkillCardOption(player, skill, AbilityCoreService.SplashOption) > 0 ? 1 : 0;
+        if (GetValue(player, skill, SplashDamageNodes) <= 0)
+        {
+            return cardHits > 0 ? (cardHits, BaseSplashRadius) : default;
+        }
+
+        return ((int)GetValue(player, skill, SplashCountNodes) + cardHits, BaseSplashRadius + (int)GetValue(player, skill, SplashRadiusNodes));
+    }
 
     /// <summary>
     /// Gets the splash of a skill by the learned nodes.
@@ -220,8 +228,8 @@ public static class EnhanceTreeEffects
            && player.SelectedCharacter?.CharacterClass is { } characterClass
            && ClassCodes.GetBaseClass(characterClass.Number) is { } baseClass
            && EnhanceTreeFeaturePlugIn.GetConfiguration(player.GameContext) is { } configuration
-            ? GetReach(configuration, baseClass, (short)skill.Number, skills, LevelInList)
-            : default;
+            ? AddCardArea(player, skill, GetReach(configuration, baseClass, (short)skill.Number, skills, LevelInList))
+            : AddCardArea(player, skill, default);
 
     /// <summary>
     /// Gets what the learned nodes add to the shape of a skill.
@@ -257,13 +265,14 @@ public static class EnhanceTreeEffects
         => GetValue(configuration, baseClass, skill, levelOf, LevelOfLookup, WeaponNodes(damageType));
 
     /// <summary>
-    /// Gets the attack speed which the learned speed nodes of a player add to a skill, when the tree is on.
+    /// Gets the attack speed which the learned speed nodes of a player add to a skill, when the tree is on, and the
+    /// "ATK Speed Increase" of its skill card.
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="skill">The used skill.</param>
     /// <returns>The added attack speed.</returns>
     public static float GetSkillSpeed(Player player, Skill skill)
-        => GetValue(player, skill, SpeedNodes);
+        => GetValue(player, skill, SpeedNodes) + AbilityCoreService.GetSkillCardOption(player, skill, AbilityCoreService.AttackSpeedOption);
 
     /// <summary>
     /// Gets the attack speed which the learned speed nodes add to a skill.
@@ -457,6 +466,14 @@ public static class EnhanceTreeEffects
 
         return total;
     }
+
+    /// <summary>
+    /// Adds the "AOE Increase" of a skill card: a tile more of its skill's area.
+    /// </summary>
+    private static EnhanceTreeReach AddCardArea(Player player, Skill skill, EnhanceTreeReach reach)
+        => AbilityCoreService.GetSkillCardOption(player, skill, AbilityCoreService.AreaOption) > 0
+            ? reach with { Radius = reach.Radius + 1 }
+            : reach;
 
     private static float GetValue(Player player, Skill skill, short[] nodes)
         => player.SkillList is { } skills
