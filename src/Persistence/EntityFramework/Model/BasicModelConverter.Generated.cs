@@ -839,6 +839,8 @@ internal sealed class BasicModelConverter
         target.IsStoreOpened = source.IsStoreOpened;
         target.Ruud = source.Ruud;
         target.ClaimedLevelRewards = source.ClaimedLevelRewards;
+        target.StarSmithLevel = source.StarSmithLevel;
+        target.StarSmithExperience = source.StarSmithExperience;
         if (source.Attributes is { } attributesItems)
         {
             foreach (var item in attributesItems)
@@ -1969,6 +1971,8 @@ internal sealed class BasicModelConverter
         target.Rarity = source.Rarity;
         target.Look = source.Look;
         target.Version = source.Version;
+        target.Locked = source.Locked;
+        target.LockedAt = source.LockedAt;
         target.CreatedBy = source.CreatedBy;
         target.UpdatedAt = source.UpdatedAt;
         return target;

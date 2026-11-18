@@ -7,6 +7,7 @@ namespace MUnique.OpenMU.GameLogic.ItemCustomization;
 using System.Buffers.Binary;
 using System.Globalization;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 /// <summary>
 /// The stored recolour look (the site's item look JSON, its <c>item_tint_look</c>) as the 31 wire bytes of an item
@@ -51,6 +52,70 @@ public static class ItemLookBytes
             return false;
         }
     }
+
+    /// <summary>
+    /// Reads the 31 look bytes back into the look JSON (the reverse of <see cref="TryWrite"/>): a smith's recolour
+    /// arrives as bytes (EE 93) and is stored as JSON.
+    /// </summary>
+    /// <param name="look">The look bytes.</param>
+    /// <returns>The look JSON, or null for no look (all zero, or a mode or effect past the known ones).</returns>
+    public static string? TryRead(ReadOnlySpan<byte> look)
+    {
+        if (look.Length < Length || look[0] >= Modes.Length || look[14] >= Effects.Length)
+        {
+            return null;
+        }
+
+        var mode = look[0];
+        var fx = look[14];
+        var hasGlow = (look[1] & 2) != 0;
+        if ((mode == 0 || look[5] == 0) && !hasGlow && fx == 0)
+        {
+            return null;
+        }
+
+        var json = new JsonObject { ["mode"] = Modes[mode] };
+        if (mode != 0)
+        {
+            json["color"] = Hex(look[2..]);
+        }
+
+        json["strength"] = look[5];
+        json["hue"] = BinaryPrimitives.ReadUInt16BigEndian(look[6..]);
+        if ((look[1] & 1) != 0)
+        {
+            json["keep_from"] = BinaryPrimitives.ReadUInt16BigEndian(look[8..]);
+            json["keep_range"] = look[10];
+        }
+
+        if (hasGlow)
+        {
+            json["glow"] = Hex(look[11..]);
+        }
+
+        if (fx > 0)
+        {
+            json["fx"] = Effects[fx];
+            var colors = new JsonArray();
+            for (var i = 0; i < Math.Min((int)look[15], 3); i++)
+            {
+                colors.Add(Hex(look[(16 + (i * 3))..]));
+            }
+
+            json["fx_colors"] = colors;
+            var tune = new JsonObject();
+            for (var i = 0; i < TuneKeys.Length; i++)
+            {
+                tune[TuneKeys[i]] = look[25 + i];
+            }
+
+            json["fx_tune"] = tune;
+        }
+
+        return json.ToJsonString();
+    }
+
+    private static string Hex(ReadOnlySpan<byte> rgb) => $"#{rgb[0]:x2}{rgb[1]:x2}{rgb[2]:x2}";
 
     private static bool Write(JsonElement look, Span<byte> target)
     {

@@ -95,6 +95,7 @@ public static class ForkInfo
         "muquest",
         "gens",
         "item_custom",
+        "star_smithing",
     ];
 
     /// <summary>

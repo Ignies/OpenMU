@@ -236,6 +236,16 @@ public class Character
     public long ClaimedLevelRewards { get; set; }
 
     /// <summary>
+    /// Gets or sets the Star Smith level (1 to 100; 0 is read as 1), GameLogic/StarSmithing/Readme.md.
+    /// </summary>
+    public short StarSmithLevel { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Star Smith experience into the current level.
+    /// </summary>
+    public long StarSmithExperience { get; set; }
+
+    /// <summary>
     /// Gets or sets the stat attributes.
     /// </summary>
     /// <remarks>

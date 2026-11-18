@@ -1140,6 +1140,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<int>("Ruud")
                         .HasColumnType("integer");
 
+                    b.Property<long>("StarSmithExperience")
+                        .HasColumnType("bigint");
+
+                    b.Property<short>("StarSmithLevel")
+                        .HasColumnType("smallint");
+
                     b.Property<int>("State")
                         .HasColumnType("integer");
 
@@ -2578,6 +2584,12 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
 
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
+
+                    b.Property<bool>("Locked")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LockedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Look")
                         .HasColumnType("text");
