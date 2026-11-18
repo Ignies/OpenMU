@@ -10,8 +10,8 @@ using Moq;
 using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
 
 /// <summary>
-/// Tests which effects of <see cref="MagicEffectsList"/> reach the player's view: the numbers 200 to 255 are OpenMU's own
-/// invisible effects; the numbers past a byte are effects of later seasons (S21Emu <c>Effect.txt</c>), which the
+/// Tests which effects of <see cref="MagicEffectsList"/> reach the player's view: the numbers 200 to 211 are OpenMU's own
+/// invisible effects; the numbers past them are effects of later seasons (S21Emu <c>Effect.txt</c>), which the
 /// client shows.
 /// </summary>
 [TestFixture]
@@ -34,7 +34,28 @@ public class MagicEffectsListViewTest
     }
 
     /// <summary>
-    /// OpenMU's own invisible effects (200 to 255) stay hidden.
+    /// A later season's effect inside a byte but past OpenMU's own invisible ones, such as the Grow Lancer's Circle Shield
+    /// (216) and Obsidian (217) or Archangel Will (246), is shown and its end too.
+    /// </summary>
+    /// <param name="number">The effect number.</param>
+    [TestCase((short)214)]
+    [TestCase((short)216)]
+    [TestCase((short)217)]
+    [TestCase((short)246)]
+    public async ValueTask ALaterSeasonsEffectInsideAByteReachesTheViewAsync(short number)
+    {
+        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
+        var effect = CreateEffect(number);
+
+        await player.MagicEffectList.AddEffectAsync(effect).ConfigureAwait(false);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IActivateMagicEffectPlugIn>()!).Verify(v => v.ActivateMagicEffectAsync(effect, player), Times.Once);
+
+        await effect.DisposeAsync().ConfigureAwait(false);
+        Mock.Get(player.ViewPlugIns.GetPlugIn<IDeactivateMagicEffectPlugIn>()!).Verify(v => v.DeactivateMagicEffectAsync(effect, player), Times.Once);
+    }
+
+    /// <summary>
+    /// OpenMU's own invisible effects (200 to 211) stay hidden.
     /// </summary>
     [Test]
     public async ValueTask AnInvisibleEffectDoesNotReachTheViewAsync()
