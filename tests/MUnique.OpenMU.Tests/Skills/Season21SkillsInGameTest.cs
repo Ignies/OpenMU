@@ -414,6 +414,7 @@ public class Season21SkillsInGameTest
         player.CurrentMap ??= await this._gameContext.GetMapAsync(0).ConfigureAwait(false);
         player.Position = new Point(180, 90);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        player.IsAlive = true; // what the map entry sets (PlayerMapTransitions); without it a cast on the player meets an inactive target
         Assert.That(player.IsAtSafezone(), Is.False, $"{player.SelectedCharacter!.CharacterClass!.Name} {player.CurrentMap?.Definition.Number} {player.Position}");
     }
 
