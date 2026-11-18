@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Tests.Babylon;
 
 using System.Buffers.Binary;
+using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.AbilityCore;
 using MUnique.OpenMU.GameLogic.Views;
 using MUnique.OpenMU.GameLogic.Views.AbilityCore;
@@ -12,6 +13,7 @@ using MUnique.OpenMU.GameServer;
 using MUnique.OpenMU.GameServer.RemoteView;
 using MUnique.OpenMU.GameServer.RemoteView.AbilityCore;
 using MUnique.OpenMU.Network.Packets.Babylon;
+using MUnique.OpenMU.Persistence.InMemory;
 using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
 
 /// <summary>
@@ -78,6 +80,41 @@ public class AbilityCorePacketsTest
         var packet = new AbilityCoreResponse(data);
         Assert.That((packet.Header.SubCode, packet.Result, packet.Action, packet.CoreSlot, packet.InventorySlot), Is.EqualTo(((byte)0x45, (byte)13, (byte)2, (byte)4, (byte)20)));
         Assert.That(packet.ItemData.ToArray(), Is.All.EqualTo(0xFF));
+    }
+
+    /// <summary>
+    /// W32 carries the option of an ability card in byte 22 of the kind block (the S21Emu option index, 0xFF for a
+    /// card without one), 23-27 zero, both ways; other items keep the byte.
+    /// </summary>
+    [Test]
+    public void W32CarriesTheCardOption()
+    {
+        var w32 = new ItemSerializerW32();
+        var options = new BasicModel.ItemOptionDefinition { Name = "Ability Card Options", MaximumOptionsPerItem = 1 };
+        var mastery = new BasicModel.IncreasableItemOption { OptionType = Season21ItemOptionTypes.AbilityCardOption, Number = 26 };
+        options.PossibleOptions.Add(new BasicModel.IncreasableItemOption { OptionType = Season21ItemOptionTypes.AbilityCardOption, Number = 39 });
+        options.PossibleOptions.Add(mastery);
+        var card = CreateCard();
+        card.Definition!.PossibleItemOptions.Add(options);
+        card.ItemOptions.Add(new BasicModel.ItemOptionLink { ItemOption = mastery });
+        var configuration = new BasicModel.GameConfiguration();
+        configuration.Items.Add(card.Definition);
+        var context = new InMemoryPersistenceContextProvider().CreateNewContext();
+
+        var data = new byte[ItemSerializerW32.Length];
+        w32.SerializeItem(data, card);
+        Assert.That(data[22..28], Is.EqualTo(new byte[] { 26, 0, 0, 0, 0, 0 }));
+        Assert.That(w32.DeserializeItem(data, configuration, context).ItemOptions.Select(o => o.ItemOption), Is.EqualTo(new[] { mastery }));
+
+        card.ItemOptions.Clear();
+        Array.Clear(data);
+        w32.SerializeItem(data, card);
+        Assert.That(data[22], Is.EqualTo(0xFF));
+        Assert.That(w32.DeserializeItem(data, configuration, context).ItemOptions, Is.Empty);
+
+        Array.Clear(data);
+        w32.SerializeItem(data, new BasicModel.Item { Definition = new BasicModel.ItemDefinition { Group = 0, Number = 1, Width = 1, Height = 3 } });
+        Assert.That(data[22], Is.Zero);
     }
 
     private static (RemotePlayer Player, System.IO.MemoryStream Output) CreateBabylonPlayer()

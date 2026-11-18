@@ -135,6 +135,7 @@ public class ItemSerializerW32 : IItemSerializer
         BinaryPrimitives.WriteUInt32LittleEndian(target[ExpiryIndex..], item.GetExpiryUnixSeconds());
         SetElementalData(target, item);
         SetMuunData(target[KindBlockIndex..], item);
+        SetAbilityCardOption(target[KindBlockIndex..], item);
         target[FlagsIndex] = GetFlags(target, item);
         return Length;
     }
@@ -205,6 +206,7 @@ public class ItemSerializerW32 : IItemSerializer
         ReadMasteryOptions(BinaryPrimitives.ReadUInt16LittleEndian(source[ExcellentIndex..]), source[MasteryBonusIndex], persistenceContext, item);
         ReadWingGrades(source[KindBlockIndex..], persistenceContext, item);
         ReadMuunData(source[KindBlockIndex..], persistenceContext, item);
+        ReadAbilityCardOption(source[KindBlockIndex], persistenceContext, item);
 
         if (definition.MaximumSockets == 0)
         {
@@ -264,6 +266,25 @@ public class ItemSerializerW32 : IItemSerializer
         {
             block[entry * 2] = entry < grades.Count ? (byte)grades[entry].ItemOption!.Number : NoWingGrade;
             block[(entry * 2) + 1] = entry < grades.Count ? (byte)Math.Max(grades[entry].Level - 1, 0) : (byte)0;
+        }
+    }
+
+    private static void SetAbilityCardOption(Span<byte> block, Item item)
+    {
+        if (HasPossibleOption(item.Definition!, Season21ItemOptionTypes.AbilityCardOption))
+        {
+            block[0] = item.ItemOptions.FirstOrDefault(o => o.ItemOption?.OptionType == Season21ItemOptionTypes.AbilityCardOption)?.ItemOption is { } option
+                ? (byte)option.Number
+                : NoOption;
+        }
+    }
+
+    private static void ReadAbilityCardOption(byte number, IContext persistenceContext, Item item)
+    {
+        if (number != NoOption
+            && item.Definition!.PossibleItemOptions.SelectMany(o => o.PossibleOptions).FirstOrDefault(o => o.OptionType == Season21ItemOptionTypes.AbilityCardOption && o.Number == number) is { } option)
+        {
+            AddLink(option, 0, 0, persistenceContext, item);
         }
     }
 
