@@ -403,9 +403,18 @@ the elemental and legendary columns and the buy prices.
   seconds on the caster, `AttackDamageIncrease` x1.1 and `DefenseDecrement` x0.95 (Webzen's guide: combat power +10 %,
   defense -5 %; WrathConstA 50 and ConstB 30 name no stat). Burst (700/701, value 5) stays pending: no source says what
   its 5 raises.
-* 78 more Season 21 skills are still an `Other` with an effect that has no duration (the Dark Knight's Sword's Fury, the
-  Magic Gladiator's charges, ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is
-  fixed as the Rune Wizard's, the Slayer's and the Grow Lancer's were.
+* The Dark Knight's Greater Life Mastered (363), Sword's Fury (1500, 801, 802), Firm Belief (1502, 810) and Strong
+  Blessing (1503, 803-806, 1204) get theirs from "Fix the Dark Knight buffs" (`Season21DarkKnightBuffs`), after S21Emu's
+  Lua (`SkillGreaterLife`, `SkillSwordFury`, `SkillStrongConviction`, `SkillSolidProtection`) and Skill.dat: Greater Life
+  Mastered is Greater Fortitude's tier (Effect.txt group 8) and copies effect 8; Sword's Fury 60 seconds on the caster,
+  attack skills reach 1 tile further (`AttackSkillRangeBonus`, read by `EnhanceTreeEffects.GetReach`; the Blow skills'
+  damage range waits for a list of which skills are Blow type); Firm Belief 120 seconds on the caster, `DefenseBase` + 35
+  and `ElementDefenseIncrease` + (30 + dexterity / 60) %; Strong Blessing 300 seconds on the party within 10,
+  `BaseDamageBonus` + 250 (taking a share of the party's damage and turning their health into the caster's have no
+  OpenMU mechanism yet).
+* 66 more Season 21 skills are still an `Other` with an effect that has no duration (the Magic Gladiator's charges,
+  ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is fixed as the Rune Wizard's,
+  the Slayer's, the Grow Lancer's and the Dark Knight's were.
 
 Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
 damage reduction table, the Ability Enhancement Core (track T, later).
