@@ -1545,6 +1545,22 @@ public class Stats
     public static AttributeDefinition MonsterHitShockResistanceChance { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F64"), "Monster Hit Shock Resistance Chance", "The chance between 0 and 1 to resist the hit shock of a monster's hit.");
 
     /// <summary>
+    /// Gets the attack speed the skill card in the first skill slot of the ability core adds to its skill ("ATK Speed
+    /// Increase", the card's fixed option).
+    /// </summary>
+    public static AttributeDefinition SkillCardSlotOneAttackSpeed { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F65"), "Skill Card Slot 1 Attack Speed", "The attack speed which the skill card of the first skill slot of the ability core adds to its skill.");
+
+    /// <summary>
+    /// Gets the attack speed the skill card in the second skill slot of the ability core adds to its skill.
+    /// </summary>
+    public static AttributeDefinition SkillCardSlotTwoAttackSpeed { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F66"), "Skill Card Slot 2 Attack Speed", "The attack speed which the skill card of the second skill slot of the ability core adds to its skill.");
+
+    /// <summary>
+    /// Gets the attack speed the skill card in the third skill slot of the ability core adds to its skill.
+    /// </summary>
+    public static AttributeDefinition SkillCardSlotThreeAttackSpeed { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F67"), "Skill Card Slot 3 Attack Speed", "The attack speed which the skill card of the third skill slot of the ability core adds to its skill.");
+
+    /// <summary>
     /// Gets the chance (0-1) that a hit deals triple damage ("Triple DMG Rate" of an ability card).
     /// </summary>
     public static AttributeDefinition TripleDamageChance { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F5E"), "Triple Damage Chance", "The chance that a hit deals triple damage.");
