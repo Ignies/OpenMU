@@ -3384,6 +3384,18 @@
   <data name="BlessingOfEuniceConsumeHandlerPlugIn_Description" xml:space="preserve">
     <value>Applies the Blessing of Eunice (more experience from monsters for a while) to a character of the fifth evolution.</value>
   </data>
+  <data name="StarSmithingFeaturePlugIn_Name" xml:space="preserve">
+    <value>Star Smithing</value>
+  </data>
+  <data name="StarSmithingFeaturePlugIn_Description" xml:space="preserve">
+    <value>With the Star Smith's Hammer in a hand, players recolour, name, write the lore of and lock their items (the start of Star Smithing).</value>
+  </data>
+  <data name="TextModerationPlugIn_Name" xml:space="preserve">
+    <value>Text moderation</value>
+  </data>
+  <data name="TextModerationPlugIn_Description" xml:space="preserve">
+    <value>Keeps the word list that item names and lore are checked against (letters that look alike are folded first). The website edits the list.</value>
+  </data>
   <data name="ItemCustomizationFeaturePlugIn_Name" xml:space="preserve">
     <value>Item looks and names</value>
   </data>

@@ -887,6 +887,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddGensRewardItemsUpdatePlugIn_Description text.</summary>
         public static string AddGensRewardItemsUpdatePlugIn_Description => ResourceManager.GetString("AddGensRewardItemsUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddStarSmithHammerUpdatePlugIn_Name text.</summary>
+        public static string AddStarSmithHammerUpdatePlugIn_Name => ResourceManager.GetString("AddStarSmithHammerUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddStarSmithHammerUpdatePlugIn_Description text.</summary>
+        public static string AddStarSmithHammerUpdatePlugIn_Description => ResourceManager.GetString("AddStarSmithHammerUpdatePlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized FixVulcanusWarpIndexUpdatePlugIn_Name text.</summary>
         public static string FixVulcanusWarpIndexUpdatePlugIn_Name => ResourceManager.GetString("FixVulcanusWarpIndexUpdatePlugIn_Name", resourceCulture)!;
 
@@ -1746,6 +1752,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("AddSeason21BagItemsUpdatePlugIn_Description", resourceCulture);
             }
         }
+        /// <summary>
+        ///   Looks up a localized string similar to Fix the Grow Lancer buffs (Season 21 data).
+        /// </summary>
+        public static string FixSeason21GrowLancerBuffsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("FixSeason21GrowLancerBuffsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to the Grow Lancer buffs fix description.
+        /// </summary>
+        public static string FixSeason21GrowLancerBuffsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("FixSeason21GrowLancerBuffsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Fix the Slayer buffs and the Rage Fighter Blood Howling (Season 21 data).
         /// </summary>

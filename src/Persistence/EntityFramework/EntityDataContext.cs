@@ -96,6 +96,11 @@ public class EntityDataContext : ExtendedTypeContext
     internal DbSet<ItemCustomization> ItemCustomizations => this.Set<ItemCustomization>();
 
     /// <summary>
+    /// Gets the reports of item names and lore.
+    /// </summary>
+    internal DbSet<ItemCustomizationReport> ItemCustomizationReports => this.Set<ItemCustomizationReport>();
+
+    /// <summary>
     /// Gets the counts of the recent kills between gens members.
     /// </summary>
     internal DbSet<GensAbuse> GensAbuses => this.Set<GensAbuse>();
@@ -156,6 +161,7 @@ public class EntityDataContext : ExtendedTypeContext
         modelBuilder.Entity<GensMember>().Apply();
         modelBuilder.Entity<GensAbuse>().Apply();
         modelBuilder.Entity<ItemCustomization>().Apply();
+        modelBuilder.Entity<ItemCustomizationReport>().Apply();
         modelBuilder.Entity<ItemCrafting>().Apply();
         modelBuilder.Entity<ItemDefinition>().Apply();
         modelBuilder.Entity<ItemLevelBonusTable>().Apply();

@@ -106,6 +106,7 @@ internal sealed class BasicModelConverter
             ItemCraftingRequiredItem value => this.Convert(value),
             ItemCraftingResultItem value => this.Convert(value),
             ItemCustomization value => this.Convert(value),
+            ItemCustomizationReport value => this.Convert(value),
             ItemDefinition value => this.Convert(value),
             ItemLevelBonusTable value => this.Convert(value),
             ItemLevelPrice value => this.Convert(value),
@@ -838,6 +839,8 @@ internal sealed class BasicModelConverter
         target.IsStoreOpened = source.IsStoreOpened;
         target.Ruud = source.Ruud;
         target.ClaimedLevelRewards = source.ClaimedLevelRewards;
+        target.StarSmithLevel = source.StarSmithLevel;
+        target.StarSmithExperience = source.StarSmithExperience;
         if (source.Attributes is { } attributesItems)
         {
             foreach (var item in attributesItems)
@@ -1968,8 +1971,29 @@ internal sealed class BasicModelConverter
         target.Rarity = source.Rarity;
         target.Look = source.Look;
         target.Version = source.Version;
+        target.Locked = source.Locked;
+        target.LockedAt = source.LockedAt;
         target.CreatedBy = source.CreatedBy;
         target.UpdatedAt = source.UpdatedAt;
+        return target;
+    }
+
+    private BasicModel.ItemCustomizationReport Convert(ItemCustomizationReport source)
+    {
+        if (this._converted.TryGetValue(source, out var converted))
+        {
+            return (BasicModel.ItemCustomizationReport)converted;
+        }
+
+        var target = new BasicModel.ItemCustomizationReport();
+        this._converted.Add(source, target);
+        target.Id = source.Id;
+        target.ItemId = source.ItemId;
+        target.Reporter = source.Reporter;
+        target.Version = source.Version;
+        target.Name = source.Name;
+        target.Lore = source.Lore;
+        target.CreatedAt = source.CreatedAt;
         return target;
     }
 

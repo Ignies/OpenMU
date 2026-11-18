@@ -1478,6 +1478,103 @@ public class Stats
     public static AttributeDefinition FourthWingCurseDamageBonus { get; } = new(new Guid("93F7B2D5-4E1A-4C68-B3D9-7A5E2C8F1B46"), "Fourth Wing Curse Damage Bonus", "The curse base damage which is added while a fourth wing is worn.");
 
     /// <summary>
+    /// Gets the damage a master skill of the physical type gets on top ("Mastery DMG Increase" of an ability card).
+    /// </summary>
+    public static AttributeDefinition MasterySkillDamageBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F51"), "Mastery Skill Damage Bonus", "The damage which is added to a physical master skill.");
+
+    /// <summary>
+    /// Gets the damage a master skill of the wizardry type gets on top ("Mastery Wizardry Increase" of an ability card).
+    /// </summary>
+    public static AttributeDefinition MasterySkillWizardryBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F52"), "Mastery Skill Wizardry Bonus", "The damage which is added to a wizardry master skill.");
+
+    /// <summary>
+    /// Gets the damage a master skill of the curse type gets on top ("Mastery Curse Increase" of an ability card).
+    /// </summary>
+    public static AttributeDefinition MasterySkillCurseBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F53"), "Mastery Skill Curse Bonus", "The damage which is added to a curse master skill.");
+
+    /// <summary>
+    /// Gets the damage each bleed of the attacker's Bleeding (275) gets on top ("Bleeding DMG Increase" of an ability card).
+    /// </summary>
+    public static AttributeDefinition BleedingDamageIncrease { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F54"), "Bleeding Damage Increase", "The damage which is added to each bleed of the attacker's Bleeding.");
+
+    /// <summary>
+    /// Gets the damage each bleed of the attacker's Bleeding Severe (279) gets on top ("Severe Bleeding DMG Increase").
+    /// </summary>
+    public static AttributeDefinition SevereBleedingDamageIncrease { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F55"), "Severe Bleeding Damage Increase", "The damage which is added to each bleed of the attacker's Bleeding Severe.");
+
+    /// <summary>
+    /// Gets the damage each tick of the attacker's Poisoning (273) gets on top ("Poison DMG Increase" of an ability card).
+    /// </summary>
+    public static AttributeDefinition PoisonDebuffDamageIncrease { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F56"), "Poison Debuff Damage Increase", "The damage which is added to each tick of the attacker's Poisoning.");
+
+    /// <summary>
+    /// Gets the damage each tick of the attacker's Toxic (277) gets on top ("Toxic DMG Increase" of an ability card).
+    /// </summary>
+    public static AttributeDefinition ToxicDamageIncrease { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F57"), "Toxic Damage Increase", "The damage which is added to each tick of the attacker's Toxic.");
+
+    /// <summary>
+    /// Gets the damage a doubled hit gets on top ("Double DMG Increase" of an ability card).
+    /// </summary>
+    public static AttributeDefinition DoubleDamageIncrease { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F5D"), "Double Damage Increase", "The damage which is added to a hit that deals double (or triple) damage.");
+
+    /// <summary>
+    /// Gets the damage the ability card skill in the first skill slot of the core gets ("Skillpower 1-Slot Increase").
+    /// </summary>
+    public static AttributeDefinition SkillpowerSlotOneBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F60"), "Skillpower Slot 1 Bonus", "The damage which is added to the card skill of the first skill slot of the ability core.");
+
+    /// <summary>
+    /// Gets the damage the ability card skill in the second skill slot of the core gets ("Skillpower 2-Slot Increase").
+    /// </summary>
+    public static AttributeDefinition SkillpowerSlotTwoBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F61"), "Skillpower Slot 2 Bonus", "The damage which is added to the card skill of the second skill slot of the ability core.");
+
+    /// <summary>
+    /// Gets the damage the ability card skill in the third skill slot of the core gets ("Skillpower 3-Slot Increase").
+    /// </summary>
+    public static AttributeDefinition SkillpowerSlotThreeBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F62"), "Skillpower Slot 3 Bonus", "The damage which is added to the card skill of the third skill slot of the ability core.");
+
+    /// <summary>
+    /// Gets the damage rate (0-1) a master skill or an ability card skill gets on top ("(Strengthener Skill, Ability Skill)
+    /// Additional DMG Rate" of an ability card).
+    /// </summary>
+    public static AttributeDefinition StrengthenerAbilitySkillDamageRate { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F63"), "Strengthener and Ability Skill Damage Rate", "The damage rate which is added to master skills and ability card skills.");
+
+    /// <summary>
+    /// Gets the chance (0-1) to resist the hit shock of a monster's hit ("Shock Defense Success Rate (Not applicable to
+    /// PvP)" of an ability card).
+    /// </summary>
+    public static AttributeDefinition MonsterHitShockResistanceChance { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F64"), "Monster Hit Shock Resistance Chance", "The chance between 0 and 1 to resist the hit shock of a monster's hit.");
+
+    /// <summary>
+    /// Gets the chance (0-1) that a hit deals triple damage ("Triple DMG Rate" of an ability card).
+    /// </summary>
+    public static AttributeDefinition TripleDamageChance { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F5E"), "Triple Damage Chance", "The chance that a hit deals triple damage.");
+
+    /// <summary>
+    /// Gets the flag which is set while a fifth wing (S21Emu <c>KindA</c> 106, the "Lv.5" wings) is worn.
+    /// </summary>
+    public static AttributeDefinition IsFifthWingEquipped { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F58"), "Is Fifth Wing Equipped", "Set while a fifth wing is worn.");
+
+    /// <summary>
+    /// Gets the defense the "Lv.5 Wing DEF Increase" option of an ability card adds while a fifth wing is worn.
+    /// </summary>
+    public static AttributeDefinition FifthWingDefenseBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F59"), "Fifth Wing Defense Bonus", "The defense which is added while a fifth wing is worn.");
+
+    /// <summary>
+    /// Gets the physical damage the "Lv.5 Wings ATK Increase" option adds while a fifth wing is worn.
+    /// </summary>
+    public static AttributeDefinition FifthWingPhysicalDamageBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F5A"), "Fifth Wing Physical Damage Bonus", "The physical base damage which is added while a fifth wing is worn.");
+
+    /// <summary>
+    /// Gets the wizardry damage the "Lv.5 Wing Wizardry Increase" option adds while a fifth wing is worn.
+    /// </summary>
+    public static AttributeDefinition FifthWingWizardryDamageBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F5B"), "Fifth Wing Wizardry Damage Bonus", "The wizardry base damage which is added while a fifth wing is worn.");
+
+    /// <summary>
+    /// Gets the curse damage the "Lv.5 Wing Curse Increase" option adds while a fifth wing is worn.
+    /// </summary>
+    public static AttributeDefinition FifthWingCurseDamageBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F5C"), "Fifth Wing Curse Damage Bonus", "The curse base damage which is added while a fifth wing is worn.");
+
+    /// <summary>
     /// Gets the shield bypass chance attribute definition.
     /// </summary>
     public static AttributeDefinition ShieldBypassChance { get; } = new(new Guid("7F6F1804-271E-40DF-A970-0CE19064A54B"), "Shield Bypass Chance", string.Empty);

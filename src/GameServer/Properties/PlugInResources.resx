@@ -3179,6 +3179,42 @@
   <data name="ItemCustomizationRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the request of the Babylon client for the customised items of the places it shows.</value>
   </data>
+  <data name="ItemCustomizationReportRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Item customisation report handler (Babylon)</value>
+  </data>
+  <data name="ItemCustomizationReportRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles C1 EE 37: a player reports the name or lore of a customised item for the website's moderation.</value>
+  </data>
+  <data name="StarSmithingBabylonPlugIn_Name" xml:space="preserve">
+    <value>Star Smithing (Babylon)</value>
+  </data>
+  <data name="StarSmithingBabylonPlugIn_Description" xml:space="preserve">
+    <value>Sends the smith's state (C1 EE 91) and the answers to smithing actions (C1 EE 97) to the Babylon client.</value>
+  </data>
+  <data name="StarSmithRecolorRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Star Smithing recolour handler (Babylon)</value>
+  </data>
+  <data name="StarSmithRecolorRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles C1 EE 93: a smith recolours an item.</value>
+  </data>
+  <data name="StarSmithRenameRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Star Smithing name handler (Babylon)</value>
+  </data>
+  <data name="StarSmithRenameRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles C1 EE 94: a smith names an item.</value>
+  </data>
+  <data name="StarSmithLoreRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Star Smithing lore handler (Babylon)</value>
+  </data>
+  <data name="StarSmithLoreRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles C2 EE 95: a smith writes an item's lore.</value>
+  </data>
+  <data name="StarSmithLockRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Star Smithing lock handler (Babylon)</value>
+  </data>
+  <data name="StarSmithLockRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles C1 EE 96: a smith locks an item.</value>
+  </data>
   <data name="ItemCustomizationDetailRequestHandlerPlugIn_Name" xml:space="preserve">
     <value>Item customisation detail request handler</value>
   </data>

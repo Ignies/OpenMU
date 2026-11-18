@@ -5473,5 +5473,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("InvitationToSantaVillage", resourceCulture);
             }
         }
+
+        /// <summary>Gets StarSmithsHammer from the configuration name resources.</summary>
+        public static string StarSmithsHammer {
+            get {
+                return ResourceManager.GetString("StarSmithsHammer", resourceCulture);
+            }
+        }
     }
 }

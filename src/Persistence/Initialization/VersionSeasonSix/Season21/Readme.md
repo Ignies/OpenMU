@@ -393,10 +393,19 @@ the elemental and legendary columns and the buy prices.
   Demolish's skill power drain (effect 321) has no OpenMU mechanism.
 * The Rage Fighter's Blood Howling (565) and its Strengthener (567) are buffs on the caster in S21Emu (Skill.xml Type 0,
   Radio 0); the same update makes them so (`Season21RageFighterBuffs`), with BloodHowlingTimeConstA's 60 seconds where an
-  effect has none. Its bleed on hit (10 + energy / 200) has no OpenMU mechanism.
-* 88 more Season 21 skills are still an `Other` with an effect that has no duration (Grow Lancer's Circle Shield,
-  Obsidian and Wrath, the Dark Knight's Sword's Fury, the Magic Gladiator's charges, ...): they are listed in
-  `Season21BuffRowsTest.Pending`, a list that only shrinks; each is fixed as the Rune Wizard's and the Slayer's were.
+  effect has none (S21Emu's Lua `SkillBloodHowling` uses the same 60). Its bleed on hit (10 + energy / 200) has no OpenMU
+  mechanism.
+* The Grow Lancer's Circle Shield (272, 703, 706), Obsidian (273, 693) and Wrath (278, 708-710, 895) get theirs from the
+  update "Fix the Grow Lancer buffs" (`Season21GrowLancerBuffs`), after S21Emu's Lua (`SkillCircleShield`,
+  `SkillObsidian`) and `GameServerInfo - Skill.dat`: Circle Shield 30 seconds on the caster, with no stat (a PvP chance
+  to lower the attacker's AG, which no OpenMU mechanism applies); Obsidian 120 seconds on the party within 5,
+  `SkillDamageBonus` + strength / 20 (the Lua's 360 seconds without a party can't be said with one duration); Wrath 15
+  seconds on the caster, `AttackDamageIncrease` x1.1 and `DefenseDecrement` x0.95 (Webzen's guide: combat power +10 %,
+  defense -5 %; WrathConstA 50 and ConstB 30 name no stat). Burst (700/701, value 5) stays pending: no source says what
+  its 5 raises.
+* 78 more Season 21 skills are still an `Other` with an effect that has no duration (the Dark Knight's Sword's Fury, the
+  Magic Gladiator's charges, ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is
+  fixed as the Rune Wizard's, the Slayer's and the Grow Lancer's were.
 
 Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
 damage reduction table, the Ability Enhancement Core (track T, later).
@@ -547,10 +556,10 @@ server data has none.
 * Values: every `%d` of a formula is the card level; the generator evaluates the levels 0 to 5. Options of the client type
   1 are rates in percent and are stored as factors (2 % = 0.02).
 * Item options: one definition per card (`0x1900` + item number) with an option of the type "Ability Card Option" per
-  option (number = the static option index, `LevelType.ItemLevel`, a value per card level). 46 of the 87 options have an
-  OpenMU attribute (`Season21AbilityCoreInitializer.Effects`); "every 20 levels" ones follow the total level. The nuke,
-  bolt and wide options, the fifth wings, mastery, bleeding, poison, splash and the static skill card options have no
-  attribute yet: they are data without effect.
+  option (number = the static option index, `LevelType.ItemLevel`, a value per card level). 64 of the 82 options have an
+  OpenMU attribute (`Season21AbilityCoreInitializer.Effects`, version 4 of the update); "every 20 levels" ones follow the
+  total level. The nuke, bolt and wide options have none yet: they are data without effect. The static skill card
+  options are read by the game logic from the card definition (`src/GameLogic/AbilityCore/Readme.md`).
 * Prices: `AbilityLevelUP.xml` (levels 0-4 per kind: cards, zen, Ability Upgrade Stones 20/239) and
   `AbilityReduction.xml` (zen, stones per kind). `Unk1` of the reduction and `RISection/RIType` beyond the stone are not
   read.

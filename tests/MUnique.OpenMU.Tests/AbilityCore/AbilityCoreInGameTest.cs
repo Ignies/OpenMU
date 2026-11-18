@@ -5,6 +5,8 @@
 namespace MUnique.OpenMU.Tests.AbilityCore;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
@@ -12,6 +14,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.AbilityCore;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Classes;
+using MUnique.OpenMU.GameLogic.EnhanceTree;
 using MUnique.OpenMU.GameLogic.PlayerActions.Character;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views;
@@ -131,6 +134,134 @@ public class AbilityCoreInGameTest
 
         await AbilityCoreService.RequestAsync(player, AbilityCoreAction.Remove, AbilityCoreSlots.FirstSkill, AbilityCoreService.AnySlot).ConfigureAwait(false);
         Assert.That(player.SkillList.ContainsSkill((ushort)MeteorStorm), Is.False);
+    }
+
+    /// <summary>
+    /// A card skill gets the "Skillpower n-Slot Increase" (51, 56, 61) of the skill slot it sits in, and with a master
+    /// skill the "(Strengthener Skill, Ability Skill) Additional DMG Rate" (63); other skills get neither.
+    /// </summary>
+    [Test]
+    public async ValueTask CardSkillGetsTheSkillpowerOfItsSlotAsync()
+    {
+        var getBonus = typeof(AbilityCoreService).GetMethod("GetSkillBonus");
+        var slotOne = typeof(Stats).GetProperty("SkillpowerSlotOneBonus")?.GetValue(null) as AttributeDefinition;
+        var rate = typeof(Stats).GetProperty("StrengthenerAbilitySkillDamageRate")?.GetValue(null) as AttributeDefinition;
+        Assert.That(getBonus, Is.Not.Null);
+        Assert.That(slotOne, Is.Not.Null);
+        Assert.That(rate, Is.Not.Null);
+
+        var player = await this.CreatePlayerAsync(ClassEvolution.Fifth, 800).ConfigureAwait(false);
+        await player.SkillList!.AddLearnedSkillAsync(this._gameConfiguration.Skills.Single(s => s.Number == MeteorStormFourth)).ConfigureAwait(false);
+        var card = await this.AddCardAsync(player, MeteorStormCard, 0, 65).ConfigureAwait(false);
+        Assert.That(await AbilityCoreService.RequestAsync(player, AbilityCoreAction.Insert, AbilityCoreSlots.FirstSkill, card.ItemSlot).ConfigureAwait(false), Is.EqualTo(AbilityCoreResult.Success));
+        player.Attributes!.AddElement(new ConstantElement(100), slotOne!);
+        player.Attributes.AddElement(new ConstantElement(0.05f), rate!);
+
+        var meteorStorm = this._gameConfiguration.Skills.Single(s => s.Number == MeteorStorm);
+        var other = this._gameConfiguration.Skills.First(s => s.MasterDefinition is null && s.Number != MeteorStorm);
+        var master = this._gameConfiguration.Skills.First(s => s.MasterDefinition is not null);
+        Assert.That(getBonus!.Invoke(null, [player, meteorStorm]), Is.EqualTo((100f, 0.05f)));
+        Assert.That(getBonus.Invoke(null, [player, other]), Is.EqualTo((0f, 0f)));
+        Assert.That(getBonus.Invoke(null, [player, master]), Is.EqualTo((0f, 0.05f)));
+
+        await AbilityCoreService.RequestAsync(player, AbilityCoreAction.Remove, AbilityCoreSlots.FirstSkill, AbilityCoreService.AnySlot).ConfigureAwait(false);
+        Assert.That(getBonus.Invoke(null, [player, meteorStorm]), Is.EqualTo((0f, 0f)));
+    }
+
+    /// <summary>
+    /// The fixed option of a skill card changes its skill while the card takes effect, with the tree off: attack speed (1)
+    /// by the value of the card level, AOE increase (2) one tile of radius, added splash damage (3) one splash hit on the
+    /// monsters within a tile of the target (Webzen guides 112 and 348). Other skills keep theirs.
+    /// </summary>
+    /// <param name="option">The fixed option.</param>
+    /// <param name="speed">The added attack speed.</param>
+    /// <param name="radius">The added radius.</param>
+    /// <param name="splashHits">The splash hits.</param>
+    [TestCase((byte)1, 38.85f, 0, 0)]
+    [TestCase((byte)2, 0f, 1, 0)]
+    [TestCase((byte)3, 0f, 0, 1)]
+    public async ValueTask SkillCardFixedOptionChangesItsSkillAsync(byte option, float speed, int radius, int splashHits)
+    {
+        var card = this._gameContext.FeaturePlugIns.GetPlugIn<AbilityCoreFeaturePlugIn>()!.Configuration!.Cards.Single(c => c.ItemNumber == MeteorStormCard);
+        var original = card.StaticOption;
+        card.StaticOption = option;
+        try
+        {
+            var player = await this.CreatePlayerAsync(ClassEvolution.Fifth, 800).ConfigureAwait(false);
+            await player.SkillList!.AddLearnedSkillAsync(this._gameConfiguration.Skills.Single(s => s.Number == MeteorStormFourth)).ConfigureAwait(false);
+            var item = await this.AddCardAsync(player, MeteorStormCard, 0, 65).ConfigureAwait(false);
+            Assert.That(await AbilityCoreService.RequestAsync(player, AbilityCoreAction.Insert, AbilityCoreSlots.FirstSkill, item.ItemSlot).ConfigureAwait(false), Is.EqualTo(AbilityCoreResult.Success));
+
+            var meteorStorm = this._gameConfiguration.Skills.Single(s => s.Number == MeteorStorm);
+            var other = this._gameConfiguration.Skills.First(s => s.Number != MeteorStorm);
+            Assert.That(EnhanceTreeEffects.GetSkillSpeed(player, meteorStorm), Is.EqualTo(speed).Within(0.001));
+            Assert.That(EnhanceTreeEffects.GetReach(player, meteorStorm).Radius, Is.EqualTo(radius));
+            Assert.That(EnhanceTreeEffects.GetSplash(player, meteorStorm), Is.EqualTo(splashHits > 0 ? (splashHits, 1) : default((int, int))));
+            Assert.That(EnhanceTreeEffects.GetSkillSpeed(player, other), Is.Zero);
+            Assert.That(EnhanceTreeEffects.GetReach(player, other), Is.EqualTo(default(EnhanceTreeReach)));
+            Assert.That(EnhanceTreeEffects.GetSplash(player, other), Is.EqualTo(default((int, int))));
+        }
+        finally
+        {
+            card.StaticOption = original;
+        }
+    }
+
+    /// <summary>
+    /// "Shock Defense Success Rate (Not applicable to PvP)" (64) is the chance to resist the hit shock of a monster's hit;
+    /// a player's hit shocks as before.
+    /// </summary>
+    [Test]
+    public async ValueTask ShockDefenseResistsTheHitShockOfMonstersAsync()
+    {
+        var resistance = typeof(Stats).GetProperty("MonsterHitShockResistanceChance")?.GetValue(null) as AttributeDefinition;
+        Assert.That(resistance, Is.Not.Null);
+        var defender = await this.CreatePlayerAsync(ClassEvolution.Fifth, 800).ConfigureAwait(false);
+        defender.Attributes!.AddElement(new ConstantElement(1), Stats.HitShockChance);
+        var monster = new Mock<IAttacker>();
+        monster.Setup(m => m.Attributes).Returns(new Mock<IAttributeSystem>().Object);
+        var otherPlayer = await this.CreatePlayerAsync(ClassEvolution.Fifth, 800).ConfigureAwait(false);
+
+        Assert.That(defender.GetHitInfo(100, DamageAttributes.Undefined, monster.Object).TriggersHitShock, Is.True);
+        defender.Attributes.AddElement(new ConstantElement(1), resistance!);
+        Assert.That(defender.GetHitInfo(100, DamageAttributes.Undefined, monster.Object).TriggersHitShock, Is.False);
+        Assert.That(defender.GetHitInfo(100, DamageAttributes.Undefined, otherPlayer).TriggersHitShock, Is.True);
+    }
+
+    /// <summary>
+    /// The card skill's hits carry the skillpower of its slot: with a bonus far above the skill's damage every hit with it
+    /// is above every hit without it, whatever the rolls.
+    /// </summary>
+    [Test]
+    public async ValueTask CardSkillHitsCarryTheSkillpowerAsync()
+    {
+        var slotOne = typeof(Stats).GetProperty("SkillpowerSlotOneBonus")?.GetValue(null) as AttributeDefinition;
+        Assert.That(slotOne, Is.Not.Null);
+        var player = await this.CreatePlayerAsync(ClassEvolution.Fifth, 800).ConfigureAwait(false);
+        await player.SkillList!.AddLearnedSkillAsync(this._gameConfiguration.Skills.Single(s => s.Number == MeteorStormFourth)).ConfigureAwait(false);
+        var card = await this.AddCardAsync(player, MeteorStormCard, 0, 65).ConfigureAwait(false);
+        await AbilityCoreService.RequestAsync(player, AbilityCoreAction.Insert, AbilityCoreSlots.FirstSkill, card.ItemSlot).ConfigureAwait(false);
+        player.Attributes![Stats.AttackRatePvm] = 1_000_000;
+        var skill = new SkillEntry { Skill = this._gameConfiguration.Skills.Single(s => s.Number == MeteorStorm) };
+        var defender = new Mock<IAttackable>();
+        var defenderAttributes = new Mock<IAttributeSystem>();
+        defenderAttributes.Setup(a => a[It.IsAny<AttributeDefinition>()]).Returns<AttributeDefinition>(d => d == Stats.DefenseDecrement || d == Stats.DamageReceiveDecrement ? 1 : 0);
+        defender.Setup(d => d.Attributes).Returns(defenderAttributes.Object);
+
+        var without = new List<uint>();
+        for (var i = 0; i < 20; i++)
+        {
+            without.Add((await player.CalculateDamageAsync(defender.Object, skill, false).ConfigureAwait(false)).HealthDamage);
+        }
+
+        player.Attributes.AddElement(new ConstantElement(1_000_000), slotOne!);
+        var with = new List<uint>();
+        for (var i = 0; i < 20; i++)
+        {
+            with.Add((await player.CalculateDamageAsync(defender.Object, skill, false).ConfigureAwait(false)).HealthDamage);
+        }
+
+        Assert.That(with.Min(), Is.GreaterThan(without.Max()));
     }
 
     /// <summary>

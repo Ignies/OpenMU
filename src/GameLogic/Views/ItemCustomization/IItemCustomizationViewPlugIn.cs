@@ -22,4 +22,16 @@ public interface IItemCustomizationViewPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="entry">The item.</param>
     ValueTask SendDetailAsync(ItemCustomizationEntryData entry);
+
+    /// <summary>
+    /// Pushes the places whose customisations changed, unasked (EE 39).
+    /// </summary>
+    /// <param name="entries">The customised items of those places.</param>
+    ValueTask SendChangedAsync(IReadOnlyList<ItemCustomizationEntryData> entries);
+
+    /// <summary>
+    /// Answers a report.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    ValueTask SendReportResultAsync(ItemCustomizationReportResult result);
 }

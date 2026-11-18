@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForSystemCon
     public partial class SystemConfigurationTypedContextModel
     {
         private SystemConfigurationTypedContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("e8c68da5-edd6-4064-82af-868034786261"), entityTypeCount: 1)
+            : base(skipDetectChanges: false, modelId: new Guid("8f6822a9-4021-4549-838e-c3383eb06d07"), entityTypeCount: 1)
         {
         }
 

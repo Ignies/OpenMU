@@ -1751,6 +1751,241 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>37</SubCode>
+      <Name>ItemCustomizationReportRequest</Name>
+      <Length>8</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>A player reports the name or lore of a customised item from its tooltip.</SentWhen>
+      <CausedReaction>The server stores a report for the website's moderation and answers with ItemCustomizationReportResult.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Storage</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>ObjectId</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>38</SubCode>
+      <Name>ItemCustomizationReportResult</Name>
+      <Length>5</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The answer to ItemCustomizationReportRequest.</SentWhen>
+      <CausedReaction>The client says whether the report was sent.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 sent, 1 reported already (this item at this version), 2 not found (or no name or lore), 3 too fast (one report every ten seconds).</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>39</SubCode>
+      <Name>ItemCustomizationsChanged</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A customised item's record changed (a moderator's reset, a new look) while this client had been told about it.</SentWhen>
+      <CausedReaction>The client replaces what it knows of each listed place with these entries, without taking it as the answer to its own request.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Structure[]</Type>
+          <TypeName>ItemCustomizationEntry</TypeName>
+          <Name>Entries</Name>
+          <ItemCountField>Count</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>91</SubCode>
+      <Name>StarSmithState</Name>
+      <Length>16</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>On world entry, when a Star Smith's Hammer is equipped or taken off, and after each smithing action.</SentWhen>
+      <CausedReaction>The client shows or hides the Star Smithing HUD with the smith's level and experience.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Flags</Name>
+          <Description>Bit 0: a Star Smith's Hammer is in a hand. Bit 1: that hammer is broken (no durability left).</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Level</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Experience</Name>
+        </Field>
+        <Field>
+          <Index>11</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>NextLevelExperience</Name>
+        </Field>
+        <Field>
+          <Index>15</Index>
+          <Type>Byte</Type>
+          <Name>HammerDurability</Name>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>93</SubCode>
+      <Name>StarSmithRecolorRequest</Name>
+      <Length>36</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The smith recolours an item of the inventory.</SentWhen>
+      <CausedReaction>The server checks, takes the Zen and the hammer's durability, saves the look and answers with StarSmithResult.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+          <Description>The inventory slot of the item.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Binary</Type>
+          <Name>Look</Name>
+          <Description>The 31 look bytes of an ItemCustomizationEntry; all zero gives the item its own colours back.</Description>
+          <Length>31</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>94</SubCode>
+      <Name>StarSmithRenameRequest</Name>
+      <Length>77</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The smith names an item of the inventory.</SentWhen>
+      <CausedReaction>The server checks the name with the text moderation, saves it and answers with StarSmithResult.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+          <Description>The inventory slot of the item.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Binary</Type>
+          <Name>Name</Name>
+          <Description>UTF-8, zero padded; empty removes the name.</Description>
+          <Length>72</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>95</SubCode>
+      <Name>StarSmithLoreRequest</Name>
+      <Length>426</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The smith writes the lore of an item of the inventory.</SentWhen>
+      <CausedReaction>The server checks the lore with the text moderation, saves it and answers with StarSmithResult.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+          <Description>The inventory slot of the item.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Binary</Type>
+          <Name>Lore</Name>
+          <Description>UTF-8, lines split by a line feed, zero padded; empty removes the lore.</Description>
+          <Length>420</Length>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>96</SubCode>
+      <Name>StarSmithLockRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The smith locks an item of the inventory (permanent for players).</SentWhen>
+      <CausedReaction>The server locks the item's customisation and answers with StarSmithResult.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Slot</Name>
+          <Description>The inventory slot of the item.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>97</SubCode>
+      <Name>StarSmithResult</Name>
+      <Length>12</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>The answer to a smithing action.</SentWhen>
+      <CausedReaction>The client says what happened.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Action</Name>
+          <Description>1 recolour, 2 rename, 3 lore, 4 lock.</Description>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Result</Name>
+          <Description>0 done, 1 no hammer in a hand, 2 hammer broken, 3 the item is locked, 4 not here (trade, shop, duel, event map), 5 no such item, 6 text refused, 7 not enough Zen, 8 smithing is off.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Refusal</Name>
+          <Description>For result 6: the text moderation's refusal (1 empty, 2 too short, 3 too long, 4 too many lines, 5 double space, 6 bad character, 7 link, 8 colour code, 9 word).</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>ZenCost</Name>
+          <Description>What the action cost in Zen.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C2HeaderWithSubCode</HeaderType>
       <Code>EE</Code>
       <SubCode>50</SubCode>

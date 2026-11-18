@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.Persistence.Initialization.Tests;
 
 using Microsoft.Extensions.Logging.Abstractions;
+using MUnique.OpenMU.AttributeSystem;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
@@ -183,10 +184,72 @@ internal class Season21AbilityCoreDataTest
 
         await new AddSeason21AbilityCoreUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
-        Assert.That(new AddSeason21AbilityCoreUpdatePlugIn().Version, Is.EqualTo(3));
+        Assert.That(new AddSeason21AbilityCoreUpdatePlugIn().Version, Is.GreaterThanOrEqualTo(3));
         Assert.That(pentagramAttack.PowerUpDefinition!.TargetAttribute, Is.EqualTo(Stats.ElementDamageBonus));
         Assert.That(pentagramAttack.LevelDependentOptions.Single(l => l.Level == 5).PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(162));
         Assert.That(extraDefense.LevelDependentOptions.Single(l => l.Level == 5).PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(99));
+    }
+
+    /// <summary>
+    /// Version 4 maps the options OpenMU had no attribute for: the mastery (25-27), the debuffs (37-40), the AG recovery
+    /// (62, a rate, so a hundredth) and the Lv.5 wing options (2, 36, 83, 84), which count while a fifth wing (S21Emu
+    /// <c>KindA</c> 106) is worn. An existing database whose options had none gets them.
+    /// </summary>
+    /// <param name="card">The card carrying the option.</param>
+    /// <param name="option">The option index.</param>
+    /// <param name="attribute">The name of the attribute in <see cref="Stats"/>.</param>
+    /// <param name="levelFive">The value at card level 5.</param>
+    [TestCase((short)217, (short)25, "MasterySkillDamageBonus", 336f)]
+    [TestCase((short)217, (short)26, "MasterySkillWizardryBonus", 324f)]
+    [TestCase((short)217, (short)27, "MasterySkillCurseBonus", 300f)]
+    [TestCase((short)217, (short)37, "BleedingDamageIncrease", 400f)]
+    [TestCase((short)217, (short)38, "SevereBleedingDamageIncrease", 300f)]
+    [TestCase((short)217, (short)39, "PoisonDebuffDamageIncrease", 600f)]
+    [TestCase((short)217, (short)40, "ToxicDamageIncrease", 500f)]
+    [TestCase((short)229, (short)62, "AbilityRecoveryMultiplier", 0.18f)]
+    [TestCase((short)216, (short)2, "FifthWingDefenseBonus", 64f)]
+    [TestCase((short)213, (short)35, "DoubleDamageIncrease", 240f)]
+    [TestCase((short)230, (short)60, "TripleDamageChance", 0.03f)]
+    [TestCase((short)214, (short)51, "SkillpowerSlotOneBonus", 180f)]
+    [TestCase((short)219, (short)56, "SkillpowerSlotTwoBonus", 180f)]
+    [TestCase((short)224, (short)61, "SkillpowerSlotThreeBonus", 180f)]
+    [TestCase((short)230, (short)63, "StrengthenerAbilitySkillDamageRate", 0.055f)]
+    [TestCase((short)217, (short)64, "MonsterHitShockResistanceChance", 0.050625f)]
+    public async Task VersionFourMapsTheOptionsWithoutAttributeAsync(short card, short option, string attribute, float levelFive)
+    {
+        var (context, gameConfiguration) = await CreateWithCoreAsync().ConfigureAwait(false);
+        var target = typeof(Stats).GetProperty(attribute)?.GetValue(null) as AttributeDefinition;
+        Assert.That(target, Is.Not.Null, attribute);
+
+        var mapped = Options(gameConfiguration, card).Single(o => o.Number == option);
+        mapped.PowerUpDefinition = null;
+        mapped.LevelDependentOptions.Clear();
+        await new AddSeason21AbilityCoreUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        Assert.That(new AddSeason21AbilityCoreUpdatePlugIn().Version, Is.EqualTo(4));
+        Assert.That(mapped.PowerUpDefinition?.TargetAttribute, Is.EqualTo(target));
+        Assert.That(mapped.LevelDependentOptions.Single(l => l.Level == 5).PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(levelFive).Within(0.0001));
+    }
+
+    /// <summary>
+    /// The fifth wings (S21Emu <c>KindA</c> 106) carry the flag, and every class counts the Lv.5 wing options' bonuses only
+    /// while it is set.
+    /// </summary>
+    [Test]
+    public async Task FifthWingsCarryTheFlagOfTheLevelFiveWingOptionsAsync()
+    {
+        var (_, gameConfiguration) = await CreateWithCoreAsync().ConfigureAwait(false);
+        var flag = typeof(Stats).GetProperty("IsFifthWingEquipped")?.GetValue(null) as AttributeDefinition;
+        Assert.That(flag, Is.Not.Null);
+
+        var wingsOfVirtue = gameConfiguration.Items.Single(i => i.Group == 12 && i.Number == 180);
+        Assert.That(wingsOfVirtue.BasePowerUpAttributes.Any(p => p.TargetAttribute == flag && p.BaseValue == 1), Is.True);
+        var fourthWing = gameConfiguration.Items.Single(i => i.Group == 12 && i.Number == 196);
+        Assert.That(fourthWing.BasePowerUpAttributes.Any(p => p.TargetAttribute == flag), Is.False);
+        foreach (var characterClass in gameConfiguration.CharacterClasses.Where(c => c.Number >= 128))
+        {
+            Assert.That(characterClass.AttributeCombinations.Count(r => r.OperandAttribute == flag), Is.EqualTo(4), characterClass.Name.ValueInNeutralLanguage);
+        }
     }
 
     private static List<IncreasableItemOption> Options(GameConfiguration gameConfiguration, short number)

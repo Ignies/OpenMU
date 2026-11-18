@@ -50,6 +50,17 @@ public class ItemCustomization
     public int Version { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the customisation is locked: a smith can no longer change it (only an
+    /// admin unlocks). Trade, selling and the ordinary upgrades are not affected.
+    /// </summary>
+    public bool Locked { get; set; }
+
+    /// <summary>
+    /// Gets or sets when it was locked.
+    /// </summary>
+    public DateTime? LockedAt { get; set; }
+
+    /// <summary>
     /// Gets or sets who made the customisation (an account, a delivery, a smith).
     /// </summary>
     public string? CreatedBy { get; set; }

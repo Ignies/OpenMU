@@ -24,6 +24,22 @@ public static class AbilityCoreService
     /// </summary>
     public const byte AnySlot = 0xFF;
 
+    /// <summary>
+    /// The fixed option "ATK Speed Increase" of a skill card: the attack speed of its skill rises by the value.
+    /// </summary>
+    public const byte AttackSpeedOption = 1;
+
+    /// <summary>
+    /// The fixed option "AOE Increase" of a skill card: a tile more of its skill's area (Webzen guide 348).
+    /// </summary>
+    public const byte AreaOption = 2;
+
+    /// <summary>
+    /// The fixed option "Add Splash Damage" of a skill card: a splash hit on the monsters within a tile of the target
+    /// (Webzen guides 112 and 348).
+    /// </summary>
+    public const byte SplashOption = 3;
+
     private static readonly ConditionalWeakTable<Player, CoreState> States = new();
 
     /// <summary>
@@ -72,6 +88,46 @@ public static class AbilityCoreService
     }
 
     /// <summary>
+    /// Gets what the card options add to a skill's damage: the "Skillpower n-Slot" of the skill slot a card skill sits in
+    /// (flat), and the "(Strengthener Skill, Ability Skill) Additional DMG Rate" of a master skill or a card skill (a rate).
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="skill">The used skill.</param>
+    /// <returns>The flat damage and the rate.</returns>
+    public static (float Flat, float Rate) GetSkillBonus(Player player, Skill skill)
+    {
+        if (player.Attributes is not { } attributes)
+        {
+            return (0, 0);
+        }
+
+        var slot = States.TryGetValue(player, out var state) && state.SkillSlots.TryGetValue(skill.Number, out var s) ? s : (byte?)null;
+        var flat = slot switch
+        {
+            AbilityCoreSlots.FirstSkill => attributes[Stats.SkillpowerSlotOneBonus],
+            AbilityCoreSlots.FirstSkill + 1 => attributes[Stats.SkillpowerSlotTwoBonus],
+            AbilityCoreSlots.FirstSkill + 2 => attributes[Stats.SkillpowerSlotThreeBonus],
+            _ => 0,
+        };
+        var rate = slot is not null || skill.MasterDefinition is not null ? attributes[Stats.StrengthenerAbilitySkillDamageRate] : 0;
+        return (flat, rate);
+    }
+
+    /// <summary>
+    /// Gets the value of a fixed option of the skill card whose skill this is, while the card takes effect.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="skill">The used skill.</param>
+    /// <param name="option">The fixed option (<see cref="AttackSpeedOption"/>, <see cref="AreaOption"/>, <see cref="SplashOption"/>).</param>
+    /// <returns>The value at the card level; 0 when no card skill has this fixed option.</returns>
+    public static float GetSkillCardOption(Player player, Skill skill, byte option)
+        => States.TryGetValue(player, out var state)
+           && state.SkillOptions.TryGetValue(skill.Number, out var fixedOption)
+           && fixedOption.Option == option
+            ? fixedOption.Value
+            : 0;
+
+    /// <summary>
     /// Applies the options and skills of the cards which take effect, and takes away those which no longer do.
     /// </summary>
     /// <param name="player">The player.</param>
@@ -96,6 +152,15 @@ public static class AbilityCoreService
         }
 
         var skills = active.Where(e => e.Card.Skill > 0).Select(e => e.Card.Skill).ToHashSet();
+        state.SkillSlots.Clear();
+        state.SkillOptions.Clear();
+        foreach (var (item, card) in active.Where(e => e.Card.Skill > 0))
+        {
+            state.SkillSlots[card.Skill] = item.ItemSlot;
+            var value = card.StaticValues.Count == 0 ? 0 : card.StaticValues[Math.Min(item.Level, card.StaticValues.Count - 1)];
+            state.SkillOptions[card.Skill] = (card.StaticOption, value);
+        }
+
         if (player.SkillList is not { } skillList)
         {
             return;
@@ -458,5 +523,15 @@ public static class AbilityCoreService
         public List<PowerUpWrapper> PowerUps { get; } = [];
 
         public HashSet<short> Skills { get; } = [];
+
+        /// <summary>
+        /// Gets the core slot of each card skill which takes effect.
+        /// </summary>
+        public Dictionary<short, byte> SkillSlots { get; } = [];
+
+        /// <summary>
+        /// Gets the fixed option of each card skill which takes effect, with its value at the card level.
+        /// </summary>
+        public Dictionary<short, (byte Option, float Value)> SkillOptions { get; } = [];
     }
 }

@@ -676,6 +676,12 @@
   <data name="FixSeason21SlayerAndRageFighterBuffsUpdatePlugIn_Description" xml:space="preserve">
     <value>Gives the effects of Detection and Demolish and of their Strengthener and Mastery their duration and value (S21Emu: 60 seconds; Demolish adds (20 + energy / 50)% defense ignore chance) and makes the skills buffs: Detection on the caster, Demolish on the party within 5. Blood Howling and its Strengthener become buffs on the caster (60 seconds where none is set). An operator's own duration or skill type stays. Optional.</value>
   </data>
+  <data name="FixSeason21GrowLancerBuffsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Fix the Grow Lancer buffs (Season 21 data)</value>
+  </data>
+  <data name="FixSeason21GrowLancerBuffsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Gives the effects of Circle Shield, Obsidian and Wrath and of their master rows their duration and value (S21Emu: Circle Shield 30 seconds; Obsidian 120 seconds, skill damage + strength / 20; Wrath 15 seconds, attack damage x1.1 and defense x0.95) and makes the skills buffs: Circle Shield and Wrath on the caster, Obsidian on the party within 5. An operator's own duration or skill type stays. Optional.</value>
+  </data>
   <data name="FixSeason21RuneWizardBuffsUpdatePlugIn_Name" xml:space="preserve">
     <value>Fix the Rune Wizard buffs Burst and Haste (Season 21 data)</value>
   </data>
@@ -684,4 +690,10 @@
   </data>
   <data name="RemoveOrphanPlugInConfigurationsPlugInBase_Name" xml:space="preserve"><value>Remove configurations of removed plugins</value></data>
   <data name="RemoveOrphanPlugInConfigurationsPlugInBase_Description" xml:space="preserve"><value>This update removes the configurations of plugins this server no longer has; the server warned about each one on every start.</value></data>
+  <data name="AddStarSmithHammerUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the Star Smith's Hammer</value>
+  </data>
+  <data name="AddStarSmithHammerUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update adds the Star Smith's Hammer (2/1000), the tool of the star smithing, and puts it on sale at Hanzo the Blacksmith in Lorencia for about 1,000,000 Zen. An existing hammer or offer stays.</value>
+  </data>
 </root>

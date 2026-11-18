@@ -1531,6 +1531,212 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for ItemCustomizationReportRequest.
+    /// </summary>
+    [Test]
+    public void ItemCustomizationReportRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = ItemCustomizationReportRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Storage' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Storage' exceeds packet boundary");
+        
+        // Validate field 'ObjectId' boundary
+        Assert.That(5 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ObjectId' exceeds packet boundary");
+        
+        // Validate field 'Slot' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Slot' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ItemCustomizationReportResult.
+    /// </summary>
+    [Test]
+    public void ItemCustomizationReportResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = ItemCustomizationReportResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Result' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ItemCustomizationsChanged.
+    /// </summary>
+    [Test]
+    public void ItemCustomizationsChanged_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'Count' starts at index 5 with size 2
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Count' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithState.
+    /// </summary>
+    [Test]
+    public void StarSmithState_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 16;
+        var actualLength = StarSmithStateRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Flags' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Flags' exceeds packet boundary");
+        
+        // Validate field 'Level' boundary
+        Assert.That(5 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Level' exceeds packet boundary");
+        
+        // Validate field 'Experience' boundary
+        Assert.That(7 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Experience' exceeds packet boundary");
+        
+        // Validate field 'NextLevelExperience' boundary
+        Assert.That(11 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'NextLevelExperience' exceeds packet boundary");
+        
+        // Validate field 'HammerDurability' boundary
+        Assert.That(15 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'HammerDurability' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithRecolorRequest.
+    /// </summary>
+    [Test]
+    public void StarSmithRecolorRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 36;
+        var actualLength = StarSmithRecolorRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Slot' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Slot' exceeds packet boundary");
+        
+        // Validate field 'Look' boundary
+        Assert.That(5 + 31, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Look' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithRenameRequest.
+    /// </summary>
+    [Test]
+    public void StarSmithRenameRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 77;
+        var actualLength = StarSmithRenameRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Slot' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Slot' exceeds packet boundary");
+        
+        // Validate field 'Name' boundary
+        Assert.That(5 + 72, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Name' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithLoreRequest.
+    /// </summary>
+    [Test]
+    public void StarSmithLoreRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 426;
+        var actualLength = StarSmithLoreRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Slot' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Slot' exceeds packet boundary");
+        
+        // Validate field 'Lore' boundary
+        Assert.That(6 + 420, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Lore' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithLockRequest.
+    /// </summary>
+    [Test]
+    public void StarSmithLockRequest_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = StarSmithLockRequestRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Slot' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Slot' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithResult.
+    /// </summary>
+    [Test]
+    public void StarSmithResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 12;
+        var actualLength = StarSmithResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Action' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Action' exceeds packet boundary");
+        
+        // Validate field 'Result' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Result' exceeds packet boundary");
+        
+        // Validate field 'Refusal' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Refusal' exceeds packet boundary");
+        
+        // Validate field 'ZenCost' boundary
+        Assert.That(7 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ZenCost' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for MuunInventoryList.
     /// </summary>
     [Test]

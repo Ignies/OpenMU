@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.Character",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character),
                 baseEntityType,
-                propertyCount: 31,
+                propertyCount: 33,
                 navigationCount: 9,
                 foreignKeyCount: 5,
                 unnamedIndexCount: 6,
@@ -236,6 +236,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Character).GetField("<Ruud>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0);
             ruud.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var starSmithExperience = runtimeEntityType.AddProperty(
+                "StarSmithExperience",
+                typeof(long),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.Character).GetProperty("StarSmithExperience", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Character).GetField("<StarSmithExperience>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: 0L);
+            starSmithExperience.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var starSmithLevel = runtimeEntityType.AddProperty(
+                "StarSmithLevel",
+                typeof(short),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.Character).GetProperty("StarSmithLevel", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Character).GetField("<StarSmithLevel>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: (short)0);
+            starSmithLevel.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var state = runtimeEntityType.AddProperty(
                 "State",

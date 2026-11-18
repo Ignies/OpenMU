@@ -9689,6 +9689,42 @@ namespace MUnique.OpenMU.GameLogic.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Text moderation.
+        /// </summary>
+        public static string TextModerationPlugIn_Name {
+            get {
+                return ResourceManager.GetString("TextModerationPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to With the Star Smith's Hammer in a hand, players recolour, name, write the lore of and lock their items (the start of Star Smithing)..
+        /// </summary>
+        public static string StarSmithingFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("StarSmithingFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star Smithing.
+        /// </summary>
+        public static string StarSmithingFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("StarSmithingFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Keeps the word list that item names and lore are checked against (letters that look alike are folded first). The website edits the list..
+        /// </summary>
+        public static string TextModerationPlugIn_Description {
+            get {
+                return ResourceManager.GetString("TextModerationPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Item looks and names.
         /// </summary>
         public static string ItemCustomizationFeaturePlugIn_Name {

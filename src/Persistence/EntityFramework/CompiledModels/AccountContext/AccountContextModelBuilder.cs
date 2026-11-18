@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
     public partial class AccountContextModel
     {
         private AccountContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("c8f50c11-f018-49cd-ac28-ac3cb649bbb7"), entityTypeCount: 50)
+            : base(skipDetectChanges: false, modelId: new Guid("aabd25bf-5b47-4a2d-983a-e11fbf2af8fc"), entityTypeCount: 51)
         {
         }
 
@@ -49,6 +49,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             var itemCraftingRequiredItemItemDefinition = ItemCraftingRequiredItemItemDefinitionEntityType.Create(this);
             var itemCraftingRequiredItemItemOptionType = ItemCraftingRequiredItemItemOptionTypeEntityType.Create(this);
             var itemCustomization = ItemCustomizationEntityType.Create(this);
+            var itemCustomizationReport = ItemCustomizationReportEntityType.Create(this);
             var itemDefinitionCharacterClass = ItemDefinitionCharacterClassEntityType.Create(this);
             var itemDefinitionItemOptionDefinition = ItemDefinitionItemOptionDefinitionEntityType.Create(this);
             var itemDefinitionItemSetGroup = ItemDefinitionItemSetGroupEntityType.Create(this);
@@ -94,6 +95,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             ItemAppearanceEntityType.CreateForeignKey1(itemAppearance, appearanceData);
             ItemAppearanceItemOptionTypeEntityType.CreateForeignKey1(itemAppearanceItemOptionType, itemAppearance);
             ItemCustomizationEntityType.CreateForeignKey1(itemCustomization, item);
+            ItemCustomizationReportEntityType.CreateForeignKey1(itemCustomizationReport, item);
             ItemItemOfItemSetEntityType.CreateForeignKey1(itemItemOfItemSet, item);
             ItemOptionLinkEntityType.CreateForeignKey1(itemOptionLink, item);
             LetterBodyEntityType.CreateForeignKey1(letterBody, letterHeader);
@@ -137,6 +139,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
             ItemCraftingRequiredItemItemDefinitionEntityType.CreateAnnotations(itemCraftingRequiredItemItemDefinition);
             ItemCraftingRequiredItemItemOptionTypeEntityType.CreateAnnotations(itemCraftingRequiredItemItemOptionType);
             ItemCustomizationEntityType.CreateAnnotations(itemCustomization);
+            ItemCustomizationReportEntityType.CreateAnnotations(itemCustomizationReport);
             ItemDefinitionCharacterClassEntityType.CreateAnnotations(itemDefinitionCharacterClass);
             ItemDefinitionItemOptionDefinitionEntityType.CreateAnnotations(itemDefinitionItemOptionDefinition);
             ItemDefinitionItemSetGroupEntityType.CreateAnnotations(itemDefinitionItemSetGroup);
