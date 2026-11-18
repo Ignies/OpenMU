@@ -54,7 +54,8 @@ The fixed option of a skill card (`AbilityCardDefinition.StaticOption`) changes 
 the Enhance Tree on or off (`EnhanceTreeEffects.GetSkillSpeed`, `GetReach`, `GetSplash` for a player):
 
 - 1 ATK Speed Increase: the attack speed of the skill rises by the value of the card level, like the tree's Speed node
-  (Webzen guide 112: "Attack Speed of main skill will increase as much as the number").
+  (Webzen guide 112: "Attack Speed of main skill will increase as much as the number"). The value is the attribute of
+  the card's skill slot (`SkillCardSlotOne/Two/ThreeAttackSpeed`), so `/charinfo` shows what the speed check adds.
 - 2 AOE Increase: a tile more of the skill's area (Webzen guides 329 and 348: "Skill Attack range increases by 1 tile").
 - 3 Add Splash Damage: one splash hit on each monster within a tile of the target, or one more with the tree's splash
   (Webzen guide 348: the card applies "Splash Damage +1"; guide 112: the splash range is 1 tile).

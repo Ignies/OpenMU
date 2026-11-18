@@ -195,6 +195,9 @@ public class AbilityCoreInGameTest
             var meteorStorm = this._gameConfiguration.Skills.Single(s => s.Number == MeteorStorm);
             var other = this._gameConfiguration.Skills.First(s => s.Number != MeteorStorm);
             Assert.That(EnhanceTreeEffects.GetSkillSpeed(player, meteorStorm), Is.EqualTo(speed).Within(0.001));
+            var slotSpeed = typeof(Stats).GetProperty("SkillCardSlotOneAttackSpeed")?.GetValue(null) as AttributeDefinition;
+            Assert.That(slotSpeed, Is.Not.Null, "the speed of the card skill in skill slot 1 is an attribute (/charinfo shows it)");
+            Assert.That(player.Attributes![slotSpeed!], Is.EqualTo(speed).Within(0.001));
             Assert.That(EnhanceTreeEffects.GetReach(player, meteorStorm).Radius, Is.EqualTo(radius));
             Assert.That(EnhanceTreeEffects.GetSplash(player, meteorStorm), Is.EqualTo(splashHits > 0 ? (splashHits, 1) : default((int, int))));
             Assert.That(EnhanceTreeEffects.GetSkillSpeed(player, other), Is.Zero);

@@ -121,11 +121,19 @@ public static class AbilityCoreService
     /// <param name="option">The fixed option (<see cref="AttackSpeedOption"/>, <see cref="AreaOption"/>, <see cref="SplashOption"/>).</param>
     /// <returns>The value at the card level; 0 when no card skill has this fixed option.</returns>
     public static float GetSkillCardOption(Player player, Skill skill, byte option)
-        => States.TryGetValue(player, out var state)
-           && state.SkillOptions.TryGetValue(skill.Number, out var fixedOption)
-           && fixedOption.Option == option
-            ? fixedOption.Value
-            : 0;
+    {
+        if (!States.TryGetValue(player, out var state)
+            || !state.SkillOptions.TryGetValue(skill.Number, out var fixedOption)
+            || fixedOption.Option != option)
+        {
+            return 0;
+        }
+
+        // The attack speed is the attribute of the card's skill slot, so /charinfo shows what the speed check uses.
+        return option == AttackSpeedOption && SlotAttackSpeed(state.SkillSlots[skill.Number]) is { } speed && player.Attributes is { } attributes
+            ? attributes[speed]
+            : fixedOption.Value;
+    }
 
     /// <summary>
     /// Applies the options and skills of the cards which take effect, and takes away those which no longer do.
@@ -159,6 +167,10 @@ public static class AbilityCoreService
             state.SkillSlots[card.Skill] = item.ItemSlot;
             var value = card.StaticValues.Count == 0 ? 0 : card.StaticValues[Math.Min(item.Level, card.StaticValues.Count - 1)];
             state.SkillOptions[card.Skill] = (card.StaticOption, value);
+            if (card.StaticOption == AttackSpeedOption && SlotAttackSpeed(item.ItemSlot) is { } speedAttribute && player.Attributes is { } speedHolder)
+            {
+                state.PowerUps.Add(new PowerUpWrapper(new ConstantElement(value), speedAttribute, speedHolder));
+            }
         }
 
         if (player.SkillList is not { } skillList)
@@ -293,6 +305,14 @@ public static class AbilityCoreService
 
         return eliteLevel > options.Min() ? AbilityCoreResult.EliteLevelTooHigh : AbilityCoreResult.Success;
     }
+
+    private static AttributeDefinition? SlotAttackSpeed(byte coreSlot) => coreSlot switch
+    {
+        AbilityCoreSlots.FirstSkill => Stats.SkillCardSlotOneAttackSpeed,
+        AbilityCoreSlots.FirstSkill + 1 => Stats.SkillCardSlotTwoAttackSpeed,
+        AbilityCoreSlots.FirstSkill + 2 => Stats.SkillCardSlotThreeAttackSpeed,
+        _ => null,
+    };
 
     private static void AddPowerUps(List<PowerUpWrapper> powerUps, Item item, AbilityCardDefinition card, BaseClassCode baseClass, AttributeSystem attributes)
     {
