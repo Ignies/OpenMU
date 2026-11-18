@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCustomization",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCustomization),
                 baseEntityType,
-                propertyCount: 9,
+                propertyCount: 11,
                 foreignKeyCount: 1,
                 unnamedIndexCount: 1,
                 keyCount: 1);
@@ -54,6 +54,22 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForTradeCont
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.ItemCustomization).GetField("<ItemId>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: new Guid("00000000-0000-0000-0000-000000000000"));
             itemId.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var locked = runtimeEntityType.AddProperty(
+                "Locked",
+                typeof(bool),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.ItemCustomization).GetProperty("Locked", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.ItemCustomization).GetField("<Locked>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: false);
+            locked.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var lockedAt = runtimeEntityType.AddProperty(
+                "LockedAt",
+                typeof(DateTime?),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.ItemCustomization).GetProperty("LockedAt", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.ItemCustomization).GetField("<LockedAt>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            lockedAt.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var look = runtimeEntityType.AddProperty(
                 "Look",

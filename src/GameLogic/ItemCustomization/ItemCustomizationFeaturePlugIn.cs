@@ -142,19 +142,15 @@ public class ItemCustomizationFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault
         }
     }
 
-    /// <summary>The customised items of the asked places, each noted as told to the player.</summary>
+    /// <summary>The customised items of the asked places; every item there is noted as told to the player.</summary>
     private async ValueTask<List<ItemCustomizationEntryData>> AnswerAsync(Player player, IEnumerable<(ItemCustomizationStorage Storage, ushort ObjectId)> asks)
     {
         var items = await ItemCustomizationCollector.CollectAsync(player, asks).ConfigureAwait(false);
         var customizations = await this.GetAsync(player, items.Select(i => i.ItemId).Distinct().ToList()).ConfigureAwait(false);
-        var answer = new List<ItemCustomizationEntryData>();
-        foreach (var item in items)
+        var (answer, watched) = ItemCustomizationAnswer.Build(items, customizations);
+        foreach (var (itemId, storage, objectId) in watched)
         {
-            if (customizations.TryGetValue(item.ItemId, out var customization))
-            {
-                answer.Add(new ItemCustomizationEntryData(item.Storage, item.ObjectId, item.Slot, customization));
-                this._watchers.Add(item.ItemId, player, item.Storage, item.ObjectId);
-            }
+            this._watchers.Add(itemId, player, storage, objectId);
         }
 
         return answer;

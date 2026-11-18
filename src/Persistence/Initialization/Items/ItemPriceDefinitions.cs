@@ -145,6 +145,27 @@ internal class ItemPriceDefinitions : InitializerBase
         }
     }
 
+    /// <summary>
+    /// Assigns the price definition to one item which doesn't have one yet, like <see cref="Initialize"/> does for all.
+    /// It's used by updates which add an item to an existing database.
+    /// </summary>
+    /// <param name="item">The item.</param>
+    internal void AssignPrice(ItemDefinition item)
+    {
+        if (item.PriceDefinition is not null)
+        {
+            return;
+        }
+
+        var specialPrices = SpecialPrices
+            .SelectMany(price => price.Items.Select(i => (Key: GetKey(i.Group, i.Number), Price: price)))
+            .ToDictionary(entry => entry.Key, entry => entry.Price);
+        if (this.GetPrice(item, specialPrices) is { } price)
+        {
+            item.PriceDefinition = this.GetOrCreateDefinition(price);
+        }
+    }
+
     private static int GetKey(byte group, short number) => (number << 8) + group;
 
     private static bool IsPotion(ItemDefinition item) => item.Group == 14 && item.Number <= 8;

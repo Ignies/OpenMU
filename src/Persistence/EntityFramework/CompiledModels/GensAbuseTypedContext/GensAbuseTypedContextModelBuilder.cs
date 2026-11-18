@@ -12,7 +12,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForGensAbuse
     public partial class GensAbuseTypedContextModel
     {
         private GensAbuseTypedContextModel()
-            : base(skipDetectChanges: false, modelId: new Guid("88369fa9-1b7c-4544-8591-a2eed192e285"), entityTypeCount: 1)
+            : base(skipDetectChanges: false, modelId: new Guid("8ac6dce2-0999-42e4-86a7-35e701a8f7a6"), entityTypeCount: 1)
         {
         }
 

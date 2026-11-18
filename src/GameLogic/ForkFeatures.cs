@@ -52,6 +52,7 @@ public static class ForkFeatures
         "legendary_craft",
         "evolution_quests",
         "item_custom",
+        "star_smithing",
     ];
 
     /// <summary>

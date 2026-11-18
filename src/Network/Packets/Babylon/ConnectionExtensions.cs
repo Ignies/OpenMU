@@ -683,6 +683,194 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="StarSmithState" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="flags">Bit 0: a Star Smith's Hammer is in a hand. Bit 1: that hammer is broken (no durability left).</param>
+    /// <param name="level">The level.</param>
+    /// <param name="experience">The experience.</param>
+    /// <param name="nextLevelExperience">The next level experience.</param>
+    /// <param name="hammerDurability">The hammer durability.</param>
+    /// <remarks>
+    /// Is sent by the server when: On world entry, when a Star Smith's Hammer is equipped or taken off, and after each smithing action.
+    /// Causes reaction on client side: The client shows or hides the Star Smithing HUD with the smith's level and experience.
+    /// </remarks>
+    public static async ValueTask SendStarSmithStateAsync(this IConnection? connection, byte @flags, ushort @level, uint @experience, uint @nextLevelExperience, byte @hammerDurability)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = StarSmithStateRef.Length;
+            var packet = new StarSmithStateRef(connection.Output.GetSpan(length)[..length]);
+            packet.Flags = @flags;
+            packet.Level = @level;
+            packet.Experience = @experience;
+            packet.NextLevelExperience = @nextLevelExperience;
+            packet.HammerDurability = @hammerDurability;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="StarSmithRecolorRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="slot">The inventory slot of the item.</param>
+    /// <param name="look">The 31 look bytes of an ItemCustomizationEntry; all zero gives the item its own colours back.</param>
+    /// <remarks>
+    /// Is sent by the client when: The smith recolours an item of the inventory.
+    /// Causes reaction on server side: The server checks, takes the Zen and the hammer's durability, saves the look and answers with StarSmithResult.
+    /// </remarks>
+    public static async ValueTask SendStarSmithRecolorRequestAsync(this IConnection? connection, byte @slot, Memory<byte> @look)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = StarSmithRecolorRequestRef.Length;
+            var packet = new StarSmithRecolorRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Slot = @slot;
+            @look.Span.CopyTo(packet.Look);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="StarSmithRenameRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="slot">The inventory slot of the item.</param>
+    /// <param name="name">UTF-8, zero padded; empty removes the name.</param>
+    /// <remarks>
+    /// Is sent by the client when: The smith names an item of the inventory.
+    /// Causes reaction on server side: The server checks the name with the text moderation, saves it and answers with StarSmithResult.
+    /// </remarks>
+    public static async ValueTask SendStarSmithRenameRequestAsync(this IConnection? connection, byte @slot, Memory<byte> @name)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = StarSmithRenameRequestRef.Length;
+            var packet = new StarSmithRenameRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Slot = @slot;
+            @name.Span.CopyTo(packet.Name);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="StarSmithLoreRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="slot">The inventory slot of the item.</param>
+    /// <param name="lore">UTF-8, lines split by a line feed, zero padded; empty removes the lore.</param>
+    /// <remarks>
+    /// Is sent by the client when: The smith writes the lore of an item of the inventory.
+    /// Causes reaction on server side: The server checks the lore with the text moderation, saves it and answers with StarSmithResult.
+    /// </remarks>
+    public static async ValueTask SendStarSmithLoreRequestAsync(this IConnection? connection, byte @slot, Memory<byte> @lore)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = StarSmithLoreRequestRef.Length;
+            var packet = new StarSmithLoreRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Slot = @slot;
+            @lore.Span.CopyTo(packet.Lore);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="StarSmithLockRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="slot">The inventory slot of the item.</param>
+    /// <remarks>
+    /// Is sent by the client when: The smith locks an item of the inventory (permanent for players).
+    /// Causes reaction on server side: The server locks the item's customisation and answers with StarSmithResult.
+    /// </remarks>
+    public static async ValueTask SendStarSmithLockRequestAsync(this IConnection? connection, byte @slot)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = StarSmithLockRequestRef.Length;
+            var packet = new StarSmithLockRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Slot = @slot;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="StarSmithResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="action">1 recolour, 2 rename, 3 lore, 4 lock.</param>
+    /// <param name="result">0 done, 1 no hammer in a hand, 2 hammer broken, 3 the item is locked, 4 not here (trade, shop, duel, event map), 5 no such item, 6 text refused, 7 not enough Zen, 8 smithing is off.</param>
+    /// <param name="refusal">For result 6: the text moderation's refusal (1 empty, 2 too short, 3 too long, 4 too many lines, 5 double space, 6 bad character, 7 link, 8 colour code, 9 word).</param>
+    /// <param name="zenCost">What the action cost in Zen.</param>
+    /// <remarks>
+    /// Is sent by the server when: The answer to a smithing action.
+    /// Causes reaction on client side: The client says what happened.
+    /// </remarks>
+    public static async ValueTask SendStarSmithResultAsync(this IConnection? connection, byte @action, byte @result, byte @refusal, uint @zenCost)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = StarSmithResultRef.Length;
+            var packet = new StarSmithResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Action = @action;
+            packet.Result = @result;
+            packet.Refusal = @refusal;
+            packet.ZenCost = @zenCost;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="MuunItemMove" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

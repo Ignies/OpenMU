@@ -81,7 +81,8 @@ public class Season21ItemOptionsTest
         Assert.That(waiting.Where(d => !WideItemRules.IsWideOnly(d)), Is.Empty);
 
         var waitingSet = waiting.ToHashSet();
-        Assert.That(this._gameConfiguration.Items.Where(d => !waitingSet.Contains(d) && WideItemRules.IsWideOnly(d)), Is.Empty);
+        // The fork's own items have numbers from 1000 (e.g. the Star Smith's Hammer 2/1000), which only the wide format carries.
+        Assert.That(this._gameConfiguration.Items.Where(d => !waitingSet.Contains(d) && d.Number < 1000 && WideItemRules.IsWideOnly(d)), Is.Empty);
         var marker = this._gameConfiguration.ItemOptions.Single(o => o.PossibleOptions.Any(p => p.OptionType == Season21ItemOptionTypes.WideFormat));
         Assert.That(waiting.Select(d => d.PossibleItemOptions.Count(o => o == marker)), Has.All.LessThanOrEqualTo(1), "marked once");
     }

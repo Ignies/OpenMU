@@ -69,7 +69,7 @@ public sealed class ItemExchangeExportTests
     }
 
     /// <summary>
-    /// Tests that the file of a new Season 6 configuration has every item, sorted by group and number.
+    /// Tests that the file of a new Season 6 configuration has every item the client knows, sorted by group and number.
     /// </summary>
     [Test]
     public void SeasonSixFileHasEveryItemSorted()
@@ -78,13 +78,15 @@ public sealed class ItemExchangeExportTests
         var items = file.RootElement.GetProperty("items").EnumerateArray()
             .Select(item => (Group: item.GetProperty("group").GetInt32(), Number: item.GetProperty("number").GetInt32()))
             .ToList();
+        // Items past the classic client's numbers (our own, from 1000) travel only in the wide format, not in this file.
         var expected = this._seasonSixConfiguration.Items
+            .Where(item => item.Number <= ItemExchangeExport.MaximumNumber)
             .Select(item => (Group: (int)item.Group, Number: (int)item.Number))
             .OrderBy(item => item.Group)
             .ThenBy(item => item.Number)
             .ToList();
 
-        Assert.That(items, Has.Count.EqualTo(this._seasonSixConfiguration.Items.Count));
+        Assert.That(items, Has.Count.EqualTo(expected.Count));
         Assert.That(items, Is.EqualTo(expected));
     }
 

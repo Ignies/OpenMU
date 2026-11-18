@@ -9138,6 +9138,96 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Sends the smith's state (C1 EE 91) and the answers to smithing actions (C1 EE 97) to the Babylon client..
+        /// </summary>
+        public static string StarSmithingBabylonPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StarSmithingBabylonPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star Smithing (Babylon).
+        /// </summary>
+        public static string StarSmithingBabylonPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StarSmithingBabylonPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles C1 EE 93: a smith recolours an item..
+        /// </summary>
+        public static string StarSmithRecolorRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StarSmithRecolorRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star Smithing recolour handler (Babylon).
+        /// </summary>
+        public static string StarSmithRecolorRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StarSmithRecolorRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles C1 EE 94: a smith names an item..
+        /// </summary>
+        public static string StarSmithRenameRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StarSmithRenameRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star Smithing name handler (Babylon).
+        /// </summary>
+        public static string StarSmithRenameRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StarSmithRenameRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles C2 EE 95: a smith writes an item's lore..
+        /// </summary>
+        public static string StarSmithLoreRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StarSmithLoreRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star Smithing lore handler (Babylon).
+        /// </summary>
+        public static string StarSmithLoreRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StarSmithLoreRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles C1 EE 96: a smith locks an item..
+        /// </summary>
+        public static string StarSmithLockRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StarSmithLockRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star Smithing lock handler (Babylon).
+        /// </summary>
+        public static string StarSmithLockRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StarSmithLockRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the request of the Babylon client for the lore of a customised item..
         /// </summary>
         public static string ItemCustomizationDetailRequestHandlerPlugIn_Description {
