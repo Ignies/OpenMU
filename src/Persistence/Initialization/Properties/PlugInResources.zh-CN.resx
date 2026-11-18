@@ -465,4 +465,6 @@
   <data name="AddSantaVillageInvitationUpdatePlugIn_Description" xml:space="preserve">
     <value>此更新添加圣诞村邀请函（可将玩家传送到圣诞村），并在圣诞村添加一个出生点。</value>
   </data>
+  <data name="RemoveOrphanPlugInConfigurationsPlugInBase_Name" xml:space="preserve"><value>移除已删除插件的配置</value></data>
+  <data name="RemoveOrphanPlugInConfigurationsPlugInBase_Description" xml:space="preserve"><value>此更新移除本服务器已不再包含的插件的配置；服务器每次启动时都会逐一发出警告。</value></data>
 </root>
