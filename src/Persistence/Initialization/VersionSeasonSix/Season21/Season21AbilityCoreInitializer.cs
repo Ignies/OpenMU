@@ -63,7 +63,8 @@ internal class Season21AbilityCoreInitializer
 
     /// <summary>
     /// The options whose data value is a chance in ten thousandths ("Shock Defense Success Rate", 37.5-911.25 by level:
-    /// 0.4 % to 9.1 %).
+    /// 0.4 % to 9.1 %). A pick: no source states the unit; as a percentage the higher levels would pass 100 %, and
+    /// ten thousandths gives a chance in the range of the other rate options. A later source is a one-row change.
     /// </summary>
     private static readonly HashSet<short> TenThousandthOptions = [64];
 

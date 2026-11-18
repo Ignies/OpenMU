@@ -45,8 +45,10 @@ defense and damage (version 3 of the update). Version 4 adds the rest that the S
   ability skill rate (63) multiplies the damage of a card skill or a master skill (`AbilityCoreService.GetSkillBonus`).
 - AG recovery (62) is stored in hundredths, like the client shows it.
 - Shock defense (64, "Not applicable to PvP") is the chance to resist the hit shock (the flinch) of a monster's hit
-  (`MonsterHitShockResistanceChance`). The data value is read in ten thousandths (0.4 % at level 0 to 9.1 % at level 5);
-  no source states the unit.
+  (`MonsterHitShockResistanceChance`). The data value is read in ten thousandths (0.4 % at level 0 to 9.1 % at level 5).
+  This is a pick: no source states the unit, read as a percentage the higher levels would pass 100 %, and ten
+  thousandths gives a chance in the range of the other rate options. A later source is a one-row change
+  (`Season21AbilityCoreInitializer.TenThousandthOptions`).
 
 The fixed option of a skill card (`AbilityCardDefinition.StaticOption`) changes its skill while the card takes effect, with
 the Enhance Tree on or off (`EnhanceTreeEffects.GetSkillSpeed`, `GetReach`, `GetSplash` for a player):
@@ -57,8 +59,11 @@ the Enhance Tree on or off (`EnhanceTreeEffects.GetSkillSpeed`, `GetReach`, `Get
 - 3 Add Splash Damage: one splash hit on each monster within a tile of the target, or one more with the tree's splash
   (Webzen guide 348: the card applies "Splash Damage +1"; guide 112: the splash range is 1 tile).
 
-No source gives the meaning of the AOE and splash values by card level, so only their presence counts; the options 0
-(hits) and 4 (enemy defense) are on no card.
+No source gives the meaning of the AOE and splash values by card level (32-486 and 46-338), so only their presence
+counts, as the Webzen texts describe a fixed tile and a fixed hit. This is a pick; a later source is a change in
+`EnhanceTreeEffects.AddCardArea` and `GetSplash`. The options 0 (hits) and 4 (enemy defense) are on no card.
+
+A game master gives a card with a chosen option by `/item 20 <number> <level> opts=card:<option>`.
 
 18 of the 82 options stay data without effect: the nuke, bolt and wide options need the fifth class "New Power" skills
 (2086-2088), which the server doesn't have; they are their own track (`handoff/s21/new_power_5th_class.md` in the client

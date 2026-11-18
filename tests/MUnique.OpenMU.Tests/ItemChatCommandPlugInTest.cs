@@ -102,6 +102,21 @@ public class ItemChatCommandPlugInTest
     }
 
     /// <summary>
+    /// <c>card:number</c> gives an ability card the card option of that number.
+    /// </summary>
+    [Test]
+    public async Task AbilityCardGetsItsOptionAsync()
+    {
+        var (player, card) = await CreateAsync(0).ConfigureAwait(false);
+        var mastery = AddOption(player, card, Season21ItemOptionTypes.AbilityCardOption, 26, 0);
+        var item = Create(card);
+
+        Assert.That(GameMasterItemOptions.Apply(item, new GameMasterItemExtras(Options: "card:26"), player.GameContext.Configuration, null), Is.Null);
+
+        Assert.That(item.ItemOptions.Select(o => o.ItemOption), Is.EquivalentTo(new[] { mastery }));
+    }
+
+    /// <summary>
     /// The chat command passes its new arguments on; an entry which doesn't fit the item is named and nothing is made.
     /// </summary>
     [Test]
