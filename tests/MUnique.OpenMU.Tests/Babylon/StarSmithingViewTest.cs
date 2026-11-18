@@ -7,7 +7,7 @@ namespace MUnique.OpenMU.Tests.Babylon;
 using MUnique.OpenMU.GameLogic.StarSmithing;
 
 /// <summary>
-/// The bytes the Babylon client gets from Star Smithing: EE 91 (the smith's state) and EE 97 (an action's answer).
+/// The bytes the Babylon client gets from Star Smithing: EE 91 (the smith's state), EE 92 (the hammering) and EE 97 (an action's answer).
 /// </summary>
 [TestFixture]
 public class StarSmithingViewTest
@@ -34,6 +34,17 @@ public class StarSmithingViewTest
         var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(GameServer.BabylonClient.Version);
         await CallAsync(player, "SendResultAsync", StarSmithAction.Recolor, StarSmithResultCode.NotEnoughZen, (byte)0, 500_000u).ConfigureAwait(false);
         Assert.That(output.ToArray(), Is.EqualTo(new byte[] { 0xC1, 12, 0xEE, 0x97, 1, 7, 0, 0x20, 0xA1, 0x07, 0x00, 0 }));
+    }
+
+    /// <summary>
+    /// EE 92: the smith as the receiver knows it (itself: the constant id), the action, the strikes.
+    /// </summary>
+    [Test]
+    public async ValueTask TheAnimationAsync()
+    {
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(GameServer.BabylonClient.Version);
+        await CallAsync(player, "SendAnimationAsync", player, StarSmithAction.Rename, (byte)3).ConfigureAwait(false);
+        Assert.That(output.ToArray(), Is.EqualTo(new byte[] { 0xC1, 8, 0xEE, 0x92, 0x02, 0x00, 2, 3 }));
     }
 
     private static async ValueTask CallAsync(object player, string method, params object[] arguments)
