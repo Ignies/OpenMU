@@ -1859,6 +1859,36 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>EE</Code>
+      <SubCode>92</SubCode>
+      <Name>StarSmithAnimation</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>A smithing action is done: to the smith and every player who sees the smith, just before the smith's StarSmithResult.</SentWhen>
+      <CausedReaction>The client places a bench in front of the smith and plays the hammering strikes; the smith's own result line waits for the last strike.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>ObjectId</Name>
+          <Description>The smith, as the receiving client knows it.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>Action</Name>
+          <Description>1 recolour, 2 rename, 3 lore, 4 lock.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Strikes</Name>
+          <Description>How many hammer strikes to play (3).</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
       <SubCode>93</SubCode>
       <Name>StarSmithRecolorRequest</Name>
       <Length>36</Length>

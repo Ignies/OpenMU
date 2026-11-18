@@ -5090,6 +5090,110 @@ public readonly struct StarSmithState
 
 
 /// <summary>
+/// Is sent by the server when: A smithing action is done: to the smith and every player who sees the smith, just before the smith's StarSmithResult.
+/// Causes reaction on client side: The client places a bench in front of the smith and plays the hammering strikes; the smith's own result line waits for the last strike.
+/// </summary>
+public readonly struct StarSmithAnimation
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithAnimation"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithAnimation(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithAnimation"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private StarSmithAnimation(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x92;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the smith, as the receiving client knows it.
+    /// </summary>
+    public ushort ObjectId
+    {
+        get => ReadUInt16BigEndian(this._data.Span[4..]);
+        set => WriteUInt16BigEndian(this._data.Span[4..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets 1 recolour, 2 rename, 3 lore, 4 lock.
+    /// </summary>
+    public byte Action
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets how many hammer strikes to play (3).
+    /// </summary>
+    public byte Strikes
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="StarSmithAnimation"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator StarSmithAnimation(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="StarSmithAnimation"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(StarSmithAnimation packet) => packet._data; 
+}
+
+
+/// <summary>
 /// Is sent by the client when: The smith recolours an item of the inventory.
 /// Causes reaction on server side: The server checks, takes the Zen and the hammer's durability, saves the look and answers with StarSmithResult.
 /// </summary>

@@ -719,6 +719,38 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="StarSmithAnimation" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="objectId">The smith, as the receiving client knows it.</param>
+    /// <param name="action">1 recolour, 2 rename, 3 lore, 4 lock.</param>
+    /// <param name="strikes">How many hammer strikes to play (3).</param>
+    /// <remarks>
+    /// Is sent by the server when: A smithing action is done: to the smith and every player who sees the smith, just before the smith's StarSmithResult.
+    /// Causes reaction on client side: The client places a bench in front of the smith and plays the hammering strikes; the smith's own result line waits for the last strike.
+    /// </remarks>
+    public static async ValueTask SendStarSmithAnimationAsync(this IConnection? connection, ushort @objectId, byte @action, byte @strikes)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = StarSmithAnimationRef.Length;
+            var packet = new StarSmithAnimationRef(connection.Output.GetSpan(length)[..length]);
+            packet.ObjectId = @objectId;
+            packet.Action = @action;
+            packet.Strikes = @strikes;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="StarSmithRecolorRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

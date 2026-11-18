@@ -16,6 +16,9 @@ the bench, effects and auras come in the later PRs.
   (`TextModerationPlugIn.Check`); an empty one removes it. Each change writes the item's `ItemCustomization` (a new
   record is Common), raises its `Version` and calls `ItemCustomizationCache.Forget`, so everyone who sees the item gets
   it at once (EE 39). A lock is permanent for players (`Locked`, `LockedAt`); only an admin unlocks.
+- A done action first shows the smith hammering at a bench to the smith and everyone who sees them,
+  `C1 EE 92 StarSmithAnimation` (the smith's id as each receiver knows it, the action, 3 strikes); clients hold the
+  smith's result line until the last strike (PR 4).
 - The smith's level and experience are on `Character` (`StarSmithLevel`, 0 read as 1; `StarSmithExperience`).
   `StarSmithLevels`: 1 to 100, round(100 * L^1.6) to the next level; experience comes with recipes.
 - The hammer item and its place in Hanzo's shop are a data update (`AddStarSmithHammerUpdatePlugIn`).

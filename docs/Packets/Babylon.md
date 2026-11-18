@@ -55,6 +55,7 @@
   * [C1 EE 86 - PentagramErrtelsRequest (by client)](C1-EE-86-PentagramErrtelsRequest_by-client.md)
   * [C1 EE 87 - ElementInfoRequest (by client)](C1-EE-87-ElementInfoRequest_by-client.md)
   * [C1 EE 91 - StarSmithState (by server)](C1-EE-91-StarSmithState_by-server.md)
+  * [C1 EE 92 - StarSmithAnimation (by server)](C1-EE-92-StarSmithAnimation_by-server.md)
   * [C1 EE 93 - StarSmithRecolorRequest (by client)](C1-EE-93-StarSmithRecolorRequest_by-client.md)
   * [C1 EE 94 - StarSmithRenameRequest (by client)](C1-EE-94-StarSmithRenameRequest_by-client.md)
   * [C2 EE 95 - StarSmithLoreRequest (by client)](C2-EE-95-StarSmithLoreRequest_by-client.md)

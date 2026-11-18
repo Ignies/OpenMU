@@ -1623,6 +1623,32 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for StarSmithAnimation.
+    /// </summary>
+    [Test]
+    public void StarSmithAnimation_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = StarSmithAnimationRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'ObjectId' boundary
+        Assert.That(4 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ObjectId' exceeds packet boundary");
+        
+        // Validate field 'Action' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Action' exceeds packet boundary");
+        
+        // Validate field 'Strikes' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Strikes' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for StarSmithRecolorRequest.
     /// </summary>
     [Test]

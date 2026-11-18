@@ -18,6 +18,14 @@ public interface IStarSmithingViewPlugIn : IViewPlugIn
     ValueTask SendStateAsync(StarSmithState state);
 
     /// <summary>
+    /// Shows a smith hammering at the bench (EE 92), to the smith and every observer.
+    /// </summary>
+    /// <param name="smith">The smith.</param>
+    /// <param name="action">The action.</param>
+    /// <param name="strikes">How many strikes to play.</param>
+    ValueTask SendAnimationAsync(Player smith, StarSmithAction action, byte strikes);
+
+    /// <summary>
     /// Answers a smithing action (EE 97).
     /// </summary>
     /// <param name="action">The action.</param>

@@ -31,6 +31,9 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
     /// <summary>The look bytes a smith may set: the colours (0-13); the weapon effects (14-30) come with recipes.</summary>
     private const int ColourBytes = 14;
 
+    /// <summary>The hammer strikes of an action (EE 92); clients hold the result until the last one.</summary>
+    private const byte Strikes = 3;
+
     private readonly ConditionalWeakTable<Player, object> _watched = new();
 
     /// <summary>
@@ -74,7 +77,7 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
     }
 
     /// <summary>
-    /// Runs a smithing action on an item of the inventory and answers it (EE 97, then EE 91).
+    /// Runs a smithing action on an item of the inventory and answers it (EE 92 to everyone who sees the smith when done, EE 97, then EE 91).
     /// </summary>
     /// <param name="player">The smith.</param>
     /// <param name="action">The action.</param>
@@ -84,6 +87,11 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
     {
         var zenCost = action == StarSmithAction.Recolor ? this.Settings.RecolorZen : 0;
         var (result, refusal) = await this.RunAsync(player, action, slot, payload, zenCost).ConfigureAwait(false);
+        if (result == StarSmithResultCode.Done)
+        {
+            await player.ForEachWorldObserverAsync<IStarSmithingViewPlugIn>(p => p.SendAnimationAsync(player, action, Strikes), true).ConfigureAwait(false);
+        }
+
         await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendResultAsync(action, result, refusal, (uint)Math.Max(0, zenCost))).ConfigureAwait(false);
         await this.SendStateAsync(player).ConfigureAwait(false);
     }
