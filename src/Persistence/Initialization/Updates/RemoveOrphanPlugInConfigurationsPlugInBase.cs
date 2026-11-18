@@ -90,15 +90,17 @@ public abstract class RemoveOrphanPlugInConfigurationsPlugInBase : UpdatePlugInB
     public override DateTime CreatedAt => new(2026, 11, 17, 21, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
-    protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
+    protected override async ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        var orphans = gameConfiguration.PlugInConfigurations.Where(configuration => RemovedPlugInTypes.Contains(configuration.TypeId)).ToList();
+        // Every row, linked or not: the plugin manager reads them all, so taking one out of the collection is not enough.
+        var orphans = (await context.GetAsync<PlugInConfiguration>().ConfigureAwait(false))
+            .Where(configuration => RemovedPlugInTypes.Contains(configuration.TypeId))
+            .ToList();
         foreach (var orphan in orphans)
         {
             gameConfiguration.PlugInConfigurations.Remove(orphan);
+            await context.DeleteAsync(orphan).ConfigureAwait(false);
             this._logger.LogInformation("Removed the configuration of plugin {TypeId}, which this server no longer has.", orphan.TypeId);
         }
-
-        return ValueTask.CompletedTask;
     }
 }

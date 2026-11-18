@@ -45,11 +45,29 @@ public class RemoveOrphanPlugInConfigurationsTest
         var logged = new CapturingLoggerFactory();
         await new RemoveOrphanPlugInConfigurationsPlugInSeason6(logged).ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
 
-        var left = configuration.PlugInConfigurations.Select(c => c.TypeId).ToList();
+        // The plugin manager reads every row of the context, not the configuration's collection: unlinked is not removed.
+        var left = (await context.GetAsync<PlugInConfiguration>().ConfigureAwait(false)).Select(c => c.TypeId).ToList();
         Assert.That(left, Does.Not.Contain(PlasmaStorm));
         Assert.That(left, Does.Contain(known));
         Assert.That(left, Does.Contain(external));
+        Assert.That(configuration.PlugInConfigurations.Select(c => c.TypeId), Does.Not.Contain(PlasmaStorm));
         Assert.That(logged.Messages, Has.One.Contains(PlasmaStorm.ToString()));
+    }
+
+    /// <summary>
+    /// A row an earlier version of the update only unlinked from the configuration (left without one) is deleted too.
+    /// </summary>
+    [Test]
+    public async Task DeletesAnUnlinkedOrphanAsync()
+    {
+        var (context, configuration) = await CreateSeason6Async().ConfigureAwait(false);
+        using var _ = context;
+        var unlinked = context.CreateNew<PlugInConfiguration>();
+        unlinked.TypeId = PlasmaStorm;
+
+        await new RemoveOrphanPlugInConfigurationsPlugInSeason6().ApplyUpdateAsync(context, configuration).ConfigureAwait(false);
+
+        Assert.That((await context.GetAsync<PlugInConfiguration>().ConfigureAwait(false)).Select(c => c.TypeId), Does.Not.Contain(PlasmaStorm));
     }
 
     /// <summary>
