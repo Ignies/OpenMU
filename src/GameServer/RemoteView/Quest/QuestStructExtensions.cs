@@ -110,7 +110,7 @@ public static class QuestStructExtensions
         int r = 0;
         foreach (var reward in activeQuest.Rewards)
         {
-            reward.AssignTo(message.GetQuestReward(r), itemSerializer);
+            AssignReward(reward, message.GetQuestReward(r), itemSerializer);
             r++;
         }
 
@@ -169,6 +169,23 @@ public static class QuestStructExtensions
         message.RewardCount = (byte)r;
     }
 
+    /// <summary>
+    /// Assigns a reward to the reward struct of the quest state.
+    /// </summary>
+    /// <param name="questReward">The reward.</param>
+    /// <param name="rewardStruct">The reward struct.</param>
+    /// <param name="itemSerializer">The item serializer of the player.</param>
+    internal static void AssignReward(QuestReward questReward, Network.Packets.ServerToClient.QuestRewardRef rewardStruct, IItemSerializer itemSerializer)
+    {
+        rewardStruct.Type = questReward.RewardType.Convert();
+        rewardStruct.RewardCount = (uint)questReward.Value;
+        if (questReward.RewardType == QuestRewardType.Item && questReward.ItemReward is { } itemReward)
+        {
+            rewardStruct.RewardId = itemReward.Definition!.GetItemType();
+            SerializeIfItFits(rewardStruct.RewardedItemData, itemReward, itemSerializer);
+        }
+    }
+
     private static void AssignTo(this QuestItemRequirement itemRequirement, QuestConditionRef condition, RemotePlayer player)
     {
         condition.Type = ConditionType.Item;
@@ -177,7 +194,7 @@ public static class QuestStructExtensions
         condition.RequirementId = itemRequirement.Item!.GetItemType();
         var temporaryItem = new TemporaryItem { Definition = itemRequirement.Item };
         temporaryItem.Durability = temporaryItem.GetMaximumDurabilityOfOnePiece();
-        player.ItemSerializer.SerializeItem(condition.RequiredItemData, temporaryItem);
+        SerializeIfItFits(condition.RequiredItemData, temporaryItem, player.ItemSerializer);
     }
 
     private static void AssignTo(this QuestItemRequirement itemRequirement, QuestConditionExtendedRef condition, RemotePlayer player)
@@ -188,7 +205,7 @@ public static class QuestStructExtensions
         condition.RequirementId = itemRequirement.Item!.GetItemType();
         var temporaryItem = new TemporaryItem { Definition = itemRequirement.Item };
         temporaryItem.Durability = temporaryItem.GetMaximumDurabilityOfOnePiece();
-        player.ItemSerializer.SerializeItem(condition.RequiredItemData, temporaryItem);
+        SerializeIfItFits(condition.RequiredItemData, temporaryItem, player.ItemSerializer);
     }
 
     private static void AssignTo(this QuestMonsterKillRequirement killRequirement, QuestConditionRef condition, CharacterQuestState questState)
@@ -207,17 +224,6 @@ public static class QuestStructExtensions
         condition.CurrentCount = (uint)(questState.RequirementStates.FirstOrDefault(s => s.Requirement != null && s.Requirement.Equals(killRequirement))?.KillCount ?? 0);
     }
 
-    private static void AssignTo(this QuestReward questReward, Network.Packets.ServerToClient.QuestRewardRef rewardStruct, IItemSerializer itemSerializer)
-    {
-        rewardStruct.Type = questReward.RewardType.Convert();
-        rewardStruct.RewardCount = (uint)questReward.Value;
-        if (questReward.RewardType == QuestRewardType.Item && questReward.ItemReward is { } itemReward)
-        {
-            rewardStruct.RewardId = itemReward.Definition!.GetItemType();
-            itemSerializer.SerializeItem(rewardStruct.RewardedItemData, itemReward);
-        }
-    }
-
     private static void AssignTo(this QuestReward questReward, Network.Packets.ServerToClient.QuestRewardExtendedRef rewardStruct, IItemSerializer itemSerializer)
     {
         rewardStruct.Type = questReward.RewardType.Convert();
@@ -225,7 +231,19 @@ public static class QuestStructExtensions
         if (questReward.RewardType == QuestRewardType.Item && questReward.ItemReward is { } itemReward)
         {
             rewardStruct.RewardId = itemReward.Definition!.GetItemType();
-            itemSerializer.SerializeItem(rewardStruct.RewardedItemData, itemReward);
+            SerializeIfItFits(rewardStruct.RewardedItemData, itemReward, itemSerializer);
+        }
+    }
+
+    /// <summary>
+    /// Writes the item into the item field of a quest struct when it fits: a Season 21 item (W32, 32 bytes) doesn't fit
+    /// the field of the Season 6 structs (12 or 15 bytes), which then stays empty; the id of the struct names the item.
+    /// </summary>
+    private static void SerializeIfItFits(Span<byte> target, Item item, IItemSerializer itemSerializer)
+    {
+        if (itemSerializer.NeededSpace <= target.Length)
+        {
+            itemSerializer.SerializeItem(target, item);
         }
     }
 
