@@ -33,4 +33,10 @@ public class EvolutionTrialStep
     /// Gets or sets the monsters. A killed monster comes back after its respawn delay while the trial runs.
     /// </summary>
     public List<EvolutionTrialSpawn> Spawns { get; set; } = [];
+
+    /// <summary>
+    /// Gets or sets the magic effect which gives the player the New Power of the step for its time (Webzen guide 338: the
+    /// "Extra Nuke/Bolt/Wide DMG" of the fifth class quests); 0 for none.
+    /// </summary>
+    public short PowerEffect { get; set; }
 }

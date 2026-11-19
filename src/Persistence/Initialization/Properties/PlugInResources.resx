@@ -696,4 +696,10 @@
   <data name="AddStarSmithHammerUpdatePlugIn_Description" xml:space="preserve">
     <value>This update adds the Star Smith's Hammer (2/1000), the tool of the star smithing, and puts it on sale at Hanzo the Blacksmith in Lorencia for about 1,000,000 Zen. An existing hammer or offer stays.</value>
   </data>
+  <data name="AddSeason21NewPowerUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the New Power of Season 21</value>
+  </data>
+  <data name="AddSeason21NewPowerUpdatePlugIn_Description" xml:space="preserve">
+    <value>Adds the fifth class New Power where the Ability Enhancement Core is installed: the skills Nuke, Bolt and AoE (Activated) of the extra damage cards, the effects Extra Nuke/Bolt/AoE Damage, the effects of the 18 nuke, bolt and wide card options, and the one minute fifth class trial steps with their power. The New Power itself stays off until it is turned on.</value>
+  </data>
 </root>

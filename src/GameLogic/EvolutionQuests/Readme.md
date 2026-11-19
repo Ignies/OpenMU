@@ -32,7 +32,8 @@ Season 21 data (S21Emu `Quest/Quest.xml` 7-12, `QuestObjective.txt`, `QuestRewar
 - Starting a step on the Trial Area, or asking for it again while it's active, or entering the map with it active,
   spawns the step's monsters for the player (`EvolutionTrial`, `EvolutionQuestConfiguration.Steps`, the S21Emu
   `QuestInstanceManager.xml` positions, each within 3 tiles). They respawn until the trial ends: the time limit (10
-  minutes, 5 for quest 8 as its "time" condition), the player leaves the map, completes the quest or starts another.
+  minutes, 5 for quest 8 as its "time" condition, 60 s for 10-12, which give the step's New Power for that time,
+  `../NewPower/Readme.md`), the player leaves the map, completes the quest or starts another.
 - A kill of a trial monster counts for the party members of the killer on the map, too.
 - Experience hold (`HoldExperienceUntilFourthEvolution`, on by default): a character whose next class is a fourth
   evolution with a quest, and who meets its level rule, gains no experience until it evolved (a blue message once per

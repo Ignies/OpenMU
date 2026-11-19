@@ -23,6 +23,12 @@ public class EvolutionQuestConfiguration
     public const byte Season21TrialMap = 121;
 
     /// <summary>
+    /// The time of the fifth class steps: defeat Eunice within 60 s (S21Emu QuestInstanceManager.xml, quests 10-12,
+    /// Time="60000"; Webzen guide 338: "within 1 minute").
+    /// </summary>
+    public static readonly TimeSpan FifthTimeLimit = TimeSpan.FromSeconds(60);
+
+    /// <summary>
     /// Gets or sets a value indicating whether a third class character stops gaining experience at the level of the
     /// fourth evolution until it did the fourth class quest.
     /// </summary>
@@ -45,9 +51,9 @@ public class EvolutionQuestConfiguration
         Step(7, TimeSpan.FromMinutes(10), (763, 147, 29)),
         Step(8, TimeSpan.FromMinutes(5), (767, 148, 28), (767, 147, 28), (770, 146, 29), (770, 145, 30), (771, 146, 31), (771, 148, 39)),
         Step(9, TimeSpan.FromMinutes(10), (763, 147, 29), (767, 148, 28), (770, 146, 28), (771, 147, 31)),
-        FifthStep(10),
-        FifthStep(11),
-        FifthStep(12),
+        FifthStep(10, 421),
+        FifthStep(11, 422),
+        FifthStep(12, 423),
     ];
 
     /// <summary>
@@ -58,8 +64,12 @@ public class EvolutionQuestConfiguration
     /// <returns>The step, or <c>null</c>.</returns>
     public EvolutionTrialStep? GetStep(short group, short number) => this.Steps.FirstOrDefault(s => s.QuestGroup == group && s.QuestNumber == number);
 
-    private static EvolutionTrialStep FifthStep(short number)
-        => Step(number, TimeSpan.FromMinutes(10), (937, 103, 29), (895, 104, 28), (895, 103, 28), (896, 102, 29), (896, 101, 30), (897, 102, 31), (897, 104, 39));
+    private static EvolutionTrialStep FifthStep(short number, short powerEffect)
+    {
+        var step = Step(number, FifthTimeLimit, (937, 103, 29), (895, 104, 28), (895, 103, 28), (896, 102, 29), (896, 101, 30), (897, 102, 31), (897, 104, 39));
+        step.PowerEffect = powerEffect;
+        return step;
+    }
 
     private static EvolutionTrialStep Step(short number, TimeSpan timeLimit, params (short Monster, byte X, byte Y)[] spawns) => new()
     {

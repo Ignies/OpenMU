@@ -1806,5 +1806,23 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
             }
         }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Add the New Power of Season 21.
+        /// </summary>
+        public static string AddSeason21NewPowerUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("AddSeason21NewPowerUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Adds the fifth class New Power where the Ability Enhancement Core is installed: the skills Nuke, Bolt and AoE (Activated) of the extra damage cards, the effects Extra Nuke/Bolt/AoE Damage, the effects of the 18 nuke, bolt and wide card options, and the one minute fifth class trial steps with their power. The New Power itself stays off until it is turned on..
+        /// </summary>
+        public static string AddSeason21NewPowerUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("AddSeason21NewPowerUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+        
     }
 }

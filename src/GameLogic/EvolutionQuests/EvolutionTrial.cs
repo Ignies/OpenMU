@@ -122,6 +122,11 @@ internal sealed class EvolutionTrial : IEventStateProvider
         {
             _ = this.EndAfterTimeLimitAsync(this._cancellation.Token);
         }
+
+        if (this.Step.PowerEffect > 0)
+        {
+            await NewPower.NewPowerService.GrantAsync(this._owner, this.Step.PowerEffect, this.Step.TimeLimit).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -136,6 +141,11 @@ internal sealed class EvolutionTrial : IEventStateProvider
 
         this._ended = true;
         await this._cancellation.CancelAsync().ConfigureAwait(false);
+        if (this.Step.PowerEffect > 0)
+        {
+            await NewPower.NewPowerService.RemoveAsync(this._owner, this.Step.PowerEffect).ConfigureAwait(false);
+        }
+
         foreach (var monster in this._monsters.Where(m => !m.IsDisposed && !m.IsDisposing))
         {
             await this._map.RemoveAsync(monster).ConfigureAwait(false);

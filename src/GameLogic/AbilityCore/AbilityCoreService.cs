@@ -114,6 +114,15 @@ public static class AbilityCoreService
     }
 
     /// <summary>
+    /// Determines whether the skill is the skill of a skill card which takes effect.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="skill">The skill.</param>
+    /// <returns><c>true</c>, if it is a card skill of the player.</returns>
+    public static bool IsCardSkill(Player player, Skill skill)
+        => States.TryGetValue(player, out var state) && state.SkillSlots.ContainsKey(skill.Number);
+
+    /// <summary>
     /// Gets the value of a fixed option of the skill card whose skill this is, while the card takes effect.
     /// </summary>
     /// <param name="player">The player.</param>
