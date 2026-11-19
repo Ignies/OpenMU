@@ -399,7 +399,9 @@ the elemental and legendary columns and the buy prices.
   update "Fix the Grow Lancer buffs" (`Season21GrowLancerBuffs`), after S21Emu's Lua (`SkillCircleShield`,
   `SkillObsidian`) and `GameServerInfo - Skill.dat`: Circle Shield 30 seconds on the caster, with no stat (a PvP chance
   to lower the attacker's AG, which no OpenMU mechanism applies); Obsidian 120 seconds on the party within 5,
-  `SkillDamageBonus` + strength / 20 (the Lua's 360 seconds without a party can't be said with one duration); Wrath 15
+  `SkillDamageBonus` + strength / 20, and 360 seconds on a caster without a party (the Lua's SOLO_DURATION): the update
+  "Obsidian lasts longer without a party" gives every class the stat `IsInParty` (set by `Player.Party`) and makes the
+  duration 360 - 240 x `IsInParty`; Wrath 15
   seconds on the caster, `AttackDamageIncrease` x1.1 and `DefenseDecrement` x0.95 (Webzen's guide: combat power +10 %,
   defense -5 %; WrathConstA 50 and ConstB 30 name no stat). Burst (700/701, value 5) stays pending: no source says what
   its 5 raises.

@@ -1990,6 +1990,11 @@ public class Stats
     public static AttributeDefinition NearbyPartyMemberCount { get; } = new(new Guid("585CB9C8-FA23-4995-ABA9-3327321A6F44"), "Nearby party member count", "Defines how many party members are currently nearby.");
 
     /// <summary>
+    /// Gets the <see cref="IsInParty"/> attribute: 1 while the character is in a party, else 0 (a buff lasting longer solo, Obsidian).
+    /// </summary>
+    public static AttributeDefinition IsInParty { get; } = new(new Guid("23666197-7607-4D48-BE62-004B7663F188"), "Is in party", "1 while the character is in a party, else 0.");
+
+    /// <summary>
     /// Gets the <see cref="CraftingBonusPercentage"/> attribute which defines the percentage points which are added to the success rate of item craftings, e.g. of the chaos machine.
     /// </summary>
     /// <remarks>

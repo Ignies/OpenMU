@@ -94,6 +94,8 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
 
     private Character? _selectedCharacter;
 
+    private Party? _party;
+
     private ICustomPlugInContainer<IViewPlugIn>? _viewPlugIns;
 
     private DateTime _lastRegenerate = DateTime.UtcNow;
@@ -458,7 +460,19 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public Direction Rotation { get; set; }
 
     /// <inheritdoc/>
-    public Party? Party { get; set; }
+    /// <remarks>Also sets <see cref="Stats.IsInParty"/>.</remarks>
+    public Party? Party
+    {
+        get => this._party;
+        set
+        {
+            this._party = value;
+            if (this.Attributes is { } attributes)
+            {
+                attributes[Stats.IsInParty] = value is null ? 0 : 1;
+            }
+        }
+    }
 
     /// <inheritdoc/>
     public bool IsConnected => !this.PlayerState.CurrentState.IsDisconnectedOrFinished();
