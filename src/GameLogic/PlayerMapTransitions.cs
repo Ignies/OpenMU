@@ -365,10 +365,11 @@ internal sealed class PlayerMapTransitions
     }
 
     /// <summary>
-    /// Gets the terrain of a map which already runs on this game server, without creating it.
+    /// Gets the terrain of a map without creating it: the running map's, else the one of its definition, so the first
+    /// warp into a map which doesn't run here yet lands on a walkable tile too.
     /// </summary>
     /// <param name="mapDefinition">The definition of the map.</param>
-    /// <returns>The terrain; or <c>null</c>, if the map doesn't run here yet.</returns>
+    /// <returns>The terrain; or <c>null</c>, if there is no map definition.</returns>
     private async ValueTask<GameMapTerrain?> GetTerrainAsync(GameMapDefinition? mapDefinition)
     {
         if (mapDefinition is null)
@@ -382,7 +383,7 @@ internal sealed class PlayerMapTransitions
         }
 
         var map = await this._player.GameContext.GetMapAsync(mapDefinition.Number.ToUnsigned(), false).ConfigureAwait(false);
-        return map?.Terrain;
+        return map?.Terrain ?? new GameMapTerrain(mapDefinition);
     }
 
     /// <summary>
@@ -477,7 +478,7 @@ internal sealed class PlayerMapTransitions
     /// client the re-entry arrives later and on a fresh stack, with its F3 12 packet - but a
     /// connection-less player (an <see cref="Offline.OfflinePlayer"/>, i.e. a bot) gets it inline
     /// from <see cref="Offline.OfflineMapChangePlugIn"/>. Since <see cref="PlaceAtGateAsync"/>
-    /// lands on a blocked tile when the gate has no walkable one (or its map isn't loaded yet), a safezone spawn gate
+    /// lands on a blocked tile when the gate has no walkable one, a safezone spawn gate
     /// without a single walkable tile recursed until the stack overflowed - taking the whole game
     /// server process down with it. The recovery therefore warps at most once per such re-entry: a
     /// nested attempt places the player on a walkable tile of the map it already stands on instead.

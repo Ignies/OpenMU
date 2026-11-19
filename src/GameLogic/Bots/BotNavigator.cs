@@ -418,7 +418,7 @@ internal sealed class BotNavigator : AsyncDisposable
     /// terrain is static configuration, so it is parsed once and shared by every bot. Terrain edited
     /// through the admin panel therefore needs a server restart to be taken into account.
     /// Only maps whose spawn gate has *zero* walkable tiles are excluded. A gate with a few walkable
-    /// tiles is fine: PlaceAtGateAsync lands on one of them when the map runs on this server.
+    /// tiles is fine: PlaceAtGateAsync lands on one of them.
     /// </remarks>
     internal static bool HasWalkableSpawnGate(GameMapDefinition map)
     {
@@ -2141,8 +2141,8 @@ internal sealed class BotNavigator : AsyncDisposable
     /// <remarks>
     /// A candidate is deliberately rejected when any coordinate which
     /// <see cref="ExitGateExtensions.GetRandomPoint(ExitGate)"/> may select is blocked or cannot reach
-    /// the target. <see cref="Player.WarpToAsync(ExitGate)"/> avoids blocked tiles only when the target
-    /// map already runs on this server and never checks reachability, so accepting a partially usable
+    /// the target. <see cref="Player.WarpToAsync(ExitGate)"/> avoids blocked tiles but
+    /// never checks reachability, so accepting a partially usable
     /// gate would make following probabilistic. This fail-closed policy can reject a configured gate with many usable coordinates
     /// and one bad coordinate; keeping that trade-off local avoids changing map-transition behavior for
     /// other warp features.
