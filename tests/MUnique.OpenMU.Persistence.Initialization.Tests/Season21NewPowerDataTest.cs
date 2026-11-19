@@ -32,7 +32,7 @@ internal class Season21NewPowerDataTest
     public async Task NewSeasonSixDatabaseIsInstalledAndUnchangedAsync()
     {
         var update = new AddSeason21NewPowerUpdatePlugIn();
-        Assert.That((update.IsMandatory, update.RunsOnNewDatabase), Is.EqualTo((true, true)));
+        Assert.That((update.IsMandatory, update.RunsOnNewDatabase, update.Version), Is.EqualTo((true, true, 2)));
 
         var (context, gameConfiguration) = await CreateSeason6Async().ConfigureAwait(false);
 
@@ -60,6 +60,9 @@ internal class Season21NewPowerDataTest
         Assert.That(definition.SkillType, Is.EqualTo(SkillType.Other));
         Assert.That(definition.MagicEffectDef?.Number, Is.EqualTo(effect));
         Assert.That(definition.MagicEffectDef!.InformObservers, Is.True);
+
+        // An item skill is only given to the classes it qualifies (SkillList.TryAddItemSkill): the cards are for every class.
+        Assert.That(definition.QualifiedCharacters, Is.EquivalentTo(gameConfiguration.CharacterClasses));
         Assert.That(CoreConfiguration(gameConfiguration).Cards.Single(c => c.ItemNumber == card).Skill, Is.EqualTo(skill));
     }
 
@@ -100,8 +103,10 @@ internal class Season21NewPowerDataTest
         // An installed world whose options have no effect gets them from this update.
         mapped.PowerUpDefinition = null;
         mapped.LevelDependentOptions.Clear();
+        gameConfiguration.Skills.Single(s => s.Number == 2086).QualifiedCharacters.Clear();
         await new AddSeason21NewPowerUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.That(mapped.PowerUpDefinition?.TargetAttribute, Is.EqualTo(target));
+        Assert.That(gameConfiguration.Skills.Single(s => s.Number == 2086).QualifiedCharacters, Is.EquivalentTo(gameConfiguration.CharacterClasses));
     }
 
     /// <summary>

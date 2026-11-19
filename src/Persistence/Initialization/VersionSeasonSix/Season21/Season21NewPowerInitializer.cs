@@ -86,13 +86,18 @@ internal sealed class Season21NewPowerInitializer : SkillsInitializerBase
             this.GameConfiguration.MagicEffects.Add(effect);
         }
 
-        if (this.GameConfiguration.Skills.Any(s => s.Number == kind.Skill))
+        if (this.GameConfiguration.Skills.All(s => s.Number != kind.Skill))
         {
-            return;
+            this.CreateSkill((SkillNumber)kind.Skill, Season21SkillNames.ResourceManager.GetLocalizedString($"Skill{kind.Skill}"), skillType: SkillType.Other);
+            this.GameConfiguration.Skills.First(s => s.Number == kind.Skill).MagicEffectDef = effect;
         }
 
-        this.CreateSkill((SkillNumber)kind.Skill, Season21SkillNames.ResourceManager.GetLocalizedString($"Skill{kind.Skill}"), skillType: SkillType.Other);
-        this.GameConfiguration.Skills.First(s => s.Number == kind.Skill).MagicEffectDef = effect;
+        // The extra damage cards are for every class, and an item skill only goes to the classes it qualifies.
+        var skill = this.GameConfiguration.Skills.First(s => s.Number == kind.Skill);
+        foreach (var characterClass in this.GameConfiguration.CharacterClasses.Where(c => !skill.QualifiedCharacters.Contains(c)).ToList())
+        {
+            skill.QualifiedCharacters.Add(characterClass);
+        }
     }
 
     private void LinkCardSkills()
