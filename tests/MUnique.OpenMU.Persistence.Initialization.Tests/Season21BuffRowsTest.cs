@@ -20,11 +20,11 @@ internal class Season21BuffRowsTest
     /// <summary>The Season 21 skills which are still an <c>Other</c> with an effect (no duration yet), to be fixed.</summary>
     private static readonly short[] Pending =
     [
-        244, 289, 298, 406, 430, 433, 459, 460, 461, 463, 652, 700, 701, 740,
+        244, 289, 298, 406, 459, 460, 461, 463, 652, 700, 701, 740,
         770, 771, 772, 773, 828, 829, 851, 852, 853, 854, 857, 861, 862, 863,
         865, 866, 867, 868, 869, 870, 885, 886, 887, 905, 906, 912, 913, 914,
-        915, 928, 1224, 1225, 1228, 1229, 1230, 2009, 2010, 2011, 2014, 2015, 2016, 2021,
-        2024, 2026, 2027, 2032, 2090, 2097, 2098, 2099, 2100, 2108,
+        915, 928, 2009, 2010, 2011, 2014, 2015, 2016, 2021,
+        2024, 2032, 2090, 2097, 2098, 2099, 2100, 2108,
     ];
 
     /// <summary>
@@ -45,6 +45,7 @@ internal class Season21BuffRowsTest
         await new FixSeason21SlayerAndRageFighterBuffsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await new FixSeason21GrowLancerBuffsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await new FixSeason21DarkKnightBuffsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21FairyElfBuffsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         var others = gameConfiguration.Skills
             .Where(s => !before.Contains(s.Number) && s.SkillType == SkillType.Other && s.MagicEffectDef is not null && !Pending.Contains(s.Number))

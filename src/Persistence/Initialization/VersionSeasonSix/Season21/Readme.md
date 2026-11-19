@@ -414,9 +414,17 @@ the elemental and legendary columns and the buy prices.
   and `ElementDefenseIncrease` + (30 + dexterity / 60) %; Strong Blessing 300 seconds on the party within 10,
   `BaseDamageBonus` + 250 (taking a share of the party's damage and turning their health into the caster's have no
   OpenMU mechanism yet).
-* 66 more Season 21 skills are still an `Other` with an effect that has no duration (the Magic Gladiator's charges,
+* The Fairy Elf's Bless (430, 433, 1230), Elemental Damage Enhancement (2026, 1224), Elemental Defense Enhancement
+  (2027, 1225) and the Greater Damage (1228) and Greater Defense (1229) enhancement rows get theirs from "Fix the Fairy
+  Elf buffs" (`Season21FairyElfBuffs`), after S21Emu's Lua: buffs on a player of the caster's choice; Bless
+  (`SkillBless`) 300 seconds, strength, agility, vitality, energy and command + base energy / 100 (the base, as a total
+  would feed itself on a self cast); Elemental Damage (`SkillElementalDamageEnhanced`) 60 seconds, `ElementDamageBonus`
+  + 3 + energy / 10; Elemental Defense (`SkillElementalDefenseEnhanced`) 60 seconds, `ElementDefense` + 4 + energy / 6;
+  the Greater Damage and Defense rows copy Season 6's effect 1 and 2. Evasion (652) and Dex Booster (2024) stay
+  pending: S21Emu has no values for them.
+* 57 more Season 21 skills are still an `Other` with an effect that has no duration (the Magic Gladiator's charges,
   ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is fixed as the Rune Wizard's,
-  the Slayer's, the Grow Lancer's and the Dark Knight's were.
+  the Slayer's, the Grow Lancer's, the Dark Knight's and the Fairy Elf's were.
 
 Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
 damage reduction table, the Ability Enhancement Core (track T, later).

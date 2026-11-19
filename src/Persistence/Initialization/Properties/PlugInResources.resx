@@ -688,6 +688,12 @@
   <data name="FixSeason21ObsidianSoloDurationUpdatePlugIn_Description" xml:space="preserve">
     <value>Gives every class the attribute 'Is in party' and makes the Grow Lancer's Obsidian last 360 seconds on a caster without a party and 120 seconds on a party (S21Emu SkillObsidian). An operator's own duration stays. Optional.</value>
   </data>
+  <data name="FixSeason21FairyElfBuffsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Fix the Fairy Elf buffs (Season 21 data)</value>
+  </data>
+  <data name="FixSeason21FairyElfBuffsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Gives the effects of Bless, Elemental Damage Enhancement, Elemental Defense Enhancement and the Greater Damage and Defense enhancement rows their duration and value (S21Emu: Bless 300 seconds, every stat + base energy / 100; Elemental Damage 60 seconds, elemental damage + 3 + energy / 10; Elemental Defense 60 seconds, elemental defense + 4 + energy / 6; Greater Damage and Defense as Season 6's) and makes the skills buffs on a player within range. An operator's own duration or skill type stays. Optional.</value>
+  </data>
   <data name="FixSeason21GrowLancerBuffsUpdatePlugIn_Name" xml:space="preserve">
     <value>Fix the Grow Lancer buffs (Season 21 data)</value>
   </data>

@@ -84,6 +84,7 @@ public class Season21SkillsInGameTest
         await new FixSeason21GrowLancerBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21DarkKnightBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21ObsidianSoloDurationUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21FairyElfBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
 
         var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
@@ -356,6 +357,30 @@ public class Season21SkillsInGameTest
 
             Assert.That(player.MagicEffectList.ContainsEffect(effect), Is.True, $"skill {skill}, effect {effect}");
         }
+    }
+
+    /// <summary>
+    /// The Fairy Elf's Bless, Elemental Damage and Defense Enhancement and the Greater Damage and Defense enhancement rows put
+    /// their effect on the player they are cast on; Bless raises the strength by base energy / 100.
+    /// </summary>
+    [Test]
+    public async ValueTask FairyElfBuffsPutTheirEffectOnTheTargetAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.FairyElf, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(player).ConfigureAwait(false);
+        var strength = player.Attributes![Stats.TotalStrength];
+        foreach (var (skill, effect) in new (short, short)[] { (430, 142), (2026, 396), (2027, 397), (1228, 400), (1229, 401) })
+        {
+            await this.LearnAsync(player, skill, 0).ConfigureAwait(false);
+            player.Attributes[Stats.CurrentMana] = 1000;
+            player.Attributes[Stats.CurrentAbility] = 200;
+
+            await new TargetedSkillDefaultPlugin().PerformSkillAsync(player, player, (ushort)skill).ConfigureAwait(false);
+
+            Assert.That(player.MagicEffectList.ContainsEffect(effect), Is.True, $"skill {skill}, effect {effect}");
+        }
+
+        Assert.That(player.Attributes[Stats.TotalStrength], Is.EqualTo(strength + (player.Attributes[Stats.BaseEnergy] / 100)).Within(0.01));
     }
 
     /// <summary>

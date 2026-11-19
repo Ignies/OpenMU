@@ -1771,6 +1771,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Fix the Fairy Elf buffs (Season 21 data).
+        /// </summary>
+        public static string FixSeason21FairyElfBuffsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("FixSeason21FairyElfBuffsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to the Fairy Elf buffs fix description.
+        /// </summary>
+        public static string FixSeason21FairyElfBuffsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("FixSeason21FairyElfBuffsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Obsidian lasts longer without a party (Season 21 data).
         /// </summary>
         public static string FixSeason21ObsidianSoloDurationUpdatePlugIn_Name {
