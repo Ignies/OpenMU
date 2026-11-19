@@ -676,6 +676,12 @@
   <data name="FixSeason21SlayerAndRageFighterBuffsUpdatePlugIn_Description" xml:space="preserve">
     <value>Gives the effects of Detection and Demolish and of their Strengthener and Mastery their duration and value (S21Emu: 60 seconds; Demolish adds (20 + energy / 50)% defense ignore chance) and makes the skills buffs: Detection on the caster, Demolish on the party within 5. Blood Howling and its Strengthener become buffs on the caster (60 seconds where none is set). An operator's own duration or skill type stays. Optional.</value>
   </data>
+  <data name="FixSeason21DarkKnightBuffsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Fix the Dark Knight buffs (Season 21 data)</value>
+  </data>
+  <data name="FixSeason21DarkKnightBuffsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Gives the effects of Greater Life Mastered, Sword's Fury, Firm Belief and Strong Blessing and of their master rows their duration and value (S21Emu: Greater Life Mastered as Greater Fortitude; Sword's Fury 60 seconds, attack skills reach 1 tile further; Firm Belief 120 seconds, base defense + 35 and elemental defense + (30 + dexterity / 60) %; Strong Blessing 300 seconds, damage + 250) and makes the skills buffs: Sword's Fury and Firm Belief on the caster, Greater Life and Strong Blessing on the party (Strong Blessing within 10). An operator's own duration or skill type stays. Optional.</value>
+  </data>
   <data name="FixSeason21GrowLancerBuffsUpdatePlugIn_Name" xml:space="preserve">
     <value>Fix the Grow Lancer buffs (Season 21 data)</value>
   </data>
