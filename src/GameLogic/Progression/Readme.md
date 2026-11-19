@@ -85,6 +85,8 @@ every number:
 - **Star power**: 1% more damage against monsters and 1% less damage from them per star, up to 10%
   (`Stats.FinalDamageIncreasePvm`, `Stats.FinalDamageReceiveDecrementPvm`); with `StarPowerInPvp` it applies to all
   damage instead. **Items** check the power level E (capped at 400) against their level requirement in Stars.
+  A level requirement above 400 is a Season 21 total level (Wings of Virtue 12/180: 1200) and is read like an
+  evolution in every mode (`EvolutionRules.IsMet`, `PlayerItemExtensions.CompliesRequirements`).
 - **Turning the plugin off** puts the stored caps back at once and takes the monster and star numbers off
   (`IDeactivationAwareFeaturePlugIn`).
 

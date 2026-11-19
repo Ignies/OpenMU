@@ -5,6 +5,7 @@
 namespace MUnique.OpenMU.GameLogic;
 
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Progression;
 using MUnique.OpenMU.GameLogic.Views.Inventory;
@@ -28,6 +29,18 @@ public static class PlayerItemExtensions
         var progressionLevel = player.GetItemRequirementLevel();
         foreach (var requirement in item.GetRequirements(player.GameContext.Configuration))
         {
+            if (requirement.Attr == Stats.Level && requirement.Value > ProgressionMapping.Season21LevelCap)
+            {
+                // A Season 21 total level (Wings of Virtue: 1200), read through the world's mode like an evolution.
+                var attributes = player.Attributes!;
+                if (!EvolutionRules.IsMet(requirement.Value, (int)attributes[Stats.Level], (int)attributes[Stats.MasterLevel], (int)attributes[Stats.Resets], ProgressionFeaturePlugIn.GetConfiguration(player.GameContext)))
+                {
+                    return false;
+                }
+
+                continue;
+            }
+
             var value = requirement.Attr == Stats.Level && progressionLevel is { } level ? level : player.Attributes![requirement.Attr];
             if (value < requirement.Value)
             {
