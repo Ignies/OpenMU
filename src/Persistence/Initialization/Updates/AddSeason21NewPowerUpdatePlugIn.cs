@@ -34,6 +34,13 @@ public class AddSeason21NewPowerUpdatePlugIn : UpdatePlugInBase
     public override bool RunsOnNewDatabase => true;
 
     /// <inheritdoc />
+    /// <remarks>Version 2 qualifies the skills for every class: an item skill only goes to the classes it qualifies.</remarks>
+    public override int Version => 2;
+
+    /// <inheritdoc />
+    public override DateTime UpdatedAt => new(2026, 11, 19, 8, 0, 0, DateTimeKind.Utc);
+
+    /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 11, 19, 1, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
