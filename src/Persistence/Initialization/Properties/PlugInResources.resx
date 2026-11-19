@@ -688,6 +688,12 @@
   <data name="FixSeason21ObsidianSoloDurationUpdatePlugIn_Description" xml:space="preserve">
     <value>Gives every class the attribute 'Is in party' and makes the Grow Lancer's Obsidian last 360 seconds on a caster without a party and 120 seconds on a party (S21Emu SkillObsidian). An operator's own duration stays. Optional.</value>
   </data>
+  <data name="FixSeason21MagicGladiatorBuffsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Fix the Magic Gladiator charges (Season 21 data)</value>
+  </data>
+  <data name="FixSeason21MagicGladiatorBuffsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Gives Spiral, Crusher and Elemental Charge and their tiers their effect duration (S21Emu: 60 + energy / 10 seconds on the caster) and makes them buffs on the caster. An operator's own duration or skill type stays. Optional.</value>
+  </data>
   <data name="FixSeason21DarkWizardBuffsUpdatePlugIn_Name" xml:space="preserve">
     <value>Fix the Dark Wizard buffs (Season 21 data)</value>
   </data>

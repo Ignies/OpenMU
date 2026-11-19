@@ -86,6 +86,7 @@ public class Season21SkillsInGameTest
         await new FixSeason21ObsidianSoloDurationUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21FairyElfBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21DarkWizardBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21MagicGladiatorBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
 
         var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
@@ -382,6 +383,30 @@ public class Season21SkillsInGameTest
         }
 
         Assert.That(player.Attributes[Stats.TotalStrength], Is.EqualTo(strength + (player.Attributes[Stats.BaseEnergy] / 100)).Within(0.01));
+    }
+
+    /// <summary>
+    /// The Magic Gladiator's charges (Spiral, Crusher and Elemental Charge and their tiers) put their effect on the caster
+    /// for 60 + energy / 10 seconds (S21Emu <c>SkillSpiralCharge</c>, <c>SkillCrusherCharge</c>, <c>SkillElementalCharge</c>).
+    /// </summary>
+    [Test]
+    public async ValueTask MagicGladiatorChargesLastByEnergyAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.MagicGladiator, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(player).ConfigureAwait(false);
+        var seconds = 60 + (player.Attributes![Stats.TotalEnergy] / 10);
+        foreach (var (skill, effect) in new (short, short)[] { (2014, 365), (2015, 366), (2016, 367), (865, 368), (866, 369), (867, 370), (868, 371), (869, 372), (870, 373) })
+        {
+            await this.LearnAsync(player, skill, 0).ConfigureAwait(false);
+            player.Attributes[Stats.CurrentMana] = 1000;
+            player.Attributes[Stats.CurrentAbility] = 200;
+
+            await new TargetedSkillDefaultPlugin().PerformSkillAsync(player, player, (ushort)skill).ConfigureAwait(false);
+
+            var active = player.MagicEffectList.GetActiveEffectsSnapshot().FirstOrDefault(e => e.Definition.Number == effect);
+            Assert.That(active, Is.Not.Null, $"skill {skill}, effect {effect}");
+            Assert.That(active!.Duration.TotalSeconds, Is.EqualTo(seconds).Within(1), $"skill {skill}");
+        }
     }
 
     /// <summary>

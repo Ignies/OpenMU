@@ -426,9 +426,13 @@ the elemental and legendary columns and the buy prices.
   S21Emu's Effect.txt puts effect 140 in Mana Shield's group (4) and `SkillManaShield` computes one value for every
   tier, so the skill is cast as Mana Shield (16) and effect 140 copies effect 4. Blessing of Experience (298) and
   Archangel Will (740) stay pending: S21Emu gives no value for the first and names no stat for Archangel Will's 200 and 50.
-* 56 more Season 21 skills are still an `Other` with an effect that has no duration (the Magic Gladiator's charges,
+* The Magic Gladiator's Spiral (2014; 865, 866), Crusher (2015; 867, 868) and Elemental Charge (2016; 869, 870) get
+  theirs from "Fix the Magic Gladiator charges" (`Season21MagicGladiatorBuffs`), after S21Emu's `SkillSpiralCharge`,
+  `SkillCrusherCharge` and `SkillElementalCharge`: buffs on the caster for 60 + energy / 10 seconds, with no value. What a
+  charge does to the attack it powers has no OpenMU mechanism yet.
+* 47 more Season 21 skills are still an `Other` with an effect that has no duration (the Summoner's curses,
   ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is fixed as the Rune Wizard's,
-  the Slayer's, the Grow Lancer's, the Dark Knight's, the Fairy Elf's and the Dark Wizard's were.
+  the Slayer's, the Grow Lancer's, the Dark Knight's, the Fairy Elf's, the Dark Wizard's and the Magic Gladiator's were.
 
 Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
 damage reduction table, the Ability Enhancement Core (track T, later).

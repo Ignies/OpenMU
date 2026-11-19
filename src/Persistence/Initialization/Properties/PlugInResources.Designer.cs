@@ -1771,6 +1771,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Fix the Magic Gladiator charges (Season 21 data).
+        /// </summary>
+        public static string FixSeason21MagicGladiatorBuffsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("FixSeason21MagicGladiatorBuffsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to the Magic Gladiator charges fix description.
+        /// </summary>
+        public static string FixSeason21MagicGladiatorBuffsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("FixSeason21MagicGladiatorBuffsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Fix the Dark Wizard buffs (Season 21 data).
         /// </summary>
         public static string FixSeason21DarkWizardBuffsUpdatePlugIn_Name {
