@@ -19,8 +19,8 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// <item>Circle Shield (<c>SkillCircleShield</c>): value 10, 30 seconds (CircleShieldConstA 10, ConstB 40, TimeConstA 30). It is a
 /// PvP skill which may lower the attacker's AG, which no OpenMU mechanism applies: the buff lasts, with no stat.</item>
 /// <item>Obsidian (<c>SkillObsidian</c>): skill damage + strength / 20 (ObsidianConstA 20) on the caster's party, 120 seconds
-/// (ObsidianTimeConstA 120; the Lua gives a caster without a party 360, which one duration can't say).
-/// Skill.xml <c>Radio</c> 5. Read as <see cref="Stats.SkillDamageBonus"/>.</item>
+/// (ObsidianTimeConstA 120); a caster without a party gets 360 (SOLO_DURATION), read as 360 - 240 x
+/// <see cref="Stats.IsInParty"/> (<see cref="ApplySoloDuration"/>). Skill.xml <c>Radio</c> 5. Read as <see cref="Stats.SkillDamageBonus"/>.</item>
 /// <item>Wrath: 15 seconds (WrathTimeConstA 15); combat power +10 % for defense -5 % (Webzen's Grow Lancer guide and its
 /// Season 19 renewal), read as <see cref="Stats.AttackDamageIncrease"/> 1.1 and <see cref="Stats.DefenseDecrement"/> 0.95.
 /// WrathConstA 50 and ConstB 30 name no stat in any source and are left out.</item>
@@ -31,6 +31,7 @@ internal static class Season21GrowLancerBuffs
 {
     private const float CircleShieldSeconds = 30;
     private const float ObsidianSeconds = 120;
+    private const float ObsidianSoloSeconds = 360;
     private const float StrengthPerSkillDamage = 20;
     private const float WrathSeconds = 15;
     private const float WrathDamage = 1.1f;
@@ -88,6 +89,38 @@ internal static class Season21GrowLancerBuffs
             {
                 MakeBuff(skill, SkillTarget.ImplicitParty);
             }
+        }
+    }
+
+    /// <summary>
+    /// Gives every class <see cref="Stats.IsInParty"/> and makes Obsidian's party duration (still the 120 seconds of
+    /// <see cref="Apply"/>) 360 seconds without a party: 360 - 240 x <see cref="Stats.IsInParty"/>. An operator's own duration stays.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="gameConfiguration">The game configuration.</param>
+    public static void ApplySoloDuration(IContext context, GameConfiguration gameConfiguration)
+    {
+        var isInParty = gameConfiguration.Attributes.FirstOrDefault(a => a.Id == Stats.IsInParty.Id);
+        if (isInParty is null)
+        {
+            isInParty = context.CreateNew<AttributeDefinition>(Stats.IsInParty.Id, Stats.IsInParty.Designation, Stats.IsInParty.Description);
+            gameConfiguration.Attributes.Add(isInParty);
+        }
+
+        foreach (var characterClass in gameConfiguration.CharacterClasses.Where(c => c.StatAttributes.All(s => s.Attribute != isInParty)))
+        {
+            characterClass.StatAttributes.Add(context.CreateNew<StatAttributeDefinition>(isInParty, 0, false));
+        }
+
+        foreach (var effect in gameConfiguration.MagicEffects.Where(e => ObsidianEffects.Contains(e.Number)
+                     && e.Duration is { RelatedValues.Count: 0 } duration && duration.ConstantValue.Value == ObsidianSeconds))
+        {
+            effect.Duration!.ConstantValue.Value = ObsidianSoloSeconds;
+            var inParty = context.CreateNew<AttributeRelationship>();
+            inParty.InputAttribute = isInParty;
+            inParty.InputOperator = InputOperator.Multiply;
+            inParty.InputOperand = ObsidianSeconds - ObsidianSoloSeconds;
+            effect.Duration.RelatedValues.Add(inParty);
         }
     }
 

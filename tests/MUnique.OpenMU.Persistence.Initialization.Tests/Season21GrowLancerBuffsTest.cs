@@ -63,6 +63,30 @@ internal class Season21GrowLancerBuffsTest
     }
 
     /// <summary>
+    /// Obsidian lasts 360 seconds without a party and 120 on one (S21Emu SOLO_DURATION, PARTY_DURATION): 360 - 240 x
+    /// "Is in party", a stat every class has. An operator's own duration stays.
+    /// </summary>
+    [Test]
+    public async Task ObsidianLastsLongerWithoutAPartyAsync()
+    {
+        var (context, gameConfiguration) = await CreateFixedAsync().ConfigureAwait(false);
+        var improved = gameConfiguration.Skills.Single(s => s.Number == 693).MagicEffectDef!;
+        improved.Duration!.ConstantValue.Value = 99;
+
+        await new FixSeason21ObsidianSoloDurationUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var duration = gameConfiguration.Skills.Single(s => s.Number == 273).MagicEffectDef!.Duration!;
+        Assert.That(duration.ConstantValue.Value, Is.EqualTo(360));
+        var inParty = duration.RelatedValues.Single();
+        Assert.That(inParty.InputAttribute!.Id, Is.EqualTo(Stats.IsInParty.Id));
+        Assert.That(inParty.InputOperator, Is.EqualTo(InputOperator.Multiply));
+        Assert.That(inParty.InputOperand, Is.EqualTo(-240));
+        Assert.That(gameConfiguration.CharacterClasses.Where(c => c.StatAttributes.All(s => s.Attribute!.Id != Stats.IsInParty.Id)), Is.Empty);
+        Assert.That(improved.Duration.ConstantValue.Value, Is.EqualTo(99));
+        Assert.That(improved.Duration.RelatedValues, Is.Empty);
+    }
+
+    /// <summary>
     /// Wrath: on the caster for 15 seconds, 10 % more attack damage and 5 % less defense.
     /// </summary>
     [Test]

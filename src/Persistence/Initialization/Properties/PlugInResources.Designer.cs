@@ -1771,6 +1771,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Obsidian lasts longer without a party (Season 21 data).
+        /// </summary>
+        public static string FixSeason21ObsidianSoloDurationUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("FixSeason21ObsidianSoloDurationUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to the Obsidian solo duration update description.
+        /// </summary>
+        public static string FixSeason21ObsidianSoloDurationUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("FixSeason21ObsidianSoloDurationUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Fix the Grow Lancer buffs (Season 21 data).
         /// </summary>
         public static string FixSeason21GrowLancerBuffsUpdatePlugIn_Name {

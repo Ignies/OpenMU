@@ -83,6 +83,7 @@ public class Season21SkillsInGameTest
         await new AddSeason21SkillsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21GrowLancerBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21DarkKnightBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21ObsidianSoloDurationUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
 
         var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
@@ -358,6 +359,27 @@ public class Season21SkillsInGameTest
     }
 
     /// <summary>
+    /// Obsidian lasts 360 seconds on a Grow Lancer without a party and 120 seconds on a party (S21Emu <c>SkillObsidian</c>).
+    /// </summary>
+    [Test]
+    public async ValueTask ObsidianLastsLongerWithoutAPartyAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.GrowLancer, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(player).ConfigureAwait(false);
+        await this.LearnAsync(player, 273, 0).ConfigureAwait(false);
+
+        Assert.That(await ObsidianSecondsAsync(player).ConfigureAwait(false), Is.EqualTo(360).Within(1), "without a party");
+
+        var mate = await this.CreatePlayerAsync(BaseClassCode.GrowLancer, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(mate).ConfigureAwait(false);
+        var party = this._gameContext.PartyManager.CreateParty();
+        await party.AddAsync(player).ConfigureAwait(false);
+        await party.AddAsync(mate).ConfigureAwait(false);
+
+        Assert.That(await ObsidianSecondsAsync(player).ConfigureAwait(false), Is.EqualTo(120).Within(1), "on a party");
+    }
+
+    /// <summary>
     /// The Dark Knight's Sword's Fury, Firm Belief and Strong Blessing put their effect on the caster; under Sword's Fury an
     /// attack skill reaches 1 tile further, a buff does not.
     /// </summary>
@@ -397,6 +419,14 @@ public class Season21SkillsInGameTest
         target.Setup(t => t.Position).Returns(player.Position);
         target.Setup(t => t.Attributes).Returns(new Mock<IAttributeSystem>().Object);
         await new TargetedSkillDefaultPlugin().PerformSkillAsync(player, target.Object, (ushort)skill.Number).ConfigureAwait(false);
+    }
+
+    private static async ValueTask<double> ObsidianSecondsAsync(Player player)
+    {
+        player.Attributes![Stats.CurrentMana] = 1000;
+        player.Attributes[Stats.CurrentAbility] = 200;
+        await new TargetedSkillDefaultPlugin().PerformSkillAsync(player, player, 273).ConfigureAwait(false);
+        return player.MagicEffectList.GetActiveEffectsSnapshot().Single(e => e.Definition.Number == 217).Duration.TotalSeconds;
     }
 
     private async ValueTask LearnAsync(Player player, short skillNumber, int level)

@@ -682,6 +682,12 @@
   <data name="FixSeason21DarkKnightBuffsUpdatePlugIn_Description" xml:space="preserve">
     <value>Gives the effects of Greater Life Mastered, Sword's Fury, Firm Belief and Strong Blessing and of their master rows their duration and value (S21Emu: Greater Life Mastered as Greater Fortitude; Sword's Fury 60 seconds, attack skills reach 1 tile further; Firm Belief 120 seconds, base defense + 35 and elemental defense + (30 + dexterity / 60) %; Strong Blessing 300 seconds, damage + 250) and makes the skills buffs: Sword's Fury and Firm Belief on the caster, Greater Life and Strong Blessing on the party (Strong Blessing within 10). An operator's own duration or skill type stays. Optional.</value>
   </data>
+  <data name="FixSeason21ObsidianSoloDurationUpdatePlugIn_Name" xml:space="preserve">
+    <value>Obsidian lasts longer without a party (Season 21 data)</value>
+  </data>
+  <data name="FixSeason21ObsidianSoloDurationUpdatePlugIn_Description" xml:space="preserve">
+    <value>Gives every class the attribute 'Is in party' and makes the Grow Lancer's Obsidian last 360 seconds on a caster without a party and 120 seconds on a party (S21Emu SkillObsidian). An operator's own duration stays. Optional.</value>
+  </data>
   <data name="FixSeason21GrowLancerBuffsUpdatePlugIn_Name" xml:space="preserve">
     <value>Fix the Grow Lancer buffs (Season 21 data)</value>
   </data>
