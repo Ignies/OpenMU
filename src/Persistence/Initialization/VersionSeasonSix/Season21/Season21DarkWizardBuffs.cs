@@ -23,6 +23,12 @@ internal static class Season21DarkWizardBuffs
     private const short ManaShieldMastered = 406;
 
     /// <summary>
+    /// Gets the skills which are buffs cast on an explicit target, as Mana Shield. The client's skill rows read them: Season 6
+    /// knows 406 as an attack.
+    /// </summary>
+    public static short[] TargetSkills { get; } = [ManaShieldMastered];
+
+    /// <summary>
     /// Gives Mana Shield Mastered's effect, if it has no duration, Mana Shield's, and makes the skill, if it is no buff yet,
     /// a buff cast as Mana Shield. An operator's own duration or skill type stays.
     /// </summary>
