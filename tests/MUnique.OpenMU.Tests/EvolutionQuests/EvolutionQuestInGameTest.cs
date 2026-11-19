@@ -12,6 +12,7 @@ using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Classes;
 using MUnique.OpenMU.GameLogic.EvolutionQuests;
+using MUnique.OpenMU.GameLogic.NewPower;
 using MUnique.OpenMU.GameLogic.NPC;
 using MUnique.OpenMU.GameLogic.PlayerActions;
 using MUnique.OpenMU.GameLogic.PlayerActions.Character;
@@ -36,6 +37,10 @@ public class EvolutionQuestInGameTest
 {
     private const short Group = EvolutionQuestConfiguration.Season21QuestGroup;
 
+    private const short EuniceVillage = 939;
+
+    private const short EuniceQuest = 941;
+
     private readonly QuestMonsterKillCountPlugIn _killCounter = new();
 
     private GameConfiguration _gameConfiguration = null!;
@@ -59,6 +64,7 @@ public class EvolutionQuestInGameTest
         await new AddSeason21ClassesUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new AddSeason21ItemCatalogUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new AddSeason21EvolutionQuestsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
+        await new AddSeason21AbilityCoreUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
 
         var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
@@ -68,6 +74,7 @@ public class EvolutionQuestInGameTest
 
         this._plugIn = new EvolutionQuestFeaturePlugIn();
         this._gameContext.FeaturePlugIns.AddPlugIn(this._plugIn, true);
+        this._gameContext.FeaturePlugIns.AddPlugIn(new NewPowerFeaturePlugIn(), true);
         plugInManager.RegisterPlugInAtPlugInPoint<IExperienceCalculationPlugIn>(this._plugIn);
         plugInManager.RegisterPlugInAtPlugInPoint<IPlayerTalkToNpcPlugIn>(this._plugIn);
         plugInManager.RegisterPlugInAtPlugInPoint<IAttackableGotKilledPlugIn>(this._plugIn);
@@ -243,6 +250,30 @@ public class EvolutionQuestInGameTest
     }
 
     /// <summary>
+    /// A fourth class Dark Wizard enters the fifth class trial through Eunice in Devias; the step of quest 10 lasts 60 s
+    /// (S21Emu QuestInstanceManager.xml) and gives the Nuke New Power of its effect 421 for that time (Webzen guide 338),
+    /// with the extra damage of the trial (S21Emu Effect.txt: 50); leaving ends it.
+    /// </summary>
+    [Test]
+    public async ValueTask FifthClassTrialGivesTheNewPowerForItsTimeAsync()
+    {
+        var player = await this.CreateThirdClassAsync((CharacterClassNumber)131, 400, 1000, 2, 193, 13).ConfigureAwait(false);
+        await this.TalkAsync(player, EuniceVillage).ConfigureAwait(false);
+        Assert.That(player.CurrentMap?.Definition.Number, Is.EqualTo(EvolutionQuestConfiguration.Season21TrialMap));
+
+        await this.TalkAsync(player, EuniceQuest).ConfigureAwait(false);
+        await new QuestStartAction().StartQuestAsync(player, Group, 10).ConfigureAwait(false);
+
+        Assert.That(this._plugIn.GetTrial(player)?.Step.TimeLimit, Is.EqualTo(TimeSpan.FromSeconds(60)));
+        Assert.That(player.MagicEffectList.TryGetEffect(421, out var power), Is.True);
+        Assert.That(power!.Duration, Is.EqualTo(TimeSpan.FromSeconds(60)));
+        Assert.That(player.Attributes![Stats.NukeExtraDamage], Is.EqualTo(50));
+
+        await player.WarpToSafezoneAsync().ConfigureAwait(false);
+        Assert.That(player.MagicEffectList.ContainsEffect(421), Is.False);
+    }
+
+    /// <summary>
     /// The trial ends when its player leaves the map; its monsters leave too.
     /// </summary>
     [Test]
@@ -310,7 +341,7 @@ public class EvolutionQuestInGameTest
         await player.SetSelectedCharacterAsync(character).ConfigureAwait(false);
     }
 
-    private async ValueTask<Player> CreateThirdClassAsync(CharacterClassNumber number, int level, int masterLevel)
+    private async ValueTask<Player> CreateThirdClassAsync(CharacterClassNumber number, int level, int masterLevel, byte map = 0, byte x = 132, byte y = 148)
     {
         var player = new InGamePlayer(this._gameContext);
         player.Account = player.PersistenceContext.CreateNew<Account>();
@@ -321,8 +352,8 @@ public class EvolutionQuestInGameTest
         await new CreateCharacterAction().CreateCharacterAsync(player, player.Account.LoginName, (byte)CharacterClassNumber.DarkKnight).ConfigureAwait(false);
         var character = player.Account.Characters.Single();
         character.CharacterClass = this._gameConfiguration.CharacterClasses.Single(c => c.Number == (byte)number);
-        character.CurrentMap = this._gameConfiguration.Maps.Single(m => m.Number == 0 && m.Discriminator == 0);
-        (character.PositionX, character.PositionY) = (132, 148);
+        character.CurrentMap = this._gameConfiguration.Maps.Single(m => m.Number == map && m.Discriminator == 0);
+        (character.PositionX, character.PositionY) = (x, y);
         await player.SetSelectedCharacterAsync(character).ConfigureAwait(false);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
         player.Attributes![Stats.Level] = level;
