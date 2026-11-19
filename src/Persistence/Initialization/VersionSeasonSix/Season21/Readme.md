@@ -422,9 +422,13 @@ the elemental and legendary columns and the buy prices.
   + 3 + energy / 10; Elemental Defense (`SkillElementalDefenseEnhanced`) 60 seconds, `ElementDefense` + 4 + energy / 6;
   the Greater Damage and Defense rows copy Season 6's effect 1 and 2. Evasion (652) and Dex Booster (2024) stay
   pending: S21Emu has no values for them.
-* 57 more Season 21 skills are still an `Other` with an effect that has no duration (the Magic Gladiator's charges,
+* The Dark Wizard's Mana Shield Mastered (406) gets its effect from "Fix the Dark Wizard buffs" (`Season21DarkWizardBuffs`):
+  S21Emu's Effect.txt puts effect 140 in Mana Shield's group (4) and `SkillManaShield` computes one value for every
+  tier, so the skill is cast as Mana Shield (16) and effect 140 copies effect 4. Blessing of Experience (298) and
+  Archangel Will (740) stay pending: S21Emu gives no value for the first and names no stat for Archangel Will's 200 and 50.
+* 56 more Season 21 skills are still an `Other` with an effect that has no duration (the Magic Gladiator's charges,
   ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is fixed as the Rune Wizard's,
-  the Slayer's, the Grow Lancer's, the Dark Knight's and the Fairy Elf's were.
+  the Slayer's, the Grow Lancer's, the Dark Knight's, the Fairy Elf's and the Dark Wizard's were.
 
 Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
 damage reduction table, the Ability Enhancement Core (track T, later).

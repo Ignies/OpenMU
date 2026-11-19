@@ -85,6 +85,7 @@ public class Season21SkillsInGameTest
         await new FixSeason21DarkKnightBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21ObsidianSoloDurationUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21FairyElfBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21DarkWizardBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
 
         var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
@@ -381,6 +382,23 @@ public class Season21SkillsInGameTest
         }
 
         Assert.That(player.Attributes[Stats.TotalStrength], Is.EqualTo(strength + (player.Attributes[Stats.BaseEnergy] / 100)).Within(0.01));
+    }
+
+    /// <summary>
+    /// The Dark Wizard's Mana Shield Mastered (406) puts its effect (140) on the player it is cast on, as Mana Shield.
+    /// </summary>
+    [Test]
+    public async ValueTask ManaShieldMasteredPutsItsEffectOnTheTargetAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.DarkWizard, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(player).ConfigureAwait(false);
+        await this.LearnAsync(player, 406, 0).ConfigureAwait(false);
+        player.Attributes![Stats.CurrentMana] = 1000;
+        player.Attributes[Stats.CurrentAbility] = 200;
+
+        await new TargetedSkillDefaultPlugin().PerformSkillAsync(player, player, 406).ConfigureAwait(false);
+
+        Assert.That(player.MagicEffectList.ContainsEffect(140), Is.True);
     }
 
     /// <summary>

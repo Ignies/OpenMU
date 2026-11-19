@@ -688,6 +688,12 @@
   <data name="FixSeason21ObsidianSoloDurationUpdatePlugIn_Description" xml:space="preserve">
     <value>Gives every class the attribute 'Is in party' and makes the Grow Lancer's Obsidian last 360 seconds on a caster without a party and 120 seconds on a party (S21Emu SkillObsidian). An operator's own duration stays. Optional.</value>
   </data>
+  <data name="FixSeason21DarkWizardBuffsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Fix the Dark Wizard buffs (Season 21 data)</value>
+  </data>
+  <data name="FixSeason21DarkWizardBuffsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Gives Mana Shield Mastered (406) Mana Shield's effect duration and value and makes it cast as Mana Shield (S21Emu Effect.txt: effect 140 is Mana Shield's tier). An operator's own duration or skill type stays. Optional.</value>
+  </data>
   <data name="FixSeason21FairyElfBuffsUpdatePlugIn_Name" xml:space="preserve">
     <value>Fix the Fairy Elf buffs (Season 21 data)</value>
   </data>
