@@ -471,13 +471,16 @@ public static class EnhanceTreeEffects
     }
 
     /// <summary>
-    /// Adds the "AOE Increase" of a skill card: a tile more of its skill's area.
+    /// Adds the tiles <see cref="Stats.AttackSkillRangeBonus"/> gives an attack skill's range (Sword's Fury).
     /// </summary>
     private static EnhanceTreeReach AddRangeBonus(Player player, Skill skill, EnhanceTreeReach reach)
         => player.Attributes is { } attributes && AttackActionValidator.IsAttackSkill(skill) && (int)attributes[Stats.AttackSkillRangeBonus] is > 0 and var bonus
             ? reach with { Range = reach.Range + bonus }
             : reach;
 
+    /// <summary>
+    /// Adds the "AOE Increase" of a skill card: a tile more of its skill's area.
+    /// </summary>
     private static EnhanceTreeReach AddCardArea(Player player, Skill skill, EnhanceTreeReach reach)
         => AbilityCoreService.GetSkillCardOption(player, skill, AbilityCoreService.AreaOption) > 0
             ? reach with { Radius = reach.Radius + 1 }
