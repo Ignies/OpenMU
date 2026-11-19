@@ -163,6 +163,12 @@ public class Stats
     public static AttributeDefinition ElementDefenseIncrease { get; } = new(new Guid("0D774B26-F77E-4022-A446-41295A63FD8D"), "Elemental Defense Increase", "Increases the elemental defense by this factor (0.05 = +5 %).");
 
     /// <summary>
+    /// Gets the attack skill range bonus attribute definition: tiles every attack skill reaches further (the Dark Knight's
+    /// Sword's Fury).
+    /// </summary>
+    public static AttributeDefinition AttackSkillRangeBonus { get; } = new(new Guid("E7ED504B-EC07-483D-961C-0E6C999D5CDA"), "Attack Skill Range Bonus", "The tiles every attack skill reaches further.");
+
+    /// <summary>
     /// Gets the elemental damage bonus against targets of the fire element.
     /// </summary>
     public static AttributeDefinition ElementDamageAgainstFire { get; } = new(new Guid("B130CD58-0331-4688-9512-B38123885A04"), "Elemental Damage Against Fire", "A bonus to the elemental damage against a target of the fire element.");

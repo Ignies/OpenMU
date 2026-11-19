@@ -8,7 +8,9 @@ using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using MUnique.OpenMU.GameLogic.AbilityCore;
+using MUnique.OpenMU.GameLogic.Attributes;
 using MUnique.OpenMU.GameLogic.Classes;
+using MUnique.OpenMU.GameLogic.PlayerActions.Skills;
 using org.mariuszgromada.math.mxparser;
 
 /// <summary>
@@ -223,13 +225,14 @@ public static class EnhanceTreeEffects
     /// <param name="player">The player.</param>
     /// <param name="skill">The used skill.</param>
     /// <returns>The added range, radius and targets.</returns>
+    /// <remarks>An attack skill also reaches as far further as <see cref="Stats.AttackSkillRangeBonus"/> says (Sword's Fury).</remarks>
     public static EnhanceTreeReach GetReach(Player player, Skill skill)
-        => player.SkillList is { } skills
+        => AddRangeBonus(player, skill, player.SkillList is { } skills
            && player.SelectedCharacter?.CharacterClass is { } characterClass
            && ClassCodes.GetBaseClass(characterClass.Number) is { } baseClass
            && EnhanceTreeFeaturePlugIn.GetConfiguration(player.GameContext) is { } configuration
             ? AddCardArea(player, skill, GetReach(configuration, baseClass, (short)skill.Number, skills, LevelInList))
-            : AddCardArea(player, skill, default);
+            : AddCardArea(player, skill, default));
 
     /// <summary>
     /// Gets what the learned nodes add to the shape of a skill.
@@ -466,6 +469,14 @@ public static class EnhanceTreeEffects
 
         return total;
     }
+
+    /// <summary>
+    /// Adds the tiles <see cref="Stats.AttackSkillRangeBonus"/> gives an attack skill's range (Sword's Fury).
+    /// </summary>
+    private static EnhanceTreeReach AddRangeBonus(Player player, Skill skill, EnhanceTreeReach reach)
+        => player.Attributes is { } attributes && AttackActionValidator.IsAttackSkill(skill) && (int)attributes[Stats.AttackSkillRangeBonus] is > 0 and var bonus
+            ? reach with { Range = reach.Range + bonus }
+            : reach;
 
     /// <summary>
     /// Adds the "AOE Increase" of a skill card: a tile more of its skill's area.

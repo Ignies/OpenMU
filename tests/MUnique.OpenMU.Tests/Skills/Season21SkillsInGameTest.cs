@@ -82,6 +82,7 @@ public class Season21SkillsInGameTest
         await new AddSeason21ClassesUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new AddSeason21SkillsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21GrowLancerBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21DarkKnightBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
 
         var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
@@ -356,6 +357,33 @@ public class Season21SkillsInGameTest
         }
     }
 
+    /// <summary>
+    /// The Dark Knight's Sword's Fury, Firm Belief and Strong Blessing put their effect on the caster; under Sword's Fury an
+    /// attack skill reaches 1 tile further, a buff does not.
+    /// </summary>
+    [Test]
+    public async ValueTask DarkKnightBuffsPutTheirEffectOnTheCasterAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.DarkKnight, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(player).ConfigureAwait(false);
+        var attack = this._gameConfiguration.Skills.First(s => s.Number == 19);
+        var buff = this._gameConfiguration.Skills.Single(s => s.Number == 1502);
+        var before = EnhanceTreeEffects.GetReach(player, attack).Range;
+        foreach (var (skill, effect) in new (short, short)[] { (1500, 324), (1502, 325), (1503, 326) })
+        {
+            await this.LearnAsync(player, skill, 0).ConfigureAwait(false);
+            player.Attributes![Stats.CurrentMana] = 2000;
+            player.Attributes[Stats.CurrentAbility] = 500;
+
+            await new TargetedSkillDefaultPlugin().PerformSkillAsync(player, player, (ushort)skill).ConfigureAwait(false);
+
+            Assert.That(player.MagicEffectList.ContainsEffect(effect), Is.True, $"skill {skill}, effect {effect}");
+        }
+
+        Assert.That(EnhanceTreeEffects.GetReach(player, attack).Range, Is.EqualTo(before + 1));
+        Assert.That(EnhanceTreeEffects.GetReach(player, buff).Range, Is.Zero);
+    }
+
     private static async ValueTask UseAsync(Player player, Skill skill)
     {
         if (skill.SkillType is SkillType.AreaSkillAutomaticHits or SkillType.AreaSkillExplicitHits or SkillType.AreaSkillExplicitTarget)
@@ -386,6 +414,7 @@ public class Season21SkillsInGameTest
         player.CurrentMap ??= await this._gameContext.GetMapAsync(0).ConfigureAwait(false);
         player.Position = new Point(180, 90);
         await player.PlayerState.TryAdvanceToAsync(PlayerState.EnteredWorld).ConfigureAwait(false);
+        player.IsAlive = true; // what the map entry sets (PlayerMapTransitions); without it a cast on the player meets an inactive target
         Assert.That(player.IsAtSafezone(), Is.False, $"{player.SelectedCharacter!.CharacterClass!.Name} {player.CurrentMap?.Definition.Number} {player.Position}");
     }
 
