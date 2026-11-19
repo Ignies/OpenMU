@@ -34,7 +34,8 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
     /// <summary>The hammer strikes of an action (EE 92); clients hold the result until the last one.</summary>
     private const byte Strikes = 3;
 
-    private readonly ConditionalWeakTable<Player, object> _watched = new();
+    /// <summary>The inventories watched for the hammer: a character entering the world gets a new one.</summary>
+    private readonly ConditionalWeakTable<IInventoryStorage, object> _watched = new();
 
     /// <summary>
     /// Gets or sets the configuration.
@@ -61,9 +62,9 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
             return;
         }
 
-        if (!this._watched.TryGetValue(player, out _))
+        if (!this._watched.TryGetValue(inventory, out _))
         {
-            this._watched.Add(player, new object());
+            this._watched.Add(inventory, new object());
             inventory.EquippedItemsChanged += async args =>
             {
                 if (this.IsHammer(args.Item))
