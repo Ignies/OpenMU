@@ -31,6 +31,7 @@ public static class PartyInstances
     /// </summary>
     /// <param name="player">The player.</param>
     /// <param name="definition">The definition of the instance.</param>
-    public static ValueTask EnterAsync(Player player, MiniGameDefinition definition)
-        => new EnterMiniGameAction().TryEnterMiniGameAsync(player, definition.Type, definition.GameLevel, NoTicket);
+    /// <param name="entrance">The area of the instance to enter at, or <c>null</c> for the entrance of the definition.</param>
+    public static ValueTask EnterAsync(Player player, MiniGameDefinition definition, ExitGate? entrance = null)
+        => new EnterMiniGameAction().TryEnterMiniGameAsync(player, definition.Type, definition.GameLevel, NoTicket, entrance);
 }
