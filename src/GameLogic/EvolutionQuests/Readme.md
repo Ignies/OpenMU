@@ -49,6 +49,8 @@ Season 21 data (S21Emu `Quest/Quest.xml` 7-12, `QuestObjective.txt`, `QuestRewar
 With the update "Add the party instances of Season 21" (feature `party_instances`) Sent and Eunice take the character into
 the copy of the Trial Area of its party (`MiniGameType.PartyInstance`, game level 2, up to 5 players,
 `src/GameLogic/MiniGames/Readme.md`): each party has its own monsters, and the copy goes away when the party left.
+A character enters the copy at the area of its evolution (`PartyInstances.EnterAsync` with the entrance), so the fifth
+class lands at Eunice (101-105, 27-28), not at the fourth class gate of the definition, which a wall separates from it.
 Without the update the Trial Area stays one shared map, where each player's steps spawn their own monsters.
 
 ## Stand-ins

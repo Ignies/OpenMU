@@ -151,13 +151,16 @@ public class EvolutionQuestFeaturePlugIn : IFeaturePlugIn, ISupportCustomConfigu
         }
 
         player.OpenedNpc = null;
+
+        // The instance enters at the area of the evolution (the fifth class one is not the gate of the definition).
+        var gate = new ExitGate { Map = map, X1 = entrance.X1, Y1 = entrance.Y1, X2 = entrance.X2, Y2 = entrance.Y2 };
         if (PartyInstances.FindForMap(player.GameContext, map) is { } instance)
         {
-            await PartyInstances.EnterAsync(player, instance).ConfigureAwait(false);
+            await PartyInstances.EnterAsync(player, instance, gate).ConfigureAwait(false);
         }
         else
         {
-            await player.WarpToAsync(new ExitGate { Map = map, X1 = entrance.X1, Y1 = entrance.Y1, X2 = entrance.X2, Y2 = entrance.Y2 }).ConfigureAwait(false);
+            await player.WarpToAsync(gate).ConfigureAwait(false);
         }
 
         // A warp changes the player state itself, so the talk action must leave it alone; a refused entry doesn't warp,

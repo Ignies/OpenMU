@@ -28,7 +28,8 @@ public class EnterMiniGameAction
     /// <param name="miniGameType">The mini game type.</param>
     /// <param name="gameLevel">The mini game level.</param>
     /// <param name="gameTicketInventoryIndex">The inventory index of the ticket.</param>
-    public async ValueTask TryEnterMiniGameAsync(Player player, MiniGameType miniGameType, int gameLevel, byte gameTicketInventoryIndex)
+    /// <param name="entrance">The area to enter at, when it isn't the entrance of the mini game (the fifth class trial).</param>
+    public async ValueTask TryEnterMiniGameAsync(Player player, MiniGameType miniGameType, int gameLevel, byte gameTicketInventoryIndex, ExitGate? entrance = null)
     {
         if (player.SelectedCharacter?.CharacterClass is null)
         {
@@ -128,7 +129,7 @@ public class EnterMiniGameAction
             return;
         }
 
-        var entrance = miniGameDefinition.Entrance ?? throw new InvalidOperationException("mini game entrance not defined");
+        entrance ??= miniGameDefinition.Entrance ?? throw new InvalidOperationException("mini game entrance not defined");
         var miniGame = await player.GameContext.MiniGames.GetOrCreateAsync(miniGameDefinition, player).ConfigureAwait(false);
 
         // Snapshot before entering: an event which disallows parties (Chaos Castle) kicks the

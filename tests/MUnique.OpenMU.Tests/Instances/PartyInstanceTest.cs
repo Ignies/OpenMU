@@ -64,6 +64,23 @@ public class PartyInstanceTest
     }
 
     /// <summary>
+    /// A fourth class character enters its copy of the Trial Area through Eunice at the fifth class entrance (101-105,
+    /// 27-28), where the fifth class quest NPC stands, not at the fourth class gate of the instance definition.
+    /// </summary>
+    [Test]
+    public async ValueTask FifthClassEntersAtItsEntranceAsync()
+    {
+        var player = await this._world.CreatePlayerAsync((CharacterClassNumber)131, 400, 1000, 2, 193, 13).ConfigureAwait(false);
+
+        await this._world.TalkAsync(player, 939).ConfigureAwait(false);
+
+        Assert.That(player.CurrentMap?.Definition.Number, Is.EqualTo(EvolutionQuestConfiguration.Season21TrialMap));
+        Assert.That(player.Position.X, Is.InRange(101, 105), $"landed at {player.Position}");
+        Assert.That(player.Position.Y, Is.InRange(27, 28), $"landed at {player.Position}");
+        await LeaveAsync(player).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Two members of a party end up in the same copy of the Trial Area, which isn't the shared map.
     /// </summary>
     [Test]
