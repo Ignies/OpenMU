@@ -1597,6 +1597,96 @@ public class Stats
     public static AttributeDefinition FifthWingCurseDamageBonus { get; } = new(new Guid("C3A1E7D2-5B84-4F19-9E26-1D7A4B8C3F5C"), "Fifth Wing Curse Damage Bonus", "The curse base damage which is added while a fifth wing is worn.");
 
     /// <summary>
+    /// Gets the extra damage of the Nuke New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition NukeExtraDamage { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F9100"), "Nuke Extra Damage", "The extra damage of the Nuke New Power (the [Extra DMG] card, a fifth class quest), before the kind rate.");
+
+    /// <summary>
+    /// Gets the attack increase of the Nuke New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition NukeAttackIncrease { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F9101"), "Nuke Attack Increase", "The damage the \"Nuke ATK Increase\" card option adds to a Nuke New Power hit.");
+
+    /// <summary>
+    /// Gets the critical chance of the Nuke New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition NukeCriticalChance { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F9102"), "Nuke Critical Chance", "The chance that a Nuke New Power hit is critical.");
+
+    /// <summary>
+    /// Gets the excellent chance of the Nuke New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition NukeExcellentChance { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F9103"), "Nuke Excellent Chance", "The chance that a Nuke New Power hit is excellent.");
+
+    /// <summary>
+    /// Gets the double damage chance of the Nuke New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition NukeDoubleChance { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F9104"), "Nuke Double Damage Chance", "The chance that a Nuke New Power hit deals double damage.");
+
+    /// <summary>
+    /// Gets the triple damage chance of the Nuke New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition NukeTripleChance { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F9105"), "Nuke Triple Damage Chance", "The chance that a Nuke New Power hit deals triple damage.");
+
+    /// <summary>
+    /// Gets the extra damage of the Bolt New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition BoltExtraDamage { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F9106"), "Bolt Extra Damage", "The extra damage of the Bolt New Power (the [Extra DMG] card, a fifth class quest), before the kind rate.");
+
+    /// <summary>
+    /// Gets the attack increase of the Bolt New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition BoltAttackIncrease { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F9107"), "Bolt Attack Increase", "The damage the \"Bolt ATK Increase\" card option adds to a Bolt New Power hit.");
+
+    /// <summary>
+    /// Gets the critical chance of the Bolt New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition BoltCriticalChance { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F9108"), "Bolt Critical Chance", "The chance that a Bolt New Power hit is critical.");
+
+    /// <summary>
+    /// Gets the excellent chance of the Bolt New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition BoltExcellentChance { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F9109"), "Bolt Excellent Chance", "The chance that a Bolt New Power hit is excellent.");
+
+    /// <summary>
+    /// Gets the double damage chance of the Bolt New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition BoltDoubleChance { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F910A"), "Bolt Double Damage Chance", "The chance that a Bolt New Power hit deals double damage.");
+
+    /// <summary>
+    /// Gets the triple damage chance of the Bolt New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition BoltTripleChance { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F910B"), "Bolt Triple Damage Chance", "The chance that a Bolt New Power hit deals triple damage.");
+
+    /// <summary>
+    /// Gets the extra damage of the Wide New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition WideExtraDamage { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F910C"), "Wide Extra Damage", "The extra damage of the Wide New Power (the [Extra DMG] card, a fifth class quest), before the kind rate.");
+
+    /// <summary>
+    /// Gets the attack increase of the Wide New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition WideAttackIncrease { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F910D"), "Wide Attack Increase", "The damage the \"Wide ATK Increase\" card option adds to a Wide New Power hit.");
+
+    /// <summary>
+    /// Gets the critical chance of the Wide New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition WideCriticalChance { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F910E"), "Wide Critical Chance", "The chance that a Wide New Power hit is critical.");
+
+    /// <summary>
+    /// Gets the excellent chance of the Wide New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition WideExcellentChance { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F910F"), "Wide Excellent Chance", "The chance that a Wide New Power hit is excellent.");
+
+    /// <summary>
+    /// Gets the double damage chance of the Wide New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition WideDoubleChance { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F9110"), "Wide Double Damage Chance", "The chance that a Wide New Power hit deals double damage.");
+
+    /// <summary>
+    /// Gets the triple damage chance of the Wide New Power (fifth class, see GameLogic/NewPower/Readme.md).
+    /// </summary>
+    public static AttributeDefinition WideTripleChance { get; } = new(new Guid("4E1F8A20-7C35-4B9D-A6E2-5D0C3B7F9111"), "Wide Triple Damage Chance", "The chance that a Wide New Power hit deals triple damage.");
+
+    /// <summary>
     /// Gets the shield bypass chance attribute definition.
     /// </summary>
     public static AttributeDefinition ShieldBypassChance { get; } = new(new Guid("7F6F1804-271E-40DF-A970-0CE19064A54B"), "Shield Bypass Chance", string.Empty);

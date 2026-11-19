@@ -81,7 +81,7 @@ internal class Season21AbilityCoreDataTest
         Assert.That(rate.PowerUpDefinition!.TargetAttribute, Is.EqualTo(Stats.CriticalDamageChance));
         Assert.That(rate.LevelDependentOptions.Single(l => l.Level == 0).PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(0.02f).Within(0.0001));
         Assert.That(Options(gameConfiguration, 165).Select(o => o.PowerUpDefinition?.TargetAttribute), Is.EqualTo(new[] { Stats.MaximumHealth, Stats.MaximumMana, Stats.MaximumAbility }));
-        Assert.That(Options(gameConfiguration, 213).Single(o => o.Number == 29).PowerUpDefinition, Is.Null);
+        Assert.That(Options(gameConfiguration, 213).Single(o => o.Number == 29).PowerUpDefinition!.TargetAttribute, Is.EqualTo(Stats.NukeAttackIncrease));
     }
 
     /// <summary>
@@ -226,7 +226,7 @@ internal class Season21AbilityCoreDataTest
         mapped.LevelDependentOptions.Clear();
         await new AddSeason21AbilityCoreUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
-        Assert.That(new AddSeason21AbilityCoreUpdatePlugIn().Version, Is.EqualTo(4));
+        Assert.That(new AddSeason21AbilityCoreUpdatePlugIn().Version, Is.EqualTo(5));
         Assert.That(mapped.PowerUpDefinition?.TargetAttribute, Is.EqualTo(target));
         Assert.That(mapped.LevelDependentOptions.Single(l => l.Level == 5).PowerUpDefinition!.Boost!.ConstantValue.Value, Is.EqualTo(levelFive).Within(0.0001));
     }

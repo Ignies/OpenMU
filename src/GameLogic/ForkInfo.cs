@@ -90,6 +90,7 @@ public static class ForkInfo
         "labyrinth_rooms",
         "arca_war",
         "ability_core",
+        "new_power",
         "illusion_temple_league",
         "s21_bag_items",
         "muquest",

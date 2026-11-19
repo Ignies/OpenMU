@@ -147,6 +147,7 @@ public abstract class AttackableNpcBase : NonPlayerCharacter, IAttackable
                 }
 
                 await EnhanceTreeDebuffs.ApplyAfterHitAsync(player, this, skill, hitInfo).ConfigureAwait(false);
+                await NewPower.NewPowerService.ApplyAfterHitAsync(player, this, skill, hitInfo).ConfigureAwait(false);
             }
 
             if (attacker as IPlayerSurrogate is { } playerSurrogate)

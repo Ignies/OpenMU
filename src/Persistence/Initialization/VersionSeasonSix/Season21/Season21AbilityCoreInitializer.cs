@@ -10,6 +10,7 @@ using MUnique.OpenMU.DataModel.Configuration.ItemCrafting;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.GameLogic.AbilityCore;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.NewPower;
 using MUnique.OpenMU.GameLogic.PlayerActions.Craftings;
 using MUnique.OpenMU.Persistence.Initialization.CharacterClasses;
 
@@ -82,7 +83,7 @@ internal class Season21AbilityCoreInitializer
     /// <summary>
     /// The attribute of each option which has one in OpenMU, by the static option index (S21Emu AbilityOption.xml
     /// <c>OptionIndex</c>; 1, 49, 54 and 59 occur in none of its rows); the other options (the nuke, bolt and wide
-    /// skill options, triple damage, skill slots, shock defense) are data without effect. The extra defense adds to the
+    /// skill options, triple damage, skill slots, shock defense) had no effect before; the nuke, bolt and wide ones count for the New Power (GameLogic/NewPower/Readme.md). The extra defense adds to the
     /// defense, the pentagram defense and attack to the elemental defense and damage, mastery to the master skills of
     /// its damage type, the debuff options to the tree debuffs of their name, the Lv.5 wing options while a fifth wing is
     /// worn.
@@ -117,6 +118,9 @@ internal class Season21AbilityCoreInitializer
         { 26, (Stats.MasterySkillWizardryBonus, false) },
         { 27, (Stats.MasterySkillCurseBonus, false) },
         { 28, (Stats.PhysicalBaseDmg, true) },
+        { 29, (Stats.NukeAttackIncrease, false) },
+        { 30, (Stats.BoltAttackIncrease, false) },
+        { 31, (Stats.WideAttackIncrease, false) },
         { 33, (Stats.CriticalDamageBonus, false) },
         { 34, (Stats.ExcellentDamageBonus, false) },
         { 35, (Stats.DoubleDamageIncrease, false) },
@@ -149,6 +153,21 @@ internal class Season21AbilityCoreInitializer
         { 65, (Stats.MaximumHealth, false) },
         { 66, (Stats.MaximumMana, false) },
         { 67, (Stats.MaximumAbility, false) },
+        { 68, (Stats.NukeCriticalChance, false) },
+        { 69, (Stats.BoltCriticalChance, false) },
+        { 70, (Stats.WideCriticalChance, false) },
+        { 71, (Stats.NukeExcellentChance, false) },
+        { 72, (Stats.BoltExcellentChance, false) },
+        { 73, (Stats.WideExcellentChance, false) },
+        { 74, (Stats.NukeDoubleChance, false) },
+        { 75, (Stats.BoltDoubleChance, false) },
+        { 76, (Stats.WideDoubleChance, false) },
+        { 77, (Stats.NukeTripleChance, false) },
+        { 78, (Stats.BoltTripleChance, false) },
+        { 79, (Stats.WideTripleChance, false) },
+        { 80, (Stats.NukeExtraDamage, false) },
+        { 81, (Stats.BoltExtraDamage, false) },
+        { 82, (Stats.WideExtraDamage, false) },
         { 83, (Stats.FifthWingWizardryDamageBonus, false) },
         { 84, (Stats.FifthWingCurseDamageBonus, false) },
         { 85, (Stats.WizardryBaseDmg, true) },
@@ -187,7 +206,7 @@ internal class Season21AbilityCoreInitializer
                 Color = (AbilityCardColor)row.Color,
                 Type = row.Type,
                 BaseClasses = row.Classes ?? 0xFFFF,
-                Skill = row.Skill,
+                Skill = row.Kind == (byte)AbilityCardKind.Extra ? NewPowerSkillOf(row) : row.Skill,
                 RequiredSkill = row.RequiredSkill,
                 StaticOption = row.Static?.Id ?? 0,
                 StaticValues = row.Static?.Values.ToList() ?? [],
@@ -218,9 +237,19 @@ internal class Season21AbilityCoreInitializer
     }
 
     /// <summary>
-    /// Adds the options of the cards to the card items which the configuration defines.
+    /// Adds the options of the cards to the card items which the configuration defines, the craftings and the fifth wing flag.
     /// </summary>
     public void Initialize()
+    {
+        this.MapCardOptions();
+        this.AddCraftings();
+        this.AddFifthWingFlag();
+    }
+
+    /// <summary>
+    /// Adds the options to the card items, and their effects to existing options which have none.
+    /// </summary>
+    public void MapCardOptions()
     {
         var optionType = this.GetOptionType();
         foreach (var row in Season21AbilityCoreData.Data.Cards)
@@ -236,10 +265,16 @@ internal class Season21AbilityCoreInitializer
                 item.PossibleItemOptions.Add(definition);
             }
         }
-
-        this.AddCraftings();
-        this.AddFifthWingFlag();
     }
+
+    /// <summary>
+    /// Gets the New Power skill an extra damage card gives: the skill of the kind whose card option it carries ("[Extra DMG]
+    /// Nuke" 80 gives "Nuke(Activated)" 2086, ...).
+    /// </summary>
+    /// <param name="row">The card.</param>
+    /// <returns>The skill, or 0.</returns>
+    internal static short NewPowerSkillOf(Season21AbilityCoreData.CardRow row)
+        => new NewPowerConfiguration().Kinds.FirstOrDefault(k => row.Options.Any(o => o.Number == k.CardOption))?.Skill ?? 0;
 
     /// <summary>
     /// Gives the fifth wings the flag of the Lv.5 wing options and every class the bonuses which count while it is set,

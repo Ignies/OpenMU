@@ -42,12 +42,12 @@ public class AddSeason21AbilityCoreUpdatePlugIn : UpdatePlugInBase
     /// <remarks>
     /// Version 2 adds the card craftings at the chaos goblin; version 3 gives the extra defense and pentagram options
     /// their attributes where an option has none; version 4 the mastery, debuff, AG recovery and Lv.5 wing options, and
-    /// the fifth wings the flag those count by.
+    /// the fifth wings the flag those count by; version 5 the New Power (<see cref="Season21NewPowerInitializer"/>).
     /// </remarks>
-    public override int Version => 4;
+    public override int Version => 5;
 
     /// <inheritdoc />
-    public override DateTime UpdatedAt => new(2026, 11, 17, 21, 0, 0, DateTimeKind.Utc);
+    public override DateTime UpdatedAt => new(2026, 11, 19, 1, 0, 0, DateTimeKind.Utc);
 
     /// <inheritdoc />
     public override DateTime CreatedAt => new(2026, 11, 07, 14, 0, 0, DateTimeKind.Utc);
@@ -59,6 +59,7 @@ public class AddSeason21AbilityCoreUpdatePlugIn : UpdatePlugInBase
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
         new Season21AbilityCoreInitializer(context, gameConfiguration).Initialize();
+        new Season21NewPowerInitializer(context, gameConfiguration).Initialize();
         var typeId = typeof(AbilityCoreFeaturePlugIn).GUID;
         var plugIn = gameConfiguration.PlugInConfigurations.FirstOrDefault(c => c.TypeId == typeId);
         if (plugIn is null)

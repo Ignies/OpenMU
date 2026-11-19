@@ -3402,4 +3402,10 @@
   <data name="ItemCustomizationFeaturePlugIn_Description" xml:space="preserve">
     <value>Tells the Babylon client which items of the places a player sees carry a recolour look, a custom name, a rarity or a lore (the website gives them; Star Smithing makes them).</value>
   </data>
+  <data name="NewPowerFeaturePlugIn_Name" xml:space="preserve">
+    <value>New Power (Season 21)</value>
+  </data>
+  <data name="NewPowerFeaturePlugIn_Description" xml:space="preserve">
+    <value>The fifth class New Power: while the extra damage card is in the ability core (or a fifth class quest's trial gives it), a hit of a fourth class or card skill adds a Nuke (one target), Bolt (two) or Wide (ten) hit of the card's extra damage. Only clients with the fork's skills draw it (Babylon).</value>
+  </data>
 </root>

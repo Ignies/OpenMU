@@ -9741,5 +9741,24 @@ namespace MUnique.OpenMU.GameLogic.Properties {
                 return ResourceManager.GetString("ItemCustomizationFeaturePlugIn_Description", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New Power (Season 21).
+        /// </summary>
+        public static string NewPowerFeaturePlugIn_Name {
+            get {
+                return ResourceManager.GetString("NewPowerFeaturePlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The fifth class New Power: while the extra damage card is in the ability core (or a fifth class quest's trial gives it), a hit of a fourth class or card skill adds a Nuke (one target), Bolt (two) or Wide (ten) hit of the card's extra damage. Only clients with the fork's skills draw it (Babylon)..
+        /// </summary>
+        public static string NewPowerFeaturePlugIn_Description {
+            get {
+                return ResourceManager.GetString("NewPowerFeaturePlugIn_Description", resourceCulture);
+            }
+        }
+        
     }
 }

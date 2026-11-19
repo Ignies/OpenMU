@@ -878,6 +878,7 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
             }
 
             await EnhanceTreeDebuffs.ApplyAfterHitAsync(attackerPlayer, this, skill, hitInfo).ConfigureAwait(false);
+            await NewPower.NewPowerService.ApplyAfterHitAsync(attackerPlayer, this, skill, hitInfo).ConfigureAwait(false);
         }
 
         return hitInfo;

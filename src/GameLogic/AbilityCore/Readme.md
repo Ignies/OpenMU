@@ -66,9 +66,8 @@ counts, as the Webzen texts describe a fixed tile and a fixed hit. This is a pic
 
 A game master gives a card with a chosen option by `/item 20 <number> <level> opts=card:<option>`.
 
-18 of the 82 options stay data without effect: the nuke, bolt and wide options need the fifth class "New Power" skills
-(2086-2088), which the server doesn't have; they are their own track (`handoff/s21/new_power_5th_class.md` in the client
-repository).
+The nuke, bolt and wide options (29-31, 68-82) count for the New Power (version 5 of the update, `../NewPower/Readme.md`):
+the extra damage cards give its skills 2086-2088.
 
 ## Actions (`AbilityCoreService.RequestAsync`)
 
