@@ -87,6 +87,7 @@ public class Season21SkillsInGameTest
         await new FixSeason21FairyElfBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21DarkWizardBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21MagicGladiatorBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21DarkLordBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
 
         var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
@@ -383,6 +384,32 @@ public class Season21SkillsInGameTest
         }
 
         Assert.That(player.Attributes[Stats.TotalStrength], Is.EqualTo(strength + (player.Attributes[Stats.BaseEnergy] / 100)).Within(0.01));
+    }
+
+    /// <summary>
+    /// The Dark Lord's Crown Force and Battle Glory last 60 + energy / 30 seconds, Divine Force and Divine Aura 3 seconds
+    /// (S21Emu <c>SkillCrowForces</c>, <c>SkillBattleOfGlory</c>, <c>SkillDivineForce</c>, <c>SkillDivineAura</c>).
+    /// </summary>
+    [Test]
+    public async ValueTask DarkLordBuffsLastAsS21EmuSaysAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.DarkLord, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(player).ConfigureAwait(false);
+        player.Attributes![Stats.BaseEnergy] = 1500;
+        player.Attributes[Stats.BaseLeadership] = 1500;
+        var byEnergy = 60 + (player.Attributes[Stats.TotalEnergy] / 30);
+        foreach (var (skill, effect, seconds) in new (short, short, double)[] { (2097, 427, byEnergy), (2100, 436, byEnergy), (915, 437, byEnergy), (2098, 428, 3), (2099, 429, 3) })
+        {
+            await this.LearnAsync(player, skill, 0).ConfigureAwait(false);
+            player.Attributes[Stats.CurrentMana] = 1000;
+            player.Attributes[Stats.CurrentAbility] = 200;
+
+            await new TargetedSkillDefaultPlugin().PerformSkillAsync(player, player, (ushort)skill).ConfigureAwait(false);
+
+            var active = player.MagicEffectList.GetActiveEffectsSnapshot().FirstOrDefault(e => e.Definition.Number == effect);
+            Assert.That(active, Is.Not.Null, $"skill {skill}, effect {effect}");
+            Assert.That(active!.Duration.TotalSeconds, Is.EqualTo(seconds).Within(1), $"skill {skill}");
+        }
     }
 
     /// <summary>
