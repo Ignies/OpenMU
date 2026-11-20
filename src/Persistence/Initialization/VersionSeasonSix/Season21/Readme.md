@@ -459,10 +459,16 @@ the elemental and legendary columns and the buy prices.
   852; effect 347) + 4 + energy / 8 for 60 seconds, Bless (2011; 857; effect 348) every stat + energy / 200 for 300 seconds
   (`SkillBeginnerGreaterDamage`, `SkillBeginnerGreaterDefense`, `SkillBeginnerBless`; a Season 22 client's skill table
   casts them as Greater Damage, target mode 4, range 6).
-* 14 more Season 21 skills are still an `Other` with an effect that has no duration (the Light
-  Wizard's Reflection Barrier, ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is
-  fixed as the Rune Wizard's, the Slayer's, the Grow Lancer's, the Dark Knight's, the Fairy Elf's, the Dark Wizard's, the Magic Gladiator's, the
-  Dark Lord's, the Summoner's, the Gun Crusher's, the Illusion Knight's and the Lemuria Mage's were.
+* The Light Wizard's Reflection Barrier (244; 861, 862: effect 343; 863: effect 345) gets its effects from "Fix the Light
+  Wizard buffs" (`Season21LightWizardBuffs`): on the caster's party within 6 tiles (the Season 22 skill table's target
+  mode 3, Crown Force's) for 60 + energy / 10 seconds (`ReflectionBarrier`). Its reflection is a stand-in: no file gives
+  the base value (S21Emu passes only the Mastery tier's; the Season 22 `skilltree.json` and `formulas.json` give only the
+  tiers' rises), so it copies the Summoner's Reflection (71), whose Effect.txt group 39 it shares. Replace it there if a
+  real value shows up.
+* 10 more Season 21 skills are still an `Other` with an effect that has no duration (the Alchemist's Confusion Stone,
+  ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is fixed as the Rune Wizard's,
+  the Slayer's, the Grow Lancer's, the Dark Knight's, the Fairy Elf's, the Dark Wizard's, the Magic Gladiator's, the
+  Dark Lord's, the Summoner's, the Gun Crusher's, the Illusion Knight's, the Lemuria Mage's and the Light Wizard's were.
 
 Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
 damage reduction table, the Ability Enhancement Core (track T, later).
