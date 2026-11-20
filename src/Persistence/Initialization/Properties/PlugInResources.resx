@@ -694,6 +694,12 @@
   <data name="FixSeason21BuffValuesFromSeason22UpdatePlugIn_Description" xml:space="preserve">
     <value>Gives the values a Season 22 client text names where S21Emu gives none: Evasion (652) raises the defense rate by 50 % for 7 seconds on the caster, Divine Force raises the attack by 100 and Divine Aura the defense by 500. Effects with power-ups of their own stay. Optional.</value>
   </data>
+  <data name="FixSeason21LemuriaMageBuffsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Fix the Lemuria Mage buffs (Season 21 data)</value>
+  </data>
+  <data name="FixSeason21LemuriaMageBuffsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Gives the beginner buffs what S21Emu says, on a player of the mage's choice: Greater Damage (2010, 853, 854) + 3 + energy / 14 and Greater Defense (2009, 851, 852) + 4 + energy / 8 for 60 seconds, Bless (2011, 857) every stat + energy / 200 for 300 seconds. An operator's own duration or skill type stays. Optional.</value>
+  </data>
   <data name="FixSeason21IllusionKnightBuffsUpdatePlugIn_Name" xml:space="preserve">
     <value>Fix the Illusion Knight buffs (Season 21 data)</value>
   </data>
