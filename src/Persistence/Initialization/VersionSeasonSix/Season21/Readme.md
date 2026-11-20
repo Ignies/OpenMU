@@ -430,9 +430,15 @@ the elemental and legendary columns and the buy prices.
   theirs from "Fix the Magic Gladiator charges" (`Season21MagicGladiatorBuffs`), after S21Emu's `SkillSpiralCharge`,
   `SkillCrusherCharge` and `SkillElementalCharge`: buffs on the caster for 60 + energy / 10 seconds, with no value. What a
   charge does to the attack it powers has no OpenMU mechanism yet.
-* 47 more Season 21 skills are still an `Other` with an effect that has no duration (the Summoner's curses,
+* The Dark Lord's Crown Force (2097; 912), Divine Force (2098; 913), Divine Aura (2099; 914) and Battle Glory (2100;
+  915) get theirs from "Fix the Dark Lord buffs" (`Season21DarkLordBuffs`), after S21Emu's `SkillCrowForces`,
+  `SkillDivineForce`, `SkillDivineAura` and `SkillBattleOfGlory`: Crown Force on the party within 10 and Battle Glory on
+  the caster for 60 + energy / 30 seconds, Divine Force and Divine Aura on the caster for 3 seconds. No source names the
+  stat of their values (Divine Force 100, Divine Aura 500, the others' from the tier only), so they get no power-up yet.
+* 39 more Season 21 skills are still an `Other` with an effect that has no duration (the Summoner's curses,
   ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is fixed as the Rune Wizard's,
-  the Slayer's, the Grow Lancer's, the Dark Knight's, the Fairy Elf's, the Dark Wizard's and the Magic Gladiator's were.
+  the Slayer's, the Grow Lancer's, the Dark Knight's, the Fairy Elf's, the Dark Wizard's, the Magic Gladiator's and the
+  Dark Lord's were.
 
 Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
 damage reduction table, the Ability Enhancement Core (track T, later).

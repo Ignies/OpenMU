@@ -22,9 +22,9 @@ internal class Season21BuffRowsTest
     [
         244, 289, 298, 459, 460, 461, 463, 652, 700, 701, 740,
         770, 771, 772, 773, 828, 829, 851, 852, 853, 854, 857, 861, 862, 863,
-        885, 886, 887, 905, 906, 912, 913, 914,
-        915, 928, 2009, 2010, 2011, 2021,
-        2024, 2032, 2090, 2097, 2098, 2099, 2100, 2108,
+        885, 886, 887, 905, 906,
+        928, 2009, 2010, 2011, 2021,
+        2024, 2032, 2090, 2108,
     ];
 
     /// <summary>
@@ -48,6 +48,7 @@ internal class Season21BuffRowsTest
         await new FixSeason21FairyElfBuffsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await new FixSeason21DarkWizardBuffsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await new FixSeason21MagicGladiatorBuffsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21DarkLordBuffsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         var others = gameConfiguration.Skills
             .Where(s => !before.Contains(s.Number) && s.SkillType == SkillType.Other && s.MagicEffectDef is not null && !Pending.Contains(s.Number))

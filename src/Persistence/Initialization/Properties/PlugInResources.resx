@@ -688,6 +688,12 @@
   <data name="FixSeason21ObsidianSoloDurationUpdatePlugIn_Description" xml:space="preserve">
     <value>Gives every class the attribute 'Is in party' and makes the Grow Lancer's Obsidian last 360 seconds on a caster without a party and 120 seconds on a party (S21Emu SkillObsidian). An operator's own duration stays. Optional.</value>
   </data>
+  <data name="FixSeason21DarkLordBuffsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Fix the Dark Lord buffs (Season 21 data)</value>
+  </data>
+  <data name="FixSeason21DarkLordBuffsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Gives Crown Force, Divine Force, Divine Aura and Battle Glory and their tiers their effect duration (S21Emu: Crown Force and Battle Glory 60 + energy / 30 seconds, Divine Force and Divine Aura 3 seconds) and makes them buffs: Crown Force on the party within 10, the others on the caster. An operator's own duration or skill type stays. Optional.</value>
+  </data>
   <data name="FixSeason21MagicGladiatorBuffsUpdatePlugIn_Name" xml:space="preserve">
     <value>Fix the Magic Gladiator charges (Season 21 data)</value>
   </data>
