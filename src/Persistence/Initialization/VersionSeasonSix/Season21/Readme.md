@@ -434,8 +434,13 @@ the elemental and legendary columns and the buy prices.
   915) get theirs from "Fix the Dark Lord buffs" (`Season21DarkLordBuffs`), after S21Emu's `SkillCrowForces`,
   `SkillDivineForce`, `SkillDivineAura` and `SkillBattleOfGlory`: Crown Force on the party within 10 and Battle Glory on
   the caster for 60 + energy / 30 seconds, Divine Force and Divine Aura on the caster for 3 seconds. No source names the
-  stat of their values (Divine Force 100, Divine Aura 500, the others' from the tier only), so they get no power-up yet.
-* 39 more Season 21 skills are still an `Other` with an effect that has no duration (the Summoner's curses,
+  stat of Crown Force's and Battle Glory's values (from the tier only), so they get no power-up yet; Divine Force's and
+  Divine Aura's come from a Season 22 text (below).
+* "Season 21 buff values from a Season 22 client" (`Season21BuffValuesFromSeason22`) gives the values a Season 22 web
+  client's `assets/data/skilltree.json` names where S21Emu gives none (a secondary source; S21Emu wins where both speak):
+  Evasion (652) raises the defense rate by 50 % for 7 seconds on the caster; Divine Force's 100 is attack
+  (`BaseDamageBonus`) and Divine Aura's 500 defense (`DefenseBase`), still on the caster for 3 seconds as S21Emu says.
+* 38 more Season 21 skills are still an `Other` with an effect that has no duration (the Summoner's curses,
   ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is fixed as the Rune Wizard's,
   the Slayer's, the Grow Lancer's, the Dark Knight's, the Fairy Elf's, the Dark Wizard's, the Magic Gladiator's and the
   Dark Lord's were.
