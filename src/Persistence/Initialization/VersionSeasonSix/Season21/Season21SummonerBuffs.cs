@@ -48,6 +48,12 @@ internal static class Season21SummonerBuffs
     private static readonly short[] InnovationTiers = [460, 773];
 
     /// <summary>
+    /// Gets the skills which are cast on an explicit target as Weakness and Innovation. The client's skill rows read them:
+    /// Season 6 knows 459 and 460 as attacks.
+    /// </summary>
+    public static short[] TargetSkills { get; } = [.. WeaknessTiers, .. InnovationTiers];
+
+    /// <summary>
     /// Gives the effects which have no duration theirs and makes the rows which are an <c>Other</c> cast as they should.
     /// An operator's own duration or skill type stays.
     /// </summary>
