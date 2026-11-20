@@ -89,6 +89,7 @@ public class Season21SkillsInGameTest
         await new FixSeason21MagicGladiatorBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21DarkLordBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21BuffValuesFromSeason22UpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21SummonerBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
 
         var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
@@ -385,6 +386,34 @@ public class Season21SkillsInGameTest
         }
 
         Assert.That(player.Attributes[Stats.TotalStrength], Is.EqualTo(strength + (player.Attributes[Stats.BaseEnergy] / 100)).Within(0.01));
+    }
+
+    /// <summary>
+    /// The Summoner's Darkness (289) and its tiers (770, 771) go on the caster for 30 + energy / 60 seconds and raise the
+    /// attack speed by 28 (S21Emu <c>SkillDarkness</c>).
+    /// </summary>
+    [Test]
+    public async ValueTask DarknessRaisesTheCastersAttackSpeedAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.Summoner, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(player).ConfigureAwait(false);
+        player.Attributes![Stats.BaseEnergy] = 1500;
+        var seconds = 30 + (player.Attributes[Stats.TotalEnergy] / 60);
+        foreach (var (skill, effect) in new (short, short)[] { (289, 301), (770, 302), (771, 303) })
+        {
+            var speed = player.Attributes[Stats.AttackSpeed];
+            await this.LearnAsync(player, skill, 0).ConfigureAwait(false);
+            player.Attributes[Stats.CurrentMana] = 1000;
+            player.Attributes[Stats.CurrentAbility] = 200;
+
+            await new TargetedSkillDefaultPlugin().PerformSkillAsync(player, player, (ushort)skill).ConfigureAwait(false);
+
+            var active = player.MagicEffectList.GetActiveEffectsSnapshot().FirstOrDefault(e => e.Definition.Number == effect);
+            Assert.That(active, Is.Not.Null, $"skill {skill}, effect {effect}");
+            Assert.That(active!.Duration.TotalSeconds, Is.EqualTo(seconds).Within(1), $"skill {skill}");
+            Assert.That(player.Attributes[Stats.AttackSpeed], Is.EqualTo(speed + 28).Within(0.01), $"skill {skill}");
+            await player.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
+        }
     }
 
     /// <summary>

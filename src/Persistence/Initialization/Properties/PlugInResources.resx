@@ -694,6 +694,12 @@
   <data name="FixSeason21BuffValuesFromSeason22UpdatePlugIn_Description" xml:space="preserve">
     <value>Gives the values a Season 22 client text names where S21Emu gives none: Evasion (652) raises the defense rate by 50 % for 7 seconds on the caster, Divine Force raises the attack by 100 and Divine Aura the defense by 500. Effects with power-ups of their own stay. Optional.</value>
   </data>
+  <data name="FixSeason21SummonerBuffsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Fix the Summoner buffs and curses (Season 21 data)</value>
+  </data>
+  <data name="FixSeason21SummonerBuffsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Gives Darkness (30 + energy / 60 seconds on the caster, attack speed + 28), the Weakness and Innovation tiers (cast as Weakness and Innovation, with their effects) and Blind (a hit, 5 seconds, chance 20 + energy / 25 %, attack rate halved) what S21Emu says. An operator's own duration or skill type stays. Optional.</value>
+  </data>
   <data name="FixSeason21DarkLordBuffsUpdatePlugIn_Name" xml:space="preserve">
     <value>Fix the Dark Lord buffs (Season 21 data)</value>
   </data>
