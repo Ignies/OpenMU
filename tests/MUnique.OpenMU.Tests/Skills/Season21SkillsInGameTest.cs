@@ -90,6 +90,7 @@ public class Season21SkillsInGameTest
         await new FixSeason21DarkLordBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21BuffValuesFromSeason22UpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21SummonerBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21GunCrusherBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
 
         var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
@@ -386,6 +387,34 @@ public class Season21SkillsInGameTest
         }
 
         Assert.That(player.Attributes[Stats.TotalStrength], Is.EqualTo(strength + (player.Attributes[Stats.BaseEnergy] / 100)).Within(0.01));
+    }
+
+    /// <summary>
+    /// The Gun Crusher's Fixed Fire (2021) and its tiers (828, 829) go on the caster for 60 + energy / 10 seconds and raise
+    /// the attack speed by 8 (S21Emu <c>SkillFixedFire</c> value2 8; a Season 22 client's skilltree.json 829 names it).
+    /// </summary>
+    [Test]
+    public async ValueTask FixedFireRaisesTheCastersAttackSpeedAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.GunCrusher, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(player).ConfigureAwait(false);
+        player.Attributes![Stats.BaseEnergy] = 1500;
+        var seconds = 60 + (player.Attributes[Stats.TotalEnergy] / 10);
+        foreach (var (skill, effect) in new (short, short)[] { (2021, 380), (828, 381), (829, 382) })
+        {
+            var speed = player.Attributes[Stats.AttackSpeed];
+            await this.LearnAsync(player, skill, 0).ConfigureAwait(false);
+            player.Attributes[Stats.CurrentMana] = 1000;
+            player.Attributes[Stats.CurrentAbility] = 200;
+
+            await new TargetedSkillDefaultPlugin().PerformSkillAsync(player, player, (ushort)skill).ConfigureAwait(false);
+
+            var active = player.MagicEffectList.GetActiveEffectsSnapshot().FirstOrDefault(e => e.Definition.Number == effect);
+            Assert.That(active, Is.Not.Null, $"skill {skill}, effect {effect}");
+            Assert.That(active!.Duration.TotalSeconds, Is.EqualTo(seconds).Within(1), $"skill {skill}");
+            Assert.That(player.Attributes[Stats.AttackSpeed], Is.EqualTo(speed + 8).Within(0.01), $"skill {skill}");
+            await player.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
+        }
     }
 
     /// <summary>

@@ -1789,6 +1789,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Fix the Gun Crusher buffs (Season 21 data).
+        /// </summary>
+        public static string FixSeason21GunCrusherBuffsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("FixSeason21GunCrusherBuffsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to the Gun Crusher buffs fix description.
+        /// </summary>
+        public static string FixSeason21GunCrusherBuffsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("FixSeason21GunCrusherBuffsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Fix the Summoner buffs and curses (Season 21 data).
         /// </summary>
         public static string FixSeason21SummonerBuffsUpdatePlugIn_Name {
