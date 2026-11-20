@@ -88,6 +88,7 @@ public class Season21SkillsInGameTest
         await new FixSeason21DarkWizardBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21MagicGladiatorBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21DarkLordBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21BuffValuesFromSeason22UpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
 
         var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
@@ -384,6 +385,40 @@ public class Season21SkillsInGameTest
         }
 
         Assert.That(player.Attributes[Stats.TotalStrength], Is.EqualTo(strength + (player.Attributes[Stats.BaseEnergy] / 100)).Within(0.01));
+    }
+
+    /// <summary>
+    /// The values a Season 22 client text names where S21Emu gives none (its <c>assets/data/skilltree.json</c>): Evasion
+    /// (652) raises the defense rate by 50 % for 7 seconds, Divine Force (2098) the attack by its 100 and Divine Aura (2099)
+    /// the defense by its 500.
+    /// </summary>
+    [Test]
+    public async ValueTask Season22TextsGiveEvasionAndTheDivineBuffsTheirValuesAsync()
+    {
+        var elf = await this.CreatePlayerAsync(BaseClassCode.FairyElf, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(elf).ConfigureAwait(false);
+        var defenseRate = elf.Attributes![Stats.DefenseRatePvm];
+        await this.LearnAsync(elf, 652, 0).ConfigureAwait(false);
+        elf.Attributes[Stats.CurrentMana] = 1000;
+        elf.Attributes[Stats.CurrentAbility] = 500;
+        await new TargetedSkillDefaultPlugin().PerformSkillAsync(elf, elf, 652).ConfigureAwait(false);
+        var evasion = elf.MagicEffectList.GetActiveEffectsSnapshot().FirstOrDefault(e => e.Definition.Number == 214);
+        Assert.That(evasion, Is.Not.Null, "Evasion");
+        Assert.That(evasion!.Duration.TotalSeconds, Is.EqualTo(7).Within(1));
+        Assert.That(elf.Attributes[Stats.DefenseRatePvm], Is.EqualTo(defenseRate * 1.5f).Within(1));
+
+        var lord = await this.CreatePlayerAsync(BaseClassCode.DarkLord, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(lord).ConfigureAwait(false);
+        lord.Attributes![Stats.BaseEnergy] = 1500;
+        lord.Attributes[Stats.BaseLeadership] = 1500;
+        foreach (var (skill, stat, value) in new (short, AttributeDefinition, float)[] { (2098, Stats.BaseDamageBonus, 100), (2099, Stats.DefenseBase, 500) })
+        {
+            var before = lord.Attributes[stat];
+            await this.LearnAsync(lord, skill, 0).ConfigureAwait(false);
+            lord.Attributes[Stats.CurrentMana] = 1000;
+            await new TargetedSkillDefaultPlugin().PerformSkillAsync(lord, lord, (ushort)skill).ConfigureAwait(false);
+            Assert.That(lord.Attributes[stat], Is.EqualTo(before + value).Within(0.01), $"skill {skill}");
+        }
     }
 
     /// <summary>

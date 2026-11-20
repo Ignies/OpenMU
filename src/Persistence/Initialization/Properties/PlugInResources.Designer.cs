@@ -1771,6 +1771,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Season 21 buff values from a Season 22 client.
+        /// </summary>
+        public static string FixSeason21BuffValuesFromSeason22UpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("FixSeason21BuffValuesFromSeason22UpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to the Season 22 buff values description.
+        /// </summary>
+        public static string FixSeason21BuffValuesFromSeason22UpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("FixSeason21BuffValuesFromSeason22UpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Fix the Dark Lord buffs (Season 21 data).
         /// </summary>
         public static string FixSeason21DarkLordBuffsUpdatePlugIn_Name {

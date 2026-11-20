@@ -688,6 +688,12 @@
   <data name="FixSeason21ObsidianSoloDurationUpdatePlugIn_Description" xml:space="preserve">
     <value>Gives every class the attribute 'Is in party' and makes the Grow Lancer's Obsidian last 360 seconds on a caster without a party and 120 seconds on a party (S21Emu SkillObsidian). An operator's own duration stays. Optional.</value>
   </data>
+  <data name="FixSeason21BuffValuesFromSeason22UpdatePlugIn_Name" xml:space="preserve">
+    <value>Season 21 buff values from a Season 22 client</value>
+  </data>
+  <data name="FixSeason21BuffValuesFromSeason22UpdatePlugIn_Description" xml:space="preserve">
+    <value>Gives the values a Season 22 client text names where S21Emu gives none: Evasion (652) raises the defense rate by 50 % for 7 seconds on the caster, Divine Force raises the attack by 100 and Divine Aura the defense by 500. Effects with power-ups of their own stay. Optional.</value>
+  </data>
   <data name="FixSeason21DarkLordBuffsUpdatePlugIn_Name" xml:space="preserve">
     <value>Fix the Dark Lord buffs (Season 21 data)</value>
   </data>
