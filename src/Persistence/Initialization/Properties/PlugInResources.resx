@@ -694,6 +694,12 @@
   <data name="FixSeason21BuffValuesFromSeason22UpdatePlugIn_Description" xml:space="preserve">
     <value>Gives the values a Season 22 client text names where S21Emu gives none: Evasion (652) raises the defense rate by 50 % for 7 seconds on the caster, Divine Force raises the attack by 100 and Divine Aura the defense by 500. Effects with power-ups of their own stay. Optional.</value>
   </data>
+  <data name="FixSeason21LightWizardBuffsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Fix the Light Wizard buffs (Season 21 data)</value>
+  </data>
+  <data name="FixSeason21LightWizardBuffsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Gives Reflection Barrier and its tiers (244, 861, 862, 863) what S21Emu says, on the caster's party within 6 tiles: 60 + energy / 10 seconds. Its reflection copies the Summoner's Reflection (same effect group), since no source gives the barrier's own. An operator's own duration or skill type stays. Optional.</value>
+  </data>
   <data name="FixSeason21LemuriaMageBuffsUpdatePlugIn_Name" xml:space="preserve">
     <value>Fix the Lemuria Mage buffs (Season 21 data)</value>
   </data>
