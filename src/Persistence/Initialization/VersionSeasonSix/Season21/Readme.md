@@ -454,10 +454,15 @@ the elemental and legendary columns and the buy prices.
   buffs" (`Season21IllusionKnightBuffs`): on the caster for 300 seconds with skill damage + 110 (`SkillIllusionBlade`, value
   110; a Season 22 client's `assets/data/skilltree.json` 885 names it skill power; its `formulas.json` 302 to 304 are the
   tiers' own rises).
-* 22 more Season 21 skills are still an `Other` with an effect that has no duration (the Lemuria Mage's beginner buffs,
-  ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is fixed as the Rune Wizard's,
-  the Slayer's, the Grow Lancer's, the Dark Knight's, the Fairy Elf's, the Dark Wizard's, the Magic Gladiator's, the
-  Dark Lord's, the Summoner's, the Gun Crusher's and the Illusion Knight's were.
+* The Lemuria Mage's beginner buffs get theirs from "Fix the Lemuria Mage buffs" (`Season21LemuriaMageBuffs`), on a
+  player of the mage's choice: Greater Damage (2010; 853, 854; effect 346) + 3 + energy / 14 and Greater Defense (2009; 851,
+  852; effect 347) + 4 + energy / 8 for 60 seconds, Bless (2011; 857; effect 348) every stat + energy / 200 for 300 seconds
+  (`SkillBeginnerGreaterDamage`, `SkillBeginnerGreaterDefense`, `SkillBeginnerBless`; a Season 22 client's skill table
+  casts them as Greater Damage, target mode 4, range 6).
+* 14 more Season 21 skills are still an `Other` with an effect that has no duration (the Light
+  Wizard's Reflection Barrier, ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is
+  fixed as the Rune Wizard's, the Slayer's, the Grow Lancer's, the Dark Knight's, the Fairy Elf's, the Dark Wizard's, the Magic Gladiator's, the
+  Dark Lord's, the Summoner's, the Gun Crusher's, the Illusion Knight's and the Lemuria Mage's were.
 
 Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
 damage reduction table, the Ability Enhancement Core (track T, later).

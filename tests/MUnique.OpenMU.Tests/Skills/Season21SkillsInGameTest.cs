@@ -92,6 +92,7 @@ public class Season21SkillsInGameTest
         await new FixSeason21SummonerBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21GunCrusherBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21IllusionKnightBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21LemuriaMageBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
 
         var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
@@ -470,6 +471,49 @@ public class Season21SkillsInGameTest
             Assert.That(active!.Duration.TotalSeconds, Is.EqualTo(seconds).Within(1), $"skill {skill}");
             Assert.That(player.Attributes[Stats.AttackSpeed], Is.EqualTo(speed + 28).Within(0.01), $"skill {skill}");
             await player.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// The Lemuria Mage's beginner buffs go on a player of the mage's choice (S21Emu <c>SkillBeginnerGreaterDamage</c>,
+    /// <c>SkillBeginnerGreaterDefense</c>, <c>SkillBeginnerBless</c>): Greater Damage (2010; 853, 854) + 3 + energy / 14 for
+    /// 60 seconds, Greater Defense (2009; 851, 852) + (2 + energy / 16) x 2 for 60 seconds, Bless (2011; 857) every stat
+    /// + energy / 200 for 300 seconds.
+    /// </summary>
+    [Test]
+    public async ValueTask BeginnerBuffsGoOnTheMagesTargetAsync()
+    {
+        var mage = await this.CreatePlayerAsync(BaseClassCode.LemuriaMage, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(mage).ConfigureAwait(false);
+        mage.Attributes![Stats.BaseEnergy] = 1400;
+        var target = await this.CreatePlayerAsync(BaseClassCode.DarkKnight, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(target).ConfigureAwait(false);
+        var energy = mage.Attributes[Stats.TotalEnergy];
+        var rows = new (short Skill, short Effect, float Seconds, AttributeDefinition Stat, float Value)[]
+        {
+            (2010, 346, 60, Stats.GreaterDamageBonus, 3 + (energy / 14)),
+            (853, 346, 60, Stats.GreaterDamageBonus, 3 + (energy / 14)),
+            (854, 346, 60, Stats.GreaterDamageBonus, 3 + (energy / 14)),
+            (2009, 347, 60, Stats.GreaterDefenseBonus, (2 + (energy / 16)) * 2),
+            (851, 347, 60, Stats.GreaterDefenseBonus, (2 + (energy / 16)) * 2),
+            (852, 347, 60, Stats.GreaterDefenseBonus, (2 + (energy / 16)) * 2),
+            (2011, 348, 300, Stats.TotalStrength, mage.Attributes[Stats.BaseEnergy] / 200),
+            (857, 348, 300, Stats.TotalStrength, mage.Attributes[Stats.BaseEnergy] / 200),
+        };
+        foreach (var (skill, effect, seconds, stat, value) in rows)
+        {
+            var before = target.Attributes![stat];
+            await this.LearnAsync(mage, skill, 0).ConfigureAwait(false);
+            mage.Attributes[Stats.CurrentMana] = 1000;
+            mage.Attributes[Stats.CurrentAbility] = 200;
+
+            await new TargetedSkillDefaultPlugin().PerformSkillAsync(mage, target, (ushort)skill).ConfigureAwait(false);
+
+            var active = target.MagicEffectList.GetActiveEffectsSnapshot().FirstOrDefault(e => e.Definition.Number == effect);
+            Assert.That(active, Is.Not.Null, $"skill {skill}, effect {effect}");
+            Assert.That(active!.Duration.TotalSeconds, Is.EqualTo(seconds).Within(1), $"skill {skill}");
+            Assert.That(target.Attributes[stat], Is.EqualTo(before + value).Within(0.5), $"skill {skill}");
+            await target.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
         }
     }
 

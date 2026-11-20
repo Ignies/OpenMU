@@ -1789,6 +1789,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Fix the Lemuria Mage buffs (Season 21 data).
+        /// </summary>
+        public static string FixSeason21LemuriaMageBuffsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("FixSeason21LemuriaMageBuffsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to the Lemuria Mage buffs fix description.
+        /// </summary>
+        public static string FixSeason21LemuriaMageBuffsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("FixSeason21LemuriaMageBuffsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Fix the Illusion Knight buffs (Season 21 data).
         /// </summary>
         public static string FixSeason21IllusionKnightBuffsUpdatePlugIn_Name {
