@@ -61,6 +61,23 @@ internal class Season21EvolutionQuestsDataTest
     }
 
     /// <summary>
+    /// The Trial Area (map 121) takes the client's terrain (folder 122, `Terrain122.att`): the fifth class entrance
+    /// (101-105, 27-28) and Eunice's spot are walkable and no safe zone, as in the client (`World122/EncTerrain122.att`).
+    /// </summary>
+    [Test]
+    public void FifthClassEntranceIsWalkable()
+    {
+        var terrain = new GameMapTerrain(this._gameConfiguration.Maps.Single(m => m.Number == EvolutionQuestConfiguration.Season21TrialMap));
+        for (byte x = 101; x <= 105; x++)
+        {
+            for (byte y = 27; y <= 28; y++)
+            {
+                Assert.That((terrain.WalkMap[x, y], terrain.SafezoneMap[x, y]), Is.EqualTo((true, false)), $"{x},{y}");
+            }
+        }
+    }
+
+    /// <summary>
     /// The Trial Area is added with its terrain, hosted with Lorencia, and Sent and Eunice stand on it and in their towns.
     /// </summary>
     [Test]

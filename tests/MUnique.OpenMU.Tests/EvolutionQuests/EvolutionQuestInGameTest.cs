@@ -274,6 +274,28 @@ public class EvolutionQuestInGameTest
     }
 
     /// <summary>
+    /// The New Power of a fifth class trial step lasts as long as the step: when the step's time runs out the trial ends
+    /// and effect 421 goes with it (as when the player leaves the map or dies, which warps it out).
+    /// </summary>
+    [Test]
+    public async ValueTask FifthClassTrialPowerEndsWithTheStepAsync()
+    {
+        var configuration = new EvolutionQuestConfiguration();
+        configuration.GetStep(Group, 10)!.TimeLimit = TimeSpan.FromMilliseconds(300);
+        this._plugIn.Configuration = configuration;
+        var player = await this.CreateThirdClassAsync((CharacterClassNumber)131, 400, 1000, 2, 193, 13).ConfigureAwait(false);
+        await this.TalkAsync(player, EuniceVillage).ConfigureAwait(false);
+        await this.TalkAsync(player, EuniceQuest).ConfigureAwait(false);
+        await new QuestStartAction().StartQuestAsync(player, Group, 10).ConfigureAwait(false);
+        Assert.That(player.MagicEffectList.ContainsEffect(421), Is.True);
+
+        await Task.Delay(1500).ConfigureAwait(false);
+
+        Assert.That(this._plugIn.GetTrial(player), Is.Null);
+        Assert.That(player.MagicEffectList.ContainsEffect(421), Is.False);
+    }
+
+    /// <summary>
     /// The trial ends when its player leaves the map; its monsters leave too.
     /// </summary>
     [Test]
