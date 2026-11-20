@@ -1,4 +1,4 @@
-// <copyright file="FixSeason21BuffValuesFromSeason22UpdatePlugIn.cs" company="MUnique">
+// <copyright file="FixSeason21Season22TextBuffsUpdatePlugIn.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -11,21 +11,21 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Gives Evasion and the Dark Lord's Divine Force and Divine Aura the values a Season 22 client text names,
-/// see <see cref="Season21BuffValuesFromSeason22"/>. Fork feature id <c>s21_skills</c>.
+/// see <see cref="Season21Season22TextBuffs"/>. Fork feature id <c>s21_skills</c>.
 /// </summary>
 [PlugIn]
-[Display(Name = nameof(Properties.PlugInResources.FixSeason21BuffValuesFromSeason22UpdatePlugIn_Name), Description = nameof(Properties.PlugInResources.FixSeason21BuffValuesFromSeason22UpdatePlugIn_Description), ResourceType = typeof(Properties.PlugInResources))]
+[Display(Name = nameof(Properties.PlugInResources.FixSeason21Season22TextBuffsUpdatePlugIn_Name), Description = nameof(Properties.PlugInResources.FixSeason21Season22TextBuffsUpdatePlugIn_Description), ResourceType = typeof(Properties.PlugInResources))]
 [Guid("E2B9D04C-6F13-4A87-B5D2-31C8F7A69E05")]
-public class FixSeason21BuffValuesFromSeason22UpdatePlugIn : UpdatePlugInBase
+public class FixSeason21Season22TextBuffsUpdatePlugIn : UpdatePlugInBase
 {
     /// <inheritdoc />
     public override string DataInitializationKey => VersionSeasonSix.DataInitialization.Id;
 
     /// <inheritdoc />
-    public override string Name => Properties.PlugInResources.FixSeason21BuffValuesFromSeason22UpdatePlugIn_Name;
+    public override string Name => Properties.PlugInResources.FixSeason21Season22TextBuffsUpdatePlugIn_Name;
 
     /// <inheritdoc />
-    public override string Description => Properties.PlugInResources.FixSeason21BuffValuesFromSeason22UpdatePlugIn_Description;
+    public override string Description => Properties.PlugInResources.FixSeason21Season22TextBuffsUpdatePlugIn_Description;
 
     /// <inheritdoc />
     public override bool IsMandatory => false;
@@ -42,7 +42,7 @@ public class FixSeason21BuffValuesFromSeason22UpdatePlugIn : UpdatePlugInBase
     /// <inheritdoc />
     protected override ValueTask ApplyAsync(IContext context, GameConfiguration gameConfiguration)
     {
-        Season21BuffValuesFromSeason22.Apply(context, gameConfiguration);
+        Season21Season22TextBuffs.Apply(context, gameConfiguration);
         return ValueTask.CompletedTask;
     }
 }

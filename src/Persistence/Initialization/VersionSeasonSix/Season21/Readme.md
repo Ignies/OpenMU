@@ -436,7 +436,7 @@ the elemental and legendary columns and the buy prices.
   the caster for 60 + energy / 30 seconds, Divine Force and Divine Aura on the caster for 3 seconds. No source names the
   stat of Crown Force's and Battle Glory's values (from the tier only), so they get no power-up yet; Divine Force's and
   Divine Aura's come from a Season 22 text (below).
-* "Season 21 buff values from a Season 22 client" (`Season21BuffValuesFromSeason22`) gives the values a Season 22 web
+* "Season 21 buff values from a Season 22 client" (`Season21Season22TextBuffs`) gives the values a Season 22 web
   client's `assets/data/skilltree.json` names where S21Emu gives none (a secondary source; S21Emu wins where both speak):
   Evasion (652) raises the defense rate by 50 % for 7 seconds on the caster; Divine Force's 100 is attack
   (`BaseDamageBonus`) and Divine Aura's 500 defense (`DefenseBase`), still on the caster for 3 seconds as S21Emu says.

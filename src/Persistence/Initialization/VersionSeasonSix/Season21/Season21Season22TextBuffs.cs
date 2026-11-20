@@ -1,4 +1,4 @@
-// <copyright file="Season21BuffValuesFromSeason22.cs" company="MUnique">
+// <copyright file="Season21Season22TextBuffs.cs" company="MUnique">
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 // </copyright>
 
@@ -24,7 +24,7 @@ using MUnique.OpenMU.GameLogic.Attributes;
 /// The Season 22 text speaks of party members; S21Emu puts both on the caster for 3 seconds, which stays. All is data an
 /// operator can change.
 /// </remarks>
-internal static class Season21BuffValuesFromSeason22
+internal static class Season21Season22TextBuffs
 {
     private const short Evasion = 652;
     private const float EvasionSeconds = 7;
