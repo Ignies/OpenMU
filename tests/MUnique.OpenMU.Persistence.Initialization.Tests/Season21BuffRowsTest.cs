@@ -22,9 +22,9 @@ internal class Season21BuffRowsTest
     [
         244, 298, 700, 701, 740,
         851, 852, 853, 854, 857, 861, 862, 863,
-        885, 886, 887, 905, 906,
+        905, 906,
         928, 2009, 2010, 2011,
-        2024, 2032, 2090, 2108,
+        2024, 2090, 2108,
     ];
 
     /// <summary>
@@ -52,6 +52,7 @@ internal class Season21BuffRowsTest
         await new FixSeason21BuffValuesFromSeason22UpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await new FixSeason21SummonerBuffsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await new FixSeason21GunCrusherBuffsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21IllusionKnightBuffsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         var others = gameConfiguration.Skills
             .Where(s => !before.Contains(s.Number) && s.SkillType == SkillType.Other && s.MagicEffectDef is not null && !Pending.Contains(s.Number))

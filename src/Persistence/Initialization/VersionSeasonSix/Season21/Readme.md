@@ -450,10 +450,14 @@ the elemental and legendary columns and the buy prices.
 * The Gun Crusher's Fixed Fire (2021; 828, 829) gets its effects (380 to 382) from "Fix the Gun Crusher buffs"
   (`Season21GunCrusherBuffs`): on the caster for 60 + energy / 10 seconds with attack speed + 8 (`SkillFixedFire`, value
   8; a Season 22 client's `assets/data/skilltree.json` 829 names it attack speed).
-* 26 more Season 21 skills are still an `Other` with an effect that has no duration (the Lemuria Mage's beginner buffs,
+* The Illusion Knight's Illusion Blade (2032; 885, 886, 887) gets its effects (405 to 408) from "Fix the Illusion Knight
+  buffs" (`Season21IllusionKnightBuffs`): on the caster for 300 seconds with skill damage + 110 (`SkillIllusionBlade`, value
+  110; a Season 22 client's `assets/data/skilltree.json` 885 names it skill power; its `formulas.json` 302 to 304 are the
+  tiers' own rises).
+* 22 more Season 21 skills are still an `Other` with an effect that has no duration (the Lemuria Mage's beginner buffs,
   ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is fixed as the Rune Wizard's,
   the Slayer's, the Grow Lancer's, the Dark Knight's, the Fairy Elf's, the Dark Wizard's, the Magic Gladiator's, the
-  Dark Lord's, the Summoner's and the Gun Crusher's were.
+  Dark Lord's, the Summoner's, the Gun Crusher's and the Illusion Knight's were.
 
 Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
 damage reduction table, the Ability Enhancement Core (track T, later).

@@ -91,6 +91,7 @@ public class Season21SkillsInGameTest
         await new FixSeason21BuffValuesFromSeason22UpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21SummonerBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
         await new FixSeason21GunCrusherBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21IllusionKnightBuffsUpdatePlugIn().ApplyUpdateAsync(context, this._gameConfiguration).ConfigureAwait(false);
 
         var mapInitializer = new MapInitializer(this._gameConfiguration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
         var plugInManager = new PlugInManager(null, new NullLoggerFactory(), null, null);
@@ -413,6 +414,33 @@ public class Season21SkillsInGameTest
             Assert.That(active, Is.Not.Null, $"skill {skill}, effect {effect}");
             Assert.That(active!.Duration.TotalSeconds, Is.EqualTo(seconds).Within(1), $"skill {skill}");
             Assert.That(player.Attributes[Stats.AttackSpeed], Is.EqualTo(speed + 8).Within(0.01), $"skill {skill}");
+            await player.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// The Illusion Knight's Illusion Blade (2032) and its tiers (885, 886, 887) go on the caster for 300 seconds and raise
+    /// the skill damage by 110 (S21Emu <c>SkillIllusionBlade</c>).
+    /// </summary>
+    [Test]
+    public async ValueTask IllusionBladeRaisesTheCastersSkillDamageAsync()
+    {
+        var player = await this.CreatePlayerAsync(BaseClassCode.IllusionKnight, ClassEvolution.Fourth).ConfigureAwait(false);
+        await this.EnterWorldAsync(player).ConfigureAwait(false);
+        player.Attributes![Stats.BaseEnergy] = 1500;
+        foreach (var (skill, effect) in new (short, short)[] { (2032, 405), (885, 406), (886, 407), (887, 408) })
+        {
+            var bonus = player.Attributes[Stats.SkillDamageBonus];
+            await this.LearnAsync(player, skill, 0).ConfigureAwait(false);
+            player.Attributes[Stats.CurrentMana] = 1000;
+            player.Attributes[Stats.CurrentAbility] = 200;
+
+            await new TargetedSkillDefaultPlugin().PerformSkillAsync(player, player, (ushort)skill).ConfigureAwait(false);
+
+            var active = player.MagicEffectList.GetActiveEffectsSnapshot().FirstOrDefault(e => e.Definition.Number == effect);
+            Assert.That(active, Is.Not.Null, $"skill {skill}, effect {effect}");
+            Assert.That(active!.Duration.TotalSeconds, Is.EqualTo(300).Within(1), $"skill {skill}");
+            Assert.That(player.Attributes[Stats.SkillDamageBonus], Is.EqualTo(bonus + 110).Within(0.01), $"skill {skill}");
             await player.MagicEffectList.ClearAllEffectsAsync().ConfigureAwait(false);
         }
     }

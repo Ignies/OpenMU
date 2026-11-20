@@ -694,6 +694,12 @@
   <data name="FixSeason21BuffValuesFromSeason22UpdatePlugIn_Description" xml:space="preserve">
     <value>Gives the values a Season 22 client text names where S21Emu gives none: Evasion (652) raises the defense rate by 50 % for 7 seconds on the caster, Divine Force raises the attack by 100 and Divine Aura the defense by 500. Effects with power-ups of their own stay. Optional.</value>
   </data>
+  <data name="FixSeason21IllusionKnightBuffsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Fix the Illusion Knight buffs (Season 21 data)</value>
+  </data>
+  <data name="FixSeason21IllusionKnightBuffsUpdatePlugIn_Description" xml:space="preserve">
+    <value>Gives Illusion Blade and its tiers (2032, 885, 886, 887) what S21Emu says: 300 seconds on the caster, skill damage + 110. An operator's own duration or skill type stays. Optional.</value>
+  </data>
   <data name="FixSeason21GunCrusherBuffsUpdatePlugIn_Name" xml:space="preserve">
     <value>Fix the Gun Crusher buffs (Season 21 data)</value>
   </data>
