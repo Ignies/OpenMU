@@ -447,10 +447,13 @@ the elemental and legendary columns and the buy prices.
   they are cast as Weakness (221) and Innovation (222) and copy their effects; Blind is a hit again (it was a Season 6
   attack) whose effect lasts 5 seconds with a 20 + energy / 25 % chance and halves the attack rate (`SkillBlind`, value
   50; a Season 22 client's `assets/data/skilltree.json` 461: it lowers the target's attack success rate).
-* 29 more Season 21 skills are still an `Other` with an effect that has no duration (the Lemuria Mage's beginner buffs,
+* The Gun Crusher's Fixed Fire (2021; 828, 829) gets its effects (380 to 382) from "Fix the Gun Crusher buffs"
+  (`Season21GunCrusherBuffs`): on the caster for 60 + energy / 10 seconds with attack speed + 8 (`SkillFixedFire`, value
+  8; a Season 22 client's `assets/data/skilltree.json` 829 names it attack speed).
+* 26 more Season 21 skills are still an `Other` with an effect that has no duration (the Lemuria Mage's beginner buffs,
   ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is fixed as the Rune Wizard's,
   the Slayer's, the Grow Lancer's, the Dark Knight's, the Fairy Elf's, the Dark Wizard's, the Magic Gladiator's, the
-  Dark Lord's and the Summoner's were.
+  Dark Lord's, the Summoner's and the Gun Crusher's were.
 
 Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
 damage reduction table, the Ability Enhancement Core (track T, later).
