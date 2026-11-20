@@ -1789,6 +1789,24 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Fix the Summoner buffs and curses (Season 21 data).
+        /// </summary>
+        public static string FixSeason21SummonerBuffsUpdatePlugIn_Name {
+            get {
+                return ResourceManager.GetString("FixSeason21SummonerBuffsUpdatePlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to the Summoner buffs and curses fix description.
+        /// </summary>
+        public static string FixSeason21SummonerBuffsUpdatePlugIn_Description {
+            get {
+                return ResourceManager.GetString("FixSeason21SummonerBuffsUpdatePlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Fix the Dark Lord buffs (Season 21 data).
         /// </summary>
         public static string FixSeason21DarkLordBuffsUpdatePlugIn_Name {

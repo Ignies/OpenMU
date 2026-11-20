@@ -20,8 +20,8 @@ internal class Season21BuffRowsTest
     /// <summary>The Season 21 skills which are still an <c>Other</c> with an effect (no duration yet), to be fixed.</summary>
     private static readonly short[] Pending =
     [
-        244, 289, 298, 459, 460, 461, 463, 700, 701, 740,
-        770, 771, 772, 773, 828, 829, 851, 852, 853, 854, 857, 861, 862, 863,
+        244, 298, 700, 701, 740,
+        828, 829, 851, 852, 853, 854, 857, 861, 862, 863,
         885, 886, 887, 905, 906,
         928, 2009, 2010, 2011, 2021,
         2024, 2032, 2090, 2108,
@@ -50,6 +50,7 @@ internal class Season21BuffRowsTest
         await new FixSeason21MagicGladiatorBuffsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await new FixSeason21DarkLordBuffsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         await new FixSeason21BuffValuesFromSeason22UpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+        await new FixSeason21SummonerBuffsUpdatePlugIn().ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
 
         var others = gameConfiguration.Skills
             .Where(s => !before.Contains(s.Number) && s.SkillType == SkillType.Other && s.MagicEffectDef is not null && !Pending.Contains(s.Number))

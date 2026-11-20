@@ -440,10 +440,17 @@ the elemental and legendary columns and the buy prices.
   client's `assets/data/skilltree.json` names where S21Emu gives none (a secondary source; S21Emu wins where both speak):
   Evasion (652) raises the defense rate by 50 % for 7 seconds on the caster; Divine Force's 100 is attack
   (`BaseDamageBonus`) and Divine Aura's 500 defense (`DefenseBase`), still on the caster for 3 seconds as S21Emu says.
-* 38 more Season 21 skills are still an `Other` with an effect that has no duration (the Summoner's curses,
+* The Summoner's Darkness (289; 770, 771), the Weakness and Innovation tiers (459, 772; 460, 773) and Blind (461, 463)
+  get theirs from "Fix the Summoner buffs and curses" (`Season21SummonerBuffs`): Darkness on the caster for
+  30 + energy / 60 seconds with attack speed + 28 (`SkillDarkness`; its curse damage, defense and life reduction come
+  from formula natives no file gives); the tiers' effects share Lesser Damage's and Lesser Defense's groups (43, 44), so
+  they are cast as Weakness (221) and Innovation (222) and copy their effects; Blind is a hit again (it was a Season 6
+  attack) whose effect lasts 5 seconds with a 20 + energy / 25 % chance and halves the attack rate (`SkillBlind`, value
+  50; a Season 22 client's `assets/data/skilltree.json` 461: it lowers the target's attack success rate).
+* 29 more Season 21 skills are still an `Other` with an effect that has no duration (the Lemuria Mage's beginner buffs,
   ...): they are listed in `Season21BuffRowsTest.Pending`, a list that only shrinks; each is fixed as the Rune Wizard's,
-  the Slayer's, the Grow Lancer's, the Dark Knight's, the Fairy Elf's, the Dark Wizard's, the Magic Gladiator's and the
-  Dark Lord's were.
+  the Slayer's, the Grow Lancer's, the Dark Knight's, the Fairy Elf's, the Dark Wizard's, the Magic Gladiator's, the
+  Dark Lord's and the Summoner's were.
 
 Not taken: the delay of a skill, the element imprint and the attack patterns (no field and no system yet), the
 damage reduction table, the Ability Enhancement Core (track T, later).
