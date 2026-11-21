@@ -27,5 +27,5 @@ Length: 3 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 1 | Byte |  | Storage; 0 worn by the object, 1 the own inventory (worn and bag), 2 the own vault, 3 the trade offer of the object, 4 the personal shop of the object, 5 the own Gremory cases (object id 0 the character's, 1 the account's). |
+| 0 | 1 | Byte |  | Storage; 0 worn by the object, 1 the own inventory (worn and bag), 2 the own vault, 3 the trade offer of the object, 4 the personal shop of the object, 5 the own Gremory cases (object id 0 the character's, 1 the account's), 6 an item on the ground in view (object id its drop id, slot 0). |
 | 1 | 2 | ShortBigEndian |  | ObjectId; The player the storage belongs to; the own id for the own storages. |
