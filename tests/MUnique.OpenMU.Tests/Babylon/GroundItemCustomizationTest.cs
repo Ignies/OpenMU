@@ -4,9 +4,12 @@
 
 namespace MUnique.OpenMU.Tests.Babylon;
 
+using Microsoft.Extensions.Logging.Abstractions;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.ItemCustomization;
 using MUnique.OpenMU.Pathfinding;
+using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.PlugIns;
 using BasicModel = MUnique.OpenMU.Persistence.BasicModel;
 
 /// <summary>
@@ -50,11 +53,20 @@ public class GroundItemCustomizationTest
         Assert.That(await ItemCustomizationCollector.ItemIdAsync(player, Ground, far.Id, 0).ConfigureAwait(false), Is.Null);
     }
 
+    /// <summary>
+    /// A test player whose map keeps drops for a minute (the test configuration's zero would remove them at once)
+    /// and who sees 15 tiles around.
+    /// </summary>
     private static async ValueTask<Player> CreatePlayerAsync()
     {
-        var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);
-        player.GameContext.Configuration.InfoRange = 15;
-        return player;
+        var configuration = PlayerTestHelper.CreateGameConfiguration();
+        configuration.ItemDropDuration = TimeSpan.FromMinutes(1);
+        configuration.InfoRange = 15;
+        var mapInitializer = new MapInitializer(configuration, new NullLogger<MapInitializer>(), NullDropGenerator.Instance, null);
+        var gameContext = new GameContext(configuration, new InMemoryPersistenceContextProvider(), mapInitializer, new NullLoggerFactory(), new PlugInManager(null, new NullLoggerFactory(), null, null), NullDropGenerator.Instance, new ConfigurationChangeMediator());
+        mapInitializer.PlugInManager = gameContext.PlugInManager;
+        mapInitializer.PathFinderPool = gameContext.PathFinderPool;
+        return await PlayerTestHelper.CreatePlayerAsync(gameContext).ConfigureAwait(false);
     }
 
     private static async ValueTask<DroppedItem> DropAsync(Player player, BasicModel.Item item, Point position)
