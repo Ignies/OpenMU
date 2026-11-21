@@ -103,6 +103,8 @@ public class GameConfigurationInitializer : GameConfigurationInitializerBase
         EventTicketItems.AssignFreeTicketItems(this.GameConfiguration);
         new CashShopItems(this.Context, this.GameConfiguration).Initialize();
         new BuffItems(this.Context, this.GameConfiguration).Initialize();
+        // After the maps and Hanzo exist: every map drops the rare dyes, Hanzo sells the basic ones.
+        new StarSmithDyeItems(this.Context, this.GameConfiguration).Initialize();
 
         // After all items exist.
         new ItemRules(this.Context, this.GameConfiguration).Initialize();

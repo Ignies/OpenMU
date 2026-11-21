@@ -93,4 +93,41 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
 
         await connection.SendAsync(Write).ConfigureAwait(false);
     }
+
+    /// <inheritdoc />
+    public async ValueTask SendDyesAsync(IReadOnlyList<StarSmithDye> dyes)
+    {
+        if (this._player.Connection is not { } connection)
+        {
+            return;
+        }
+
+        var count = Math.Min(dyes.Count, byte.MaxValue);
+        int Write()
+        {
+            var size = StarSmithDyesRef.GetRequiredSize(count);
+            var packet = new StarSmithDyesRef(connection.Output.GetSpan(size)[..size]) { Count = (byte)count };
+            for (var i = 0; i < count; i++)
+            {
+                var dye = dyes[i];
+                var entry = packet[i];
+                entry.Group = dye.Group;
+                entry.Number = (ushort)dye.Number;
+                entry.Flags = (byte)((dye.Hue ? 1 : 0) | (dye.Keep ? 2 : 0) | (dye.Radiant ? 4 : 0));
+                entry.MaximumStrength = dye.MaximumStrength;
+                var swatches = Math.Min(dye.Swatches.Count, StarSmithDye.MaximumSwatches);
+                entry.SwatchCount = (byte)swatches;
+                for (var s = 0; s < swatches; s++)
+                {
+                    entry.Swatches[s * 3] = (byte)(dye.Swatches[s] >> 16);
+                    entry.Swatches[(s * 3) + 1] = (byte)(dye.Swatches[s] >> 8);
+                    entry.Swatches[(s * 3) + 2] = (byte)dye.Swatches[s];
+                }
+            }
+
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
+    }
 }

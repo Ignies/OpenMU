@@ -756,11 +756,13 @@ public static class ConnectionExtensions
     /// <param name="connection">The connection.</param>
     /// <param name="slot">The inventory slot of the item.</param>
     /// <param name="look">The 31 look bytes of an ItemCustomizationEntry; all zero gives the item its own colours back.</param>
+    /// <param name="dyeSlot">The inventory slot of the colour dye spent (a basic, rare or Prismatic Dye), 0xFF for none (the original colours).</param>
+    /// <param name="radiantSlot">The inventory slot of the Radiant Dye spent for a glow, 0xFF for none.</param>
     /// <remarks>
     /// Is sent by the client when: The smith recolours an item of the inventory.
-    /// Causes reaction on server side: The server checks, takes the Zen and the hammer's durability, saves the look and answers with StarSmithResult.
+    /// Causes reaction on server side: The server checks the look against the dyes named, takes the dyes, the Zen and the hammer's durability, saves the look and answers with StarSmithResult.
     /// </remarks>
-    public static async ValueTask SendStarSmithRecolorRequestAsync(this IConnection? connection, byte @slot, Memory<byte> @look)
+    public static async ValueTask SendStarSmithRecolorRequestAsync(this IConnection? connection, byte @slot, Memory<byte> @look, byte @dyeSlot, byte @radiantSlot)
     {
         if (connection is null)
         {
@@ -773,6 +775,8 @@ public static class ConnectionExtensions
             var packet = new StarSmithRecolorRequestRef(connection.Output.GetSpan(length)[..length]);
             packet.Slot = @slot;
             @look.Span.CopyTo(packet.Look);
+            packet.DyeSlot = @dyeSlot;
+            packet.RadiantSlot = @radiantSlot;
 
             return packet.Header.Length;
         }
@@ -873,7 +877,7 @@ public static class ConnectionExtensions
     /// </summary>
     /// <param name="connection">The connection.</param>
     /// <param name="action">1 recolour, 2 rename, 3 lore, 4 lock.</param>
-    /// <param name="result">0 done, 1 no hammer in a hand, 2 hammer broken, 3 the item is locked, 4 not here (trade, shop, duel, event map), 5 no such item, 6 text refused, 7 not enough Zen, 8 smithing is off.</param>
+    /// <param name="result">0 done, 1 no hammer in a hand, 2 hammer broken, 3 the item is locked, 4 not here (trade, shop, duel, event map), 5 no such item, 6 text refused, 7 not enough Zen, 8 smithing is off, 9 no dye in the slot named, 10 the dye does not allow that colour, strength, mode or glow.</param>
     /// <param name="refusal">For result 6: the text moderation's refusal (1 empty, 2 too short, 3 too long, 4 too many lines, 5 double space, 6 bad character, 7 link, 8 colour code, 9 word).</param>
     /// <param name="zenCost">What the action cost in Zen.</param>
     /// <remarks>
