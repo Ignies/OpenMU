@@ -34,6 +34,12 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
     /// <summary>The hammer strikes of an action (EE 92); clients hold the result until the last one.</summary>
     private const byte Strikes = 3;
 
+    /// <summary>No dye named in a recolour (EE 93).</summary>
+    private const byte NoDye = 0xFF;
+
+    /// <summary>The look's flag of a glow (<see cref="ItemLookBytes"/>, byte 1).</summary>
+    private const byte GlowFlag = 2;
+
     /// <summary>The inventories watched for the hammer: a character entering the world gets a new one.</summary>
     private readonly ConditionalWeakTable<IInventoryStorage, object> _watched = new();
 
@@ -84,10 +90,12 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
     /// <param name="action">The action.</param>
     /// <param name="slot">The inventory slot of the item.</param>
     /// <param name="payload">The look bytes, the name or the lore (UTF-8, zero padded); empty for a lock.</param>
-    public async ValueTask HandleAsync(Player player, StarSmithAction action, byte slot, ReadOnlyMemory<byte> payload)
+    /// <param name="dyeSlot">For a recolour, the inventory slot of the colour dye spent (0xFF none).</param>
+    /// <param name="radiantSlot">For a recolour, the inventory slot of the Radiant Dye spent for a glow (0xFF none).</param>
+    public async ValueTask HandleAsync(Player player, StarSmithAction action, byte slot, ReadOnlyMemory<byte> payload, byte dyeSlot = NoDye, byte radiantSlot = NoDye)
     {
         var zenCost = action == StarSmithAction.Recolor ? this.Settings.RecolorZen : 0;
-        var (result, refusal) = await this.RunAsync(player, action, slot, payload, zenCost).ConfigureAwait(false);
+        var (result, refusal) = await this.RunAsync(player, action, slot, payload, zenCost, dyeSlot, radiantSlot).ConfigureAwait(false);
         if (result == StarSmithResultCode.Done)
         {
             await player.ForEachWorldObserverAsync<IStarSmithingViewPlugIn>(p => p.SendAnimationAsync(player, action, Strikes), true).ConfigureAwait(false);
@@ -113,6 +121,10 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
             StarSmithLevels.ToNext(level),
             (int)(hammer?.Durability ?? 0));
         await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendStateAsync(state)).ConfigureAwait(false);
+        if (hammer is not null)
+        {
+            await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendDyesAsync(this.Settings.Dyes)).ConfigureAwait(false);
+        }
     }
 
     /// <summary>
@@ -162,7 +174,7 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
         ItemCustomizationCache.Forget(itemId);
     }
 
-    private async ValueTask<(StarSmithResultCode Result, byte Refusal)> RunAsync(Player player, StarSmithAction action, byte slot, ReadOnlyMemory<byte> payload, int zenCost)
+    private async ValueTask<(StarSmithResultCode Result, byte Refusal)> RunAsync(Player player, StarSmithAction action, byte slot, ReadOnlyMemory<byte> payload, int zenCost, byte dyeSlot, byte radiantSlot)
     {
         var hammer = this.HammerOf(player);
         var item = player.Inventory?.GetItem(slot);
@@ -196,6 +208,25 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
             text = verdict.Text;
         }
 
+        // The dyes a recolour spends (Readme.md "Dyes"): none for the original colours, the Radiant Dye only for a glow.
+        Item? colourDye = null;
+        Item? radiantDye = null;
+        if (action == StarSmithAction.Recolor)
+        {
+            var lookBytes = payload.Span[..Math.Min(ItemLookBytes.Length, payload.Length)];
+            colourDye = this.DyeItem(player, dyeSlot, hammer, item);
+            radiantDye = this.DyeItem(player, radiantSlot, hammer, item);
+            var dyes = StarSmithDyes.Check(lookBytes, this.DyeOf(colourDye), this.DyeOf(radiantDye));
+            if (dyes != StarSmithResultCode.Done)
+            {
+                return (dyes, 0);
+            }
+
+            var needsDye = StarSmithDyes.NeedsDye(lookBytes);
+            colourDye = needsDye ? colourDye : null;
+            radiantDye = needsDye && (lookBytes[1] & GlowFlag) != 0 ? radiantDye : null;
+        }
+
         if (action == StarSmithAction.Recolor && !player.TryRemoveMoney(zenCost))
         {
             return (StarSmithResultCode.NotEnoughZen, 0);
@@ -222,6 +253,14 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
             }
         }).ConfigureAwait(false);
 
+        foreach (var dye in new[] { colourDye, radiantDye })
+        {
+            if (dye is not null)
+            {
+                await SpendOneAsync(player, dye).ConfigureAwait(false);
+            }
+        }
+
         if (StarSmithRules.WearsHammer(action) && hammer is not null)
         {
             hammer.Durability = Math.Max(0, hammer.Durability - this.Settings.DurabilityPerAction);
@@ -230,6 +269,34 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
 
         return (StarSmithResultCode.Done, 0);
     }
+
+    /// <summary>Takes one dye from its stack, or the item when it was the last.</summary>
+    private static async ValueTask SpendOneAsync(Player player, Item dye)
+    {
+        if (dye.Durability > 1)
+        {
+            dye.Durability--;
+            await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(dye, true)).ConfigureAwait(false);
+            return;
+        }
+
+        if (player.Inventory is not { } inventory)
+        {
+            return;
+        }
+
+        var slot = dye.ItemSlot;
+        await inventory.RemoveItemAsync(dye).ConfigureAwait(false);
+        await player.PersistenceContext.DeleteAsync(dye).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
+    }
+
+    /// <summary>The bag item in a dye slot, if it is a dye (never the hammer or the item being recoloured).</summary>
+    private Item? DyeItem(Player player, byte slot, Item? hammer, Item? target) =>
+        slot != NoDye && player.Inventory?.GetItem(slot) is { } found && !ReferenceEquals(found, hammer) && !ReferenceEquals(found, target) && this.DyeOf(found) is not null ? found : null;
+
+    private StarSmithDye? DyeOf(Item? item) =>
+        item?.Definition is { } definition ? StarSmithDyes.Find(this.Settings.Dyes, (byte)definition.Group, definition.Number) : null;
 
     private Item? HammerOf(Player player)
     {

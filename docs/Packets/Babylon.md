@@ -61,6 +61,7 @@
   * [C2 EE 95 - StarSmithLoreRequest (by client)](C2-EE-95-StarSmithLoreRequest_by-client.md)
   * [C1 EE 96 - StarSmithLockRequest (by client)](C1-EE-96-StarSmithLockRequest_by-client.md)
   * [C1 EE 97 - StarSmithResult (by server)](C1-EE-97-StarSmithResult_by-server.md)
+  * [C2 EE 98 - StarSmithDyes (by server)](C2-EE-98-StarSmithDyes_by-server.md)
   * [C2 EE A0 - EliteZones (by server)](C2-EE-A0-EliteZones_by-server.md)
   * [C1 EE A1 - FieldBossState (by server)](C1-EE-A1-FieldBossState_by-server.md)
   * [C1 EE A2 - MiningRequest (by client)](C1-EE-A2-MiningRequest_by-client.md)

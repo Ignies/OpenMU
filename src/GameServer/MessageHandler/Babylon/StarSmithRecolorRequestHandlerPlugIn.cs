@@ -36,6 +36,6 @@ internal class StarSmithRecolorRequestHandlerPlugIn : ISubPacketHandlerPlugIn
         }
 
         StarSmithRecolorRequest message = packet;
-        await smithing.HandleAsync(player, StarSmithAction.Recolor, message.Slot, packet.Slice(5, 31)).ConfigureAwait(false);
+        await smithing.HandleAsync(player, StarSmithAction.Recolor, message.Slot, packet.Slice(5, 31), message.DyeSlot, message.RadiantSlot).ConfigureAwait(false);
     }
 }

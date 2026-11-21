@@ -24,6 +24,7 @@ public static class AdminOperationsExtensions
         services.AddScoped<ConfigurationWriteOperations>();
         services.AddScoped<PluginWriteOperations>();
         services.AddScoped<ItemModerationOperations>();
+        services.AddScoped<StarSmithingOperations>();
         services.AddScoped<ContentActivationOperations>();
         services.AddScoped<ConfigurationTaskOperations>();
         services.AddScoped<CharacterWriteOperations>();

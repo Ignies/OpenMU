@@ -167,8 +167,8 @@ internal class Season21ShopsInitializer
             merchant.MerchantStoreTabs.Add(newTab);
         }
 
-        // The fork's own offers, e.g. the Star Smith's Hammer at Hanzo, aren't part of the data and stay.
-        var ownOffers = storage.Items.Where(item => item.Definition is { } definition && StarSmithHammer.IsHammer(definition)).ToList();
+        // The fork's own offers, the Star Smith's Hammer and dyes at Hanzo, aren't part of the data and stay.
+        var ownOffers = storage.Items.Where(item => item.Definition is { } definition && (StarSmithHammer.IsHammer(definition) || StarSmithDyeItems.IsDye(definition))).ToList();
         if (Matches(storage, rows, ownOffers) || (keepFilledTabs && storage.Items.Count > ownOffers.Count))
         {
             return;

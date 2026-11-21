@@ -16,6 +16,82 @@ using System;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 /// <summary>
+/// One dye of StarSmithDyes: the item, what it allows and its swatches..
+/// </summary>
+public readonly struct StarSmithDyeEntry
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithDyeEntry"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithDyeEntry(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 30;
+
+    /// <summary>
+    /// Gets or sets the group.
+    /// </summary>
+    public byte Group
+    {
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the number.
+    /// </summary>
+    public ushort Number
+    {
+        get => ReadUInt16BigEndian(this._data.Span[1..]);
+        set => WriteUInt16BigEndian(this._data.Span[1..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets 1 the hue shift (Prismatic), 2 the keep mask (rare), 4 the Radiant Dye (a glow).
+    /// </summary>
+    public byte Flags
+    {
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the maximum strength.
+    /// </summary>
+    public byte MaximumStrength
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets how many of the 8 swatches are set.
+    /// </summary>
+    public byte SwatchCount
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 8 colours, r g b each.
+    /// </summary>
+    public Span<byte> Swatches
+    {
+        get => this._data.Slice(6, 24).Span;
+    }
+}
+
+
+/// <summary>
 /// The class code of a character of the character list..
 /// </summary>
 public readonly struct CharacterClassCode
@@ -5195,7 +5271,7 @@ public readonly struct StarSmithAnimation
 
 /// <summary>
 /// Is sent by the client when: The smith recolours an item of the inventory.
-/// Causes reaction on server side: The server checks, takes the Zen and the hammer's durability, saves the look and answers with StarSmithResult.
+/// Causes reaction on server side: The server checks the look against the dyes named, takes the dyes, the Zen and the hammer's durability, saves the look and answers with StarSmithResult.
 /// </summary>
 public readonly struct StarSmithRecolorRequest
 {
@@ -5247,7 +5323,7 @@ public readonly struct StarSmithRecolorRequest
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 36;
+    public static int Length => 38;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -5269,6 +5345,24 @@ public readonly struct StarSmithRecolorRequest
     public Span<byte> Look
     {
         get => this._data.Slice(5, 31).Span;
+    }
+
+    /// <summary>
+    /// Gets or sets the inventory slot of the colour dye spent (a basic, rare or Prismatic Dye), 0xFF for none (the original colours).
+    /// </summary>
+    public byte DyeSlot
+    {
+        get => this._data.Span[36];
+        set => this._data.Span[36] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the inventory slot of the Radiant Dye spent for a glow, 0xFF for none.
+    /// </summary>
+    public byte RadiantSlot
+    {
+        get => this._data.Span[37];
+        set => this._data.Span[37] = value;
     }
 
     /// <summary>
@@ -5632,7 +5726,7 @@ public readonly struct StarSmithResult
     }
 
     /// <summary>
-    /// Gets or sets 0 done, 1 no hammer in a hand, 2 hammer broken, 3 the item is locked, 4 not here (trade, shop, duel, event map), 5 no such item, 6 text refused, 7 not enough Zen, 8 smithing is off.
+    /// Gets or sets 0 done, 1 no hammer in a hand, 2 hammer broken, 3 the item is locked, 4 not here (trade, shop, duel, event map), 5 no such item, 6 text refused, 7 not enough Zen, 8 smithing is off, 9 no dye in the slot named, 10 the dye does not allow that colour, strength, mode or glow.
     /// </summary>
     public byte Result
     {
@@ -5671,6 +5765,99 @@ public readonly struct StarSmithResult
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Memory<byte>(StarSmithResult packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: With StarSmithState while the hammer is in a hand, and after the dyes change.
+/// Causes reaction on client side: The client shows the swatches of the dye in the dye square, the ones the server accepts.
+/// </summary>
+public readonly struct StarSmithDyes
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithDyes"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithDyes(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithDyes"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private StarSmithDyes(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x98;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the count.
+    /// </summary>
+    public byte Count
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="StarSmithDyeEntry"/> of the specified index.
+    /// </summary>
+        public StarSmithDyeEntry this[int index] => new (this._data.Slice(6 + index * StarSmithDyeEntry.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="StarSmithDyes"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator StarSmithDyes(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="StarSmithDyes"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(StarSmithDyes packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="StarSmithDyeEntry"/>.
+    /// </summary>
+    /// <param name="dyesCount">The count of <see cref="StarSmithDyeEntry"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int dyesCount) => dyesCount * StarSmithDyeEntry.Length + 6;
 }
 
 

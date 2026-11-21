@@ -3,6 +3,47 @@
   <Description>This file contains the packet definitions of the Babylon protocol: packets of the Ignies/OpenMU fork, exchanged only with the Babylon client after it announced the fork protocol. All of them use the head code 0xEE (0xFB is the ping relay of the Babylon proxy) and a sub code; the sub code ranges are reserved per system (see docs/babylon.md).</Description>
   <Structures>
     <Structure>
+      <Name>StarSmithDyeEntry</Name>
+      <Description>One dye of StarSmithDyes: the item, what it allows and its swatches.</Description>
+      <Length>30</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>Group</Name>
+        </Field>
+        <Field>
+          <Index>1</Index>
+          <Type>ShortBigEndian</Type>
+          <Name>Number</Name>
+        </Field>
+        <Field>
+          <Index>3</Index>
+          <Type>Byte</Type>
+          <Name>Flags</Name>
+          <Description>1 the hue shift (Prismatic), 2 the keep mask (rare), 4 the Radiant Dye (a glow).</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>MaximumStrength</Name>
+        </Field>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>SwatchCount</Name>
+          <Description>How many of the 8 swatches are set.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Binary</Type>
+          <Name>Swatches</Name>
+          <Description>8 colours, r g b each.</Description>
+          <Length>24</Length>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
       <Name>CharacterClassCode</Name>
       <Description>The class code of a character of the character list.</Description>
       <Length>2</Length>
@@ -1891,10 +1932,10 @@
       <Code>EE</Code>
       <SubCode>93</SubCode>
       <Name>StarSmithRecolorRequest</Name>
-      <Length>36</Length>
+      <Length>38</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The smith recolours an item of the inventory.</SentWhen>
-      <CausedReaction>The server checks, takes the Zen and the hammer's durability, saves the look and answers with StarSmithResult.</CausedReaction>
+      <CausedReaction>The server checks the look against the dyes named, takes the dyes, the Zen and the hammer's durability, saves the look and answers with StarSmithResult.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
@@ -1908,6 +1949,18 @@
           <Name>Look</Name>
           <Description>The 31 look bytes of an ItemCustomizationEntry; all zero gives the item its own colours back.</Description>
           <Length>31</Length>
+        </Field>
+        <Field>
+          <Index>36</Index>
+          <Type>Byte</Type>
+          <Name>DyeSlot</Name>
+          <Description>The inventory slot of the colour dye spent (a basic, rare or Prismatic Dye), 0xFF for none (the original colours).</Description>
+        </Field>
+        <Field>
+          <Index>37</Index>
+          <Type>Byte</Type>
+          <Name>RadiantSlot</Name>
+          <Description>The inventory slot of the Radiant Dye spent for a glow, 0xFF for none.</Description>
         </Field>
       </Fields>
     </Packet>
@@ -1999,7 +2052,7 @@
           <Index>5</Index>
           <Type>Byte</Type>
           <Name>Result</Name>
-          <Description>0 done, 1 no hammer in a hand, 2 hammer broken, 3 the item is locked, 4 not here (trade, shop, duel, event map), 5 no such item, 6 text refused, 7 not enough Zen, 8 smithing is off.</Description>
+          <Description>0 done, 1 no hammer in a hand, 2 hammer broken, 3 the item is locked, 4 not here (trade, shop, duel, event map), 5 no such item, 6 text refused, 7 not enough Zen, 8 smithing is off, 9 no dye in the slot named, 10 the dye does not allow that colour, strength, mode or glow.</Description>
         </Field>
         <Field>
           <Index>6</Index>
@@ -2012,6 +2065,29 @@
           <Type>IntegerLittleEndian</Type>
           <Name>ZenCost</Name>
           <Description>What the action cost in Zen.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>98</SubCode>
+      <Name>StarSmithDyes</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>With StarSmithState while the hammer is in a hand, and after the dyes change.</SentWhen>
+      <CausedReaction>The client shows the swatches of the dye in the dye square, the ones the server accepts.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Count</Name>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Structure[]</Type>
+          <TypeName>StarSmithDyeEntry</TypeName>
+          <Name>Dyes</Name>
+          <ItemCountField>Count</ItemCountField>
         </Field>
       </Fields>
     </Packet>
