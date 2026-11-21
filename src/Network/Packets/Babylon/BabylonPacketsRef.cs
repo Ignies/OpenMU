@@ -1339,7 +1339,7 @@ public readonly ref struct ItemCustomizationAskRef
     public static int Length => 3;
 
     /// <summary>
-    /// Gets or sets 0 worn by the object, 1 the own inventory (worn and bag), 2 the own vault, 3 the trade offer of the object, 4 the personal shop of the object, 5 the own Gremory cases (object id 0 the character's, 1 the account's).
+    /// Gets or sets 0 worn by the object, 1 the own inventory (worn and bag), 2 the own vault, 3 the trade offer of the object, 4 the personal shop of the object, 5 the own Gremory cases (object id 0 the character's, 1 the account's), 6 an item on the ground in view (object id its drop id, slot 0).
     /// </summary>
     public byte Storage
     {

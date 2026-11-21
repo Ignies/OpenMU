@@ -32,7 +32,7 @@ public static class ItemCustomizationCollector
             {
                 if (item is IIdentifiable { Id: var id } && id != Guid.Empty)
                 {
-                    result.Add((storage, objectId, item.ItemSlot, id));
+                    result.Add((storage, objectId, SlotOf(storage, item), id));
                 }
             }
         }
@@ -51,8 +51,23 @@ public static class ItemCustomizationCollector
     public static async ValueTask<Guid?> ItemIdAsync(Player player, ItemCustomizationStorage storage, ushort objectId, byte slot)
     {
         var items = await ItemsOfAsync(player, storage, objectId).ConfigureAwait(false);
-        return items.FirstOrDefault(item => item.ItemSlot == slot) is IIdentifiable { Id: var id } && id != Guid.Empty ? id : null;
+        return items.FirstOrDefault(item => SlotOf(storage, item) == slot) is IIdentifiable { Id: var id } && id != Guid.Empty ? id : null;
     }
+
+    /// <summary>
+    /// Gets the dropped item a ground request names: on the asking player's map and within its view range.
+    /// </summary>
+    /// <param name="player">The asking player.</param>
+    /// <param name="dropId">The drop id.</param>
+    /// <returns>The dropped item, or null.</returns>
+    public static DroppedItem? GroundItemOf(Player player, ushort dropId) =>
+        player.CurrentMap?.GetDrop(dropId) is DroppedItem drop && player.IsInRange(drop.Position, player.InfoRange) ? drop : null;
+
+    /// <summary>
+    /// The slot an item is told as: its own slot, but 0 on the ground, where the slot it last had means nothing.
+    /// </summary>
+    private static byte SlotOf(ItemCustomizationStorage storage, Item item) =>
+        storage == ItemCustomizationStorage.GroundItem ? (byte)0 : item.ItemSlot;
 
     /// <summary>
     /// Gets the Gremory case a request names by its object id.
@@ -77,6 +92,8 @@ public static class ItemCustomizationCollector
                 return target.TemporaryStorage?.Items ?? [];
             case ItemCustomizationStorage.PersonalShop when target is { ShopStorage.StoreOpen: true } && await InViewAsync(player, target).ConfigureAwait(false):
                 return target.ShopStorage.Items;
+            case ItemCustomizationStorage.GroundItem:
+                return GroundItemOf(player, objectId) is { } drop ? [drop.Item] : [];
             case ItemCustomizationStorage.GremoryCase:
                 return GremoryCaseOf(objectId) switch
                 {
