@@ -26,4 +26,7 @@ public enum ItemCustomizationStorage : byte
 
     /// <summary>The own Gremory cases: object id 0 the character's, 1 the account's.</summary>
     GremoryCase = 5,
+
+    /// <summary>An item lying on the own map within view: the object id is its drop id, and the item is slot 0.</summary>
+    GroundItem = 6,
 }

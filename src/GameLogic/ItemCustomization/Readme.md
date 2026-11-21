@@ -28,7 +28,8 @@ and copied the site's older `web_item_tint` rows once. Readers: `IPlayerContext.
 
 - `EE 33 ItemCustomizationRequest`: up to 32 places `(storage, objectId)`: 0 worn by a player in view, 1 the own
   inventory, 2 the own vault, 3 the trading partner's offer, 4 the open personal shop of a player in view, 5 the own
-  Gremory cases (object id 0 the character's, 1 the account's). A place the player may not see gives nothing
+  Gremory cases (object id 0 the character's, 1 the account's), 6 an item on the ground of the own map within view (object id
+  its drop id, slot 0). A place the player may not see gives nothing
   (`ItemCustomizationCollector`).
 - `EE 34 ItemCustomizations`: the customised items of the asked places, 123 bytes each: the place, the slot, the
   version, flags (1 look, 2 name, 4 lore waiting, 8 aura, 16 particles), the rarity, the look (31 bytes, `ItemLookBytes`,
