@@ -16,12 +16,13 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Star Smithing (Readme.md): with the Star Smith's Hammer in a hand, a smith recolours, names, writes the lore of and
-/// locks the items of the inventory. Off by default; a world turns it on with its system (Admin > Systems).
+/// locks the items of the inventory, and plays recipe attempts in the Constellation Forge
+/// (StarSmithingFeaturePlugIn.Forge.cs). Off by default; a world turns it on with its system (Admin > Systems).
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.StarSmithingFeaturePlugIn_Name), Description = nameof(PlugInResources.StarSmithingFeaturePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("27031977-58F3-4B43-A2EE-524CB1F01D4D")]
-public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISupportCustomConfiguration<StarSmithingConfiguration>, ISupportDefaultCustomConfiguration, IObjectAddedToMapPlugIn
+public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISupportCustomConfiguration<StarSmithingConfiguration>, ISupportDefaultCustomConfiguration, IObjectAddedToMapPlugIn
 {
     /// <summary>
     /// The feature id (<see cref="ForkInfo.Features"/>, <see cref="ForkFeatures"/>).
