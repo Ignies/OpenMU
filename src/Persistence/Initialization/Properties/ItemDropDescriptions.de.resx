@@ -219,4 +219,7 @@
   <data name="SilverBoxMoney" xml:space="preserve">
     <value>Silberne Box – Geld</value>
   </data>
+  <data name="StarSmithDyes" xml:space="preserve">
+    <value>Farbstoffe des Sternenschmieds</value>
+  </data>
 </root>

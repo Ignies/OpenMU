@@ -204,7 +204,7 @@ internal class ItemStatProfilesDataTest
         {
             "armor: 327",
             "book: 3",
-            "default: 240",
+            "default: 255", // with the fifteen Star Smith dyes (14/1000-1014)
             "firstTierWing: 4",
             "helper: 27",
             "orb: 12",

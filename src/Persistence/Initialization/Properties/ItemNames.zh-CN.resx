@@ -2340,4 +2340,49 @@
   <data name="StarSmithsHammer" xml:space="preserve">
     <value>星匠之锤</value>
   </data>
+  <data name="CrimsonDye" xml:space="preserve">
+    <value>赤红染料</value>
+  </data>
+  <data name="AmberDye" xml:space="preserve">
+    <value>琥珀染料</value>
+  </data>
+  <data name="GoldDye" xml:space="preserve">
+    <value>金色染料</value>
+  </data>
+  <data name="VerdantDye" xml:space="preserve">
+    <value>翠绿染料</value>
+  </data>
+  <data name="AzureDye" xml:space="preserve">
+    <value>蔚蓝染料</value>
+  </data>
+  <data name="VioletDye" xml:space="preserve">
+    <value>紫罗兰染料</value>
+  </data>
+  <data name="IvoryDye" xml:space="preserve">
+    <value>象牙染料</value>
+  </data>
+  <data name="EbonyDye" xml:space="preserve">
+    <value>乌木染料</value>
+  </data>
+  <data name="BloodmoonDye" xml:space="preserve">
+    <value>血月染料</value>
+  </data>
+  <data name="FrostfireDye" xml:space="preserve">
+    <value>霜火染料</value>
+  </data>
+  <data name="StarlightDye" xml:space="preserve">
+    <value>星光染料</value>
+  </data>
+  <data name="AbyssalDye" xml:space="preserve">
+    <value>深渊染料</value>
+  </data>
+  <data name="RoyalDye" xml:space="preserve">
+    <value>皇家染料</value>
+  </data>
+  <data name="PrismaticDye" xml:space="preserve">
+    <value>棱彩染料</value>
+  </data>
+  <data name="RadiantDye" xml:space="preserve">
+    <value>光辉染料</value>
+  </data>
 </root>

@@ -4,10 +4,12 @@
 
 namespace MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Items;
 
+using System.Linq.Expressions;
 using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.DataModel.Configuration.Items;
 using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic.StarSmithing;
+using MUnique.OpenMU.Interfaces;
 using MUnique.OpenMU.Persistence.Initialization.Items;
 using MUnique.OpenMU.Persistence.Initialization.VersionSeasonSix.Season21;
 
@@ -39,12 +41,13 @@ internal class StarSmithDyeItems : InitializerBase
     /// <summary>The chance of the drop group: one kill in 2,500 from level 60.</summary>
     private const double DropChance = 0.0004;
 
-    private const string DropGroupName = "Star Smith dyes";
-
-    private static readonly string[] Names =
+    /// <summary>The dyes' names, from 14/1000 on, as translatable resources.</summary>
+    private static readonly Expression<Func<string>>[] Names =
     [
-        "Crimson Dye", "Amber Dye", "Gold Dye", "Verdant Dye", "Azure Dye", "Violet Dye", "Ivory Dye", "Ebony Dye",
-        "Bloodmoon Dye", "Frostfire Dye", "Starlight Dye", "Abyssal Dye", "Royal Dye", "Prismatic Dye", "Radiant Dye",
+        () => ItemNames.CrimsonDye, () => ItemNames.AmberDye, () => ItemNames.GoldDye, () => ItemNames.VerdantDye,
+        () => ItemNames.AzureDye, () => ItemNames.VioletDye, () => ItemNames.IvoryDye, () => ItemNames.EbonyDye,
+        () => ItemNames.BloodmoonDye, () => ItemNames.FrostfireDye, () => ItemNames.StarlightDye, () => ItemNames.AbyssalDye,
+        () => ItemNames.RoyalDye, () => ItemNames.PrismaticDye, () => ItemNames.RadiantDye,
     ];
 
     /// <summary>
@@ -99,7 +102,7 @@ internal class StarSmithDyeItems : InitializerBase
         var dye = context.CreateNew<ItemDefinition>();
         dye.Group = ItemGroup;
         dye.Number = number;
-        dye.Name = Names[number - FirstNumber];
+        dye.Name = LocalizedString.FromResource(Names[number - FirstNumber]);
         dye.Width = 1;
         dye.Height = 1;
         dye.Durability = MaximumStack;
@@ -151,7 +154,7 @@ internal class StarSmithDyeItems : InitializerBase
         {
             group = context.CreateNew<DropItemGroup>();
             group.SetGuid(ItemGroup, FirstDroppedNumber);
-            group.Description = DropGroupName;
+            group.Description = LocalizedString.FromResource(() => ItemDropDescriptions.StarSmithDyes);
             group.Chance = DropChance;
             group.MinimumMonsterLevel = DropMonsterLevel;
             group.ItemType = SpecialItemType.None;

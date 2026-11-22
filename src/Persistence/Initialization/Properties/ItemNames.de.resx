@@ -2256,4 +2256,49 @@
   <data name="StarSmithsHammer" xml:space="preserve">
     <value>Hammer des Sternenschmieds</value>
   </data>
+  <data name="CrimsonDye" xml:space="preserve">
+    <value>Karmesin-Farbstoff</value>
+  </data>
+  <data name="AmberDye" xml:space="preserve">
+    <value>Bernstein-Farbstoff</value>
+  </data>
+  <data name="GoldDye" xml:space="preserve">
+    <value>Gold-Farbstoff</value>
+  </data>
+  <data name="VerdantDye" xml:space="preserve">
+    <value>Smaragd-Farbstoff</value>
+  </data>
+  <data name="AzureDye" xml:space="preserve">
+    <value>Azur-Farbstoff</value>
+  </data>
+  <data name="VioletDye" xml:space="preserve">
+    <value>Violett-Farbstoff</value>
+  </data>
+  <data name="IvoryDye" xml:space="preserve">
+    <value>Elfenbein-Farbstoff</value>
+  </data>
+  <data name="EbonyDye" xml:space="preserve">
+    <value>Ebenholz-Farbstoff</value>
+  </data>
+  <data name="BloodmoonDye" xml:space="preserve">
+    <value>Blutmond-Farbstoff</value>
+  </data>
+  <data name="FrostfireDye" xml:space="preserve">
+    <value>Frostfeuer-Farbstoff</value>
+  </data>
+  <data name="StarlightDye" xml:space="preserve">
+    <value>Sternenlicht-Farbstoff</value>
+  </data>
+  <data name="AbyssalDye" xml:space="preserve">
+    <value>Abgrund-Farbstoff</value>
+  </data>
+  <data name="RoyalDye" xml:space="preserve">
+    <value>Königlicher Farbstoff</value>
+  </data>
+  <data name="PrismaticDye" xml:space="preserve">
+    <value>Prismatischer Farbstoff</value>
+  </data>
+  <data name="RadiantDye" xml:space="preserve">
+    <value>Strahlender Farbstoff</value>
+  </data>
 </root>

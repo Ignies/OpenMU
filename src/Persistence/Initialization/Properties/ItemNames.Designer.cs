@@ -5480,5 +5480,110 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("StarSmithsHammer", resourceCulture);
             }
         }
+
+        /// <summary>Gets CrimsonDye from the configuration name resources.</summary>
+        public static string CrimsonDye {
+            get {
+                return ResourceManager.GetString("CrimsonDye", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AmberDye from the configuration name resources.</summary>
+        public static string AmberDye {
+            get {
+                return ResourceManager.GetString("AmberDye", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets GoldDye from the configuration name resources.</summary>
+        public static string GoldDye {
+            get {
+                return ResourceManager.GetString("GoldDye", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets VerdantDye from the configuration name resources.</summary>
+        public static string VerdantDye {
+            get {
+                return ResourceManager.GetString("VerdantDye", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AzureDye from the configuration name resources.</summary>
+        public static string AzureDye {
+            get {
+                return ResourceManager.GetString("AzureDye", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets VioletDye from the configuration name resources.</summary>
+        public static string VioletDye {
+            get {
+                return ResourceManager.GetString("VioletDye", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets IvoryDye from the configuration name resources.</summary>
+        public static string IvoryDye {
+            get {
+                return ResourceManager.GetString("IvoryDye", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets EbonyDye from the configuration name resources.</summary>
+        public static string EbonyDye {
+            get {
+                return ResourceManager.GetString("EbonyDye", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets BloodmoonDye from the configuration name resources.</summary>
+        public static string BloodmoonDye {
+            get {
+                return ResourceManager.GetString("BloodmoonDye", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets FrostfireDye from the configuration name resources.</summary>
+        public static string FrostfireDye {
+            get {
+                return ResourceManager.GetString("FrostfireDye", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets StarlightDye from the configuration name resources.</summary>
+        public static string StarlightDye {
+            get {
+                return ResourceManager.GetString("StarlightDye", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets AbyssalDye from the configuration name resources.</summary>
+        public static string AbyssalDye {
+            get {
+                return ResourceManager.GetString("AbyssalDye", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets RoyalDye from the configuration name resources.</summary>
+        public static string RoyalDye {
+            get {
+                return ResourceManager.GetString("RoyalDye", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets PrismaticDye from the configuration name resources.</summary>
+        public static string PrismaticDye {
+            get {
+                return ResourceManager.GetString("PrismaticDye", resourceCulture);
+            }
+        }
+
+        /// <summary>Gets RadiantDye from the configuration name resources.</summary>
+        public static string RadiantDye {
+            get {
+                return ResourceManager.GetString("RadiantDye", resourceCulture);
+            }
+        }
     }
 }
