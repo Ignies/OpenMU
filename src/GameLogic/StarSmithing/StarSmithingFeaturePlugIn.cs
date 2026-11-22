@@ -125,6 +125,8 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
         if (hammer is not null)
         {
             await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendDyesAsync(this.Settings.Dyes)).ConfigureAwait(false);
+            var found = this.GuidebookOf(player);
+            await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendGuidebookAsync(this.Settings.Recipes.Count, found)).ConfigureAwait(false);
         }
     }
 

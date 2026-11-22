@@ -95,7 +95,9 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
         int Write()
         {
             var size = StarSmithResultRef.Length;
-            _ = new StarSmithResultRef(connection.Output.GetSpan(size)[..size]) { Action = (byte)action, Result = (byte)result, Refusal = refusal, ZenCost = zenCost };
+            var span = connection.Output.GetSpan(size)[..size];
+            span.Clear();
+            _ = new StarSmithResultRef(span) { Action = (byte)action, Result = (byte)result, Refusal = refusal, ZenCost = zenCost };
             return size;
         }
 
@@ -256,5 +258,35 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
     }
 
     /// <inheritdoc />
-    public ValueTask SendGuidebookAsync(int total, IReadOnlyList<GuidebookEntry> found) => ValueTask.CompletedTask;
+    public async ValueTask SendGuidebookAsync(int total, IReadOnlyList<GuidebookEntry> found)
+    {
+        if (this._player.Connection is not { } connection)
+        {
+            return;
+        }
+
+        var count = Math.Min(found.Count, byte.MaxValue);
+        int Write()
+        {
+            var size = StarSmithGuidebookRef.GetRequiredSize(count);
+            var span = connection.Output.GetSpan(size)[..size];
+            span.Clear();
+            var packet = new StarSmithGuidebookRef(span)
+            {
+                Total = (byte)Math.Clamp(total, 0, byte.MaxValue),
+                FoundCount = (byte)count,
+            };
+            for (var i = 0; i < count; i++)
+            {
+                var entry = packet[i];
+                entry.Recipe = (ushort)found[i].Recipe;
+                entry.Made = (ushort)Math.Clamp(found[i].Made, 0, ushort.MaxValue);
+                entry.Name = found[i].Name;
+            }
+
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
+    }
 }

@@ -26,11 +26,11 @@ public partial class StarSmithingFeaturePlugIn
     /// <summary>The most catalyst slots of EE 99.</summary>
     private const int MaximumCatalysts = 4;
 
-    /// <summary>
-    /// The smith's Guidebook. It is not stored yet (a later step), so no recipe is known: the guidance is empty and every
-    /// completion is a first one.
-    /// </summary>
-    private static readonly IReadOnlySet<short> NoKnownRecipes = new HashSet<short>();
+    /// <summary>The smith experience a sealed attunement (no recipe) gives, so experimenting is never a dead end.</summary>
+    private const int AttunementExperience = 10;
+
+    /// <summary>The share of a recipe's experience a crack gives, in percent (design section 3, step 6).</summary>
+    private const int CrackExperiencePercent = 30;
 
     /// <summary>Gets or sets the server clock in milliseconds; tests replace it.</summary>
     internal Func<long> Clock { get; set; } = () => Environment.TickCount64;
@@ -127,6 +127,23 @@ public partial class StarSmithingFeaturePlugIn
     }
 
     /// <summary>
+    /// The smith's found recipes for EE 90, by number; a stored recipe the world no longer has is left out, and nothing
+    /// names a recipe not found.
+    /// </summary>
+    /// <param name="player">The smith.</param>
+    /// <returns>The found recipes.</returns>
+    internal IReadOnlyList<StarSmithGuidebookEntry> GuidebookOf(Player player)
+    {
+        var recipes = this.Settings.Recipes;
+        return StarSmithGuidebook.Parse(player.SelectedCharacter?.StarSmithGuidebook)
+            .Select(f => (Found: f, Recipe: recipes.FirstOrDefault(r => r.Number == f.Key)))
+            .Where(f => f.Recipe is not null)
+            .OrderBy(f => f.Found.Key)
+            .Select(f => new StarSmithGuidebookEntry(f.Found.Key, f.Found.Value, f.Recipe!.Name))
+            .ToList();
+    }
+
+    /// <summary>
     /// What a recipe's target rule reads of an item: its kind, level and excellent option.
     /// </summary>
     private static StarSmithTarget TargetOf(Item item)
@@ -157,6 +174,38 @@ public partial class StarSmithingFeaturePlugIn
         await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
         ItemCustomizationCache.Forget(itemId);
+    }
+
+    /// <summary>The recipes in the smith's Guidebook, which guide the path and are no first completion.</summary>
+    private static IReadOnlySet<short> KnownRecipes(Player player)
+        => StarSmithGuidebook.Parse(player.SelectedCharacter?.StarSmithGuidebook).Keys.ToHashSet();
+
+    /// <summary>
+    /// The smith's reward of an ended attempt (design section 3, step 6): a seal gives the recipe's experience (an
+    /// attunement a little), doubled on the first completion, which also writes the recipe into the Guidebook; a seal of
+    /// a known recipe raises its made count; a crack gives 30% of the recipe it was on; an abandon or timeout nothing.
+    /// </summary>
+    private static void Reward(Player player, StarSmithForgeOutcome outcome, StarSmithForgeResult result)
+    {
+        if (player.SelectedCharacter is not { } character)
+        {
+            return;
+        }
+
+        var earned = outcome switch
+        {
+            StarSmithForgeOutcome.Sealed => (result.Recipe?.Experience ?? AttunementExperience) * (result.FirstCompletion ? 2 : 1),
+            StarSmithForgeOutcome.Cracked => (result.Recipe?.Experience ?? 0) * CrackExperiencePercent / 100,
+            _ => 0,
+        };
+        if (outcome == StarSmithForgeOutcome.Sealed && result.Recipe is { } recipe)
+        {
+            character.StarSmithGuidebook = StarSmithGuidebook.Record(character.StarSmithGuidebook, recipe.Number);
+        }
+
+        var (level, experience) = StarSmithLevels.Add(character.StarSmithLevel, character.StarSmithExperience, Math.Max(0, earned));
+        character.StarSmithLevel = (short)level;
+        character.StarSmithExperience = experience;
     }
 
     private async ValueTask<(StarSmithForgeSkyMessage Sky, StarSmithForgeAttempt? Attempt)> TryStartForgeAsync(Player player, byte targetSlot, IReadOnlyList<byte> ingredientSlots, IReadOnlyList<byte> catalystSlots)
@@ -200,7 +249,7 @@ public partial class StarSmithingFeaturePlugIn
             .Select(g => (g.Key.Item1, g.Key.Number, g.Count()))
             .ToList();
         var candidates = StarSmithRecipes.Candidates(this.Settings.Recipes, target, counts);
-        if (candidates.Count == 0)
+        if (candidates.Count == 0 || ingredients.Count == 0)
         {
             return (StarSmithForgeSkyMessage.Refused(StarSmithResultCode.NoRecipe, targetSlot), null);
         }
@@ -221,7 +270,7 @@ public partial class StarSmithingFeaturePlugIn
             beat,
             this.Clock(),
             roundTripMs,
-            NoKnownRecipes,
+            KnownRecipes(player),
             targetSlot,
             itemId);
         player.StarSmithForge = attempt;
@@ -298,6 +347,7 @@ public partial class StarSmithingFeaturePlugIn
                 break;
         }
 
+        Reward(player, outcome, result);
         await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeResultAsync(outcome, result)).ConfigureAwait(false);
         await this.SendStateAsync(player).ConfigureAwait(false);
     }
