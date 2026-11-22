@@ -75,15 +75,25 @@ public sealed class StarSmithForge
     }
 
     /// <summary>
+    /// How far a sealed shape got, in permille: the struck stars over the shape's length; an extendable shape counts
+    /// its extensions up to its cap. The attunement (no shape) counts 1,000.
+    /// </summary>
+    /// <param name="shape">The completed shape, or null.</param>
+    /// <param name="strikes">All strikes.</param>
+    /// <returns>The progress.</returns>
+    public static int Progress(StarSmithShape? shape, int strikes) => 0;
+
+    /// <summary>
     /// The rarity tier of a result: the share of clean strikes (up to 1,000 permille) plus a quarter of it for the
     /// smith level (250 at level 100). Common below 300, Uncommon below 500, Rare below 700, Epic below 900, Legendary
     /// below 1,100, Mythic from there.
     /// </summary>
     /// <param name="clean">The clean strikes.</param>
     /// <param name="strikes">All strikes.</param>
+    /// <param name="progress">How far the shape got, in permille (see <see cref="Progress"/>).</param>
     /// <param name="smithLevel">The smith's level.</param>
     /// <returns>The tier.</returns>
-    public static StarSmithRarity Rarity(int clean, int strikes, int smithLevel)
+    public static StarSmithRarity Rarity(int clean, int strikes, int progress, int smithLevel)
     {
         if (strikes <= 0)
         {
@@ -151,7 +161,7 @@ public sealed class StarSmithForge
         var counted = recipe is null ? 0 : Math.Clamp(extension, 0, Math.Max(0, recipe.Shape!.MaximumExtension));
         var multiplier = recipe is null ? 1.0 : 1 + (counted * recipe.Shape!.ExtensionPercent / 100.0);
         var clean = this.CleanStrikes();
-        var rarity = Rarity(clean, this.path.Count, this.smithLevel);
+        var rarity = Rarity(clean, this.path.Count, Progress(recipe?.Shape, this.path.Count), this.smithLevel);
         if (recipe is null && rarity > StarSmithRarity.Uncommon)
         {
             rarity = StarSmithRarity.Uncommon;

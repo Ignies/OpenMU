@@ -268,23 +268,49 @@ public class StarSmithForgeTest
     }
 
     /// <summary>
-    /// The share of clean strikes plus the smith level sets the rarity tier; the attunement fallback stops at Uncommon.
+    /// The rarity tier rewards pushing your luck: the clean share times how far the shape got (its extensions count up
+    /// to the cap), plus the smith level. The attunement fallback stops at Uncommon.
     /// </summary>
     [Test]
-    public void RarityFromTheCleanShare()
+    public void RarityFromTheCleanShareAndProgress()
     {
-        Assert.That(StarSmithForge.Rarity(clean: 0, strikes: 4, smithLevel: 100), Is.EqualTo(StarSmithRarity.Common));
-        Assert.That(StarSmithForge.Rarity(1, 4, 1), Is.EqualTo(StarSmithRarity.Common));
-        Assert.That(StarSmithForge.Rarity(2, 4, 1), Is.EqualTo(StarSmithRarity.Rare));
-        Assert.That(StarSmithForge.Rarity(2, 4, 100), Is.EqualTo(StarSmithRarity.Epic));
-        Assert.That(StarSmithForge.Rarity(4, 4, 1), Is.EqualTo(StarSmithRarity.Legendary));
-        Assert.That(StarSmithForge.Rarity(4, 4, 100), Is.EqualTo(StarSmithRarity.Mythic));
+        Assert.That(StarSmithForge.Progress(Ember.Shape, strikes: 3), Is.EqualTo(1000), "the full shape");
+        Assert.That(StarSmithForge.Progress(Ember.Shape, 5), Is.EqualTo(1666), "two extensions");
+        Assert.That(StarSmithForge.Progress(Ember.Shape, 9), Is.EqualTo(2000), "extensions count up to the cap");
+        Assert.That(StarSmithForge.Progress(Ward.Shape, 3), Is.EqualTo(1000), "an exact shape");
+        Assert.That(StarSmithForge.Progress(null, 1), Is.EqualTo(1000), "the attunement");
 
-        Assert.That(Seal(HandSky(), 1, [1000, 2000, 3000], 0, 1, 2).Rarity, Is.EqualTo(StarSmithRarity.Legendary));
+        Assert.That(StarSmithForge.Rarity(clean: 0, strikes: 4, progress: 1000, smithLevel: 100), Is.EqualTo(StarSmithRarity.Common));
+        Assert.That(StarSmithForge.Rarity(2, 4, 1000, 100), Is.LessThanOrEqualTo(StarSmithRarity.Rare), "a full shape half clean");
+        Assert.That(StarSmithForge.Rarity(2, 4, 1000, 1), Is.LessThanOrEqualTo(StarSmithRarity.Rare));
+        Assert.That(StarSmithForge.Rarity(4, 4, 1000, 100), Is.EqualTo(StarSmithRarity.Epic), "no Mythic without extending");
+        Assert.That(StarSmithForge.Rarity(5, 5, 1666, 1), Is.EqualTo(StarSmithRarity.Legendary));
+        Assert.That(StarSmithForge.Rarity(6, 6, 2000, 1), Is.EqualTo(StarSmithRarity.Mythic), "every extension, all clean");
+
+        Assert.That(Seal(HandSky(), 1, [1000], 0).Rarity, Is.LessThanOrEqualTo(StarSmithRarity.Uncommon), "one clean strike and a seal");
+        Assert.That(Seal(HandSky(), 100, [1000], 0).Rarity, Is.LessThanOrEqualTo(StarSmithRarity.Uncommon));
+        Assert.That(Seal(HandSky(), 1, [1000, 2000, 3000], 0, 1, 2).Rarity, Is.EqualTo(StarSmithRarity.Epic), "a full shape, all clean");
+        Assert.That(Seal(HandSky(), 100, [1000, 2000, 3000, 4000, 5000], 0, 1, 2, 3, 4).Rarity, Is.GreaterThanOrEqualTo(StarSmithRarity.Legendary), "two extensions");
         Assert.That(Seal(HandSky(), 1, [1450, 2450, 3450], 0, 1, 2).Rarity, Is.EqualTo(StarSmithRarity.Common));
         var attuned = Seal(HandSky(), 1, [1000, 2000], 0, 1);
         Assert.That(attuned.Recipe, Is.Null, "no shape completed");
         Assert.That(attuned.Rarity, Is.EqualTo(StarSmithRarity.Uncommon));
+    }
+
+    /// <summary>
+    /// The client lays the stars out over the item's silhouette, so the dealt positions are a hint only: the same graph
+    /// with the stars moved plays out the same.
+    /// </summary>
+    [Test]
+    public void RulesIgnoreStarPositions()
+    {
+        var dealt = Seal(HandSky(), 50, [1000, 2000, 3000, 4000], 0, 1, 2, 3);
+        var moved = Seal(HandSky(moved: true), 50, [1000, 2000, 3000, 4000], 0, 1, 2, 3);
+        Assert.That(moved.Recipe, Is.SameAs(dealt.Recipe));
+        Assert.That(moved.Rarity, Is.EqualTo(dealt.Rarity));
+        Assert.That(moved.MagnitudeFactor, Is.EqualTo(dealt.MagnitudeFactor));
+        Assert.That(moved.ElementMix, Is.EqualTo(dealt.ElementMix));
+        Assert.That(Crack(HandSky(moved: true), 2, 3, 7), Is.EqualTo(StarSmithOnFail.ItemDestroyed));
     }
 
     /// <summary>
@@ -335,7 +361,7 @@ public class StarSmithForgeTest
     private static StarSmithSky Deal(long seed, int smithLevel, int ingredientCount = 4)
         => StarSmithSky.Deal(seed, DealBook, Sword, smithLevel, ingredientCount, NoCatalysts);
 
-    private static StarSmithSky HandSky(bool guarded = false)
+    private static StarSmithSky HandSky(bool guarded = false, bool moved = false)
     {
         StarSmithStar[] stars =
         [
@@ -349,6 +375,11 @@ public class StarSmithForgeTest
             new(0.3, 0.6, StarSmithElement.Shadow, 1, true),
         ];
         (int A, int B)[] links = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (2, 7), (3, 7)];
+        if (moved)
+        {
+            stars = stars.Select(s => s with { X = 0.9 - (s.Y * 0.5), Y = 0.2 + (s.X * 0.7) }).ToArray();
+        }
+
         return new StarSmithSky(stars, links, [], strikes: 5, recipes: [Ember, Ward, Nova, Glow], guarded);
     }
 
