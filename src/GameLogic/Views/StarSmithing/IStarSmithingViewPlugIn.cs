@@ -33,4 +33,10 @@ public interface IStarSmithingViewPlugIn : IViewPlugIn
     /// <param name="refusal">The text moderation's refusal, for <see cref="StarSmithResultCode.TextRefused"/>.</param>
     /// <param name="zenCost">What the action costs in Zen.</param>
     ValueTask SendResultAsync(StarSmithAction action, StarSmithResultCode result, byte refusal, uint zenCost);
+
+    /// <summary>
+    /// Sends the dyes a recolour may spend (EE 98).
+    /// </summary>
+    /// <param name="dyes">The dyes.</param>
+    ValueTask SendDyesAsync(IReadOnlyList<StarSmithDye> dyes);
 }

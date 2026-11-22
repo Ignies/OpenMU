@@ -768,6 +768,12 @@
   <data name="AddStarSmithHammerUpdatePlugIn_Description" xml:space="preserve">
     <value>This update adds the Star Smith's Hammer (2/1000), the tool of the star smithing, and puts it on sale at Hanzo the Blacksmith in Lorencia for about 1,000,000 Zen. An existing hammer or offer stays.</value>
   </data>
+  <data name="AddStarSmithDyesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the Star Smith dyes</value>
+  </data>
+  <data name="AddStarSmithDyesUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update adds the fifteen dyes a Star Smith's recolour spends (14/1000-1014): the eight basic ones on sale at Hanzo the Blacksmith, the rare, Prismatic and Radiant ones dropped by monsters from level 60 on every map. Existing dyes, offers and the drop group stay.</value>
+  </data>
   <data name="AddSeason21NewPowerUpdatePlugIn_Name" xml:space="preserve">
     <value>Add the New Power of Season 21</value>
   </data>

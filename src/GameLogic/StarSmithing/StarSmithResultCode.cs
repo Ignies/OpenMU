@@ -35,4 +35,10 @@ public enum StarSmithResultCode : byte
 
     /// <summary>Star Smithing is off on this world.</summary>
     Off,
+
+    /// <summary>A recolour without the dye it needs in the slot it names.</summary>
+    NoDye,
+
+    /// <summary>The colour, strength, mode or glow is not one the dye allows.</summary>
+    WrongDye,
 }
