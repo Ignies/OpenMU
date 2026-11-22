@@ -893,6 +893,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
         /// <summary>Gets the localized AddStarSmithDyesUpdatePlugIn_Description text.</summary>
         public static string AddStarSmithDyesUpdatePlugIn_Description => ResourceManager.GetString("AddStarSmithDyesUpdatePlugIn_Description", resourceCulture)!;
 
+        /// <summary>Gets the localized AddStarSmithRecipesUpdatePlugIn_Name text.</summary>
+        public static string AddStarSmithRecipesUpdatePlugIn_Name => ResourceManager.GetString("AddStarSmithRecipesUpdatePlugIn_Name", resourceCulture)!;
+
+        /// <summary>Gets the localized AddStarSmithRecipesUpdatePlugIn_Description text.</summary>
+        public static string AddStarSmithRecipesUpdatePlugIn_Description => ResourceManager.GetString("AddStarSmithRecipesUpdatePlugIn_Description", resourceCulture)!;
+
         /// <summary>Gets the localized AddStarSmithHammerUpdatePlugIn_Name text.</summary>
         public static string AddStarSmithHammerUpdatePlugIn_Name => ResourceManager.GetString("AddStarSmithHammerUpdatePlugIn_Name", resourceCulture)!;
 

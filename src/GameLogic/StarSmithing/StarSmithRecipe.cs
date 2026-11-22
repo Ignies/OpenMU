@@ -13,6 +13,12 @@ public class StarSmithRecipe
     /// <summary>Gets or sets the recipe's number, its id in the Guidebook.</summary>
     public short Number { get; set; }
 
+    /// <summary>Gets or sets its name, shown in the Guidebook once found.</summary>
+    public string Name { get; set; } = string.Empty;
+
+    /// <summary>Gets or sets the smith experience a success gives (a crack gives 30%, a first discovery doubles it).</summary>
+    public int Experience { get; set; }
+
     /// <summary>Gets or sets the kinds of item it works on.</summary>
     public StarSmithTargetKind Targets { get; set; }
 

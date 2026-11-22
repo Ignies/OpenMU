@@ -774,6 +774,12 @@
   <data name="AddStarSmithDyesUpdatePlugIn_Description" xml:space="preserve">
     <value>This update adds the fifteen dyes a Star Smith's recolour spends (14/1000-1014): the eight basic ones on sale at Hanzo the Blacksmith, the rare, Prismatic and Radiant ones dropped by monsters from level 60 on every map. Existing dyes, offers and the drop group stay.</value>
   </data>
+  <data name="AddStarSmithRecipesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the Star Smith recipes</value>
+  </data>
+  <data name="AddStarSmithRecipesUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update adds the Constellation Forge recipes of Star Smithing to its configuration when it has none: the five weapon shapes The Serpent, Twin Fangs, Ember Ring, Storm Spine and Wyrm Coil, made from the Season 6 skill orbs and scrolls. A recipe list the operator made stays.</value>
+  </data>
   <data name="AddSeason21NewPowerUpdatePlugIn_Name" xml:space="preserve">
     <value>Add the New Power of Season 21</value>
   </data>

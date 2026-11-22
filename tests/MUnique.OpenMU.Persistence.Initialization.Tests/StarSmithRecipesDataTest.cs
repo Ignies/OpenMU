@@ -9,6 +9,7 @@ using MUnique.OpenMU.DataModel.Configuration;
 using MUnique.OpenMU.GameLogic.StarSmithing;
 using MUnique.OpenMU.Persistence.Initialization.Updates;
 using MUnique.OpenMU.Persistence.InMemory;
+using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// The Constellation Forge's recipes as data (GameLogic/StarSmithing/Readme.md "Recipes"): the five weapon shapes of the
@@ -90,7 +91,7 @@ internal class StarSmithRecipesDataTest
         => gameConfiguration.PlugInConfigurations.Single(c => c.TypeId == typeof(StarSmithingFeaturePlugIn).GUID);
 
     private static StarSmithingConfiguration Configuration(GameConfiguration gameConfiguration)
-        => PlugIn(gameConfiguration).GetConfiguration<StarSmithingConfiguration>(null)!;
+        => PlugIn(gameConfiguration).GetConfiguration<StarSmithingConfiguration>(new IdIgnoringReferenceHandler())!;
 
     private static UpdatePlugInBase CreateUpdate()
     {

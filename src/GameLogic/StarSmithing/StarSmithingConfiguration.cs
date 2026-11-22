@@ -24,8 +24,8 @@ public class StarSmithingConfiguration
     /// <summary>Gets or sets the dyes a recolour spends (Readme.md "Dyes").</summary>
     public List<StarSmithDye> Dyes { get; set; } = DefaultDyes();
 
-    /// <summary>Gets or sets the recipes the Constellation Forge can make (Readme.md "Constellation Forge"); none by default.</summary>
-    public List<StarSmithRecipe> Recipes { get; set; } = [];
+    /// <summary>Gets or sets the recipes the Constellation Forge can make (Readme.md "Recipes").</summary>
+    public List<StarSmithRecipe> Recipes { get; set; } = DefaultRecipes();
 
     /// <summary>Gets or sets the Forge's dealing rules.</summary>
     public StarSmithForgeRules Forge { get; set; } = new();
@@ -69,6 +69,52 @@ public class StarSmithingConfiguration
             Rare(1012, 0x6a1ab8, 0xd4a017, 0x0f2a6a), // Royal
             new() { Number = 1013, Swatches = [0xff3b3b, 0xffd23b, 0x3bff6e, 0x3bb8ff, 0xb23bff, 0xff3bd2], MaximumStrength = 100, Hue = true, Keep = true }, // Prismatic
             new() { Number = 1014, Radiant = true, MaximumStrength = 0 }, // Radiant
+        ];
+    }
+
+    /// <summary>
+    /// The default recipes, the design's five weapon shapes (Hidden-Babylon docs/star_smithing.md section 10, the
+    /// demo's Guidebook): The Serpent, Twin Fangs, Ember Ring, Storm Spine and Wyrm Coil. All take the same family of
+    /// ingredients, any mix of the Season 6 skill orbs and scrolls, so one sky holds every shape and exploring finds
+    /// the hidden ones. A 60% base chance (95% at most); Storm Spine is the one risky recipe.
+    /// </summary>
+    /// <returns>The recipes.</returns>
+    public static List<StarSmithRecipe> DefaultRecipes()
+    {
+        StarSmithRecipe Weapon(short number, string name, int experience, int[] stars, StarSmithShapeMatch match = StarSmithShapeMatch.Exact, StarSmithOnFail onFail = StarSmithOnFail.IngredientsLost, bool risky = false) => new()
+        {
+            Number = number,
+            Name = name,
+            Experience = experience,
+            Targets = StarSmithTargetKind.Weapon,
+            Ingredients = SkillOrbsAndScrolls(),
+            BaseChance = 6000,
+            MaximumChance = 9500,
+            Shape = new StarSmithShape { Stars = [.. stars], Match = match },
+            OnFail = onFail,
+            Risky = risky,
+        };
+
+        return
+        [
+            Weapon(1, "The Serpent", 120, [0, 1, 2, 3, 4, 5, 6], onFail: StarSmithOnFail.ItemDowngraded),
+            Weapon(2, "Twin Fangs", 40, [9, 6, 10], StarSmithShapeMatch.Extendable),
+            Weapon(3, "Ember Ring", 40, [6, 7, 8], StarSmithShapeMatch.Extendable),
+            Weapon(4, "Storm Spine", 60, [6, 4, 2, 0], onFail: StarSmithOnFail.ItemDestroyed, risky: true),
+            Weapon(5, "Wyrm Coil", 60, [1, 11, 3, 5]),
+        ];
+    }
+
+    /// <summary>
+    /// The Season 6 skill orbs (12/7-48) and scrolls (15/0-14), any mix up to ten of each.
+    /// </summary>
+    private static List<StarSmithIngredient> SkillOrbsAndScrolls()
+    {
+        short[] orbs = [7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 21, 22, 23, 24, 35, 44, 45, 46, 47, 48];
+        return
+        [
+            .. orbs.Select(n => new StarSmithIngredient { Group = 12, Number = n, Minimum = 0, Maximum = 10 }),
+            .. Enumerable.Range(0, 15).Select(n => new StarSmithIngredient { Group = 15, Number = (short)n, Minimum = 0, Maximum = 10 }),
         ];
     }
 }
