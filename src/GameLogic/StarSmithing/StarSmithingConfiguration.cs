@@ -24,6 +24,24 @@ public class StarSmithingConfiguration
     /// <summary>Gets or sets the dyes a recolour spends (Readme.md "Dyes").</summary>
     public List<StarSmithDye> Dyes { get; set; } = DefaultDyes();
 
+    /// <summary>Gets or sets the recipes the Constellation Forge can make (Readme.md "Constellation Forge"); none by default.</summary>
+    public List<StarSmithRecipe> Recipes { get; set; } = [];
+
+    /// <summary>Gets or sets the Forge's dealing rules.</summary>
+    public StarSmithForgeRules Forge { get; set; } = new();
+
+    /// <summary>Gets or sets the time between the Forge's beats, in milliseconds.</summary>
+    public int BeatIntervalMs { get; set; } = 800;
+
+    /// <summary>Gets or sets how far from a beat a strike is still clean, in milliseconds.</summary>
+    public int BeatToleranceMs { get; set; } = 90;
+
+    /// <summary>Gets or sets the most round trip that widens the clean window, in milliseconds.</summary>
+    public int RoundTripCapMs { get; set; } = 150;
+
+    /// <summary>Gets or sets how long an attempt may go without a strike before it is abandoned, in seconds.</summary>
+    public int ForgeIdleTimeoutSeconds { get; set; } = 60;
+
     /// <summary>
     /// The default dyes, group 14 from number 1000: eight basic ones (four shades of their colour, strength up to 85),
     /// five rare ones (three special colours, full strength, the keep mask), the Prismatic Dye (the hue shift) and the

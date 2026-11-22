@@ -196,6 +196,35 @@ public sealed class StarSmithForge
     }
 
     /// <summary>
+    /// Abandons the attempt (the smith walked away, or it timed out): like a crack off every shape, the ingredients
+    /// are lost and the item stays.
+    /// </summary>
+    /// <returns>The result, or null when the attempt is no longer drafting.</returns>
+    public StarSmithForgeResult? Abandon()
+    {
+        if (this.State != StarSmithForgeState.Drafting)
+        {
+            return null;
+        }
+
+        var (mix, dominant) = this.Mix();
+        this.State = StarSmithForgeState.Abandoned;
+        this.Result = new StarSmithForgeResult(
+            StarSmithForgeState.Abandoned,
+            null,
+            this.path.ToArray(),
+            mix,
+            dominant,
+            this.CleanStrikes(),
+            StarSmithRarity.Common,
+            0,
+            0,
+            false,
+            StarSmithOnFail.IngredientsLost);
+        return this.Result;
+    }
+
+    /// <summary>
     /// The guidance for the path so far: the smith's known recipes it is still a prefix of.
     /// </summary>
     /// <returns>The recipes.</returns>
@@ -239,12 +268,7 @@ public sealed class StarSmithForge
     private StarSmithForgeResult Crack()
     {
         var recipe = this.sky.Followed(this.path);
-        var fail = recipe?.OnFail ?? StarSmithOnFail.IngredientsLost;
-        if (fail == StarSmithOnFail.ItemDestroyed && (!recipe!.Risky || this.sky.Guarded))
-        {
-            fail = StarSmithOnFail.IngredientsLost;
-        }
-
+        var fail = this.sky.FateOf(recipe);
         var (mix, dominant) = this.Mix();
         return new StarSmithForgeResult(
             StarSmithForgeState.Cracked,

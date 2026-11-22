@@ -59,6 +59,23 @@ public sealed class StarSmithSky
     public bool Guarded { get; }
 
     /// <summary>
+    /// Gets the risk the client is told: the worst fate among the recipes after protection (a destroy only on a risky
+    /// recipe without a Jewel of Guardian, as a crack decides it).
+    /// </summary>
+    public StarSmithOnFail Risk => this.Recipes.Count == 0 ? StarSmithOnFail.IngredientsLost : this.Recipes.Max(this.FateOf);
+
+    /// <summary>
+    /// The fate of a crack on a recipe: its onFail, but a destroy only on a risky recipe without a Jewel of Guardian.
+    /// </summary>
+    /// <param name="recipe">The recipe, or null off every shape.</param>
+    /// <returns>The fate.</returns>
+    public StarSmithOnFail FateOf(StarSmithRecipe? recipe)
+    {
+        var fail = recipe?.OnFail ?? StarSmithOnFail.IngredientsLost;
+        return fail == StarSmithOnFail.ItemDestroyed && (!recipe!.Risky || this.Guarded) ? StarSmithOnFail.IngredientsLost : fail;
+    }
+
+    /// <summary>
     /// Deals a sky. The order of the draws is part of the contract: a replay with the same inputs deals the same sky.
     /// <list type="number">
     /// <item>Positions inside the item's box, kept apart by the minimum spacing where the box allows.</item>

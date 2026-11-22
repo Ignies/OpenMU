@@ -571,6 +571,11 @@ public class Player : AsyncDisposable, IBucketMapObserver, IAttackable, IAttacke
     public IMuHelperSettings? MuHelperSettings { get; set; }
 
     /// <summary>
+    /// Gets or sets the running Constellation Forge attempt of Star Smithing (seed, forge and strikes), or null.
+    /// </summary>
+    public StarSmithing.StarSmithForgeAttempt? StarSmithForge { get; set; }
+
+    /// <summary>
     /// Gets the appearance data.
     /// </summary>
     public IAppearanceData AppearanceData => this._appearanceData;

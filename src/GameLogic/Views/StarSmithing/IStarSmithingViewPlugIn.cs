@@ -39,4 +39,26 @@ public interface IStarSmithingViewPlugIn : IViewPlugIn
     /// </summary>
     /// <param name="dyes">The dyes.</param>
     ValueTask SendDyesAsync(IReadOnlyList<StarSmithDye> dyes);
+
+    /// <summary>
+    /// Answers a Forge start with the dealt sky, or why there is none (EE 9D).
+    /// </summary>
+    /// <param name="sky">What the client may know of the sky, built field by field.</param>
+    ValueTask SendForgeSkyAsync(StarSmithForgeSkyMessage sky);
+
+    /// <summary>
+    /// Answers a Forge strike (EE 9E). A refused strike shows nothing of the star.
+    /// </summary>
+    /// <param name="star">The star named.</param>
+    /// <param name="strike">The answer, with the struck star.</param>
+    /// <param name="strikesLeft">How many stars may still be struck.</param>
+    /// <param name="guidance">The known recipes the path is still a prefix of.</param>
+    ValueTask SendForgeStrikeAsync(int star, StarSmithStrike strike, int strikesLeft, IReadOnlyList<short> guidance);
+
+    /// <summary>
+    /// Tells how a Forge attempt ended, or that a seal or abandon was refused (EE 9F).
+    /// </summary>
+    /// <param name="outcome">The outcome.</param>
+    /// <param name="result">The result, or null when refused.</param>
+    ValueTask SendForgeResultAsync(StarSmithForgeOutcome outcome, StarSmithForgeResult? result);
 }
