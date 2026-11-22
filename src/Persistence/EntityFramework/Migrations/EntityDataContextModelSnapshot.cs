@@ -1143,6 +1143,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<long>("StarSmithExperience")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("StarSmithGuidebook")
+                        .HasColumnType("text");
+
                     b.Property<short>("StarSmithLevel")
                         .HasColumnType("smallint");
 
