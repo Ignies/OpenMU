@@ -175,6 +175,27 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
         ItemCustomizationCache.Forget(itemId);
     }
 
+    /// <summary>Takes one dye from its stack, or the item when it was the last.</summary>
+    private static async ValueTask SpendOneAsync(Player player, Item dye)
+    {
+        if (dye.Durability > 1)
+        {
+            dye.Durability--;
+            await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(dye, true)).ConfigureAwait(false);
+            return;
+        }
+
+        if (player.Inventory is not { } inventory)
+        {
+            return;
+        }
+
+        var slot = dye.ItemSlot;
+        await inventory.RemoveItemAsync(dye).ConfigureAwait(false);
+        await player.PersistenceContext.DeleteAsync(dye).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
+    }
+
     private async ValueTask<(StarSmithResultCode Result, byte Refusal)> RunAsync(Player player, StarSmithAction action, byte slot, ReadOnlyMemory<byte> payload, int zenCost, byte dyeSlot, byte radiantSlot)
     {
         var hammer = this.HammerOf(player);
@@ -269,27 +290,6 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
         }
 
         return (StarSmithResultCode.Done, 0);
-    }
-
-    /// <summary>Takes one dye from its stack, or the item when it was the last.</summary>
-    private static async ValueTask SpendOneAsync(Player player, Item dye)
-    {
-        if (dye.Durability > 1)
-        {
-            dye.Durability--;
-            await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(dye, true)).ConfigureAwait(false);
-            return;
-        }
-
-        if (player.Inventory is not { } inventory)
-        {
-            return;
-        }
-
-        var slot = dye.ItemSlot;
-        await inventory.RemoveItemAsync(dye).ConfigureAwait(false);
-        await player.PersistenceContext.DeleteAsync(dye).ConfigureAwait(false);
-        await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
     }
 
     /// <summary>The bag item in a dye slot, if it is a dye (never the hammer or the item being recoloured).</summary>
