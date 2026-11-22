@@ -51,8 +51,8 @@ Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRulesTest.cs`, `StarSmithLev
 ## Constellation Forge
 
 Every recipe attempt is played as the Forge minigame (Hidden-Babylon `docs/star_smithing.md` section 10). This is its
-rule core, deterministic from a seed so the server can deal an attempt again and verify it, and its wire (below). No
-database yet: an attempt lives on the player.
+rule core, deterministic from a seed so the server can deal an attempt again and verify it, its wire, the recipes, the
+Guidebook and the experience (below). An attempt lives on the player; the Guidebook is stored on the character.
 
 - Recipes: `StarSmithRecipes.Candidates` lists the recipes a target and its ingredients can make, the most specific
   first (`Match` is its first); `Chance` is the base, +0.15% a smith level (15% at most) and the catalysts, capped by
@@ -132,12 +132,15 @@ The client receives:
 Applying: a seal writes the rarity into the item's `ItemCustomization` (`SaveAsync`: a new record when there is none,
 `Version` up, `ItemCustomizationCache.Forget`) and shows EE 92 (action 5, `Forge`) to everyone who sees the smith. A
 crack applies the fate: a downgrade clears the customisation (name, lore, look, rarity), a destroy removes and deletes
-the item. Recipe effects, the smith's experience and the Guidebook come with the later steps.
+the item. Then the smith's experience and Guidebook (below). Recipe effects come with a later step.
 
 Never sent before a star is struck: its element, its value and whether it is a void (except the revealed one), nor
 which recipes the sky holds beyond the smith's known ones. `StarSmithSky.Stars` holds all of them, so the packet is
 built field by field, never by copying a star (`TheSkyHidesUnstruckStarsAsync` compares the bytes of skies that differ
 only there).
+
+Every Star Smithing packet writer clears its buffer before it writes: the connection's output memory is pooled, and a
+field left unwritten (like the spare last byte of `C1 EE 97 StarSmithResult`) would otherwise carry old bytes.
 
 Decided for the wire step:
 - Attempt state: `StarSmithForgeAttempt` on `Player.StarSmithForge`: the seed (a cryptographic random 64-bit number,
@@ -148,7 +151,46 @@ Decided for the wire step:
   is the tolerance alone). The beat settings are on `StarSmithingConfiguration` (800, 90, cap 150).
 - Timeout: an attempt with no strike for `ForgeIdleTimeoutSeconds` (60) ends as an abandon (outcome 3), the safe choice:
   an idle seal could hand out a result nobody played for, an idle crack could destroy an item.
-- The Guidebook is not stored yet, so no recipe is known: the guidance is empty and every completion is a first one.
-- Recipes are `StarSmithingConfiguration.Recipes` (none by default), the dealing rules `StarSmithingConfiguration.Forge`.
+- A start needs at least one ingredient (11 otherwise).
 
-Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRecipesTest.cs`, `StarSmithForgeTest.cs`, `StarSmithForgeWireTest.cs`.
+### Recipes
+
+`StarSmithingConfiguration.Recipes` defaults to `DefaultRecipes()`, the design's five weapon shapes (the demo
+Guidebook of Hidden-Babylon `src/modules/star_smithing/forge.ts`). Each has a `Name`, a `Hint` for its sealed row and
+the smith `Experience` it gives:
+
+| # | Name | Stars | Match | On fail | Experience | Hint |
+|---|---|---|---|---|---|---|
+| 1 | The Serpent | 0, 1, 2, 3, 4, 5, 6 | exact | downgraded | 120 | Seven scales, from the point down to the hand. |
+| 2 | Twin Fangs | 9, 6, 10 | extendable | ingredients lost | 40 | Two fangs bite across the guard. |
+| 3 | Ember Ring | 6, 7, 8 | extendable | ingredients lost | 40 | A ring of embers wraps the grip. |
+| 4 | Storm Spine | 6, 4, 2, 0 | exact | destroyed (risky) | 60 | Lightning climbs the blade in leaps. |
+| 5 | Wyrm Coil | 1, 11, 3, 5 | exact | ingredients lost | 60 | Four stars knot themselves around the blade. |
+
+All are weapon recipes with a 60% base chance (95% at most) and take the same family: any mix of the Season 6 skill
+orbs (12/7-48) and scrolls (15/0-14), up to ten of each. One family puts every shape in one sky, so exploring off the
+known shapes finds the hidden ones. A new database gets them with the plug-in's default configuration; an existing one
+through `AddStarSmithRecipesUpdatePlugIn`, which fills an empty list once and keeps a list the operator made.
+
+### Guidebook
+
+Every recipe is hidden until the smith makes it once. The Guidebook is one column on the character,
+`Character.StarSmithGuidebook` (text, migration `AddStarSmithGuidebook`): "number:made" pairs joined by ';', sorted by
+number (`StarSmithGuidebook.Parse` and `Record`). Its keys are the known set a start feeds the forge, so guidance shows
+only known recipes and a first completion is a recipe not in it. A seal of a recipe records it (new at 1, else one
+more).
+
+`C2 EE 90 StarSmithGuidebook` goes out with EE 91 while the hammer is in a hand, so also after every ended attempt:
+5 the recipe count (for "? of N found"), 6 the entry count, then 69-byte entries: 0 kind (0 found, 1 sealed), 1-2 the
+recipe number, 3-4 the made count (both 0 for a sealed row), 5-68 the text (UTF-8, zero padded): a found recipe's name,
+a sealed row's hint. The found rows come first, then a sealed row for every recipe not found, each by number. A sealed
+row carries only its hint: nothing names an unfound recipe. A stored recipe the world no longer has is left out.
+
+### Experience
+
+An ended attempt gives the smith experience (design section 3, step 6; `StarSmithLevels.Add` raises the level): a seal
+the recipe's `Experience`, doubled on the first completion, or 10 for the attunement; a crack 30% of the recipe the
+path was on; an abandon or a timeout nothing. EE 91 shows the new level and experience.
+
+Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRecipesTest.cs`, `StarSmithForgeTest.cs`, `StarSmithForgeWireTest.cs`,
+`StarSmithGuidebookTest.cs`; `tests/MUnique.OpenMU.Persistence.Initialization.Tests/StarSmithRecipesDataTest.cs`.
