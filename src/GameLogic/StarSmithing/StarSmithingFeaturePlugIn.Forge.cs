@@ -127,20 +127,21 @@ public partial class StarSmithingFeaturePlugIn
     }
 
     /// <summary>
-    /// The smith's found recipes for EE 90, by number; a stored recipe the world no longer has is left out, and nothing
-    /// names a recipe not found.
+    /// The smith's Guidebook rows for EE 90: the found recipes in full, by number (a stored recipe the world no longer
+    /// has is left out), then a sealed row with its hint only for every recipe not found yet, by number.
     /// </summary>
     /// <param name="player">The smith.</param>
-    /// <returns>The found recipes.</returns>
+    /// <returns>The rows.</returns>
     internal IReadOnlyList<StarSmithGuidebookEntry> GuidebookOf(Player player)
     {
-        var recipes = this.Settings.Recipes;
-        return StarSmithGuidebook.Parse(player.SelectedCharacter?.StarSmithGuidebook)
-            .Select(f => (Found: f, Recipe: recipes.FirstOrDefault(r => r.Number == f.Key)))
-            .Where(f => f.Recipe is not null)
-            .OrderBy(f => f.Found.Key)
-            .Select(f => new StarSmithGuidebookEntry(f.Found.Key, f.Found.Value, f.Recipe!.Name))
+        var recipes = this.Settings.Recipes.OrderBy(r => r.Number).ToList();
+        var found = StarSmithGuidebook.Parse(player.SelectedCharacter?.StarSmithGuidebook);
+        var rows = recipes
+            .Where(r => found.ContainsKey(r.Number))
+            .Select(r => StarSmithGuidebookEntry.Found(r.Number, found[r.Number], r.Name))
             .ToList();
+        rows.AddRange(recipes.Where(r => !found.ContainsKey(r.Number)).Select(r => StarSmithGuidebookEntry.Sealed(r.Hint)));
+        return rows;
     }
 
     /// <summary>

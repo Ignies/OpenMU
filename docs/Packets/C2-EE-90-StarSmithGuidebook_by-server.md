@@ -16,18 +16,19 @@ The client shows the Guidebook: the found recipes in full, the rest as sealed ro
 | 1 | 2 |    Short   |      | Packet header - length of the packet |
 | 3 | 1 |    Byte   | 0xEE  | Packet header - packet type identifier |
 | 4 | 1 |    Byte   | 0x90  | Packet header - sub packet type identifier |
-| 5 | 1 | Byte |  | Total; How many recipes the world has, for "? of ? found". |
-| 6 | 1 | Byte |  | FoundCount |
-| 7 | StarSmithGuidebookEntry.Length * FoundCount | Array of StarSmithGuidebookEntry |  | Found |
+| 5 | 1 | Byte |  | Total; How many recipes the world has, for "? of N found". |
+| 6 | 1 | Byte |  | EntryCount |
+| 7 | StarSmithGuidebookEntry.Length * EntryCount | Array of StarSmithGuidebookEntry |  | Entries |
 
 ### StarSmithGuidebookEntry Structure
 
-A found recipe of StarSmithGuidebook.
+A row of StarSmithGuidebook: a found recipe in full, or a sealed one with its hint only.
 
-Length: 36 Bytes
+Length: 69 Bytes
 
 | Index | Length | Data Type | Value | Description |
 |-------|--------|-----------|-------|-------------|
-| 0 | 2 | ShortLittleEndian |  | Recipe |
-| 2 | 2 | ShortLittleEndian |  | Made; How often the smith made it. |
-| 4 | 32 | String |  | Name; UTF-8, zero padded. |
+| 0 | 1 | Byte |  | Kind; 0 a found recipe, 1 a sealed one. |
+| 1 | 2 | ShortLittleEndian |  | Recipe; The recipe's number; 0 for a sealed row. |
+| 3 | 2 | ShortLittleEndian |  | Made; How often the smith made it; 0 for a sealed row. |
+| 5 | 64 | String |  | Text; UTF-8, zero padded: a found recipe's name, a sealed row's hint. |

@@ -274,14 +274,20 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
             var packet = new StarSmithGuidebookRef(span)
             {
                 Total = (byte)Math.Clamp(total, 0, byte.MaxValue),
-                FoundCount = (byte)count,
+                EntryCount = (byte)count,
             };
             for (var i = 0; i < count; i++)
             {
+                var row = found[i];
                 var entry = packet[i];
-                entry.Recipe = (ushort)found[i].Recipe;
-                entry.Made = (ushort)Math.Clamp(found[i].Made, 0, ushort.MaxValue);
-                entry.Name = found[i].Name;
+                entry.Kind = (byte)row.Kind;
+                if (row.Kind == StarSmithGuidebookEntryKind.Found)
+                {
+                    entry.Recipe = (ushort)row.Recipe;
+                    entry.Made = (ushort)Math.Clamp(row.Made, 0, ushort.MaxValue);
+                }
+
+                entry.Text = row.Text;
             }
 
             return size;

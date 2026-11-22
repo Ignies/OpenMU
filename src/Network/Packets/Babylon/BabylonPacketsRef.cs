@@ -16,7 +16,7 @@ using System;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 /// <summary>
-/// A found recipe of StarSmithGuidebook..
+/// A row of StarSmithGuidebook: a found recipe in full, or a sealed one with its hint only..
 /// </summary>
 public readonly ref struct StarSmithGuidebookEntryRef
 {
@@ -34,33 +34,42 @@ public readonly ref struct StarSmithGuidebookEntryRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 36;
+    public static int Length => 69;
 
     /// <summary>
-    /// Gets or sets the recipe.
+    /// Gets or sets 0 a found recipe, 1 a sealed one.
+    /// </summary>
+    public byte Kind
+    {
+        get => this._data[0];
+        set => this._data[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the recipe's number; 0 for a sealed row.
     /// </summary>
     public ushort Recipe
     {
-        get => ReadUInt16LittleEndian(this._data);
-        set => WriteUInt16LittleEndian(this._data, value);
+        get => ReadUInt16LittleEndian(this._data[1..]);
+        set => WriteUInt16LittleEndian(this._data[1..], value);
     }
 
     /// <summary>
-    /// Gets or sets how often the smith made it.
+    /// Gets or sets how often the smith made it; 0 for a sealed row.
     /// </summary>
     public ushort Made
     {
-        get => ReadUInt16LittleEndian(this._data[2..]);
-        set => WriteUInt16LittleEndian(this._data[2..], value);
+        get => ReadUInt16LittleEndian(this._data[3..]);
+        set => WriteUInt16LittleEndian(this._data[3..], value);
     }
 
     /// <summary>
-    /// Gets or sets uTF-8, zero padded.
+    /// Gets or sets uTF-8, zero padded: a found recipe's name, a sealed row's hint.
     /// </summary>
-    public string Name
+    public string Text
     {
-        get => this._data.ExtractString(4, 32, System.Text.Encoding.UTF8);
-        set => this._data.Slice(4, 32).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.ExtractString(5, 64, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 64).WriteString(value, System.Text.Encoding.UTF8);
     }
 }
 
@@ -5250,7 +5259,7 @@ public readonly ref struct StarSmithGuidebookRef
     public C2HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets how many recipes the world has, for "? of ? found".
+    /// Gets or sets how many recipes the world has, for "? of N found".
     /// </summary>
     public byte Total
     {
@@ -5259,9 +5268,9 @@ public readonly ref struct StarSmithGuidebookRef
     }
 
     /// <summary>
-    /// Gets or sets the found count.
+    /// Gets or sets the entry count.
     /// </summary>
-    public byte FoundCount
+    public byte EntryCount
     {
         get => this._data[6];
         set => this._data[6] = value;
@@ -5289,9 +5298,9 @@ public readonly ref struct StarSmithGuidebookRef
     /// <summary>
     /// Calculates the size of the packet for the specified count of <see cref="StarSmithGuidebookEntryRef"/>.
     /// </summary>
-    /// <param name="foundCount">The count of <see cref="StarSmithGuidebookEntryRef"/> from which the size will be calculated.</param>
+    /// <param name="entriesCount">The count of <see cref="StarSmithGuidebookEntryRef"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int foundCount) => foundCount * StarSmithGuidebookEntryRef.Length + 7;
+    public static int GetRequiredSize(int entriesCount) => entriesCount * StarSmithGuidebookEntryRef.Length + 7;
 }
 
 

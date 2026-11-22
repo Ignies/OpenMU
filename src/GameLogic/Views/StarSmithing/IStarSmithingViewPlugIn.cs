@@ -63,9 +63,10 @@ public interface IStarSmithingViewPlugIn : IViewPlugIn
     ValueTask SendForgeResultAsync(StarSmithForgeOutcome outcome, StarSmithForgeResult? result);
 
     /// <summary>
-    /// Sends the smith's Guidebook (EE 90): the recipe count and the found recipes only.
+    /// Sends the smith's Guidebook (EE 90): the recipe count, the found recipes in full and a sealed row with its hint
+    /// for every other one.
     /// </summary>
     /// <param name="total">How many recipes the world has.</param>
-    /// <param name="found">The found recipes.</param>
+    /// <param name="found">The rows, found ones first.</param>
     ValueTask SendGuidebookAsync(int total, IReadOnlyList<StarSmithGuidebookEntry> found);
 }

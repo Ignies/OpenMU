@@ -16,6 +16,9 @@ public class StarSmithRecipe
     /// <summary>Gets or sets its name, shown in the Guidebook once found.</summary>
     public string Name { get; set; } = string.Empty;
 
+    /// <summary>Gets or sets the hint its sealed Guidebook row shows before it is found (a riddle or an ingredient clue; English, at most 64 bytes).</summary>
+    public string Hint { get; set; } = string.Empty;
+
     /// <summary>Gets or sets the smith experience a success gives (a crack gives 30%, a first discovery doubles it).</summary>
     public int Experience { get; set; }
 

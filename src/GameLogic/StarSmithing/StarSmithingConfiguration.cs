@@ -81,10 +81,11 @@ public class StarSmithingConfiguration
     /// <returns>The recipes.</returns>
     public static List<StarSmithRecipe> DefaultRecipes()
     {
-        StarSmithRecipe Weapon(short number, string name, int experience, int[] stars, StarSmithShapeMatch match = StarSmithShapeMatch.Exact, StarSmithOnFail onFail = StarSmithOnFail.IngredientsLost, bool risky = false) => new()
+        StarSmithRecipe Weapon(short number, string name, string hint, int experience, int[] stars, StarSmithShapeMatch match = StarSmithShapeMatch.Exact, StarSmithOnFail onFail = StarSmithOnFail.IngredientsLost, bool risky = false) => new()
         {
             Number = number,
             Name = name,
+            Hint = hint,
             Experience = experience,
             Targets = StarSmithTargetKind.Weapon,
             Ingredients = SkillOrbsAndScrolls(),
@@ -97,11 +98,11 @@ public class StarSmithingConfiguration
 
         return
         [
-            Weapon(1, "The Serpent", 120, [0, 1, 2, 3, 4, 5, 6], onFail: StarSmithOnFail.ItemDowngraded),
-            Weapon(2, "Twin Fangs", 40, [9, 6, 10], StarSmithShapeMatch.Extendable),
-            Weapon(3, "Ember Ring", 40, [6, 7, 8], StarSmithShapeMatch.Extendable),
-            Weapon(4, "Storm Spine", 60, [6, 4, 2, 0], onFail: StarSmithOnFail.ItemDestroyed, risky: true),
-            Weapon(5, "Wyrm Coil", 60, [1, 11, 3, 5]),
+            Weapon(1, "The Serpent", "Seven scales, from the point down to the hand.", 120, [0, 1, 2, 3, 4, 5, 6], onFail: StarSmithOnFail.ItemDowngraded),
+            Weapon(2, "Twin Fangs", "Two fangs bite across the guard.", 40, [9, 6, 10], StarSmithShapeMatch.Extendable),
+            Weapon(3, "Ember Ring", "A ring of embers wraps the grip.", 40, [6, 7, 8], StarSmithShapeMatch.Extendable),
+            Weapon(4, "Storm Spine", "Lightning climbs the blade in leaps.", 60, [6, 4, 2, 0], onFail: StarSmithOnFail.ItemDestroyed, risky: true),
+            Weapon(5, "Wyrm Coil", "Four stars knot themselves around the blade.", 60, [1, 11, 3, 5]),
         ];
     }
 

@@ -4,26 +4,33 @@
   <Structures>
     <Structure>
       <Name>StarSmithGuidebookEntry</Name>
-      <Description>A found recipe of StarSmithGuidebook.</Description>
-      <Length>36</Length>
+      <Description>A row of StarSmithGuidebook: a found recipe in full, or a sealed one with its hint only.</Description>
+      <Length>69</Length>
       <Fields>
         <Field>
           <Index>0</Index>
+          <Type>Byte</Type>
+          <Name>Kind</Name>
+          <Description>0 a found recipe, 1 a sealed one.</Description>
+        </Field>
+        <Field>
+          <Index>1</Index>
           <Type>ShortLittleEndian</Type>
           <Name>Recipe</Name>
+          <Description>The recipe's number; 0 for a sealed row.</Description>
         </Field>
         <Field>
-          <Index>2</Index>
+          <Index>3</Index>
           <Type>ShortLittleEndian</Type>
           <Name>Made</Name>
-          <Description>How often the smith made it.</Description>
+          <Description>How often the smith made it; 0 for a sealed row.</Description>
         </Field>
         <Field>
-          <Index>4</Index>
+          <Index>5</Index>
           <Type>String</Type>
-          <Name>Name</Name>
-          <Description>UTF-8, zero padded.</Description>
-          <Length>32</Length>
+          <Name>Text</Name>
+          <Description>UTF-8, zero padded: a found recipe's name, a sealed row's hint.</Description>
+          <Length>64</Length>
         </Field>
       </Fields>
     </Structure>
@@ -1946,19 +1953,19 @@
           <Index>5</Index>
           <Type>Byte</Type>
           <Name>Total</Name>
-          <Description>How many recipes the world has, for "? of ? found".</Description>
+          <Description>How many recipes the world has, for "? of N found".</Description>
         </Field>
         <Field>
           <Index>6</Index>
           <Type>Byte</Type>
-          <Name>FoundCount</Name>
+          <Name>EntryCount</Name>
         </Field>
         <Field>
           <Index>7</Index>
           <Type>Structure[]</Type>
           <TypeName>StarSmithGuidebookEntry</TypeName>
-          <Name>Found</Name>
-          <ItemCountField>FoundCount</ItemCountField>
+          <Name>Entries</Name>
+          <ItemCountField>EntryCount</ItemCountField>
         </Field>
       </Fields>
     </Packet>
