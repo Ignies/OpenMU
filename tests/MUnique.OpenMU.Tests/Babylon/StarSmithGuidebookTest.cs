@@ -58,7 +58,7 @@ public class StarSmithGuidebookTest
         view.Verify(v => v.SendForgeResultAsync(StarSmithForgeOutcome.Sealed, It.Is<StarSmithForgeResult>(r => r.FirstCompletion)), Times.Once);
         Assert.That(player.SelectedCharacter!.StarSmithGuidebook, Is.EqualTo("7:1"));
         Assert.That((player.SelectedCharacter.StarSmithLevel, player.SelectedCharacter.StarSmithExperience), Is.EqualTo(((short)2, 0L)), "50 doubled reaches level 2");
-        view.Verify(v => v.SendGuidebookAsync(1, It.Is<IReadOnlyList<StarSmithGuidebookEntry>>(f => f.Count == 1 && f[0] == new StarSmithGuidebookEntry(7, 1, "Sure"))), Times.AtLeastOnce);
+        view.Verify(v => v.SendGuidebookAsync(1, It.Is<IReadOnlyList<StarSmithGuidebookEntry>>(f => f.Count == 1 && f[0] == StarSmithGuidebookEntry.Found(7, 1, "Sure"))), Times.AtLeastOnce);
     }
 
     /// <summary>
@@ -109,20 +109,46 @@ public class StarSmithGuidebookTest
     }
 
     /// <summary>
-    /// C2 EE 90: the recipe count, the found count, then per found recipe its number, made count and name (32 bytes,
-    /// zero padded). Nothing names a recipe not found.
+    /// C2 EE 90: the recipe count, the entry count, then 69-byte entries: the kind (0 found, 1 sealed), the number and the
+    /// made count (both 0 for a sealed row), and the text (64 bytes, zero padded): a found recipe's name, a sealed row's
+    /// hint.
     /// </summary>
     [Test]
     public async ValueTask TheGuidebookBytesAsync()
     {
         var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(GameServer.BabylonClient.Version);
         var type = Type.GetType(PlugIn)!;
-        await ((ValueTask)type.GetMethod("SendGuidebookAsync")!.Invoke(Activator.CreateInstance(type, player), [5, (IReadOnlyList<StarSmithGuidebookEntry>)[new StarSmithGuidebookEntry(1, 4, "The Serpent")]])!).ConfigureAwait(false);
+        IReadOnlyList<StarSmithGuidebookEntry> entries = [StarSmithGuidebookEntry.Found(1, 4, "The Serpent"), StarSmithGuidebookEntry.Sealed("Two fangs bite across the guard.")];
+        await ((ValueTask)type.GetMethod("SendGuidebookAsync")!.Invoke(Activator.CreateInstance(type, player), [5, entries])!).ConfigureAwait(false);
 
-        var expected = new byte[43];
-        new byte[] { 0xC2, 0, 43, 0xEE, 0x90, 5, 1, 1, 0, 4, 0 }.CopyTo(expected, 0);
-        System.Text.Encoding.UTF8.GetBytes("The Serpent").CopyTo(expected, 11);
+        var expected = new byte[7 + (2 * 69)];
+        new byte[] { 0xC2, 0, 145, 0xEE, 0x90, 5, 2 }.CopyTo(expected, 0);
+        new byte[] { 0, 1, 0, 4, 0 }.CopyTo(expected, 7);
+        System.Text.Encoding.UTF8.GetBytes("The Serpent").CopyTo(expected, 12);
+        new byte[] { 1, 0, 0, 0, 0 }.CopyTo(expected, 76);
+        System.Text.Encoding.UTF8.GetBytes("Two fangs bite across the guard.").CopyTo(expected, 81);
         Assert.That(output.ToArray(), Is.EqualTo(expected));
+    }
+
+    /// <summary>
+    /// The recipes not found yet go out as sealed rows after the found ones, in recipe order, with their hint only: no
+    /// number, no made count and nothing that names them. Every default recipe has a hint that doesn't name it.
+    /// </summary>
+    [Test]
+    public async ValueTask TheUnfoundAreSealedAsync()
+    {
+        var (player, plugIn) = await SmithAsync(null).ConfigureAwait(false);
+        player.SelectedCharacter!.StarSmithGuidebook = "2:1";
+        var recipes = StarSmithingConfiguration.DefaultRecipes();
+        Assert.That(recipes.All(r => r.Hint.Length is > 0 and <= 64 && !r.Hint.Contains(r.Name, StringComparison.OrdinalIgnoreCase)), Is.True);
+
+        var entries = plugIn.GuidebookOf(player);
+
+        Assert.That(entries[0], Is.EqualTo(StarSmithGuidebookEntry.Found(2, 1, "Twin Fangs")));
+        var sealedRows = entries.Skip(1).ToList();
+        Assert.That(sealedRows.Select(e => e.Text), Is.EqualTo(recipes.Where(r => r.Number != 2).Select(r => r.Hint)));
+        Assert.That(sealedRows.All(e => e is { Kind: StarSmithGuidebookEntryKind.Sealed, Recipe: 0, Made: 0 }), Is.True);
+        Assert.That(sealedRows.Any(e => recipes.Any(r => e.Text.Contains(r.Name, StringComparison.OrdinalIgnoreCase))), Is.False);
     }
 
     /// <summary>
@@ -135,7 +161,7 @@ public class StarSmithGuidebookTest
         player.SelectedCharacter!.StarSmithGuidebook = "7:3;99:1";
         await plugIn.SendStateAsync(player).ConfigureAwait(false);
         var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IStarSmithingViewPlugIn>()!);
-        view.Verify(v => v.SendGuidebookAsync(1, It.Is<IReadOnlyList<StarSmithGuidebookEntry>>(f => f.Count == 1 && f[0] == new StarSmithGuidebookEntry(7, 3, "Sure"))), Times.Once, "a removed recipe (99) is not shown");
+        view.Verify(v => v.SendGuidebookAsync(1, It.Is<IReadOnlyList<StarSmithGuidebookEntry>>(f => f.Count == 1 && f[0] == StarSmithGuidebookEntry.Found(7, 3, "Sure"))), Times.Once, "a removed recipe (99) is not shown");
     }
 
     /// <summary>
