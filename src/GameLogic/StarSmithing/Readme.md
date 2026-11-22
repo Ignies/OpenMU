@@ -54,7 +54,47 @@ wiring or database yet.
   strikes left, a used star or one not linked to the last. A void cracks: the recipe the path follows decides by its
   `OnFail`; a destroy needs a risky recipe and no Guardian, else the ingredients are lost. A seal gives the longest
   completed shape's recipe (or the attunement, null, capped at Uncommon), the element mix by value and the dominant
-  element, the rarity (clean share in permille + 250 * level / 100: Common under 300, Uncommon 500, Rare 700, Epic
-  900, Legendary 1,100, else Mythic), the magnitude factor and the Guidebook's first-completion flag.
+  element, the rarity, the magnitude factor and the Guidebook's first-completion flag.
+- Rarity rewards pushing your luck. `Progress` is the struck stars over the completed shape's length in permille; an
+  extendable shape counts its extensions up to its cap (a 3-star shape with 3 extensions is 2,000). The score is the
+  clean share times the progress, plus 250 * level / 100: Common under 300, Uncommon under 500, Rare under 800, Epic
+  under 1,300, Legendary under 2,000, else Mythic. So one clean strike and a seal is at most Uncommon, a full shape all
+  clean is Epic, a half-clean one at most Rare, and Mythic needs every extension of a short shape struck clean.
+
+### Positions are a layout hint
+
+The rules play on the graph only: stars, links and shapes. A star's `X` and `Y` (0 to 1 in the item's box) are a hint
+of the layout. The client lays the stars out over the item's real 2D silhouette, from the rendered picture's alpha,
+and may move a star inside the silhouette as long as the stars keep their relative order (left to right, top to
+bottom) and every link stays drawable. No rule depends on positions, let alone pixels; the server never checks them
+(`RulesIgnoreStarPositions`).
+
+### Wire contract (next step)
+
+The client sends:
+- start: the target slot, the ingredient and catalyst slots (the server checks them again, deals the sky and starts
+  the beat on its own clock);
+- strike: the star's index only; the server stamps the time on arrival;
+- seal;
+- abandon (proposed: like a crack off every shape, the ingredients are lost and the item stays; the forge has no
+  `Abandon` yet).
+
+The client receives:
+- on start: per star its index and layout hint (X, Y) and, for the one void a Jewel of Guardian reveals, that it is a
+  void; the links; the hints (pair and clarity); the strikes allowed; the beat interval and the time to the first beat;
+  the risk (the worst onFail among the sky's recipes, after protection);
+- on each strike: the answer (linked, cracked or why refused), the struck star's element, value and void flag, the
+  timing (clean, shaky, late), the strikes left and the guidance (the known recipe numbers the path is still a prefix
+  of);
+- on seal or crack: the result (recipe number or attunement, element mix, rarity, extension, first completion, the
+  item's fate on a crack), then the item's new customisation as today (EE 39).
+
+Never sent before a star is struck: its element, its value and whether it is a void (except the revealed one), nor
+which recipes the sky holds beyond the smith's known ones. `StarSmithSky.Stars` holds all of them, so the packet must
+be built field by field, never by copying a star.
+
+Open for the wire step: where the round trip comes from (the server's own ping of the connection, not a client
+claim), the attempt's timeout (an idle attempt seals or cracks), and how the seed is chosen and stored with the
+attempt's strikes so it can be replayed and verified.
 
 Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRecipesTest.cs`, `StarSmithForgeTest.cs`.

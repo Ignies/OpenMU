@@ -81,12 +81,22 @@ public sealed class StarSmithForge
     /// <param name="shape">The completed shape, or null.</param>
     /// <param name="strikes">All strikes.</param>
     /// <returns>The progress.</returns>
-    public static int Progress(StarSmithShape? shape, int strikes) => 0;
+    public static int Progress(StarSmithShape? shape, int strikes)
+    {
+        if (shape is null || shape.Stars.Count == 0)
+        {
+            return 1000;
+        }
+
+        var length = shape.Stars.Count;
+        var extensions = shape.Match == StarSmithShapeMatch.Extendable ? Math.Max(0, shape.MaximumExtension) : 0;
+        return Math.Clamp(strikes, 0, length + extensions) * 1000 / length;
+    }
 
     /// <summary>
-    /// The rarity tier of a result: the share of clean strikes (up to 1,000 permille) plus a quarter of it for the
-    /// smith level (250 at level 100). Common below 300, Uncommon below 500, Rare below 700, Epic below 900, Legendary
-    /// below 1,100, Mythic from there.
+    /// The rarity tier of a result, which rewards pushing your luck: the clean share times the progress (both in
+    /// permille), plus 250 * level / 100. Common below 300, Uncommon below 500, Rare below 800, Epic below 1,300,
+    /// Legendary below 2,000, Mythic from there. So a full shape struck clean is Epic, and Mythic needs the extensions.
     /// </summary>
     /// <param name="clean">The clean strikes.</param>
     /// <param name="strikes">All strikes.</param>
@@ -100,14 +110,15 @@ public sealed class StarSmithForge
             return StarSmithRarity.Common;
         }
 
-        var score = (Math.Clamp(clean, 0, strikes) * 1000 / strikes) + (250 * Math.Clamp(smithLevel, 0, StarSmithLevels.Maximum) / StarSmithLevels.Maximum);
+        var share = (long)Math.Clamp(clean, 0, strikes) * Math.Max(0, progress) / strikes;
+        var score = share + (250 * Math.Clamp(smithLevel, 0, StarSmithLevels.Maximum) / StarSmithLevels.Maximum);
         return score switch
         {
             < 300 => StarSmithRarity.Common,
             < 500 => StarSmithRarity.Uncommon,
-            < 700 => StarSmithRarity.Rare,
-            < 900 => StarSmithRarity.Epic,
-            < 1100 => StarSmithRarity.Legendary,
+            < 800 => StarSmithRarity.Rare,
+            < 1300 => StarSmithRarity.Epic,
+            < 2000 => StarSmithRarity.Legendary,
             _ => StarSmithRarity.Mythic,
         };
     }
