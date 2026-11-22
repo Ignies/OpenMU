@@ -6050,7 +6050,7 @@ public readonly ref struct StarSmithForgeStartRef
     }
 
     /// <summary>
-    /// Gets or sets 10 inventory slots of ingredients; the unused ones are 0xFF. A stack counts with its whole durability.
+    /// Gets or sets 10 inventory slots of ingredients; the unused ones are 0xFF. Each slot is one unit of its item (a stack gives one).
     /// </summary>
     public Span<byte> IngredientSlots
     {

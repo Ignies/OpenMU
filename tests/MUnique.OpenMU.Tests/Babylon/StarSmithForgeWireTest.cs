@@ -4,10 +4,11 @@
 
 namespace MUnique.OpenMU.Tests.Babylon;
 
-using MUnique.OpenMU.DataModel.Configuration.Items;
+using MUnique.OpenMU.DataModel.Entities;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.StarSmithing;
 using MUnique.OpenMU.GameLogic.Views.StarSmithing;
+using Moq;
 
 /// <summary>
 /// The Constellation Forge on the wire (Readme.md "Wire"): the attempt kept on the player (seed, forge, strikes with
@@ -413,7 +414,7 @@ public class StarSmithForgeWireTest
     private static async ValueTask<Item> AddAsync(Player player, byte slot, byte group, short number, byte durability = 1)
     {
         var item = player.PersistenceContext.CreateNew<Item>();
-        item.Definition = new ItemDefinition { Group = group, Number = number, Width = 1, Height = 1, Durability = durability };
+        item.Definition = new MUnique.OpenMU.Persistence.BasicModel.ItemDefinition { Group = group, Number = number, Width = 1, Height = 1, Durability = durability };
         item.Durability = durability;
         await player.Inventory!.AddItemAsync(slot, item).ConfigureAwait(false);
         return item;

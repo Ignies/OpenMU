@@ -51,8 +51,8 @@ Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRulesTest.cs`, `StarSmithLev
 ## Constellation Forge
 
 Every recipe attempt is played as the Forge minigame (Hidden-Babylon `docs/star_smithing.md` section 10). This is its
-pure rule core: deterministic from a seed, so the server can deal an attempt again and verify it. No packets, plug-in
-wiring or database yet.
+rule core, deterministic from a seed so the server can deal an attempt again and verify it, and its wire (below). No
+database yet: an attempt lives on the player.
 
 - Recipes: `StarSmithRecipes.Candidates` lists the recipes a target and its ingredients can make, the most specific
   first (`Match` is its first); `Chance` is the base, +0.15% a smith level (15% at most) and the catalysts, capped by
@@ -71,8 +71,8 @@ wiring or database yet.
 - `StarSmithBeat(interval 800, tolerance 90, round-trip cap 150)`: beats fall every interval after the start; a strike
   within tolerance + round trip (capped) of the nearest beat is clean, within twice that (at most half a beat) shaky,
   else late. Server time only. A second strike on the same beat is late.
-- `StarSmithForge.Start(sky, beat, start, roundTrip, level, known)`, then `Strike(star, serverTime)` and `Seal()`;
-  states drafting, sealed, cracked. A strike is refused (and changes nothing) when not drafting, for no such star, no
+- `StarSmithForge.Start(sky, beat, start, roundTrip, level, known)`, then `Strike(star, serverTime)` and `Seal()` or
+  `Abandon()`; states drafting, sealed, cracked, abandoned. A strike is refused (and changes nothing) when not drafting, for no such star, no
   strikes left, a used star or one not linked to the last. A void cracks: the recipe the path follows decides by its
   `OnFail`; a destroy needs a risky recipe and no Guardian, else the ingredients are lost. A seal gives the longest
   completed shape's recipe (or the attunement, null, capped at Uncommon), the element mix by value and the dominant
@@ -91,32 +91,64 @@ and may move a star inside the silhouette as long as the stars keep their relati
 bottom) and every link stays drawable. No rule depends on positions, let alone pixels; the server never checks them
 (`RulesIgnoreStarPositions`).
 
-### Wire contract (next step)
+### Wire
+
+Packets `C1 EE 99` to `C1 EE 9F` (`docs/Packets`, generated from `BabylonPackets.xml`); multi-byte numbers are little
+endian. The handlers are no-ops while Star Smithing is off (`StarSmithingFeaturePlugIn.Get` is null). The plug-in's side
+is `StarSmithingFeaturePlugIn.Forge.cs`.
 
 The client sends:
-- start: the target slot, the ingredient and catalyst slots (the server checks them again, deals the sky and starts
-  the beat on its own clock);
-- strike: the star's index only; the server stamps the time on arrival;
-- seal;
-- abandon (proposed: like a crack off every shape, the ingredients are lost and the item stays; the forge has no
-  `Abandon` yet).
+- `C1 EE 99 StarSmithForgeStart`, 21 bytes: 4 target slot, 5 ingredient count, 6 catalyst count, 7-16 ten ingredient
+  slots, 17-20 four catalyst slots (0xFF unused). Checked in this order: an attempt already running (12), then
+  `StarSmithRules.Check` for the new action `Forge` (5): hammer, durability, place, item, lock; then the slots (13: empty,
+  named twice, the hammer or the item); then the recipes the item and ingredients make (11 none). Each ingredient slot
+  is one unit of its item (a stack gives one); a Jewel of Guardian (14/31) among the catalysts reveals a void and
+  protects the item. On a start the ingredients, the catalysts (one each, like a dye: off the stack, or the item when it
+  was the last) and the hammer's durability are spent at once, so leaving or losing the connection never keeps them.
+- `C1 EE 9A StarSmithForgeStrike`, 5 bytes: 4 the star's index. The server stamps the time on arrival
+  (`Environment.TickCount64`).
+- `C1 EE 9B StarSmithForgeSeal`, 4 bytes.
+- `C1 EE 9C StarSmithForgeAbandon`, 4 bytes: like a crack off every shape (`StarSmithForge.Abandon`, state
+  `Abandoned`): the ingredients are lost, the item stays.
 
 The client receives:
-- on start: per star its index and layout hint (X, Y) and, for the one void a Jewel of Guardian reveals, that it is a
-  void; the links; the hints (pair and clarity); the strikes allowed; the beat interval and the time to the first beat;
-  the risk (the worst onFail among the sky's recipes, after protection);
-- on each strike: the answer (linked, cracked or why refused), the struck star's element, value and void flag, the
-  timing (clean, shaky, late), the strikes left and the guidance (the known recipe numbers the path is still a prefix
-  of);
-- on seal or crack: the result (recipe number or attunement, element mix, rarity, extension, first completion, the
-  item's fate on a crack), then the item's new customisation as today (EE 39).
+- `C2 EE 9D StarSmithForgeSky`: 5 result (0 started, else the EE 97 codes and 11-13 above; then only the header is
+  filled), 6 target slot, 7 strikes, 8 risk (`StarSmithSky.Risk`: the worst fate among the sky's recipes after
+  protection, 0 ingredients lost, 1 downgraded, 2 destroyed), 9 star count, 10-11 beat interval ms, 12-13 ms to the
+  first beat, 14 entry count, then 5-byte entries (kind, A, B, C, D): the stars in index order (0, index, X, Y as 0 to
+  255, 1 when it is the void a Guardian reveals), the links (1, a, b, 0, 0), the hints (2, from, to, clarity 0 to 255, 0).
+  At most 255 entries. `StarSmithForgeSkyMessage.From` builds it field by field from the sky.
+- `C1 EE 9E StarSmithForgeStrikeResult`, 12 + 2 per guidance recipe: 4 answer (0 linked, 1 cracked, 2 no attempt
+  running, 3 no such star, 4 no strikes left, 5 the star is struck, 6 not linked to the last), 5 star, 6 element (0
+  fire to 4 light), 7 value, 8 flags (1 void), 9 timing (0 clean, 1 shaky, 2 late), 10 strikes left, 11 guidance count,
+  then the recipe numbers (2 bytes each, at most 60). A refused strike shows nothing of the star and no guidance.
+- `C1 EE 9F StarSmithForgeResult`, 19 bytes: 4 outcome (0 sealed, 1 cracked, 2 abandoned, 3 timed out, 4 seal or abandon
+  refused: no attempt or nothing struck, then nothing else is filled), 5 flags (1 the attunement, 2 the first
+  completion), 6-7 recipe (on a crack the one the path was on; 0 the attunement), 8 rarity, 9 extension, 10 dominant
+  element (0xFF none), 11 fate (0 ingredients lost, 1 downgraded, 2 destroyed; 0xFF when sealed), 12-16 the element mix
+  (fire, frost, storm, shadow, light), 17 clean strikes, 18 strikes. Then EE 91 and, for a changed item, its
+  customisation as today (EE 39).
+
+Applying: a seal writes the rarity into the item's `ItemCustomization` (`SaveAsync`: a new record when there is none,
+`Version` up, `ItemCustomizationCache.Forget`) and shows EE 92 (action 5, `Forge`) to everyone who sees the smith. A
+crack applies the fate: a downgrade clears the customisation (name, lore, look, rarity), a destroy removes and deletes
+the item. Recipe effects, the smith's experience and the Guidebook come with the later steps.
 
 Never sent before a star is struck: its element, its value and whether it is a void (except the revealed one), nor
-which recipes the sky holds beyond the smith's known ones. `StarSmithSky.Stars` holds all of them, so the packet must
-be built field by field, never by copying a star.
+which recipes the sky holds beyond the smith's known ones. `StarSmithSky.Stars` holds all of them, so the packet is
+built field by field, never by copying a star (`TheSkyHidesUnstruckStarsAsync` compares the bytes of skies that differ
+only there).
 
-Open for the wire step: where the round trip comes from (the server's own ping of the connection, not a client
-claim), the attempt's timeout (an idle attempt seals or cracks), and how the seed is chosen and stored with the
-attempt's strikes so it can be replayed and verified.
+Decided for the wire step:
+- Attempt state: `StarSmithForgeAttempt` on `Player.StarSmithForge`: the seed (a cryptographic random 64-bit number,
+  never sent), every input of the deal, the forge, the target's slot and persistent id, and each accepted strike with
+  its server time. `Replay()` deals the sky again and plays the strikes and the ending again to verify the attempt. One
+  attempt per player; it lives in memory only.
+- Round trip: OpenMU keeps no measurement of its own and a client claim is never trusted, so it is 0 (the clean window
+  is the tolerance alone). The beat settings are on `StarSmithingConfiguration` (800, 90, cap 150).
+- Timeout: an attempt with no strike for `ForgeIdleTimeoutSeconds` (60) ends as an abandon (outcome 3), the safe choice:
+  an idle seal could hand out a result nobody played for, an idle crack could destroy an item.
+- The Guidebook is not stored yet, so no recipe is known: the guidance is empty and every completion is a first one.
+- Recipes are `StarSmithingConfiguration.Recipes` (none by default), the dealing rules `StarSmithingConfiguration.Forge`.
 
-Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRecipesTest.cs`, `StarSmithForgeTest.cs`.
+Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRecipesTest.cs`, `StarSmithForgeTest.cs`, `StarSmithForgeWireTest.cs`.

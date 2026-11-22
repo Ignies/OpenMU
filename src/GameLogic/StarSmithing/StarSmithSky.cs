@@ -65,17 +65,6 @@ public sealed class StarSmithSky
     public StarSmithOnFail Risk => this.Recipes.Count == 0 ? StarSmithOnFail.IngredientsLost : this.Recipes.Max(this.FateOf);
 
     /// <summary>
-    /// The fate of a crack on a recipe: its onFail, but a destroy only on a risky recipe without a Jewel of Guardian.
-    /// </summary>
-    /// <param name="recipe">The recipe, or null off every shape.</param>
-    /// <returns>The fate.</returns>
-    public StarSmithOnFail FateOf(StarSmithRecipe? recipe)
-    {
-        var fail = recipe?.OnFail ?? StarSmithOnFail.IngredientsLost;
-        return fail == StarSmithOnFail.ItemDestroyed && (!recipe!.Risky || this.Guarded) ? StarSmithOnFail.IngredientsLost : fail;
-    }
-
-    /// <summary>
     /// Deals a sky. The order of the draws is part of the contract: a replay with the same inputs deals the same sky.
     /// <list type="number">
     /// <item>Positions inside the item's box, kept apart by the minimum spacing where the box allows.</item>
@@ -159,6 +148,17 @@ public sealed class StarSmithSky
     /// <param name="b">The other star.</param>
     /// <returns>True when they may.</returns>
     public bool IsLinked(int a, int b) => this.linkSet.Contains(Normalized((a, b)));
+
+    /// <summary>
+    /// The fate of a crack on a recipe: its onFail, but a destroy only on a risky recipe without a Jewel of Guardian.
+    /// </summary>
+    /// <param name="recipe">The recipe, or null off every shape.</param>
+    /// <returns>The fate.</returns>
+    public StarSmithOnFail FateOf(StarSmithRecipe? recipe)
+    {
+        var fail = recipe?.OnFail ?? StarSmithOnFail.IngredientsLost;
+        return fail == StarSmithOnFail.ItemDestroyed && (!recipe!.Risky || this.Guarded) ? StarSmithOnFail.IngredientsLost : fail;
+    }
 
     /// <summary>
     /// The guidance for a drawn path: the recipes it is still a prefix of.

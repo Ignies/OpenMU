@@ -19,5 +19,5 @@ The server checks the slots again, deals the sky from a seed of its own, starts 
 | 4 | 1 | Byte |  | TargetSlot; The inventory slot of the item worked on. |
 | 5 | 1 | Byte |  | IngredientCount; How many of the ingredient slots are used, at most 10. |
 | 6 | 1 | Byte |  | CatalystCount; How many of the catalyst slots are used, at most 4. |
-| 7 | 10 | Binary |  | IngredientSlots; 10 inventory slots of ingredients; the unused ones are 0xFF. A stack counts with its whole durability. |
+| 7 | 10 | Binary |  | IngredientSlots; 10 inventory slots of ingredients; the unused ones are 0xFF. Each slot is one unit of its item (a stack gives one). |
 | 17 | 4 | Binary |  | CatalystSlots; 4 inventory slots of catalysts (a Jewel of Guardian reveals a void and protects the item); the unused ones are 0xFF. |

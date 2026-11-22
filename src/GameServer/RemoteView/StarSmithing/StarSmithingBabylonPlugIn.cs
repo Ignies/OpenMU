@@ -13,6 +13,7 @@ using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.Babylon;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
+using ForgeResult = MUnique.OpenMU.GameLogic.StarSmithing.StarSmithForgeResult;
 using SmithState = MUnique.OpenMU.GameLogic.StarSmithing.StarSmithState;
 
 /// <summary>
@@ -203,7 +204,8 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
             };
             for (var i = 0; i < count; i++)
             {
-                packet[i].Recipe = (ushort)guidance[i];
+                var entry = packet[i];
+                entry.Recipe = (ushort)guidance[i];
             }
 
             return size;
@@ -213,7 +215,7 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
     }
 
     /// <inheritdoc />
-    public async ValueTask SendForgeResultAsync(StarSmithForgeOutcome outcome, StarSmithForgeResult? result)
+    public async ValueTask SendForgeResultAsync(StarSmithForgeOutcome outcome, ForgeResult? result)
     {
         if (this._player.Connection is not { } connection)
         {
@@ -223,7 +225,9 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
         int Write()
         {
             var size = StarSmithForgeResultRef.Length;
-            var packet = new StarSmithForgeResultRef(connection.Output.GetSpan(size)[..size])
+            var span = connection.Output.GetSpan(size)[..size];
+            span.Clear();
+            var packet = new StarSmithForgeResultRef(span)
             {
                 Outcome = (byte)outcome,
                 Dominant = result?.Dominant is { } dominant ? (byte)dominant : NoValue,

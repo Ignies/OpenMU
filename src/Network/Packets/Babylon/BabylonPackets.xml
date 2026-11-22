@@ -2172,7 +2172,7 @@
           <Index>7</Index>
           <Type>Binary</Type>
           <Name>IngredientSlots</Name>
-          <Description>10 inventory slots of ingredients; the unused ones are 0xFF. A stack counts with its whole durability.</Description>
+          <Description>10 inventory slots of ingredients; the unused ones are 0xFF. Each slot is one unit of its item (a stack gives one).</Description>
           <Length>10</Length>
         </Field>
         <Field>

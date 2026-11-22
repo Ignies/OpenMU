@@ -913,7 +913,7 @@ public static class ConnectionExtensions
     /// <param name="targetSlot">The inventory slot of the item worked on.</param>
     /// <param name="ingredientCount">How many of the ingredient slots are used, at most 10.</param>
     /// <param name="catalystCount">How many of the catalyst slots are used, at most 4.</param>
-    /// <param name="ingredientSlots">10 inventory slots of ingredients; the unused ones are 0xFF. A stack counts with its whole durability.</param>
+    /// <param name="ingredientSlots">10 inventory slots of ingredients; the unused ones are 0xFF. Each slot is one unit of its item (a stack gives one).</param>
     /// <param name="catalystSlots">4 inventory slots of catalysts (a Jewel of Guardian reveals a void and protects the item); the unused ones are 0xFF.</param>
     /// <remarks>
     /// Is sent by the client when: The smith starts a recipe attempt in the Constellation Forge.
