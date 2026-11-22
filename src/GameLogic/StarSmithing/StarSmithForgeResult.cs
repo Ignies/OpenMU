@@ -36,5 +36,5 @@ public sealed record StarSmithForgeResult(
     /// </summary>
     /// <param name="rolled">The rolled magnitude.</param>
     /// <returns>The magnitude.</returns>
-    public double Magnitude(double rolled) => 0;
+    public double Magnitude(double rolled) => rolled * this.MagnitudeFactor;
 }
