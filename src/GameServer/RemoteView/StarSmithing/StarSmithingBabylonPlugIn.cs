@@ -14,6 +14,7 @@ using MUnique.OpenMU.Network.Packets.Babylon;
 using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 using ForgeResult = MUnique.OpenMU.GameLogic.StarSmithing.StarSmithForgeResult;
+using GuidebookEntry = MUnique.OpenMU.GameLogic.StarSmithing.StarSmithGuidebookEntry;
 using SmithState = MUnique.OpenMU.GameLogic.StarSmithing.StarSmithState;
 
 /// <summary>
@@ -253,4 +254,7 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
 
         await connection.SendAsync(Write).ConfigureAwait(false);
     }
+
+    /// <inheritdoc />
+    public ValueTask SendGuidebookAsync(int total, IReadOnlyList<GuidebookEntry> found) => ValueTask.CompletedTask;
 }

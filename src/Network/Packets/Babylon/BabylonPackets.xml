@@ -3,6 +3,31 @@
   <Description>This file contains the packet definitions of the Babylon protocol: packets of the Ignies/OpenMU fork, exchanged only with the Babylon client after it announced the fork protocol. All of them use the head code 0xEE (0xFB is the ping relay of the Babylon proxy) and a sub code; the sub code ranges are reserved per system (see docs/babylon.md).</Description>
   <Structures>
     <Structure>
+      <Name>StarSmithGuidebookEntry</Name>
+      <Description>A found recipe of StarSmithGuidebook.</Description>
+      <Length>36</Length>
+      <Fields>
+        <Field>
+          <Index>0</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Recipe</Name>
+        </Field>
+        <Field>
+          <Index>2</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Made</Name>
+          <Description>How often the smith made it.</Description>
+        </Field>
+        <Field>
+          <Index>4</Index>
+          <Type>String</Type>
+          <Name>Name</Name>
+          <Description>UTF-8, zero padded.</Description>
+          <Length>32</Length>
+        </Field>
+      </Fields>
+    </Structure>
+    <Structure>
       <Name>StarSmithForgeSkyEntry</Name>
       <Description>One entry of StarSmithForgeSky: a star, a link or a hint.</Description>
       <Length>5</Length>
@@ -1905,6 +1930,35 @@
           <TypeName>ItemCustomizationEntry</TypeName>
           <Name>Entries</Name>
           <ItemCountField>Count</ItemCountField>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>90</SubCode>
+      <Name>StarSmithGuidebook</Name>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>With StarSmithState while the hammer is in a hand, and after an attempt is sealed.</SentWhen>
+      <CausedReaction>The client shows the Guidebook: the found recipes in full, the rest as sealed rows. Nothing names a recipe the smith has not found.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>Total</Name>
+          <Description>How many recipes the world has, for "? of ? found".</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>FoundCount</Name>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Structure[]</Type>
+          <TypeName>StarSmithGuidebookEntry</TypeName>
+          <Name>Found</Name>
+          <ItemCountField>FoundCount</ItemCountField>
         </Field>
       </Fields>
     </Packet>

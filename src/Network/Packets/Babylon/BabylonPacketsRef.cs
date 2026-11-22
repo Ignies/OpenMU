@@ -16,6 +16,56 @@ using System;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 /// <summary>
+/// A found recipe of StarSmithGuidebook..
+/// </summary>
+public readonly ref struct StarSmithGuidebookEntryRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithGuidebookEntryRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithGuidebookEntryRef(Span<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 36;
+
+    /// <summary>
+    /// Gets or sets the recipe.
+    /// </summary>
+    public ushort Recipe
+    {
+        get => ReadUInt16LittleEndian(this._data);
+        set => WriteUInt16LittleEndian(this._data, value);
+    }
+
+    /// <summary>
+    /// Gets or sets how often the smith made it.
+    /// </summary>
+    public ushort Made
+    {
+        get => ReadUInt16LittleEndian(this._data[2..]);
+        set => WriteUInt16LittleEndian(this._data[2..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets uTF-8, zero padded.
+    /// </summary>
+    public string Name
+    {
+        get => this._data.ExtractString(4, 32, System.Text.Encoding.UTF8);
+        set => this._data.Slice(4, 32).WriteString(value, System.Text.Encoding.UTF8);
+    }
+}
+
+
+/// <summary>
 /// One entry of StarSmithForgeSky: a star, a link or a hint..
 /// </summary>
 public readonly ref struct StarSmithForgeSkyEntryRef
@@ -5140,6 +5190,108 @@ public readonly ref struct ItemCustomizationsChangedRef
     /// <param name="entriesCount">The count of <see cref="ItemCustomizationEntryRef"/> from which the size will be calculated.</param>
         
     public static int GetRequiredSize(int entriesCount) => entriesCount * ItemCustomizationEntryRef.Length + 7;
+}
+
+
+/// <summary>
+/// Is sent by the server when: With StarSmithState while the hammer is in a hand, and after an attempt is sealed.
+/// Causes reaction on client side: The client shows the Guidebook: the found recipes in full, the rest as sealed rows. Nothing names a recipe the smith has not found.
+/// </summary>
+public readonly ref struct StarSmithGuidebookRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithGuidebookRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithGuidebookRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithGuidebookRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private StarSmithGuidebookRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x90;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets how many recipes the world has, for "? of ? found".
+    /// </summary>
+    public byte Total
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the found count.
+    /// </summary>
+    public byte FoundCount
+    {
+        get => this._data[6];
+        set => this._data[6] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="StarSmithGuidebookEntryRef"/> of the specified index.
+    /// </summary>
+        public StarSmithGuidebookEntryRef this[int index] => new (this._data[(7 + index * StarSmithGuidebookEntryRef.Length)..]);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="StarSmithGuidebook"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator StarSmithGuidebookRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="StarSmithGuidebook"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(StarSmithGuidebookRef packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="StarSmithGuidebookEntryRef"/>.
+    /// </summary>
+    /// <param name="foundCount">The count of <see cref="StarSmithGuidebookEntryRef"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int foundCount) => foundCount * StarSmithGuidebookEntryRef.Length + 7;
 }
 
 
