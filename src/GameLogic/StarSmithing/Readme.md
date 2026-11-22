@@ -45,8 +45,8 @@ A recolour spends dyes (Hidden-Babylon `docs/star_smithing.md` section 9):
   Dye bare). Players get the new table with their next EE 91.
 
 Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRulesTest.cs`, `StarSmithLevelsTest.cs`, `StarSmithingViewTest.cs`,
-<<<<<<< HEAD
-`ItemLookBytesReadTest.cs`.
+`ItemLookBytesReadTest.cs`, `StarSmithDyesTest.cs`; `tests/MUnique.OpenMU.Persistence.Initialization.Tests/StarSmithDyesDataTest.cs`;
+`tests/MUnique.OpenMU.Web.Tests/Site/StarSmithingOperationsTests.cs`.
 
 ## Constellation Forge
 
@@ -120,7 +120,3 @@ claim), the attempt's timeout (an idle attempt seals or cracks), and how the see
 attempt's strikes so it can be replayed and verified.
 
 Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRecipesTest.cs`, `StarSmithForgeTest.cs`.
-=======
-`ItemLookBytesReadTest.cs`, `StarSmithDyesTest.cs`; `tests/MUnique.OpenMU.Persistence.Initialization.Tests/StarSmithDyesDataTest.cs`;
-`tests/MUnique.OpenMU.Web.Tests/Site/StarSmithingOperationsTests.cs`.
->>>>>>> origin/master
