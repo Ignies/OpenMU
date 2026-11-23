@@ -329,7 +329,14 @@ public partial class StarSmithingFeaturePlugIn
         switch (outcome)
         {
             case StarSmithForgeOutcome.Sealed:
-                await SaveAsync(player, attempt.ItemId, existing, c => c.Rarity = (byte)result.Rarity).ConfigureAwait(false);
+                var roll = result.Recipe is { } sealedRecipe ? StarSmithOutcomes.Roll(sealedRecipe, result.Rarity, result.MagnitudeFactor, attempt.Seed, this.Settings.Balance) : null;
+                var smithLevel = (short)Math.Clamp((int)(player.SelectedCharacter?.StarSmithLevel ?? 1), 1, StarSmithLevels.Maximum);
+                await SaveAsync(player, attempt.ItemId, existing, c =>
+                {
+                    c.Rarity = (byte)result.Rarity;
+                    c.Boosts = StarSmithBoosts.Format(roll?.Boosts ?? []);
+                    c.SmithLevel = smithLevel;
+                }).ConfigureAwait(false);
                 await player.ForEachWorldObserverAsync<IStarSmithingViewPlugIn>(p => p.SendAnimationAsync(player, StarSmithAction.Forge, Strikes), true).ConfigureAwait(false);
                 break;
             case StarSmithForgeOutcome.Cracked when result.Fail == StarSmithOnFail.ItemDowngraded && existing is not null:
@@ -339,6 +346,8 @@ public partial class StarSmithingFeaturePlugIn
                     c.Lore = null;
                     c.Look = null;
                     c.Rarity = 0;
+                    c.Boosts = null;
+                    c.SmithLevel = 0;
                 }).ConfigureAwait(false);
                 break;
             case StarSmithForgeOutcome.Cracked when result.Fail == StarSmithOnFail.ItemDestroyed && item is not null:

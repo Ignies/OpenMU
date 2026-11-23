@@ -1971,6 +1971,8 @@ internal sealed class BasicModelConverter
         target.Lore = source.Lore;
         target.Rarity = source.Rarity;
         target.Look = source.Look;
+        target.Boosts = source.Boosts;
+        target.SmithLevel = source.SmithLevel;
         target.Version = source.Version;
         target.Locked = source.Locked;
         target.LockedAt = source.LockedAt;

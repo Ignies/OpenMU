@@ -22,7 +22,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCustomization",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.ItemCustomization),
                 baseEntityType,
-                propertyCount: 11,
+                propertyCount: 13,
                 foreignKeyCount: 1,
                 unnamedIndexCount: 1,
                 keyCount: 1);
@@ -37,6 +37,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 valueGeneratorFactory: new MUnique.OpenMU.Persistence.EntityFramework.GuidV7ValueGeneratorFactory().Create,
                 sentinel: new Guid("00000000-0000-0000-0000-000000000000"));
             id.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var boosts = runtimeEntityType.AddProperty(
+                "Boosts",
+                typeof(string),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.ItemCustomization).GetProperty("Boosts", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.ItemCustomization).GetField("<Boosts>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            boosts.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var createdBy = runtimeEntityType.AddProperty(
                 "CreatedBy",
@@ -104,6 +112,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForEntityDat
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.ItemCustomization).GetField("<Rarity>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: (byte)0);
             rarity.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var smithLevel = runtimeEntityType.AddProperty(
+                "SmithLevel",
+                typeof(short),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.ItemCustomization).GetProperty("SmithLevel", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.ItemCustomization).GetField("<SmithLevel>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                sentinel: (short)0);
+            smithLevel.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var updatedAt = runtimeEntityType.AddProperty(
                 "UpdatedAt",

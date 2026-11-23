@@ -45,6 +45,17 @@ public class ItemCustomization
     public string? Look { get; set; }
 
     /// <summary>
+    /// Gets or sets the smithed boosts as "stat:value" pairs joined by ';' (the value times 100), or null
+    /// (GameLogic/StarSmithing/Readme.md, "PR 6 contract").
+    /// </summary>
+    public string? Boosts { get; set; }
+
+    /// <summary>
+    /// Gets or sets the smith's level when the item was forged; 0 when it was not.
+    /// </summary>
+    public short SmithLevel { get; set; }
+
+    /// <summary>
     /// Gets or sets the version, which goes up on every change; clients keep the lore by it.
     /// </summary>
     public int Version { get; set; }

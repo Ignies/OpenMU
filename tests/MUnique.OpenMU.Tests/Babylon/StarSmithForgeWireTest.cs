@@ -219,6 +219,37 @@ public class StarSmithForgeWireTest
     }
 
     /// <summary>
+    /// A seal rolls the recipe's outcome and stores its boosts and the smith's level on the item's record; a
+    /// downgrade clears them again.
+    /// </summary>
+    [Test]
+    public async ValueTask ASealStoresItsBoostsAsync()
+    {
+        var recipe = Sure(7);
+        recipe.Outcomes = [new StarSmithOutcome { Weight = 1, Tier = StarSmithRarity.Common, Boosts = [new() { Stat = StarSmithBoostStat.Defense, Minimum = 2, Maximum = 2 }] }];
+        var (player, plugIn, _) = await SmithAsync(recipe).ConfigureAwait(false);
+        player.SelectedCharacter!.StarSmithLevel = 40;
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IStarSmithingViewPlugIn>()!);
+        await plugIn.StartForgeAsync(player, TargetSlot, [IngredientSlot], []).ConfigureAwait(false);
+        foreach (var star in new byte[] { 0, 1, 2 })
+        {
+            this._now += 800;
+            await plugIn.StrikeForgeAsync(player, star).ConfigureAwait(false);
+        }
+
+        StarSmithForgeResult? sealedResult = null;
+        view.Setup(v => v.SendForgeResultAsync(StarSmithForgeOutcome.Sealed, It.IsAny<StarSmithForgeResult>())).Callback<StarSmithForgeOutcome, StarSmithForgeResult?>((_, r) => sealedResult = r);
+        await plugIn.SealForgeAsync(player).ConfigureAwait(false);
+
+        var record = await CustomizationAsync(player).ConfigureAwait(false);
+        Assert.That(sealedResult, Is.Not.Null);
+        var expected = (int)Math.Round(Math.Min(2 * sealedResult!.MagnitudeFactor, 6) * 100);
+        Assert.That(StarSmithBoosts.Parse(record?.Boosts), Is.EqualTo(new[] { new StarSmithBoost(StarSmithBoostStat.Defense, expected) }));
+        Assert.That(expected, Is.GreaterThan(200), "scaled by the smith level");
+        Assert.That(record!.SmithLevel, Is.EqualTo(40));
+    }
+
+    /// <summary>
     /// A void on a risky recipe's shape cracks the attempt and destroys the item, as its onFail says.
     /// </summary>
     [Test]

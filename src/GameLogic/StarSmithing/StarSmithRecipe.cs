@@ -48,4 +48,19 @@ public class StarSmithRecipe
 
     /// <summary>Gets or sets a value indicating whether it is risky; only a risky recipe destroys an item.</summary>
     public bool Risky { get; set; }
+
+    /// <summary>Gets or sets what its sealed Guidebook row shows: nothing, the riddle in <see cref="Hint"/>, or an ingredient.</summary>
+    public StarSmithHintKind HintKind { get; set; } = StarSmithHintKind.Riddle;
+
+    /// <summary>Gets or sets the item group of an ingredient hint.</summary>
+    public byte HintGroup { get; set; }
+
+    /// <summary>Gets or sets the item number of an ingredient hint.</summary>
+    public short HintNumber { get; set; }
+
+    /// <summary>Gets or sets the catalysts that add to its chance.</summary>
+    public List<StarSmithCatalyst> Catalysts { get; set; } = [];
+
+    /// <summary>Gets or sets its weighted outcome table; a seal rolls one.</summary>
+    public List<StarSmithOutcome> Outcomes { get; set; } = [];
 }

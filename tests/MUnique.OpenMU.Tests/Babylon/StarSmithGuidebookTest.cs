@@ -140,7 +140,7 @@ public class StarSmithGuidebookTest
         var (player, plugIn) = await SmithAsync(null).ConfigureAwait(false);
         player.SelectedCharacter!.StarSmithGuidebook = "2:1";
         var recipes = StarSmithingConfiguration.DefaultRecipes();
-        Assert.That(recipes.All(r => r.Hint.Length is > 0 and <= 64 && !r.Hint.Contains(r.Name, StringComparison.OrdinalIgnoreCase)), Is.True);
+        Assert.That(recipes.Where(r => r.HintKind == StarSmithHintKind.Riddle).All(r => r.Hint.Length is > 0 and <= 64 && !r.Hint.Contains(r.Name, StringComparison.OrdinalIgnoreCase)), Is.True);
 
         var entries = plugIn.GuidebookOf(player);
 
