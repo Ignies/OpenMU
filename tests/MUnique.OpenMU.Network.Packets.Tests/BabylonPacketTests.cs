@@ -1679,7 +1679,7 @@ public class PacketStructureTests
     public void ItemCustomizationDetail_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 433;
+        const int expectedLength = 451;
         var actualLength = ItemCustomizationDetailRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -1704,6 +1704,18 @@ public class PacketStructureTests
         // Validate field 'Lore' boundary
         Assert.That(13 + 420, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Lore' exceeds packet boundary");
+        
+        // Validate field 'SmithLevel' boundary
+        Assert.That(433 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SmithLevel' exceeds packet boundary");
+        
+        // Validate field 'BoostCount' boundary
+        Assert.That(435 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'BoostCount' exceeds packet boundary");
+        
+        // Validate field 'Boosts' boundary
+        Assert.That(436 + 15, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Boosts' exceeds packet boundary");
     }
 
     /// <summary>
