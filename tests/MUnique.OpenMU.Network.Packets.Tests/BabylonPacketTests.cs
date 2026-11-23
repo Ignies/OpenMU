@@ -25,6 +25,36 @@ public class PacketStructureTests
 {
 
     /// <summary>
+    /// Tests the structure size calculation for StarSmithGuidebookEntry.
+    /// </summary>
+    [Test]
+    public void StarSmithGuidebookEntry_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 69;
+        var actualLength = StarSmithGuidebookEntry.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Kind' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Kind' exceeds structure boundary");
+        
+        // Validate field 'Recipe' boundary
+        Assert.That(1 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Recipe' exceeds structure boundary");
+        
+        // Validate field 'Made' boundary
+        Assert.That(3 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Made' exceeds structure boundary");
+        
+        // Validate field 'Text' boundary
+        Assert.That(5 + 64, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Text' exceeds structure boundary");
+    }
+
+    /// <summary>
     /// Tests the structure size calculation for StarSmithForgeSkyEntry.
     /// </summary>
     [Test]
@@ -1676,6 +1706,24 @@ public class PacketStructureTests
         // Field 'Count' starts at index 5 with size 2
         Assert.That(5, Is.GreaterThanOrEqualTo(0), 
             "Field 'Count' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithGuidebook.
+    /// </summary>
+    [Test]
+    public void StarSmithGuidebook_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'Total' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Total' has invalid negative index");
+        
+        // Field 'EntryCount' starts at index 6 with size 1
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'EntryCount' has invalid negative index");
     }
 
     /// <summary>
