@@ -4,14 +4,14 @@
   <Structures>
     <Structure>
       <Name>StarSmithGuidebookEntry</Name>
-      <Description>A row of StarSmithGuidebook: a found recipe in full, or a sealed one with its hint only.</Description>
-      <Length>69</Length>
+      <Description>An entry of StarSmithGuidebook (v2): a found recipe (kind 0) followed by its lines, or a sealed one (kind 1) with its hint only. The fields below are a row's; a line has other bytes after its kind. Kind 2, an ingredient line: 1 the count in the line (1 to 12), then from 2 five bytes per ingredient: group, number (2, little endian), minimum, maximum. Kind 3, a boost line: 1 the count (1 to 8), then from 2 nine bytes per stat: the stat, the least and the most value (each a 32-bit little endian integer, the value times 100) over the outcomes the smith has seen, unscaled. The rest of a line is zero.</Description>
+      <Length>75</Length>
       <Fields>
         <Field>
           <Index>0</Index>
           <Type>Byte</Type>
           <Name>Kind</Name>
-          <Description>0 a found recipe, 1 a sealed one.</Description>
+          <Description>0 a found recipe, 1 a sealed one, 2 an ingredient line, 3 a boost line.</Description>
         </Field>
         <Field>
           <Index>1</Index>
@@ -27,9 +27,39 @@
         </Field>
         <Field>
           <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ShapeLength</Name>
+          <Description>The stars of a found recipe's shape; 0 for a sealed row.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>HintKind</Name>
+          <Description>A sealed row's hint: 0 none, 1 a riddle (the text), 2 an ingredient (the item below); 0 for a found row.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>HintGroup</Name>
+          <Description>The item group of an ingredient hint.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>HintNumber</Name>
+          <Description>The item number of an ingredient hint.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>Lines</Name>
+          <Description>The ingredient and boost lines that follow a found row; 0 for a sealed row.</Description>
+        </Field>
+        <Field>
+          <Index>11</Index>
           <Type>String</Type>
           <Name>Text</Name>
-          <Description>UTF-8, zero padded: a found recipe's name, a sealed row's hint.</Description>
+          <Description>UTF-8, zero padded: a found recipe's name, a sealed row's riddle; empty otherwise.</Description>
           <Length>64</Length>
         </Field>
       </Fields>
@@ -849,7 +879,7 @@
           <Index>8</Index>
           <Type>Byte</Type>
           <Name>Flags</Name>
-          <Description>1 look, 2 name, 4 lore waiting (ask ItemCustomizationDetailRequest), 8 aura, 16 particles.</Description>
+          <Description>1 look, 2 name, 4 lore waiting (ask ItemCustomizationDetailRequest), 8 aura, 16 particles, 32 boosts waiting (ask ItemCustomizationDetailRequest as for the lore).</Description>
         </Field>
         <Field>
           <Index>9</Index>
@@ -981,6 +1011,42 @@
           <Type>IntegerLittleEndian</Type>
           <Name>ActiveFeatures</Name>
           <Description>The features which are active from now on.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>F3</SubCode>
+      <Name>ForkPing</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>With StarSmithState while Star Smithing is on, at most one out and at most one per 2 seconds.</SentWhen>
+      <CausedReaction>The client answers at once with ForkPong and the same token; the server measures the round trip on its own clock (the Constellation Forge's beat window).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Token</Name>
+          <Description>The token the answer carries back.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>F4</SubCode>
+      <Name>ForkPong</Name>
+      <Length>8</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>At once on a ForkPing, and never otherwise.</SentWhen>
+      <CausedReaction>The server takes the time since its ping as a round trip sample; another token or an answer after 5 seconds is ignored.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Token</Name>
+          <Description>The token of the ping it answers.</Description>
         </Field>
       </Fields>
     </Packet>
@@ -1838,10 +1904,10 @@
       <Code>EE</Code>
       <SubCode>36</SubCode>
       <Name>ItemCustomizationDetail</Name>
-      <Length>433</Length>
+      <Length>451</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>The answer to ItemCustomizationDetailRequest.</SentWhen>
-      <CausedReaction>The client shows the item's lore in its tooltip.</CausedReaction>
+      <CausedReaction>The client shows the item's lore, and a smithed item's boosts and smith level, in its tooltip.</CausedReaction>
       <Fields>
         <Field>
           <Index>5</Index>
@@ -1869,6 +1935,25 @@
           <Name>Lore</Name>
           <Description>The lore, UTF-8, at most 140 characters on at most 3 lines, zero padded; empty when the item has none.</Description>
           <Length>420</Length>
+        </Field>
+        <Field>
+          <Index>433</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SmithLevel</Name>
+          <Description>The smith's level when the item was forged; 0 when it was not (Star Smithing).</Description>
+        </Field>
+        <Field>
+          <Index>435</Index>
+          <Type>Byte</Type>
+          <Name>BoostCount</Name>
+          <Description>The smithed boosts, 0 to 3.</Description>
+        </Field>
+        <Field>
+          <Index>436</Index>
+          <Type>Binary</Type>
+          <Name>Boosts</Name>
+          <Description>Three 5-byte boosts: the stat (0 damage %, 1 defense %, 2 max HP, 3 max mana, 4 attack speed, 5 critical rate %, 6 excellent rate %, 7 damage absorbed %), then its value times 100 (32-bit, little endian); unused ones zero.</Description>
+          <Length>15</Length>
         </Field>
       </Fields>
     </Packet>
@@ -1957,11 +2042,12 @@
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>Byte</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>EntryCount</Name>
+          <Description>The entries: rows and the lines of the found rows.</Description>
         </Field>
         <Field>
-          <Index>7</Index>
+          <Index>8</Index>
           <Type>Structure[]</Type>
           <TypeName>StarSmithGuidebookEntry</TypeName>
           <Name>Entries</Name>

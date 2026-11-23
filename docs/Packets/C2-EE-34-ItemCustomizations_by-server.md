@@ -31,7 +31,7 @@ Length: 123 Bytes
 | 1 | 2 | ShortBigEndian |  | ObjectId |
 | 3 | 1 | Byte |  | Slot; The slot of the item in its storage. |
 | 4 | 4 | IntegerLittleEndian |  | Version; Goes up on every change of the customisation; the client keeps the detail by it. |
-| 8 | 1 | Byte |  | Flags; 1 look, 2 name, 4 lore waiting (ask ItemCustomizationDetailRequest), 8 aura, 16 particles. |
+| 8 | 1 | Byte |  | Flags; 1 look, 2 name, 4 lore waiting (ask ItemCustomizationDetailRequest), 8 aura, 16 particles, 32 boosts waiting (ask ItemCustomizationDetailRequest as for the lore). |
 | 9 | 1 | Byte |  | Rarity; 0 Common, 1 Uncommon, 2 Rare, 3 Epic, 4 Legendary, 5 Mythic. |
 | 10 | 31 | Binary |  | Look; The recolour look: mode, flags, tone RGB, strength, hue (2, big endian), keep from (2, big endian), keep range, glow RGB, weapon fx, fx colour count, 3 fx colours, 6 fx tuning values. |
 | 41 | 72 | Binary |  | Name; The custom name, UTF-8, zero padded. |

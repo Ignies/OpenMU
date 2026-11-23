@@ -130,7 +130,9 @@ public class GameContext : AsyncDisposable, IGameContext
             this._logger = loggerFactory.CreateLogger<GameContext>();
             this.DropGenerator = dropGenerator;
             this.ConfigurationChangeMediator = changeMediator;
-            this.ItemPowerUpFactory = new ItemPowerUpFactory(loggerFactory.CreateLogger<ItemPowerUpFactory>(), configuration);
+            this.ItemPowerUpFactory = new StarSmithing.StarSmithItemPowerUpFactory(
+                new ItemPowerUpFactory(loggerFactory.CreateLogger<ItemPowerUpFactory>(), configuration),
+                () => this.FeaturePlugIns?.GetPlugIn<StarSmithing.StarSmithingFeaturePlugIn>()?.Balance);
             this.PartyManager = new PartyManager(configuration.MaximumPartySize, loggerFactory.CreateLogger<Party>());
             this._recoverTimer = new Timer(this.RecoverTimerElapsed, null, this.Configuration.RecoveryInterval, this.Configuration.RecoveryInterval);
             this._tasksTimer = new Timer(this.ExecutePeriodicTasks, null, 1000, 1000);

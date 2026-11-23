@@ -127,6 +127,62 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="ForkPing" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="token">The token the answer carries back.</param>
+    /// <remarks>
+    /// Is sent by the server when: With StarSmithState while Star Smithing is on, at most one out and at most one per 2 seconds.
+    /// Causes reaction on client side: The client answers at once with ForkPong and the same token; the server measures the round trip on its own clock (the Constellation Forge's beat window).
+    /// </remarks>
+    public static async ValueTask SendForkPingAsync(this IConnection? connection, uint @token)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ForkPingRef.Length;
+            var packet = new ForkPingRef(connection.Output.GetSpan(length)[..length]);
+            packet.Token = @token;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="ForkPong" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="token">The token of the ping it answers.</param>
+    /// <remarks>
+    /// Is sent by the client when: At once on a ForkPing, and never otherwise.
+    /// Causes reaction on server side: The server takes the time since its ping as a round trip sample; another token or an answer after 5 seconds is ignored.
+    /// </remarks>
+    public static async ValueTask SendForkPongAsync(this IConnection? connection, uint @token)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = ForkPongRef.Length;
+            var packet = new ForkPongRef(connection.Output.GetSpan(length)[..length]);
+            packet.Token = @token;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="CreateCharacterWide" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
@@ -595,11 +651,14 @@ public static class ConnectionExtensions
     /// <param name="slot">The slot.</param>
     /// <param name="version">The version.</param>
     /// <param name="lore">The lore, UTF-8, at most 140 characters on at most 3 lines, zero padded; empty when the item has none.</param>
+    /// <param name="smithLevel">The smith's level when the item was forged; 0 when it was not (Star Smithing).</param>
+    /// <param name="boostCount">The smithed boosts, 0 to 3.</param>
+    /// <param name="boosts">Three 5-byte boosts: the stat (0 damage %, 1 defense %, 2 max HP, 3 max mana, 4 attack speed, 5 critical rate %, 6 excellent rate %, 7 damage absorbed %), then its value times 100 (32-bit, little endian); unused ones zero.</param>
     /// <remarks>
     /// Is sent by the server when: The answer to ItemCustomizationDetailRequest.
-    /// Causes reaction on client side: The client shows the item's lore in its tooltip.
+    /// Causes reaction on client side: The client shows the item's lore, and a smithed item's boosts and smith level, in its tooltip.
     /// </remarks>
-    public static async ValueTask SendItemCustomizationDetailAsync(this IConnection? connection, byte @storage, ushort @objectId, byte @slot, uint @version, Memory<byte> @lore)
+    public static async ValueTask SendItemCustomizationDetailAsync(this IConnection? connection, byte @storage, ushort @objectId, byte @slot, uint @version, Memory<byte> @lore, ushort @smithLevel, byte @boostCount, Memory<byte> @boosts)
     {
         if (connection is null)
         {
@@ -615,6 +674,9 @@ public static class ConnectionExtensions
             packet.Slot = @slot;
             packet.Version = @version;
             @lore.Span.CopyTo(packet.Lore);
+            packet.SmithLevel = @smithLevel;
+            packet.BoostCount = @boostCount;
+            @boosts.Span.CopyTo(packet.Boosts);
 
             return packet.Header.Length;
         }

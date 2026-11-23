@@ -44,12 +44,33 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
     /// <summary>The inventories watched for the hammer: a character entering the world gets a new one.</summary>
     private readonly ConditionalWeakTable<IInventoryStorage, object> _watched = new();
 
+    /// <summary>Each smith's measured round trip (the beat ping), gone with the player.</summary>
+    private readonly ConditionalWeakTable<Player, StarSmithRoundTrip> _roundTrips = new();
+
+    /// <summary>The configuration already checked by <see cref="StarSmithConfigValidator.Sanitize"/>.</summary>
+    private StarSmithingConfiguration? _checked;
+
     /// <summary>
     /// Gets or sets the configuration.
     /// </summary>
     public StarSmithingConfiguration? Configuration { get; set; }
 
-    private StarSmithingConfiguration Settings => this.Configuration ??= new StarSmithingConfiguration();
+    private StarSmithingConfiguration Settings
+    {
+        get
+        {
+            // A configuration is checked once when it comes in: broken recipes are dropped, a broken balance is the default.
+            var settings = this.Configuration ??= new StarSmithingConfiguration();
+            if (!ReferenceEquals(settings, this._checked))
+            {
+                StarSmithConfigValidator.Sanitize(settings);
+                settings.Forge.LevelChance = settings.Balance.Chance;
+                this._checked = settings;
+            }
+
+            return settings;
+        }
+    }
 
     /// <summary>
     /// Gets the active plugin of a game context.
@@ -58,8 +79,75 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
     /// <returns>The plugin, or null when Star Smithing is off.</returns>
     public static StarSmithingFeaturePlugIn? Get(IGameContext gameContext) => gameContext.FeaturePlugIns.GetPlugIn<StarSmithingFeaturePlugIn>();
 
+    /// <summary>
+    /// Takes a client's answer to the beat ping (EE F4): a sample when it carries the token of the ping out.
+    /// </summary>
+    /// <param name="player">The smith.</param>
+    /// <param name="token">The token it carries.</param>
+    public void Pong(Player player, uint token) => this.RoundTripOf(player).Answer(token, this.Clock());
+
+    /// <summary>
+    /// The smith's measured round trip.
+    /// </summary>
+    /// <param name="player">The smith.</param>
+    /// <returns>The round trip.</returns>
+    internal StarSmithRoundTrip RoundTripOf(Player player) => this._roundTrips.GetValue(player, _ => new StarSmithRoundTrip());
+
+    /// <summary>Gets the balance tables the boosts in play are capped by.</summary>
+    public StarSmithBalance Balance => this.Settings.Balance;
+
     /// <inheritdoc />
     public object CreateDefaultConfig() => new StarSmithingConfiguration();
+
+    /// <summary>
+    /// Puts an item's boosts in play: the boost book learns them and, when the item is worn, its power-ups are made
+    /// again.
+    /// </summary>
+    /// <param name="player">The owner.</param>
+    /// <param name="item">The item.</param>
+    /// <param name="itemId">The item's persistent id.</param>
+    /// <param name="boosts">The boosts; none takes them out.</param>
+    internal static void ApplyBoosts(Player player, Item? item, Guid itemId, IReadOnlyList<StarSmithBoost> boosts)
+    {
+        StarSmithBoostBook.Set(itemId, boosts);
+        if (item is null || player.Attributes is not { } attributes || player.Inventory?.EquippedItems.Contains(item) != true)
+        {
+            return;
+        }
+
+        if (attributes.ItemPowerUps.Remove(item, out var old))
+        {
+            foreach (var powerUp in old)
+            {
+                powerUp.Dispose();
+            }
+        }
+
+        attributes.ItemPowerUps.Add(item, player.GameContext.ItemPowerUpFactory.GetPowerUps(item, attributes).ToList());
+    }
+
+    /// <summary>
+    /// Reads the boosts of every item a player carries into the boost book, and makes the worn ones' power-ups again.
+    /// </summary>
+    private static async ValueTask LoadBoostsAsync(Player player)
+    {
+        var items = player.Inventory?.Items
+            .Select(i => (Item: i, Id: i is MUnique.OpenMU.Persistence.IIdentifiable { Id: var id } ? id : Guid.Empty))
+            .Where(i => i.Id != Guid.Empty)
+            .ToList() ?? [];
+        if (items.Count == 0)
+        {
+            return;
+        }
+
+        var records = (await player.PersistenceContext.GetItemCustomizationsAsync(items.Select(i => i.Id).ToList()).ConfigureAwait(false))
+            .Where(r => !string.IsNullOrEmpty(r.Boosts))
+            .ToDictionary(r => r.ItemId);
+        foreach (var (item, id) in items.Where(i => records.ContainsKey(i.Id)))
+        {
+            ApplyBoosts(player, item, id, StarSmithBoosts.Parse(records[id].Boosts));
+        }
+    }
 
     /// <inheritdoc />
     public async ValueTask ObjectAddedToMapAsync(GameMap map, ILocateable addedObject)
@@ -72,6 +160,7 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
         if (!this._watched.TryGetValue(inventory, out _))
         {
             this._watched.Add(inventory, new object());
+            await LoadBoostsAsync(player).ConfigureAwait(false);
             inventory.EquippedItemsChanged += async args =>
             {
                 if (this.IsHammer(args.Item))
@@ -119,9 +208,14 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
             hammer is not null && hammer.Durability < this.Settings.DurabilityPerAction,
             level,
             player.SelectedCharacter?.StarSmithExperience ?? 0,
-            StarSmithLevels.ToNext(level),
+            StarSmithLevels.ToNext(level, this.Settings.Balance.LevelCurve),
             (int)(hammer?.Durability ?? 0));
         await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendStateAsync(state)).ConfigureAwait(false);
+        if (this.RoundTripOf(player).Send(this.Clock()) is { } token)
+        {
+            await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendPingAsync(token)).ConfigureAwait(false);
+        }
+
         if (hammer is not null)
         {
             await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendDyesAsync(this.Settings.Dyes)).ConfigureAwait(false);

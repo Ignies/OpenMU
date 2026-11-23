@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.StarSmithing;
 
+using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic;
 using MUnique.OpenMU.GameLogic.StarSmithing;
@@ -31,6 +32,21 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
 
     /// <summary>A dominant element or fate that is not there.</summary>
     private const byte NoValue = 0xFF;
+
+    /// <summary>Where the entries of EE 90 start.</summary>
+    private const int GuidebookEntriesAt = 8;
+
+    /// <summary>The kind of an EE 90 ingredient line.</summary>
+    private const byte IngredientLine = 2;
+
+    /// <summary>The kind of an EE 90 boost line.</summary>
+    private const byte BoostLine = 3;
+
+    /// <summary>The ingredients an EE 90 line holds.</summary>
+    private const int IngredientsPerLine = 12;
+
+    /// <summary>The boosts an EE 90 line holds.</summary>
+    private const int BoostsPerLine = 8;
 
     private readonly RemotePlayer _player;
 
@@ -258,6 +274,26 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
     }
 
     /// <inheritdoc />
+    public async ValueTask SendPingAsync(uint token)
+    {
+        if (this._player.Connection is not { } connection)
+        {
+            return;
+        }
+
+        int Write()
+        {
+            var size = ForkPingRef.Length;
+            var span = connection.Output.GetSpan(size)[..size];
+            span.Clear();
+            _ = new ForkPingRef(span) { Token = token };
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public async ValueTask SendGuidebookAsync(int total, IReadOnlyList<GuidebookEntry> found)
     {
         if (this._player.Connection is not { } connection)
@@ -265,7 +301,24 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
             return;
         }
 
-        var count = Math.Min(found.Count, byte.MaxValue);
+        // A found row is followed by its ingredient lines (12 a line) and boost lines (8 a line); the whole stays a C2.
+        static int LinesOf(GuidebookEntry row) => row.Kind == StarSmithGuidebookEntryKind.Found
+            ? ((row.Ingredients.Count + IngredientsPerLine - 1) / IngredientsPerLine) + ((row.BoostsSeen.Count + BoostsPerLine - 1) / BoostsPerLine)
+            : 0;
+        var rows = new List<GuidebookEntry>();
+        var count = 0;
+        foreach (var row in found)
+        {
+            var needed = 1 + LinesOf(row);
+            if (StarSmithGuidebookRef.GetRequiredSize(count + needed) > ushort.MaxValue)
+            {
+                break;
+            }
+
+            rows.Add(row);
+            count += needed;
+        }
+
         int Write()
         {
             var size = StarSmithGuidebookRef.GetRequiredSize(count);
@@ -274,20 +327,54 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
             var packet = new StarSmithGuidebookRef(span)
             {
                 Total = (byte)Math.Clamp(total, 0, byte.MaxValue),
-                EntryCount = (byte)count,
+                EntryCount = (ushort)count,
             };
-            for (var i = 0; i < count; i++)
+            var index = 0;
+            foreach (var row in rows)
             {
-                var row = found[i];
-                var entry = packet[i];
+                var entry = packet[index++];
                 entry.Kind = (byte)row.Kind;
-                if (row.Kind == StarSmithGuidebookEntryKind.Found)
+                entry.Text = row.Text;
+                if (row.Kind != StarSmithGuidebookEntryKind.Found)
                 {
-                    entry.Recipe = (ushort)row.Recipe;
-                    entry.Made = (ushort)Math.Clamp(row.Made, 0, ushort.MaxValue);
+                    entry.HintKind = (byte)row.HintKind;
+                    entry.HintGroup = row.HintGroup;
+                    entry.HintNumber = (ushort)row.HintNumber;
+                    continue;
                 }
 
-                entry.Text = row.Text;
+                entry.Recipe = (ushort)row.Recipe;
+                entry.Made = (ushort)Math.Clamp(row.Made, 0, ushort.MaxValue);
+                entry.ShapeLength = (byte)Math.Clamp(row.ShapeLength, 0, byte.MaxValue);
+                entry.Lines = (byte)LinesOf(row);
+                foreach (var chunk in row.Ingredients.Chunk(IngredientsPerLine))
+                {
+                    var line = span.Slice(GuidebookEntriesAt + (index++ * StarSmithGuidebookEntryRef.Length), StarSmithGuidebookEntryRef.Length);
+                    line[0] = IngredientLine;
+                    line[1] = (byte)chunk.Length;
+                    for (var i = 0; i < chunk.Length; i++)
+                    {
+                        var at = line[(2 + (i * 5))..];
+                        at[0] = chunk[i].Group;
+                        BinaryPrimitives.WriteUInt16LittleEndian(at[1..], (ushort)chunk[i].Number);
+                        at[3] = chunk[i].Minimum;
+                        at[4] = chunk[i].Maximum;
+                    }
+                }
+
+                foreach (var chunk in row.BoostsSeen.Chunk(BoostsPerLine))
+                {
+                    var line = span.Slice(GuidebookEntriesAt + (index++ * StarSmithGuidebookEntryRef.Length), StarSmithGuidebookEntryRef.Length);
+                    line[0] = BoostLine;
+                    line[1] = (byte)chunk.Length;
+                    for (var i = 0; i < chunk.Length; i++)
+                    {
+                        var at = line[(2 + (i * 9))..];
+                        at[0] = (byte)chunk[i].Stat;
+                        BinaryPrimitives.WriteInt32LittleEndian(at[1..], chunk[i].Minimum);
+                        BinaryPrimitives.WriteInt32LittleEndian(at[5..], chunk[i].Maximum);
+                    }
+                }
             }
 
             return size;

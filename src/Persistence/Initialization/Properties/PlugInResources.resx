@@ -780,6 +780,12 @@
   <data name="AddStarSmithRecipesUpdatePlugIn_Description" xml:space="preserve">
     <value>This update adds the Constellation Forge recipes of Star Smithing to its configuration when it has none: the five weapon shapes The Serpent, Twin Fangs, Ember Ring, Storm Spine and Wyrm Coil, made from the Season 6 skill orbs and scrolls. A recipe list the operator made stays.</value>
   </data>
+  <data name="AddStarSmithItemRecipesUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the Star Smith recipes for every item kind</value>
+  </data>
+  <data name="AddStarSmithItemRecipesUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update adds the Star Smithing recipes for armour, wings, pendants and rings (numbers 6 to 11) and gives each default recipe without an outcome table its default table of boosts. Recipes the operator made or changed keep everything else; a number already taken is never overwritten.</value>
+  </data>
   <data name="AddSeason21NewPowerUpdatePlugIn_Name" xml:space="preserve">
     <value>Add the New Power of Season 21</value>
   </data>

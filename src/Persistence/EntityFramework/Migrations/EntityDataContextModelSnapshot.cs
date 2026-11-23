@@ -2581,6 +2581,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Boosts")
+                        .HasColumnType("text");
+
                     b.Property<string>("CreatedBy")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
@@ -2606,6 +2609,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                         .HasColumnType("character varying(24)");
 
                     b.Property<byte>("Rarity")
+                        .HasColumnType("smallint");
+
+                    b.Property<short>("SmithLevel")
                         .HasColumnType("smallint");
 
                     b.Property<DateTime>("UpdatedAt")

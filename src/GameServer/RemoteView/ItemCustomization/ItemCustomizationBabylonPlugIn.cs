@@ -4,8 +4,10 @@
 
 namespace MUnique.OpenMU.GameServer.RemoteView.ItemCustomization;
 
+using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using MUnique.OpenMU.GameLogic.ItemCustomization;
+using MUnique.OpenMU.GameLogic.StarSmithing;
 using MUnique.OpenMU.GameLogic.Views.ItemCustomization;
 using MUnique.OpenMU.Network;
 using MUnique.OpenMU.Network.Packets.Babylon;
@@ -22,6 +24,12 @@ using ReportResult = MUnique.OpenMU.GameLogic.ItemCustomization.ItemCustomizatio
 [MinimumClient(BabylonClient.MinimumSeason, BabylonClient.MinimumEpisode, ClientLanguage.Invariant)]
 public class ItemCustomizationBabylonPlugIn : IItemCustomizationViewPlugIn
 {
+    /// <summary>The EE 34 flag of an item with smithed boosts, which EE 36 carries.</summary>
+    private const byte BoostsWaiting = 32;
+
+    /// <summary>The bytes of one boost in EE 36: the stat and its value times 100.</summary>
+    private const int BoostBytes = 5;
+
     private readonly RemotePlayer _player;
 
     /// <summary>
@@ -65,14 +73,26 @@ public class ItemCustomizationBabylonPlugIn : IItemCustomizationViewPlugIn
         int Write()
         {
             var size = ItemCustomizationDetailRef.Length;
-            var packet = new ItemCustomizationDetailRef(connection.Output.GetSpan(size)[..size])
+            var span = connection.Output.GetSpan(size)[..size];
+            span.Clear();
+            var boosts = StarSmithBoosts.Parse(entry.Customization.Boosts);
+            var packet = new ItemCustomizationDetailRef(span)
             {
                 Storage = (byte)entry.Storage,
                 ObjectId = entry.ObjectId,
                 Slot = entry.Slot,
                 Version = (uint)entry.Customization.Version,
+                SmithLevel = (ushort)Math.Max((short)0, entry.Customization.SmithLevel),
+                BoostCount = (byte)boosts.Count,
             };
             ItemCustomizationText.WriteLore(entry.Customization.Lore, packet.Lore);
+            for (var i = 0; i < boosts.Count; i++)
+            {
+                var at = packet.Boosts[(i * BoostBytes)..];
+                at[0] = (byte)boosts[i].Stat;
+                BinaryPrimitives.WriteInt32LittleEndian(at[1..], boosts[i].Value);
+            }
+
             return size;
         }
 
@@ -131,6 +151,6 @@ public class ItemCustomizationBabylonPlugIn : IItemCustomizationViewPlugIn
         entry.Rarity = c.Rarity;
         var hasLook = ItemLookBytes.TryWrite(c.Look, entry.Look);
         ItemCustomizationText.WriteName(c.Name, entry.Name);
-        entry.Flags = ItemCustomizationText.Flags(hasLook, c.Name, c.Lore);
+        entry.Flags = (byte)(ItemCustomizationText.Flags(hasLook, c.Name, c.Lore) | (string.IsNullOrEmpty(c.Boosts) ? 0 : BoostsWaiting));
     }
 }

@@ -105,7 +105,8 @@ public sealed class StarSmithSky
         var voids = new bool[count];
         foreach (var recipe in fitting)
         {
-            if (!StarSmithRecipes.Succeeds(dice.Next(10_000), StarSmithRecipes.Chance(recipe, level, catalystBonus)))
+            var own = recipe.Catalysts.Where(c => catalysts.Any(k => k.Group == c.Group && k.Number == c.Number)).Sum(c => Math.Max(0, c.Chance));
+            if (!StarSmithRecipes.Succeeds(dice.Next(10_000), StarSmithRecipes.Chance(recipe, level, catalystBonus + own, rules.LevelChance)))
             {
                 var spots = VoidSpots(recipe, fitting);
                 voids[spots[dice.Next(spots.Count)]] = true;

@@ -132,7 +132,8 @@ The client receives:
 Applying: a seal writes the rarity into the item's `ItemCustomization` (`SaveAsync`: a new record when there is none,
 `Version` up, `ItemCustomizationCache.Forget`) and shows EE 92 (action 5, `Forge`) to everyone who sees the smith. A
 crack applies the fate: a downgrade clears the customisation (name, lore, look, rarity), a destroy removes and deletes
-the item. Then the smith's experience and Guidebook (below). Recipe effects come with a later step.
+the item. Then the smith's experience and Guidebook (below). PR 6: a seal also rolls the recipe's outcome and stores its
+boosts and the smith's level on the record, and a downgrade clears them ("Outcomes and boosts" below).
 
 Never sent before a star is struck: its element, its value and whether it is a void (except the revealed one), nor
 which recipes the sky holds beyond the smith's known ones. `StarSmithSky.Stars` holds all of them, so the packet is
@@ -147,50 +148,279 @@ Decided for the wire step:
   never sent), every input of the deal, the forge, the target's slot and persistent id, and each accepted strike with
   its server time. `Replay()` deals the sky again and plays the strikes and the ending again to verify the attempt. One
   attempt per player; it lives in memory only.
-- Round trip: OpenMU keeps no measurement of its own and a client claim is never trusted, so it is 0 (the clean window
-  is the tolerance alone). The beat settings are on `StarSmithingConfiguration` (800, 90, cap 150).
+- Round trip: a client claim is never trusted. Since PR 6 the server measures it with its own beat ping (EE F3/F4,
+  `StarSmithRoundTrip`, the lowest of the last 3 samples, 0 with none) and a start uses it, capped by `RoundTripCapMs`.
+  The beat settings are on `StarSmithingConfiguration` (800, 90, cap 150).
 - Timeout: an attempt with no strike for `ForgeIdleTimeoutSeconds` (60) ends as an abandon (outcome 3), the safe choice:
   an idle seal could hand out a result nobody played for, an idle crack could destroy an item.
 - A start needs at least one ingredient (11 otherwise).
 
 ### Recipes
 
-`StarSmithingConfiguration.Recipes` defaults to `DefaultRecipes()`, the design's five weapon shapes (the demo
-Guidebook of Hidden-Babylon `src/modules/star_smithing/forge.ts`). Each has a `Name`, a `Hint` for its sealed row and
-the smith `Experience` it gives:
+`StarSmithingConfiguration.Recipes` defaults to `DefaultRecipes()`: the design's five weapon shapes (the demo
+Guidebook of Hidden-Babylon `src/modules/star_smithing/forge.ts`) and, since PR 6, two for armour, two for wings, one
+for pendants and one for rings. Each has a `Name`, a hint for its sealed row, the smith `Experience` it gives and an
+outcome table (boosts by tier, "Outcomes and boosts" below):
 
-| # | Name | Stars | Match | On fail | Experience | Hint |
-|---|---|---|---|---|---|---|
-| 1 | The Serpent | 0, 1, 2, 3, 4, 5, 6 | exact | downgraded | 120 | Seven scales, from the point down to the hand. |
-| 2 | Twin Fangs | 9, 6, 10 | extendable | ingredients lost | 40 | Two fangs bite across the guard. |
-| 3 | Ember Ring | 6, 7, 8 | extendable | ingredients lost | 40 | A ring of embers wraps the grip. |
-| 4 | Storm Spine | 6, 4, 2, 0 | exact | destroyed (risky) | 60 | Lightning climbs the blade in leaps. |
-| 5 | Wyrm Coil | 1, 11, 3, 5 | exact | ingredients lost | 60 | Four stars knot themselves around the blade. |
+| # | Name | Item | Stars | Match | On fail | Exp | Hint | Boosts |
+|---|---|---|---|---|---|---|---|---|
+| 1 | The Serpent | weapon | 0, 1, 2, 3, 4, 5, 6 | exact | downgraded | 120 | Seven scales, from the point down to the hand. | damage, crit, excellent, speed |
+| 2 | Twin Fangs | weapon | 9, 6, 10 | extendable | lost | 40 | Two fangs bite across the guard. | crit, damage, excellent |
+| 3 | Ember Ring | weapon | 6, 7, 8 | extendable | lost | 40 | A ring of embers wraps the grip. | speed, damage, mana |
+| 4 | Storm Spine | weapon | 6, 4, 2, 0 | exact | destroyed (risky) | 60 | Lightning climbs the blade in leaps. | damage, speed, crit |
+| 5 | Wyrm Coil | weapon | 1, 11, 3, 5 | exact | lost | 60 | Four stars knot themselves around the blade. | excellent, damage, crit |
+| 6 | Aegis Weave | armour | 3, 4, 8, 7 | exact | lost | 50 | Four plates lock over the heart. | defense, HP, absorb |
+| 7 | Bulwark Knot | armour | 2, 9, 6 | extendable | lost | 40 | A knot of three holds where the blows land. | absorb, defense, HP |
+| 8 | Featherfall | wings | 1, 10, 4, 7 | exact | lost | 60 | Four feathers drift and never touch the ground. | HP, absorb, damage |
+| 9 | Tempest Pinions | wings | 11, 3, 9, 5, 8 | exact | lost | 70 | ingredient: a Season 6 skill orb (12/7) | speed, damage, mana |
+| 10 | Heart of Embers | pendant | 6, 2, 10 | extendable | lost | 40 | none | mana, damage, excellent |
+| 11 | Circle of Tides | ring | 0, 4, 8 | extendable | lost | 40 | Three tides meet and never end. | HP, mana, crit |
 
-All are weapon recipes with a 60% base chance (95% at most) and take the same family: any mix of the Season 6 skill
-orbs (12/7-48) and scrolls (15/0-14), up to ten of each. One family puts every shape in one sky, so exploring off the
-known shapes finds the hidden ones. A new database gets them with the plug-in's default configuration; an existing one
-through `AddStarSmithRecipesUpdatePlugIn`, which fills an empty list once and keeps a list the operator made.
+All have a 60% base chance (95% at most) and take the same family: any mix of the Season 6 skill orbs (12/7-48) and
+scrolls (15/0-14), up to ten of each. One family puts every shape of an item kind in one sky, so exploring off the
+known shapes finds the hidden ones; the target rule (`StarSmithTargetKind`: weapon, armour piece, wings, pendant, ring,
+a minimum level, excellent or not) keeps the kinds apart. A new database gets them with the plug-in's default
+configuration; an existing one through `AddStarSmithRecipesUpdatePlugIn` (PR 5: fills an empty list once) and
+`AddStarSmithItemRecipesUpdatePlugIn` (PR 6: adds every default number the list lacks and gives a stored default recipe
+without outcomes its default table; an operator's recipe on a number is never overwritten).
+
+A recipe's own `Catalysts` add their chance when they are among the attempt's catalysts; the balance's chance bonus
+(`StarSmithForgeRules.LevelChance`, set from `Balance.Chance` when the configuration is checked) replaces the fixed
++0.15% a level.
+
+### Outcomes and boosts
+
+- `StarSmithOutcomes.Roll(recipe, rarity, factor, seed, balance)`: one outcome by weight among those whose tier the
+  forge's rarity reaches (none: the lowest tier), its own dice from the attempt's seed (salted), each boost rolled in its
+  range, times the factor (`1 + extension * ExtensionPercent / 100` times `Balance.LevelFactor(level)`), clamped to the
+  PvE per-item cap (a stat without a PvP value: the lower cap), and only the tier's `BoostSlots`.
+- The record: `ItemCustomization.Boosts` ("stat:value" x100, `StarSmithBoosts`) and `SmithLevel`, migration
+  `AddStarSmithBoosts`.
+- In play: `StarSmithBoostBook` (item id to boosts, filled when a player first enters a map with Star Smithing on and on
+  every seal or downgrade, which also rebuilds a worn item's power-ups) and `StarSmithItemPowerUpFactory`, the decorator
+  `GameContext` puts over `ItemPowerUpFactory` (no boost while the feature is off). Each item's value goes into a pool
+  attribute per stat and context; one capped element per pool feeds the real attribute, so the total cap holds whatever
+  item came first and is recounted when one comes off. `StarSmithBalance.Ceiling` stops any cap. PvP damage and absorb
+  are two new attributes (`Stats.StarSmithDamageIncreasePvp`, `StarSmithDamageReceiveDecrementPvp`) applied in the PvP
+  branch of `AttackableExtensions`.
+- The tooltip gets them through EE 36 (`ItemCustomizationDetail`, 451 bytes); EE 34 sets flag 32 when an item has any.
+
+### Configuration and the bridge
+
+`StarSmithConfigValidator.Validate` is the one validator (contract above); `Sanitize` runs when the plug-in gets a
+configuration and drops only what would break the game (a recipe with a bad number, chance, catalyst, fate, shape or
+outcome; a bad balance falls back to the default). `StarSmithConfigJson` reads and writes the bridge's camelCase
+shape and names each field it cannot read. `StarSmithingOperations.ConfigAsync` / `SetConfigAsync` are the site
+operations `smithing.config` and `smithing.setConfig`; a refusal is an `AdminOperationException` with `Fields`, which
+the site bridge returns as `fields`.
 
 ### Guidebook
 
 Every recipe is hidden until the smith makes it once. The Guidebook is one column on the character,
-`Character.StarSmithGuidebook` (text, migration `AddStarSmithGuidebook`): "number:made" pairs joined by ';', sorted by
-number (`StarSmithGuidebook.Parse` and `Record`). Its keys are the known set a start feeds the forge, so guidance shows
-only known recipes and a first completion is a recipe not in it. A seal of a recipe records it (new at 1, else one
-more).
+`Character.StarSmithGuidebook` (text, migration `AddStarSmithGuidebook`): "number:made:seen" entries joined by ';',
+sorted by number (`StarSmithGuidebook.Parse`, `Seen` and `Record`); "seen" is the bit mask of the outcomes the smith
+rolled and is left out while 0, so a PR 5 "number:made" pair still reads. Its keys are the known set a start feeds the
+forge, so guidance shows only known recipes and a first completion is a recipe not in it. A seal of a recipe records it
+(new at 1, else one more) and the outcome it rolled.
 
-`C2 EE 90 StarSmithGuidebook` goes out with EE 91 while the hammer is in a hand, so also after every ended attempt:
-5 the recipe count (for "? of N found"), 6 the entry count, then 69-byte entries: 0 kind (0 found, 1 sealed), 1-2 the
-recipe number, 3-4 the made count (both 0 for a sealed row), 5-68 the text (UTF-8, zero padded): a found recipe's name,
-a sealed row's hint. The found rows come first, then a sealed row for every recipe not found, each by number. A sealed
-row carries only its hint: nothing names an unfound recipe. A stored recipe the world no longer has is left out.
+`C2 EE 90 StarSmithGuidebook` goes out with EE 91 while the hammer is in a hand, so also after every ended attempt. PR 6
+made it v2 (contract above): 75-byte entries, a found row with its shape length followed by its ingredient lines and
+its boost lines (per stat the range of the outcomes seen), a sealed row with only its hint kind and hint (a riddle's
+text or an ingredient's item). The found rows come first, then a sealed row for every recipe not found, each by
+number. Nothing names an unfound recipe. A stored recipe the world no longer has is left out. The writer stops before a
+row that would pass the C2 limit.
 
 ### Experience
 
 An ended attempt gives the smith experience (design section 3, step 6; `StarSmithLevels.Add` raises the level): a seal
 the recipe's `Experience`, doubled on the first completion, or 10 for the attunement; a crack 30% of the recipe the
-path was on; an abandon or a timeout nothing. EE 91 shows the new level and experience.
+path was on; an abandon or a timeout nothing. EE 91 shows the new level and experience. The level curve is the
+balance's (`StarSmithLevels.ToNext(level, Balance.LevelCurve)`).
 
 Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRecipesTest.cs`, `StarSmithForgeTest.cs`, `StarSmithForgeWireTest.cs`,
-`StarSmithGuidebookTest.cs`; `tests/MUnique.OpenMU.Persistence.Initialization.Tests/StarSmithRecipesDataTest.cs`.
+`StarSmithGuidebookTest.cs`, `StarSmithOutcomesTest.cs`, `StarSmithBoostPowerUpTest.cs`, `StarSmithConfigValidatorTest.cs`,
+`StarSmithRoundTripTest.cs`; `tests/MUnique.OpenMU.Persistence.Initialization.Tests/StarSmithRecipesDataTest.cs`;
+`tests/MUnique.OpenMU.Web.Tests/Site/StarSmithingOperationsTests.cs`.
+
+## PR 6 contract
+
+The contract of PR 6 (Hidden-Babylon `docs/star_smithing.md` section 11), written before the code so the client and the
+site can build against it. Multi-byte numbers are little endian unless named big endian. A boost value on the wire is
+always the stat's value times 100, as a signed 32-bit integer (6.25% is 625, +300 HP is 30000).
+
+### Boost stats
+
+| Byte | JSON name | Unit | PvE attribute | PvP attribute |
+|---|---|---|---|---|
+| 0 | `damage` | % | `FinalDamageIncreasePvm` | `StarSmithDamageIncreasePvp` (new) |
+| 1 | `defense` | % | `DefensePvm` (multiplied) | `DefensePvp` (multiplied) |
+| 2 | `maxHealth` | flat | `MaximumHealth` | the same |
+| 3 | `maxMana` | flat | `MaximumMana` | the same |
+| 4 | `attackSpeed` | flat | `AttackSpeed` | the same |
+| 5 | `criticalRate` | % | `CriticalDamageChance` | the same |
+| 6 | `excellentRate` | % | `ExcellentDamageChance` | the same |
+| 7 | `damageAbsorbed` | % | `FinalDamageReceiveDecrementPvm` | `StarSmithDamageReceiveDecrementPvp` (new) |
+
+A stat that cannot tell a player from a monster (2 to 6) is capped by the lower of its PvE and PvP caps, so PvP never
+sees more than its table.
+
+### Outcomes
+
+- A recipe has 1 to 16 outcomes `{weight, tier, boosts}`; an outcome has 0 to 3 boosts `{stat, min, max}`.
+- A seal rolls one outcome by weight among those whose tier is at most the forge's rarity (none: the lowest tier
+  outcome). The roll uses the attempt's seed, so `Replay()` gives the same result.
+- Each boost of the outcome is rolled in `[min, max]`, multiplied by the seal's `MagnitudeFactor` (extension and smith
+  level: `1 + factor * (L / 100)^exponent`, balance `scaling`), then clamped to the PvE per-item cap. Only the first
+  `boostSlots` of the forge's rarity tier are kept.
+- The item's record keeps the forge's rarity (as in PR 5), the boosts, and the smith level at forging. A new seal
+  replaces the boosts. A downgrade clears them. The attunement (no recipe) gives no boost.
+- The Guidebook records which outcomes a smith has seen: `number:made:seen`, `seen` a bit mask of outcome indices
+  (a PR 5 pair `number:made` reads as seen 0).
+
+### Boosts in play
+
+A decorator over `IItemPowerUpFactory` adds a worn item's boosts. Each item's value is clamped to its per-item cap (PvE
+and PvP separately) and goes into a per-player pool attribute per stat and context; one capped element per pool feeds
+the real attribute, so the total across all worn items never passes the total cap, whichever item came first. Caps are
+clamped again to the code ceilings, whatever the configuration says. Two new attributes and one line in the PvP damage
+path carry the PvP damage and absorb.
+
+### Item record and EE 36
+
+`ItemCustomization` gains `SmithLevel` (short, 0 none) and `Boosts` (text, `stat:value` pairs joined by `;`, value x100,
+at most 3), migration `AddStarSmithBoosts`.
+
+`C2 EE 34 ItemCustomizations`: flag 32 = boosts waiting; the client asks `EE 35` for them as for the lore (flag 4).
+
+`C2 EE 36 ItemCustomizationDetail` grows from 433 to 451 bytes:
+
+| Index | Size | Field |
+|---|---|---|
+| 0-12 | | as before (header, storage, objectId big endian, slot, version) |
+| 13 | 420 | lore, as before |
+| 433 | 2 | smith level at forging (0 not forged) |
+| 435 | 1 | boost count (0 to 3) |
+| 436 | 3 x 5 | boosts: stat (1 byte, table above), value (int32, x100); unused ones zero |
+
+The value is the stored one (PvE per-item capped); the client shows it in the rarity colour under the name and lore.
+
+### EE 90 v2
+
+`C2 EE 90 StarSmithGuidebook`: 5 the recipe count (for "? of N found"), 6-7 the entry count (u16), then 75-byte entries.
+Each entry starts with its kind; a found row is followed by its lines (its ingredient lines, then its boost lines).
+
+| Kind 0 found / 1 sealed | Size | Field |
+|---|---|---|
+| 0 | 1 | kind |
+| 1 | 2 | recipe number (0 sealed) |
+| 3 | 2 | made count (0 sealed) |
+| 5 | 1 | shape length in stars (0 sealed) |
+| 6 | 1 | hint kind: 0 none, 1 riddle, 2 ingredient (found rows send 0) |
+| 7 | 1 | hint item group (ingredient hint; else 0) |
+| 8 | 2 | hint item number (ingredient hint; else 0) |
+| 10 | 1 | lines that follow (found: ingredient lines + boost lines; sealed 0) |
+| 11 | 64 | text, UTF-8 zero padded: a found recipe's name, a riddle's text, else empty |
+
+| Kind 2 ingredient line | Size | Field |
+|---|---|---|
+| 0 | 1 | kind 2 |
+| 1 | 1 | count in this line, 1 to 12 |
+| 2 | 12 x 5 | ingredients: group (1), number (2), minimum (1), maximum (1); the rest zero |
+
+| Kind 3 boost line | Size | Field |
+|---|---|---|
+| 0 | 1 | kind 3 |
+| 1 | 1 | count in this line, 1 to 8 |
+| 2 | 8 x 9 | boosts seen: stat (1), min (int32, x100), max (int32, x100): per stat the range over the outcomes the smith has seen, unscaled; the rest zero |
+
+Found rows come first by number, each followed by its lines; then a sealed row for each recipe not found, by number. A
+sealed row carries only its hint kind and the hint (text or item): no number, name, shape length, ingredients or
+boosts. The ingredient hint names one of the recipe's ingredients; the client writes "a recipe uses <item name>".
+
+### Beat ping
+
+| Packet | Direction | Layout |
+|---|---|---|
+| `C1 EE F3 ForkPing` | server to client | 8 bytes: 4-7 token (u32) |
+| `C1 EE F4 ForkPong` | client to server | 8 bytes: 4-7 the token of the ping it answers |
+
+The client answers a ping at once and sends nothing else. The server sends one with every EE 91 while Star Smithing is
+on, at most one outstanding and at most one per 2 seconds; a pong with another token or after 5 seconds is ignored. The
+round trip is the server's own clock from send to answer; the smith's round trip is the lowest of the last 3 samples
+(0 with none), and a forge start uses it (`StarSmithBeat.Window`, capped by `RoundTripCapMs`). The client never states
+a time.
+
+### Configuration JSON
+
+`StarSmithingConfiguration` gains `Balance`, and each recipe `HintKind`, `HintGroup`, `HintNumber`, `Catalysts` and
+`Outcomes`. The bridge speaks camelCase, enums as camelCase strings:
+
+```json
+{
+  "recipes": [{
+    "number": 6, "name": "Aegis Weave", "experience": 50,
+    "targets": ["armor"], "minimumItemLevel": 0, "excellent": null,
+    "ingredients": [{ "group": 12, "number": 7, "minimum": 0, "maximum": 10 }],
+    "baseChance": 6000, "maximumChance": 9500,
+    "catalysts": [{ "group": 14, "number": 13, "chance": 500 }],
+    "onFail": "ingredientsLost", "risky": false,
+    "shape": { "stars": [3, 4, 8, 7], "ordered": true, "match": "exact", "extensionPercent": 10, "maximumExtension": 3 },
+    "hint": { "kind": "riddle", "text": "Four plates lock over the heart.", "group": 0, "number": 0 },
+    "outcomes": [{ "weight": 60, "tier": "common", "boosts": [{ "stat": "defense", "min": 1, "max": 3 }] }]
+  }],
+  "balance": {
+    "tiers": [{ "name": "Common", "color": "#ffffff", "effectSlots": 0, "boostSlots": 1 }],
+    "levelCurve": { "base": 100, "exponent": 1.6 },
+    "scaling": { "factor": 0.5, "exponent": 0.8 },
+    "chance": { "perLevel": 15, "maximum": 1500 },
+    "caps": {
+      "pve": { "damage": { "perItem": 6, "total": 15 } },
+      "pvp": { "damage": { "perItem": 3, "total": 8 } }
+    }
+  }
+}
+```
+
+- `targets`: any of `weapon`, `armor`, `wings`, `pendant`, `ring`. `excellent`: true, false or null (either).
+- `onFail`: `ingredientsLost`, `itemDowngraded`, `itemDestroyed`. `match`: `exact`, `extendable`.
+- `hint.kind`: `none`, `riddle` (needs `text`), `ingredient` (needs `group` and `number` of one of the ingredients).
+- `tier`: `common`, `uncommon`, `rare`, `epic`, `legendary`, `mythic`. Chances in hundredths of a percent.
+- Boost `min`/`max` and the caps in the stat's unit (table above), decimals allowed, two places kept.
+- `caps` names every stat in both tables. Defaults (PvE per item / total, PvP per item / total, code ceiling):
+  damage 6/15, 3/8, 30; defense 6/15, 3/8, 30; maxHealth 300/800, 300/800, 3000; maxMana 300/800, 300/800, 3000;
+  attackSpeed 5/12, 5/12, 30; criticalRate 3/8, 2/5, 20; excellentRate 3/8, 2/5, 20; damageAbsorbed 4/10, 2/6, 25.
+- `tiers`: exactly 6, Common to Mythic; defaults white 0/1, green 0/2, blue 1/2, purple 1/3, orange 2/3, red 2/3.
+
+Validation (`StarSmithConfigValidator`, run at load and on every bridge write; at load a bad recipe is dropped and
+logged): at most 64 recipes, numbers 1 to 32767 and unique; name 1 to 64 UTF-8 bytes; targets not empty; minimum item
+level 0 to 15; 1 to 40 ingredients, each an existing item, none twice, minimum at most maximum at most 10; base chance 0
+to 10,000, maximum chance from the base to 10,000; at most 4 catalysts, each an existing item, chance 0 to 10,000;
+`itemDestroyed` only on a risky recipe; shape 2 to 12 distinct stars, each below the forge's star count, extension 0 to
+100 %, at most 6 extension links; 1 to 16 outcomes, weight 1 to 10,000, at most 3 boosts, no stat twice, 0 < min <= max
+<= the stat's ceiling; experience 0 to 100,000; hint text at most 64 UTF-8 bytes. Balance: 6 tiers, name 1 to 16
+characters, colour `#rrggbb`, effect slots 0 to 2, boost slots 0 to 3; level curve base 1 to 100,000, exponent 1 to 3;
+scaling factor 0 to 1, exponent 0.1 to 2; chance per level 0 to 100, maximum 0 to 3,000; each cap 0 <= per item <=
+total <= ceiling.
+
+### Bridge
+
+The design's `GET`/`POST admin/star-smithing/config` are site operations like `smithing.dyes`/`smithing.setDyes`
+(fork #32), called through the site's `POST admin/cfg/read` and `POST admin/cfg/write` with `{op, args, role}`:
+
+- `smithing.config` (read, role Viewer; site flag `smithing.view`), no arguments. Result:
+  `{ "config": {recipes, balance}, "ceilings": {stat: number}, "stats": [...], "items": [{group, number, name}] }`,
+  `items` naming every ingredient, catalyst and hint item the config uses.
+- `smithing.setConfig` (write, role Operator; site flag `smithing.edit`), arguments `config` (the JSON above as a
+  string; a missing `recipes` or `balance` keeps the current one), `apply`, `confirmationToken`. A preview answers
+  `{ "change": {kind: "config", recipesBefore, recipesAfter, balanceChanged}, "confirmationToken": ... }` as `setDyes`
+  does; the apply writes the plugin configuration, every other setting kept, and the game reads it at once.
+- A refusal is HTTP 400 `{ "ok": false, "error": "invalid", "message": "3 fields are wrong.", "fields": [{ "field":
+  "recipes[2].outcomes[0].boosts[1].max", "message": "At most 30 (the code ceiling)." }] }`. `field` is the JSON path
+  in the camelCase shape above; the site marks those inputs.
+
+### Default recipes
+
+The five weapon recipes get outcome tables. New, all with the skill orb and scroll family, a 60% base chance (95% at
+most) and hints: armour 6 Aegis Weave, 7 Bulwark Knot; wings 8 Featherfall, 9 Tempest Pinions; pendant 10 Heart of
+Embers; ring 11 Circle of Tides. `AddStarSmithItemRecipesUpdatePlugIn` adds every default number a database lacks and
+gives a stored default recipe without outcomes its default table; it never changes anything else.

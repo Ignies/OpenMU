@@ -16,7 +16,7 @@ using System;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 /// <summary>
-/// A row of StarSmithGuidebook: a found recipe in full, or a sealed one with its hint only..
+/// An entry of StarSmithGuidebook (v2): a found recipe (kind 0) followed by its lines, or a sealed one (kind 1) with its hint only. The fields below are a row's; a line has other bytes after its kind. Kind 2, an ingredient line: 1 the count in the line (1 to 12), then from 2 five bytes per ingredient: group, number (2, little endian), minimum, maximum. Kind 3, a boost line: 1 the count (1 to 8), then from 2 nine bytes per stat: the stat, the least and the most value (each a 32-bit little endian integer, the value times 100) over the outcomes the smith has seen, unscaled. The rest of a line is zero..
 /// </summary>
 public readonly ref struct StarSmithGuidebookEntryRef
 {
@@ -34,10 +34,10 @@ public readonly ref struct StarSmithGuidebookEntryRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 69;
+    public static int Length => 75;
 
     /// <summary>
-    /// Gets or sets 0 a found recipe, 1 a sealed one.
+    /// Gets or sets 0 a found recipe, 1 a sealed one, 2 an ingredient line, 3 a boost line.
     /// </summary>
     public byte Kind
     {
@@ -64,12 +64,57 @@ public readonly ref struct StarSmithGuidebookEntryRef
     }
 
     /// <summary>
-    /// Gets or sets uTF-8, zero padded: a found recipe's name, a sealed row's hint.
+    /// Gets or sets the stars of a found recipe's shape; 0 for a sealed row.
+    /// </summary>
+    public byte ShapeLength
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets a sealed row's hint: 0 none, 1 a riddle (the text), 2 an ingredient (the item below); 0 for a found row.
+    /// </summary>
+    public byte HintKind
+    {
+        get => this._data[6];
+        set => this._data[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the item group of an ingredient hint.
+    /// </summary>
+    public byte HintGroup
+    {
+        get => this._data[7];
+        set => this._data[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the item number of an ingredient hint.
+    /// </summary>
+    public ushort HintNumber
+    {
+        get => ReadUInt16LittleEndian(this._data[8..]);
+        set => WriteUInt16LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the ingredient and boost lines that follow a found row; 0 for a sealed row.
+    /// </summary>
+    public byte Lines
+    {
+        get => this._data[10];
+        set => this._data[10] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets uTF-8, zero padded: a found recipe's name, a sealed row's riddle; empty otherwise.
     /// </summary>
     public string Text
     {
-        get => this._data.ExtractString(5, 64, System.Text.Encoding.UTF8);
-        set => this._data.Slice(5, 64).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.ExtractString(11, 64, System.Text.Encoding.UTF8);
+        set => this._data.Slice(11, 64).WriteString(value, System.Text.Encoding.UTF8);
     }
 }
 
@@ -1651,7 +1696,7 @@ public readonly ref struct ItemCustomizationEntryRef
     }
 
     /// <summary>
-    /// Gets or sets 1 look, 2 name, 4 lore waiting (ask ItemCustomizationDetailRequest), 8 aura, 16 particles.
+    /// Gets or sets 1 look, 2 name, 4 lore waiting (ask ItemCustomizationDetailRequest), 8 aura, 16 particles, 32 boosts waiting (ask ItemCustomizationDetailRequest as for the lore).
     /// </summary>
     public byte Flags
     {
@@ -2021,6 +2066,178 @@ public readonly ref struct ForkFeaturesChangedRef
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
     public static implicit operator Span<byte>(ForkFeaturesChangedRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: With StarSmithState while Star Smithing is on, at most one out and at most one per 2 seconds.
+/// Causes reaction on client side: The client answers at once with ForkPong and the same token; the server measures the round trip on its own clock (the Constellation Forge's beat window).
+/// </summary>
+public readonly ref struct ForkPingRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ForkPingRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ForkPingRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ForkPingRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ForkPingRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xF3;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the token the answer carries back.
+    /// </summary>
+    public uint Token
+    {
+        get => ReadUInt32LittleEndian(this._data[4..]);
+        set => WriteUInt32LittleEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ForkPing"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ForkPingRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ForkPing"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ForkPingRef packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: At once on a ForkPing, and never otherwise.
+/// Causes reaction on server side: The server takes the time since its ping as a round trip sample; another token or an answer after 5 seconds is ignored.
+/// </summary>
+public readonly ref struct ForkPongRef
+{
+    private readonly Span<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ForkPongRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public ForkPongRef(Span<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ForkPongRef"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private ForkPongRef(Span<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0xF4;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 8;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the token of the ping it answers.
+    /// </summary>
+    public uint Token
+    {
+        get => ReadUInt32LittleEndian(this._data[4..]);
+        set => WriteUInt32LittleEndian(this._data[4..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="ForkPong"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator ForkPongRef(Span<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="ForkPong"/> to a Span of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Span<byte>(ForkPongRef packet) => packet._data; 
 }
 
 
@@ -4800,7 +5017,7 @@ public readonly ref struct ItemCustomizationDetailRequestRef
 
 /// <summary>
 /// Is sent by the server when: The answer to ItemCustomizationDetailRequest.
-/// Causes reaction on client side: The client shows the item's lore in its tooltip.
+/// Causes reaction on client side: The client shows the item's lore, and a smithed item's boosts and smith level, in its tooltip.
 /// </summary>
 public readonly ref struct ItemCustomizationDetailRef
 {
@@ -4852,7 +5069,7 @@ public readonly ref struct ItemCustomizationDetailRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 433;
+    public static int Length => 451;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -4901,6 +5118,32 @@ public readonly ref struct ItemCustomizationDetailRef
     public Span<byte> Lore
     {
         get => this._data.Slice(13, 420);
+    }
+
+    /// <summary>
+    /// Gets or sets the smith's level when the item was forged; 0 when it was not (Star Smithing).
+    /// </summary>
+    public ushort SmithLevel
+    {
+        get => ReadUInt16LittleEndian(this._data[433..]);
+        set => WriteUInt16LittleEndian(this._data[433..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the smithed boosts, 0 to 3.
+    /// </summary>
+    public byte BoostCount
+    {
+        get => this._data[435];
+        set => this._data[435] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets three 5-byte boosts: the stat (0 damage %, 1 defense %, 2 max HP, 3 max mana, 4 attack speed, 5 critical rate %, 6 excellent rate %, 7 damage absorbed %), then its value times 100 (32-bit, little endian); unused ones zero.
+    /// </summary>
+    public Span<byte> Boosts
+    {
+        get => this._data.Slice(436, 15);
     }
 
     /// <summary>
@@ -5268,18 +5511,18 @@ public readonly ref struct StarSmithGuidebookRef
     }
 
     /// <summary>
-    /// Gets or sets the entry count.
+    /// Gets or sets the entries: rows and the lines of the found rows.
     /// </summary>
-    public byte EntryCount
+    public ushort EntryCount
     {
-        get => this._data[6];
-        set => this._data[6] = value;
+        get => ReadUInt16LittleEndian(this._data[6..]);
+        set => WriteUInt16LittleEndian(this._data[6..], value);
     }
 
     /// <summary>
     /// Gets the <see cref="StarSmithGuidebookEntryRef"/> of the specified index.
     /// </summary>
-        public StarSmithGuidebookEntryRef this[int index] => new (this._data[(7 + index * StarSmithGuidebookEntryRef.Length)..]);
+        public StarSmithGuidebookEntryRef this[int index] => new (this._data[(8 + index * StarSmithGuidebookEntryRef.Length)..]);
 
     /// <summary>
     /// Performs an implicit conversion from a Span of bytes to a <see cref="StarSmithGuidebook"/>.
@@ -5300,7 +5543,7 @@ public readonly ref struct StarSmithGuidebookRef
     /// </summary>
     /// <param name="entriesCount">The count of <see cref="StarSmithGuidebookEntryRef"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int entriesCount) => entriesCount * StarSmithGuidebookEntryRef.Length + 7;
+    public static int GetRequiredSize(int entriesCount) => entriesCount * StarSmithGuidebookEntryRef.Length + 8;
 }
 
 

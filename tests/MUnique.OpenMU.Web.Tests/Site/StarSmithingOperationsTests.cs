@@ -125,6 +125,104 @@ public sealed class StarSmithingOperationsTests
         Assert.That((await this.CallAsync("smithing.setDyes", new JsonObject { ["dyes"] = new JsonArray(Dye(1004, "#ffffff")).ToJsonString(), ["apply"] = false }, "Viewer").ConfigureAwait(false)).Status, Is.EqualTo(403));
     }
 
+    /// <summary>
+    /// The recipes and the balance read in the bridge's camelCase shape: targets as a list, enums as names, the hint as
+    /// one object, colours as <c>#rrggbb</c>, with the code ceilings.
+    /// </summary>
+    [Test]
+    public async Task ReadsTheConfigAsync()
+    {
+        var (status, body) = await this.CallAsync("smithing.config", new JsonObject(), "Viewer").ConfigureAwait(false);
+        Assert.That(status, Is.EqualTo(200), body.ToJsonString());
+        var result = body["result"]!;
+        var recipes = result["config"]!["recipes"]!.AsArray();
+        Assert.That(recipes, Has.Count.EqualTo(11));
+        Assert.That(recipes[0]!["targets"]!.AsArray().Select(t => t!.GetValue<string>()), Is.EqualTo(new[] { "weapon" }));
+        Assert.That(recipes[0]!["onFail"]!.GetValue<string>(), Is.EqualTo("itemDowngraded"));
+        Assert.That(recipes[0]!["outcomes"]![0]!["tier"]!.GetValue<string>(), Is.EqualTo("common"));
+        Assert.That(recipes[0]!["outcomes"]![0]!["boosts"]![0]!["stat"]!.GetValue<string>(), Is.EqualTo("damage"));
+        Assert.That(recipes[8]!["hint"]!["kind"]!.GetValue<string>(), Is.EqualTo("ingredient"));
+        Assert.That(recipes[8]!["hint"]!["number"]!.GetValue<int>(), Is.EqualTo(7));
+        var balance = result["config"]!["balance"]!;
+        Assert.That(balance["tiers"]![0]!["color"]!.GetValue<string>(), Is.EqualTo("#ffffff"));
+        Assert.That(balance["scaling"]!["factor"]!.GetValue<double>(), Is.EqualTo(0.5));
+        Assert.That(balance["caps"]!["pvp"]!["damage"]!["perItem"]!.GetValue<double>(), Is.EqualTo(3));
+        Assert.That(result["ceilings"]!["damage"]!.GetValue<double>(), Is.EqualTo(30));
+        Assert.That(result["items"], Is.InstanceOf<JsonArray>());
+    }
+
+    /// <summary>
+    /// A config written through the bridge, previewed then applied: the recipes and the balance change, every other
+    /// setting stays; what is left out stays as it was.
+    /// </summary>
+    [Test]
+    public async Task ReplacesTheConfigAsync()
+    {
+        var config = new JsonObject
+        {
+            ["recipes"] = new JsonArray(Recipe(1)),
+            ["balance"] = (await this.CallAsync("smithing.config", new JsonObject(), "Viewer").ConfigureAwait(false)).Body["result"]!["config"]!["balance"]!.DeepClone(),
+        };
+        config["balance"]!["caps"]!["pve"]!["damage"]!["perItem"] = 5;
+        await this.PreviewAndApplyAsync("smithing.setConfig", new JsonObject { ["config"] = config.ToJsonString() }).ConfigureAwait(false);
+
+        var saved = JsonSerializer.Deserialize<StarSmithingConfiguration>(this._plugin.CustomConfiguration!)!;
+        Assert.That(saved.RecolorZen, Is.EqualTo(300_000), "the other settings stay");
+        Assert.That(saved.Dyes, Has.Count.EqualTo(1));
+        var recipe = saved.Recipes.Single();
+        Assert.That((recipe.Name, recipe.Targets, recipe.HintKind, recipe.Hint), Is.EqualTo(("Edited", StarSmithTargetKind.Armor | StarSmithTargetKind.Ring, StarSmithHintKind.Riddle, "A riddle.")));
+        Assert.That(recipe.Outcomes.Single().Boosts.Single().Maximum, Is.EqualTo(2.5));
+        Assert.That(saved.Balance.Pve[StarSmithBoostStat.Damage].PerItem, Is.EqualTo(5));
+        Assert.That((await this._audit.ReadAsync(0, 10).ConfigureAwait(false)).Items.Single().Operation, Is.EqualTo("smithing_set_config"));
+
+        await this.PreviewAndApplyAsync("smithing.setConfig", new JsonObject { ["config"] = new JsonObject { ["recipes"] = new JsonArray(Recipe(2)) }.ToJsonString() }).ConfigureAwait(false);
+        saved = JsonSerializer.Deserialize<StarSmithingConfiguration>(this._plugin.CustomConfiguration!)!;
+        Assert.That(saved.Recipes.Single().Number, Is.EqualTo(2));
+        Assert.That(saved.Balance.Pve[StarSmithBoostStat.Damage].PerItem, Is.EqualTo(5), "a missing balance stays");
+    }
+
+    /// <summary>
+    /// A refusal is a 400 that names every field at fault, as the camelCase path; a Viewer may not write.
+    /// </summary>
+    [Test]
+    public async Task RefusesWithTheFieldsAsync()
+    {
+        var bad = Recipe(1);
+        bad["ingredients"]![0]!["number"] = 7;
+        bad["ingredients"]![0]!["group"] = 12;
+        bad["outcomes"]![0]!["boosts"]![0]!["max"] = 99;
+        bad["baseChance"] = "lots";
+        var (status, body) = await this.CallAsync("smithing.setConfig", new JsonObject { ["config"] = new JsonObject { ["recipes"] = new JsonArray(bad) }.ToJsonString(), ["apply"] = false }).ConfigureAwait(false);
+
+        Assert.That(status, Is.EqualTo(400), body.ToJsonString());
+        Assert.That(body["error"]!.GetValue<string>(), Is.EqualTo("invalid"));
+        var fields = body["fields"]!.AsArray().Select(f => f!["field"]!.GetValue<string>()).ToList();
+        Assert.That(fields, Is.SupersetOf(new[] { "recipes[0].ingredients[0]", "recipes[0].outcomes[0].boosts[0].max", "recipes[0].baseChance" }));
+        Assert.That(body["fields"]!.AsArray().All(f => f!["message"]!.GetValue<string>().Length > 0), Is.True);
+
+        Assert.That((await this.CallAsync("smithing.setConfig", new JsonObject { ["config"] = "not json", ["apply"] = false }).ConfigureAwait(false)).Status, Is.EqualTo(400));
+        Assert.That((await this.CallAsync("smithing.setConfig", new JsonObject { ["config"] = new JsonObject { ["recipes"] = new JsonArray(Recipe(1)) }.ToJsonString(), ["apply"] = false }, "Viewer").ConfigureAwait(false)).Status, Is.EqualTo(403));
+    }
+
+    private static JsonObject Recipe(int number) => new()
+    {
+        ["number"] = number,
+        ["name"] = "Edited",
+        ["experience"] = 10,
+        ["targets"] = new JsonArray("armor", "ring"),
+        ["minimumItemLevel"] = 0,
+        ["excellent"] = null,
+        ["ingredients"] = new JsonArray(new JsonObject { ["group"] = 14, ["number"] = 1004, ["minimum"] = 1, ["maximum"] = 2 }),
+        ["baseChance"] = 5000,
+        ["maximumChance"] = 9000,
+        ["catalysts"] = new JsonArray(),
+        ["onFail"] = "ingredientsLost",
+        ["risky"] = false,
+        ["shape"] = new JsonObject { ["stars"] = new JsonArray(0, 1, 2), ["ordered"] = true, ["match"] = "exact", ["extensionPercent"] = 10, ["maximumExtension"] = 3 },
+        ["hint"] = new JsonObject { ["kind"] = "riddle", ["text"] = "A riddle.", ["group"] = 0, ["number"] = 0 },
+        ["outcomes"] = new JsonArray(new JsonObject { ["weight"] = 1, ["tier"] = "common", ["boosts"] = new JsonArray(new JsonObject { ["stat"] = "defense", ["min"] = 1, ["max"] = 2.5 }) }),
+    };
+
     private Task<(int Status, JsonObject Body)> CallAsync(string operation, JsonObject arguments, string role = "Operator")
         => SiteBridge.InvokeAsync(this._services, operation, arguments, "devgm", role, default);
 

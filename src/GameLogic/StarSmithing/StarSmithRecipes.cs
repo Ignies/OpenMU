@@ -68,9 +68,19 @@ public static class StarSmithRecipes
     /// <param name="smithLevel">The smith's level.</param>
     /// <param name="catalysts">The catalysts' bonus, in hundredths of a percent.</param>
     /// <returns>The chance.</returns>
-    public static int Chance(StarSmithRecipe recipe, int smithLevel, int catalysts)
+    public static int Chance(StarSmithRecipe recipe, int smithLevel, int catalysts) => Chance(recipe, smithLevel, catalysts, null);
+
+    /// <summary>
+    /// The chance of an attempt, in hundredths of a percent, with the balance's level bonus.
+    /// </summary>
+    /// <param name="recipe">The recipe.</param>
+    /// <param name="smithLevel">The smith's level.</param>
+    /// <param name="catalysts">The catalysts' bonus, in hundredths of a percent.</param>
+    /// <param name="bonus">What a level adds and the most it adds, or null for the default.</param>
+    /// <returns>The chance.</returns>
+    public static int Chance(StarSmithRecipe recipe, int smithLevel, int catalysts, StarSmithChanceBonus? bonus)
     {
-        var levelBonus = Math.Min(MaximumLevelBonus, LevelBonus * Math.Clamp(smithLevel, 0, StarSmithLevels.Maximum));
+        var levelBonus = Math.Min(bonus?.Maximum ?? MaximumLevelBonus, (bonus?.PerLevel ?? LevelBonus) * Math.Clamp(smithLevel, 0, StarSmithLevels.Maximum));
         var chance = recipe.BaseChance + levelBonus + Math.Max(0, catalysts);
         return Math.Clamp(chance, 0, Math.Clamp(recipe.MaximumChance, 0, 10_000));
     }
