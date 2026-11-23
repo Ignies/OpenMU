@@ -47,3 +47,150 @@ A recolour spends dyes (Hidden-Babylon `docs/star_smithing.md` section 9):
 Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRulesTest.cs`, `StarSmithLevelsTest.cs`, `StarSmithingViewTest.cs`,
 `ItemLookBytesReadTest.cs`, `StarSmithDyesTest.cs`; `tests/MUnique.OpenMU.Persistence.Initialization.Tests/StarSmithDyesDataTest.cs`;
 `tests/MUnique.OpenMU.Web.Tests/Site/StarSmithingOperationsTests.cs`.
+
+## Constellation Forge
+
+Every recipe attempt is played as the Forge minigame (Hidden-Babylon `docs/star_smithing.md` section 10). This is its
+rule core, deterministic from a seed so the server can deal an attempt again and verify it, its wire, the recipes, the
+Guidebook and the experience (below). An attempt lives on the player; the Guidebook is stored on the character.
+
+- Recipes: `StarSmithRecipes.Candidates` lists the recipes a target and its ingredients can make, the most specific
+  first (`Match` is its first); `Chance` is the base, +0.15% a smith level (15% at most) and the catalysts, capped by
+  the recipe's maximum; `Magnitude` scales a roll by `1 + 0.5 * (L / 100)^0.8`. A recipe has a `Shape`, an `OnFail`
+  and a `Risky` flag.
+- `StarSmithShape`: the stars it links, in drawing order; `Ordered` false lets it start at either end; `Exact` or
+  `Extendable` (each link past it adds `ExtensionPercent`, up to `MaximumExtension` links). `IsPrefix` is the guidance
+  test, `Extension` the completion test, `Follows` either.
+- `StarSmithSky.Deal(seed, recipes, target, level, ingredients, catalysts, bonus, rules)`, with its own SplitMix64
+  dice (`StarSmithDice`), draws in a fixed order: 12 positions in the item's box (0 to 1, kept apart), elements (fire,
+  frost, storm, shadow, light) and values (1 to 5), then voids. Each recipe rolls its chance; a failed roll puts a void
+  on its shape past the first star, so following that shape cracks. Two exploration voids lie on stars of no shape. A
+  Jewel of Guardian (14/31) reveals one void. Hints are shape edges, 1 + level / 20 of them, clarity 0.25 to 1. Links
+  join each star to its 3 nearest and include every shape edge. Strikes: 2 + the ingredient count, at most 12.
+  `Guidance(path, known)` is the recipes the path is still a prefix of. `StarSmithForgeRules` holds the numbers.
+- `StarSmithBeat(interval 800, tolerance 90, round-trip cap 150)`: beats fall every interval after the start; a strike
+  within tolerance + round trip (capped) of the nearest beat is clean, within twice that (at most half a beat) shaky,
+  else late. Server time only. A second strike on the same beat is late.
+- `StarSmithForge.Start(sky, beat, start, roundTrip, level, known)`, then `Strike(star, serverTime)` and `Seal()` or
+  `Abandon()`; states drafting, sealed, cracked, abandoned. A strike is refused (and changes nothing) when not drafting, for no such star, no
+  strikes left, a used star or one not linked to the last. A void cracks: the recipe the path follows decides by its
+  `OnFail`; a destroy needs a risky recipe and no Guardian, else the ingredients are lost. A seal gives the longest
+  completed shape's recipe (or the attunement, null, capped at Uncommon), the element mix by value and the dominant
+  element, the rarity, the magnitude factor and the Guidebook's first-completion flag.
+- Rarity rewards pushing your luck. `Progress` is the struck stars over the completed shape's length in permille; an
+  extendable shape counts its extensions up to its cap (a 3-star shape with 3 extensions is 2,000). The score is the
+  clean share times the progress, plus 250 * level / 100: Common under 300, Uncommon under 500, Rare under 800, Epic
+  under 1,300, Legendary under 2,000, else Mythic. So one clean strike and a seal is at most Uncommon, a full shape all
+  clean is Epic, a half-clean one at most Rare, and Mythic needs every extension of a short shape struck clean.
+
+### Positions are a layout hint
+
+The rules play on the graph only: stars, links and shapes. A star's `X` and `Y` (0 to 1 in the item's box) are a hint
+of the layout. The client lays the stars out over the item's real 2D silhouette, from the rendered picture's alpha,
+and may move a star inside the silhouette as long as the stars keep their relative order (left to right, top to
+bottom) and every link stays drawable. No rule depends on positions, let alone pixels; the server never checks them
+(`RulesIgnoreStarPositions`).
+
+### Wire
+
+Packets `C1 EE 99` to `C1 EE 9F` (`docs/Packets`, generated from `BabylonPackets.xml`); multi-byte numbers are little
+endian. The handlers are no-ops while Star Smithing is off (`StarSmithingFeaturePlugIn.Get` is null). The plug-in's side
+is `StarSmithingFeaturePlugIn.Forge.cs`.
+
+The client sends:
+- `C1 EE 99 StarSmithForgeStart`, 21 bytes: 4 target slot, 5 ingredient count, 6 catalyst count, 7-16 ten ingredient
+  slots, 17-20 four catalyst slots (0xFF unused). Checked in this order: an attempt already running (12), then
+  `StarSmithRules.Check` for the new action `Forge` (5): hammer, durability, place, item, lock; then the slots (13: empty,
+  named twice, the hammer or the item); then the recipes the item and ingredients make (11 none). Each ingredient slot
+  is one unit of its item (a stack gives one); a Jewel of Guardian (14/31) among the catalysts reveals a void and
+  protects the item. On a start the ingredients, the catalysts (one each, like a dye: off the stack, or the item when it
+  was the last) and the hammer's durability are spent at once, so leaving or losing the connection never keeps them.
+- `C1 EE 9A StarSmithForgeStrike`, 5 bytes: 4 the star's index. The server stamps the time on arrival
+  (`Environment.TickCount64`).
+- `C1 EE 9B StarSmithForgeSeal`, 4 bytes.
+- `C1 EE 9C StarSmithForgeAbandon`, 4 bytes: like a crack off every shape (`StarSmithForge.Abandon`, state
+  `Abandoned`): the ingredients are lost, the item stays.
+
+The client receives:
+- `C2 EE 9D StarSmithForgeSky`: 5 result (0 started, else the EE 97 codes and 11-13 above; then only the header is
+  filled), 6 target slot, 7 strikes, 8 risk (`StarSmithSky.Risk`: the worst fate among the sky's recipes after
+  protection, 0 ingredients lost, 1 downgraded, 2 destroyed), 9 star count, 10-11 beat interval ms, 12-13 ms to the
+  first beat, 14 entry count, then 5-byte entries (kind, A, B, C, D): the stars in index order (0, index, X, Y as 0 to
+  255, 1 when it is the void a Guardian reveals), the links (1, a, b, 0, 0), the hints (2, from, to, clarity 0 to 255, 0).
+  At most 255 entries. `StarSmithForgeSkyMessage.From` builds it field by field from the sky.
+- `C1 EE 9E StarSmithForgeStrikeResult`, 12 + 2 per guidance recipe: 4 answer (0 linked, 1 cracked, 2 no attempt
+  running, 3 no such star, 4 no strikes left, 5 the star is struck, 6 not linked to the last), 5 star, 6 element (0
+  fire to 4 light), 7 value, 8 flags (1 void), 9 timing (0 clean, 1 shaky, 2 late), 10 strikes left, 11 guidance count,
+  then the recipe numbers (2 bytes each, at most 60). A refused strike shows nothing of the star and no guidance.
+- `C1 EE 9F StarSmithForgeResult`, 19 bytes: 4 outcome (0 sealed, 1 cracked, 2 abandoned, 3 timed out, 4 seal or abandon
+  refused: no attempt or nothing struck, then nothing else is filled), 5 flags (1 the attunement, 2 the first
+  completion), 6-7 recipe (on a crack the one the path was on; 0 the attunement), 8 rarity, 9 extension, 10 dominant
+  element (0xFF none), 11 fate (0 ingredients lost, 1 downgraded, 2 destroyed; 0xFF when sealed), 12-16 the element mix
+  (fire, frost, storm, shadow, light), 17 clean strikes, 18 strikes. Then EE 91 and, for a changed item, its
+  customisation as today (EE 39).
+
+Applying: a seal writes the rarity into the item's `ItemCustomization` (`SaveAsync`: a new record when there is none,
+`Version` up, `ItemCustomizationCache.Forget`) and shows EE 92 (action 5, `Forge`) to everyone who sees the smith. A
+crack applies the fate: a downgrade clears the customisation (name, lore, look, rarity), a destroy removes and deletes
+the item. Then the smith's experience and Guidebook (below). Recipe effects come with a later step.
+
+Never sent before a star is struck: its element, its value and whether it is a void (except the revealed one), nor
+which recipes the sky holds beyond the smith's known ones. `StarSmithSky.Stars` holds all of them, so the packet is
+built field by field, never by copying a star (`TheSkyHidesUnstruckStarsAsync` compares the bytes of skies that differ
+only there).
+
+Every Star Smithing packet writer clears its buffer before it writes: the connection's output memory is pooled, and a
+field left unwritten (like the spare last byte of `C1 EE 97 StarSmithResult`) would otherwise carry old bytes.
+
+Decided for the wire step:
+- Attempt state: `StarSmithForgeAttempt` on `Player.StarSmithForge`: the seed (a cryptographic random 64-bit number,
+  never sent), every input of the deal, the forge, the target's slot and persistent id, and each accepted strike with
+  its server time. `Replay()` deals the sky again and plays the strikes and the ending again to verify the attempt. One
+  attempt per player; it lives in memory only.
+- Round trip: OpenMU keeps no measurement of its own and a client claim is never trusted, so it is 0 (the clean window
+  is the tolerance alone). The beat settings are on `StarSmithingConfiguration` (800, 90, cap 150).
+- Timeout: an attempt with no strike for `ForgeIdleTimeoutSeconds` (60) ends as an abandon (outcome 3), the safe choice:
+  an idle seal could hand out a result nobody played for, an idle crack could destroy an item.
+- A start needs at least one ingredient (11 otherwise).
+
+### Recipes
+
+`StarSmithingConfiguration.Recipes` defaults to `DefaultRecipes()`, the design's five weapon shapes (the demo
+Guidebook of Hidden-Babylon `src/modules/star_smithing/forge.ts`). Each has a `Name`, a `Hint` for its sealed row and
+the smith `Experience` it gives:
+
+| # | Name | Stars | Match | On fail | Experience | Hint |
+|---|---|---|---|---|---|---|
+| 1 | The Serpent | 0, 1, 2, 3, 4, 5, 6 | exact | downgraded | 120 | Seven scales, from the point down to the hand. |
+| 2 | Twin Fangs | 9, 6, 10 | extendable | ingredients lost | 40 | Two fangs bite across the guard. |
+| 3 | Ember Ring | 6, 7, 8 | extendable | ingredients lost | 40 | A ring of embers wraps the grip. |
+| 4 | Storm Spine | 6, 4, 2, 0 | exact | destroyed (risky) | 60 | Lightning climbs the blade in leaps. |
+| 5 | Wyrm Coil | 1, 11, 3, 5 | exact | ingredients lost | 60 | Four stars knot themselves around the blade. |
+
+All are weapon recipes with a 60% base chance (95% at most) and take the same family: any mix of the Season 6 skill
+orbs (12/7-48) and scrolls (15/0-14), up to ten of each. One family puts every shape in one sky, so exploring off the
+known shapes finds the hidden ones. A new database gets them with the plug-in's default configuration; an existing one
+through `AddStarSmithRecipesUpdatePlugIn`, which fills an empty list once and keeps a list the operator made.
+
+### Guidebook
+
+Every recipe is hidden until the smith makes it once. The Guidebook is one column on the character,
+`Character.StarSmithGuidebook` (text, migration `AddStarSmithGuidebook`): "number:made" pairs joined by ';', sorted by
+number (`StarSmithGuidebook.Parse` and `Record`). Its keys are the known set a start feeds the forge, so guidance shows
+only known recipes and a first completion is a recipe not in it. A seal of a recipe records it (new at 1, else one
+more).
+
+`C2 EE 90 StarSmithGuidebook` goes out with EE 91 while the hammer is in a hand, so also after every ended attempt:
+5 the recipe count (for "? of N found"), 6 the entry count, then 69-byte entries: 0 kind (0 found, 1 sealed), 1-2 the
+recipe number, 3-4 the made count (both 0 for a sealed row), 5-68 the text (UTF-8, zero padded): a found recipe's name,
+a sealed row's hint. The found rows come first, then a sealed row for every recipe not found, each by number. A sealed
+row carries only its hint: nothing names an unfound recipe. A stored recipe the world no longer has is left out.
+
+### Experience
+
+An ended attempt gives the smith experience (design section 3, step 6; `StarSmithLevels.Add` raises the level): a seal
+the recipe's `Experience`, doubled on the first completion, or 10 for the attunement; a crack 30% of the recipe the
+path was on; an abandon or a timeout nothing. EE 91 shows the new level and experience.
+
+Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRecipesTest.cs`, `StarSmithForgeTest.cs`, `StarSmithForgeWireTest.cs`,
+`StarSmithGuidebookTest.cs`; `tests/MUnique.OpenMU.Persistence.Initialization.Tests/StarSmithRecipesDataTest.cs`.

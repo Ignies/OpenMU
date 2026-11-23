@@ -9228,6 +9228,78 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Star Smithing Forge start handler (Babylon).
+        /// </summary>
+        public static string StarSmithForgeStartHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StarSmithForgeStartHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles C1 EE 99: a smith starts a recipe attempt in the Constellation Forge..
+        /// </summary>
+        public static string StarSmithForgeStartHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StarSmithForgeStartHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star Smithing Forge strike handler (Babylon).
+        /// </summary>
+        public static string StarSmithForgeStrikeHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StarSmithForgeStrikeHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles C1 EE 9A: a smith strikes a star of the running attempt..
+        /// </summary>
+        public static string StarSmithForgeStrikeHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StarSmithForgeStrikeHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star Smithing Forge seal handler (Babylon).
+        /// </summary>
+        public static string StarSmithForgeSealHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StarSmithForgeSealHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles C1 EE 9B: a smith seals the drawn constellation..
+        /// </summary>
+        public static string StarSmithForgeSealHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StarSmithForgeSealHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Star Smithing Forge abandon handler (Babylon).
+        /// </summary>
+        public static string StarSmithForgeAbandonHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("StarSmithForgeAbandonHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Handles C1 EE 9C: a smith abandons the running attempt..
+        /// </summary>
+        public static string StarSmithForgeAbandonHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("StarSmithForgeAbandonHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Handles the request of the Babylon client for the lore of a customised item..
         /// </summary>
         public static string ItemCustomizationDetailRequestHandlerPlugIn_Description {

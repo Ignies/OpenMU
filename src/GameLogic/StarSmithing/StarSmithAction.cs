@@ -20,4 +20,7 @@ public enum StarSmithAction : byte
 
     /// <summary>A lock: permanent for players.</summary>
     Lock,
+
+    /// <summary>A recipe attempt in the Constellation Forge (EE 99-9F); EE 92 shows it when sealed.</summary>
+    Forge,
 }

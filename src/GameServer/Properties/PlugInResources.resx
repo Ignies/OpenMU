@@ -3215,6 +3215,30 @@
   <data name="StarSmithLockRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles C1 EE 96: a smith locks an item.</value>
   </data>
+  <data name="StarSmithForgeStartHandlerPlugIn_Name" xml:space="preserve">
+    <value>Star Smithing Forge start handler (Babylon)</value>
+  </data>
+  <data name="StarSmithForgeStartHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles C1 EE 99: a smith starts a recipe attempt in the Constellation Forge.</value>
+  </data>
+  <data name="StarSmithForgeStrikeHandlerPlugIn_Name" xml:space="preserve">
+    <value>Star Smithing Forge strike handler (Babylon)</value>
+  </data>
+  <data name="StarSmithForgeStrikeHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles C1 EE 9A: a smith strikes a star of the running attempt.</value>
+  </data>
+  <data name="StarSmithForgeSealHandlerPlugIn_Name" xml:space="preserve">
+    <value>Star Smithing Forge seal handler (Babylon)</value>
+  </data>
+  <data name="StarSmithForgeSealHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles C1 EE 9B: a smith seals the drawn constellation.</value>
+  </data>
+  <data name="StarSmithForgeAbandonHandlerPlugIn_Name" xml:space="preserve">
+    <value>Star Smithing Forge abandon handler (Babylon)</value>
+  </data>
+  <data name="StarSmithForgeAbandonHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles C1 EE 9C: a smith abandons the running attempt.</value>
+  </data>
   <data name="ItemCustomizationDetailRequestHandlerPlugIn_Name" xml:space="preserve">
     <value>Item customisation detail request handler</value>
   </data>

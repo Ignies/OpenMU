@@ -23,7 +23,7 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
                 "MUnique.OpenMU.Persistence.EntityFramework.Model.Character",
                 typeof(MUnique.OpenMU.Persistence.EntityFramework.Model.Character),
                 baseEntityType,
-                propertyCount: 33,
+                propertyCount: 34,
                 navigationCount: 9,
                 foreignKeyCount: 5,
                 unnamedIndexCount: 6,
@@ -244,6 +244,14 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.CompiledModels.ForAccountCo
                 fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Character).GetField("<StarSmithExperience>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
                 sentinel: 0L);
             starSmithExperience.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
+
+            var starSmithGuidebook = runtimeEntityType.AddProperty(
+                "StarSmithGuidebook",
+                typeof(string),
+                propertyInfo: typeof(MUnique.OpenMU.DataModel.Entities.Character).GetProperty("StarSmithGuidebook", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                fieldInfo: typeof(MUnique.OpenMU.DataModel.Entities.Character).GetField("<StarSmithGuidebook>k__BackingField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly),
+                nullable: true);
+            starSmithGuidebook.AddAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.None);
 
             var starSmithLevel = runtimeEntityType.AddProperty(
                 "StarSmithLevel",

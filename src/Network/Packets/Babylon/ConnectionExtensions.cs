@@ -907,6 +907,166 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="StarSmithForgeStart" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="targetSlot">The inventory slot of the item worked on.</param>
+    /// <param name="ingredientCount">How many of the ingredient slots are used, at most 10.</param>
+    /// <param name="catalystCount">How many of the catalyst slots are used, at most 4.</param>
+    /// <param name="ingredientSlots">10 inventory slots of ingredients; the unused ones are 0xFF. Each slot is one unit of its item (a stack gives one).</param>
+    /// <param name="catalystSlots">4 inventory slots of catalysts (a Jewel of Guardian reveals a void and protects the item); the unused ones are 0xFF.</param>
+    /// <remarks>
+    /// Is sent by the client when: The smith starts a recipe attempt in the Constellation Forge.
+    /// Causes reaction on server side: The server checks the slots again, deals the sky from a seed of its own, starts the beat on its clock and answers with StarSmithForgeSky.
+    /// </remarks>
+    public static async ValueTask SendStarSmithForgeStartAsync(this IConnection? connection, byte @targetSlot, byte @ingredientCount, byte @catalystCount, Memory<byte> @ingredientSlots, Memory<byte> @catalystSlots)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = StarSmithForgeStartRef.Length;
+            var packet = new StarSmithForgeStartRef(connection.Output.GetSpan(length)[..length]);
+            packet.TargetSlot = @targetSlot;
+            packet.IngredientCount = @ingredientCount;
+            packet.CatalystCount = @catalystCount;
+            @ingredientSlots.Span.CopyTo(packet.IngredientSlots);
+            @catalystSlots.Span.CopyTo(packet.CatalystSlots);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="StarSmithForgeStrike" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="star">The star's index in the sky.</param>
+    /// <remarks>
+    /// Is sent by the client when: The smith strikes a star of the running attempt.
+    /// Causes reaction on server side: The server stamps the time on arrival, judges it against the beat and answers with StarSmithForgeStrikeResult (and StarSmithForgeResult on a crack).
+    /// </remarks>
+    public static async ValueTask SendStarSmithForgeStrikeAsync(this IConnection? connection, byte @star)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = StarSmithForgeStrikeRef.Length;
+            var packet = new StarSmithForgeStrikeRef(connection.Output.GetSpan(length)[..length]);
+            packet.Star = @star;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="StarSmithForgeSeal" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The smith seals the drawn constellation.
+    /// Causes reaction on server side: The server applies the result and answers with StarSmithForgeResult; refused (outcome 4) without a running attempt or before the first strike.
+    /// </remarks>
+    public static async ValueTask SendStarSmithForgeSealAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = StarSmithForgeSealRef.Length;
+            var packet = new StarSmithForgeSealRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="StarSmithForgeAbandon" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <remarks>
+    /// Is sent by the client when: The smith walks away from the running attempt.
+    /// Causes reaction on server side: Like a crack off every shape: the ingredients are lost and the item stays. Answered with StarSmithForgeResult (outcome 2).
+    /// </remarks>
+    public static async ValueTask SendStarSmithForgeAbandonAsync(this IConnection? connection)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = StarSmithForgeAbandonRef.Length;
+            var packet = new StarSmithForgeAbandonRef(connection.Output.GetSpan(length)[..length]);
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="StarSmithForgeResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="outcome">0 sealed, 1 cracked, 2 abandoned, 3 timed out (as abandoned), 4 seal refused (no attempt running or nothing struck; nothing else is filled).</param>
+    /// <param name="flags">1 the attunement (no recipe), 2 the smith's first completion of the recipe.</param>
+    /// <param name="recipe">The recipe's number (on a crack, the one the path was on); 0 for the attunement.</param>
+    /// <param name="rarity">0 Common to 5 Mythic (Common on a crack).</param>
+    /// <param name="extension">The links past an extendable shape.</param>
+    /// <param name="dominant">The dominant element (0 fire to 4 light), 0xFF none.</param>
+    /// <param name="fate">The item's fate when not sealed: 0 the ingredients are lost, 1 the item is downgraded, 2 the item is destroyed; 0xFF when sealed.</param>
+    /// <param name="elementMix">The struck stars' values summed by element: fire, frost, storm, shadow, light.</param>
+    /// <param name="cleanStrikes">The clean strikes.</param>
+    /// <param name="strikeCount">The strike count.</param>
+    /// <remarks>
+    /// Is sent by the server when: An attempt ends (sealed, cracked, abandoned or timed out), or a seal is refused.
+    /// Causes reaction on client side: The client shows the result; the item's new customisation follows as ItemCustomization (EE 39).
+    /// </remarks>
+    public static async ValueTask SendStarSmithForgeResultAsync(this IConnection? connection, byte @outcome, byte @flags, ushort @recipe, byte @rarity, byte @extension, byte @dominant, byte @fate, Memory<byte> @elementMix, byte @cleanStrikes, byte @strikeCount)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = StarSmithForgeResultRef.Length;
+            var packet = new StarSmithForgeResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Outcome = @outcome;
+            packet.Flags = @flags;
+            packet.Recipe = @recipe;
+            packet.Rarity = @rarity;
+            packet.Extension = @extension;
+            packet.Dominant = @dominant;
+            packet.Fate = @fate;
+            @elementMix.Span.CopyTo(packet.ElementMix);
+            packet.CleanStrikes = @cleanStrikes;
+            packet.StrikeCount = @strikeCount;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="MuunItemMove" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

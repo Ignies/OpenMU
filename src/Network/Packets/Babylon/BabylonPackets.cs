@@ -16,6 +16,165 @@ using System;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 /// <summary>
+/// A row of StarSmithGuidebook: a found recipe in full, or a sealed one with its hint only..
+/// </summary>
+public readonly struct StarSmithGuidebookEntry
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithGuidebookEntry"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithGuidebookEntry(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 69;
+
+    /// <summary>
+    /// Gets or sets 0 a found recipe, 1 a sealed one.
+    /// </summary>
+    public byte Kind
+    {
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the recipe's number; 0 for a sealed row.
+    /// </summary>
+    public ushort Recipe
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[1..]);
+        set => WriteUInt16LittleEndian(this._data.Span[1..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets how often the smith made it; 0 for a sealed row.
+    /// </summary>
+    public ushort Made
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[3..]);
+        set => WriteUInt16LittleEndian(this._data.Span[3..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets uTF-8, zero padded: a found recipe's name, a sealed row's hint.
+    /// </summary>
+    public string Text
+    {
+        get => this._data.Span.ExtractString(5, 64, System.Text.Encoding.UTF8);
+        set => this._data.Slice(5, 64).Span.WriteString(value, System.Text.Encoding.UTF8);
+    }
+}
+
+
+/// <summary>
+/// One entry of StarSmithForgeSky: a star, a link or a hint..
+/// </summary>
+public readonly struct StarSmithForgeSkyEntry
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeSkyEntry"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithForgeSkyEntry(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets or sets 0 a star, 1 a link, 2 a hint.
+    /// </summary>
+    public byte Kind
+    {
+        get => this._data.Span[0];
+        set => this._data.Span[0] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets a star: its index. A link or hint: one star.
+    /// </summary>
+    public byte A
+    {
+        get => this._data.Span[1];
+        set => this._data.Span[1] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets a star: X, 0 to 255 across the item's box (a layout hint). A link or hint: the other star.
+    /// </summary>
+    public byte B
+    {
+        get => this._data.Span[2];
+        set => this._data.Span[2] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets a star: Y, 0 to 255 down the item's box. A hint: its clarity, 0 to 255. A link: 0.
+    /// </summary>
+    public byte C
+    {
+        get => this._data.Span[3];
+        set => this._data.Span[3] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets a star: flags, 1 a void revealed by a Jewel of Guardian. Else 0.
+    /// </summary>
+    public byte D
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+}
+
+
+/// <summary>
+/// A recipe number of the guidance in StarSmithForgeStrikeResult..
+/// </summary>
+public readonly struct StarSmithForgeGuidance
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeGuidance"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithForgeGuidance(Memory<byte> data)
+    {
+        this._data = data;
+    }
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 2;
+
+    /// <summary>
+    /// Gets or sets the recipe.
+    /// </summary>
+    public ushort Recipe
+    {
+        get => ReadUInt16LittleEndian(this._data.Span);
+        set => WriteUInt16LittleEndian(this._data.Span, value);
+    }
+}
+
+
+/// <summary>
 /// One dye of StarSmithDyes: the item, what it allows and its swatches..
 /// </summary>
 public readonly struct StarSmithDyeEntry
@@ -5044,6 +5203,108 @@ public readonly struct ItemCustomizationsChanged
 
 
 /// <summary>
+/// Is sent by the server when: With StarSmithState while the hammer is in a hand, and after an attempt is sealed.
+/// Causes reaction on client side: The client shows the Guidebook: the found recipes in full, the rest as sealed rows. Nothing names a recipe the smith has not found.
+/// </summary>
+public readonly struct StarSmithGuidebook
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithGuidebook"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithGuidebook(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithGuidebook"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private StarSmithGuidebook(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x90;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets how many recipes the world has, for "? of N found".
+    /// </summary>
+    public byte Total
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the entry count.
+    /// </summary>
+    public byte EntryCount
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="StarSmithGuidebookEntry"/> of the specified index.
+    /// </summary>
+        public StarSmithGuidebookEntry this[int index] => new (this._data.Slice(7 + index * StarSmithGuidebookEntry.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="StarSmithGuidebook"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator StarSmithGuidebook(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="StarSmithGuidebook"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(StarSmithGuidebook packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="StarSmithGuidebookEntry"/>.
+    /// </summary>
+    /// <param name="entriesCount">The count of <see cref="StarSmithGuidebookEntry"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int entriesCount) => entriesCount * StarSmithGuidebookEntry.Length + 7;
+}
+
+
+/// <summary>
 /// Is sent by the server when: On world entry, when a Star Smith's Hammer is equipped or taken off, and after each smithing action.
 /// Causes reaction on client side: The client shows or hides the Star Smithing HUD with the smith's level and experience.
 /// </summary>
@@ -5858,6 +6119,844 @@ public readonly struct StarSmithDyes
     /// <param name="dyesCount">The count of <see cref="StarSmithDyeEntry"/> from which the size will be calculated.</param>
         
     public static int GetRequiredSize(int dyesCount) => dyesCount * StarSmithDyeEntry.Length + 6;
+}
+
+
+/// <summary>
+/// Is sent by the client when: The smith starts a recipe attempt in the Constellation Forge.
+/// Causes reaction on server side: The server checks the slots again, deals the sky from a seed of its own, starts the beat on its clock and answers with StarSmithForgeSky.
+/// </summary>
+public readonly struct StarSmithForgeStart
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeStart"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithForgeStart(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeStart"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private StarSmithForgeStart(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x99;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 21;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the inventory slot of the item worked on.
+    /// </summary>
+    public byte TargetSlot
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets how many of the ingredient slots are used, at most 10.
+    /// </summary>
+    public byte IngredientCount
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets how many of the catalyst slots are used, at most 4.
+    /// </summary>
+    public byte CatalystCount
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 10 inventory slots of ingredients; the unused ones are 0xFF. Each slot is one unit of its item (a stack gives one).
+    /// </summary>
+    public Span<byte> IngredientSlots
+    {
+        get => this._data.Slice(7, 10).Span;
+    }
+
+    /// <summary>
+    /// Gets or sets 4 inventory slots of catalysts (a Jewel of Guardian reveals a void and protects the item); the unused ones are 0xFF.
+    /// </summary>
+    public Span<byte> CatalystSlots
+    {
+        get => this._data.Slice(17, 4).Span;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="StarSmithForgeStart"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator StarSmithForgeStart(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="StarSmithForgeStart"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(StarSmithForgeStart packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: The smith strikes a star of the running attempt.
+/// Causes reaction on server side: The server stamps the time on arrival, judges it against the beat and answers with StarSmithForgeStrikeResult (and StarSmithForgeResult on a crack).
+/// </summary>
+public readonly struct StarSmithForgeStrike
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeStrike"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithForgeStrike(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeStrike"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private StarSmithForgeStrike(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x9A;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 5;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets the star's index in the sky.
+    /// </summary>
+    public byte Star
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="StarSmithForgeStrike"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator StarSmithForgeStrike(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="StarSmithForgeStrike"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(StarSmithForgeStrike packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: The smith seals the drawn constellation.
+/// Causes reaction on server side: The server applies the result and answers with StarSmithForgeResult; refused (outcome 4) without a running attempt or before the first strike.
+/// </summary>
+public readonly struct StarSmithForgeSeal
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeSeal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithForgeSeal(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeSeal"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private StarSmithForgeSeal(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x9B;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 4;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="StarSmithForgeSeal"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator StarSmithForgeSeal(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="StarSmithForgeSeal"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(StarSmithForgeSeal packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the client when: The smith walks away from the running attempt.
+/// Causes reaction on server side: Like a crack off every shape: the ingredients are lost and the item stays. Answered with StarSmithForgeResult (outcome 2).
+/// </summary>
+public readonly struct StarSmithForgeAbandon
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeAbandon"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithForgeAbandon(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeAbandon"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private StarSmithForgeAbandon(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x9C;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 4;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="StarSmithForgeAbandon"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator StarSmithForgeAbandon(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="StarSmithForgeAbandon"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(StarSmithForgeAbandon packet) => packet._data; 
+}
+
+
+/// <summary>
+/// Is sent by the server when: The answer to StarSmithForgeStart: the dealt sky, or why there is none.
+/// Causes reaction on client side: The client lays the stars out over the item's silhouette and starts the beat. Element, value and void of a star are never sent before it is struck, except the void a Jewel of Guardian reveals.
+/// </summary>
+public readonly struct StarSmithForgeSky
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeSky"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithForgeSky(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeSky"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private StarSmithForgeSky(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (ushort)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC2;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x9D;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C2HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets 0 started; else the StarSmithResult codes (1 no hammer, 2 hammer broken, 3 locked, 4 not here, 5 no such item, 8 off), 11 no recipe for these ingredients, 12 an attempt is already running, 13 a slot is wrong (empty, used twice, the hammer or the item). Only the header is filled when not 0.
+    /// </summary>
+    public byte Result
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the target slot.
+    /// </summary>
+    public byte TargetSlot
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets how many stars may be struck.
+    /// </summary>
+    public byte Strikes
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the worst fate among the sky's recipes after protection: 0 the ingredients are lost, 1 the item is downgraded, 2 the item is destroyed.
+    /// </summary>
+    public byte Risk
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the star count.
+    /// </summary>
+    public byte StarCount
+    {
+        get => this._data.Span[9];
+        set => this._data.Span[9] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the beat interval ms.
+    /// </summary>
+    public ushort BeatIntervalMs
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[10..]);
+        set => WriteUInt16LittleEndian(this._data.Span[10..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the time from sending this packet to the first beat, in milliseconds.
+    /// </summary>
+    public ushort FirstBeatMs
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[12..]);
+        set => WriteUInt16LittleEndian(this._data.Span[12..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the entry count.
+    /// </summary>
+    public byte EntryCount
+    {
+        get => this._data.Span[14];
+        set => this._data.Span[14] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="StarSmithForgeSkyEntry"/> of the specified index.
+    /// </summary>
+        public StarSmithForgeSkyEntry this[int index] => new (this._data.Slice(15 + index * StarSmithForgeSkyEntry.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="StarSmithForgeSky"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator StarSmithForgeSky(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="StarSmithForgeSky"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(StarSmithForgeSky packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="StarSmithForgeSkyEntry"/>.
+    /// </summary>
+    /// <param name="entriesCount">The count of <see cref="StarSmithForgeSkyEntry"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int entriesCount) => entriesCount * StarSmithForgeSkyEntry.Length + 15;
+}
+
+
+/// <summary>
+/// Is sent by the server when: The answer to StarSmithForgeStrike.
+/// Causes reaction on client side: The client draws the link (or the crack) and shows the struck star's element and value. A refused strike changes nothing; its star fields are 0.
+/// </summary>
+public readonly struct StarSmithForgeStrikeResult
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeStrikeResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithForgeStrikeResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeStrikeResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private StarSmithForgeStrikeResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)data.Length;
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x9E;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets 0 linked, 1 cracked, 2 refused: no attempt running, 3 refused: no such star, 4 refused: no strikes left, 5 refused: the star is struck, 6 refused: not linked to the last star.
+    /// </summary>
+    public byte Answer
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the star.
+    /// </summary>
+    public byte Star
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 0 fire, 1 frost, 2 storm, 3 shadow, 4 light.
+    /// </summary>
+    public byte Element
+    {
+        get => this._data.Span[6];
+        set => this._data.Span[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 1 to 5.
+    /// </summary>
+    public byte Value
+    {
+        get => this._data.Span[7];
+        set => this._data.Span[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 1 the star is a void.
+    /// </summary>
+    public byte Flags
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 0 clean, 1 shaky, 2 late.
+    /// </summary>
+    public byte Timing
+    {
+        get => this._data.Span[9];
+        set => this._data.Span[9] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the strikes left.
+    /// </summary>
+    public byte StrikesLeft
+    {
+        get => this._data.Span[10];
+        set => this._data.Span[10] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the guidance count.
+    /// </summary>
+    public byte GuidanceCount
+    {
+        get => this._data.Span[11];
+        set => this._data.Span[11] = value;
+    }
+
+    /// <summary>
+    /// Gets the <see cref="StarSmithForgeGuidance"/> of the specified index.
+    /// </summary>
+        public StarSmithForgeGuidance this[int index] => new (this._data.Slice(12 + index * StarSmithForgeGuidance.Length));
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="StarSmithForgeStrikeResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator StarSmithForgeStrikeResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="StarSmithForgeStrikeResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(StarSmithForgeStrikeResult packet) => packet._data; 
+
+    /// <summary>
+    /// Calculates the size of the packet for the specified count of <see cref="StarSmithForgeGuidance"/>.
+    /// </summary>
+    /// <param name="guidanceCount">The count of <see cref="StarSmithForgeGuidance"/> from which the size will be calculated.</param>
+        
+    public static int GetRequiredSize(int guidanceCount) => guidanceCount * StarSmithForgeGuidance.Length + 12;
+}
+
+
+/// <summary>
+/// Is sent by the server when: An attempt ends (sealed, cracked, abandoned or timed out), or a seal is refused.
+/// Causes reaction on client side: The client shows the result; the item's new customisation follows as ItemCustomization (EE 39).
+/// </summary>
+public readonly struct StarSmithForgeResult
+{
+    private readonly Memory<byte> _data;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    public StarSmithForgeResult(Memory<byte> data)
+        : this(data, true)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StarSmithForgeResult"/> struct.
+    /// </summary>
+    /// <param name="data">The underlying data.</param>
+    /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
+    private StarSmithForgeResult(Memory<byte> data, bool initialize)
+    {
+        this._data = data;
+        if (initialize)
+        {
+            var header = this.Header;
+            header.Type = HeaderType;
+            header.Code = Code;
+            header.Length = (byte)Math.Min(data.Length, Length);
+            header.SubCode = SubCode;
+        }
+    }
+
+    /// <summary>
+    /// Gets the header type of this data packet.
+    /// </summary>
+    public static byte HeaderType => 0xC1;
+
+    /// <summary>
+    /// Gets the operation code of this data packet.
+    /// </summary>
+    public static byte Code => 0xEE;
+
+    /// <summary>
+    /// Gets the operation sub-code of this data packet.
+    /// The <see cref="Code" /> is used as a grouping key.
+    /// </summary>
+    public static byte SubCode => 0x9F;
+
+    /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 19;
+
+    /// <summary>
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCode Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets 0 sealed, 1 cracked, 2 abandoned, 3 timed out (as abandoned), 4 seal refused (no attempt running or nothing struck; nothing else is filled).
+    /// </summary>
+    public byte Outcome
+    {
+        get => this._data.Span[4];
+        set => this._data.Span[4] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 1 the attunement (no recipe), 2 the smith's first completion of the recipe.
+    /// </summary>
+    public byte Flags
+    {
+        get => this._data.Span[5];
+        set => this._data.Span[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the recipe's number (on a crack, the one the path was on); 0 for the attunement.
+    /// </summary>
+    public ushort Recipe
+    {
+        get => ReadUInt16LittleEndian(this._data.Span[6..]);
+        set => WriteUInt16LittleEndian(this._data.Span[6..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets 0 Common to 5 Mythic (Common on a crack).
+    /// </summary>
+    public byte Rarity
+    {
+        get => this._data.Span[8];
+        set => this._data.Span[8] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the links past an extendable shape.
+    /// </summary>
+    public byte Extension
+    {
+        get => this._data.Span[9];
+        set => this._data.Span[9] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the dominant element (0 fire to 4 light), 0xFF none.
+    /// </summary>
+    public byte Dominant
+    {
+        get => this._data.Span[10];
+        set => this._data.Span[10] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the item's fate when not sealed: 0 the ingredients are lost, 1 the item is downgraded, 2 the item is destroyed; 0xFF when sealed.
+    /// </summary>
+    public byte Fate
+    {
+        get => this._data.Span[11];
+        set => this._data.Span[11] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the struck stars' values summed by element: fire, frost, storm, shadow, light.
+    /// </summary>
+    public Span<byte> ElementMix
+    {
+        get => this._data.Slice(12, 5).Span;
+    }
+
+    /// <summary>
+    /// Gets or sets the clean strikes.
+    /// </summary>
+    public byte CleanStrikes
+    {
+        get => this._data.Span[17];
+        set => this._data.Span[17] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the strike count.
+    /// </summary>
+    public byte StrikeCount
+    {
+        get => this._data.Span[18];
+        set => this._data.Span[18] = value;
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Memory of bytes to a <see cref="StarSmithForgeResult"/>.
+    /// </summary>
+    /// <param name="packet">The packet as span.</param>
+    /// <returns>The packet as struct.</returns>
+    public static implicit operator StarSmithForgeResult(Memory<byte> packet) => new (packet, false);
+
+    /// <summary>
+    /// Performs an implicit conversion from <see cref="StarSmithForgeResult"/> to a Memory of bytes.
+    /// </summary>
+    /// <param name="packet">The packet as struct.</param>
+    /// <returns>The packet as byte span.</returns>
+    public static implicit operator Memory<byte>(StarSmithForgeResult packet) => packet._data; 
 }
 
 

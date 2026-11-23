@@ -16,12 +16,13 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Star Smithing (Readme.md): with the Star Smith's Hammer in a hand, a smith recolours, names, writes the lore of and
-/// locks the items of the inventory. Off by default; a world turns it on with its system (Admin > Systems).
+/// locks the items of the inventory, and plays recipe attempts in the Constellation Forge
+/// (StarSmithingFeaturePlugIn.Forge.cs). Off by default; a world turns it on with its system (Admin > Systems).
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.StarSmithingFeaturePlugIn_Name), Description = nameof(PlugInResources.StarSmithingFeaturePlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("27031977-58F3-4B43-A2EE-524CB1F01D4D")]
-public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISupportCustomConfiguration<StarSmithingConfiguration>, ISupportDefaultCustomConfiguration, IObjectAddedToMapPlugIn
+public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISupportCustomConfiguration<StarSmithingConfiguration>, ISupportDefaultCustomConfiguration, IObjectAddedToMapPlugIn
 {
     /// <summary>
     /// The feature id (<see cref="ForkInfo.Features"/>, <see cref="ForkFeatures"/>).
@@ -124,6 +125,8 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
         if (hammer is not null)
         {
             await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendDyesAsync(this.Settings.Dyes)).ConfigureAwait(false);
+            var found = this.GuidebookOf(player);
+            await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendGuidebookAsync(this.Settings.Recipes.Count, found)).ConfigureAwait(false);
         }
     }
 
@@ -172,6 +175,27 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
         record.UpdatedAt = DateTime.UtcNow;
         await context.SaveChangesAsync().ConfigureAwait(false);
         ItemCustomizationCache.Forget(itemId);
+    }
+
+    /// <summary>Takes one dye from its stack, or the item when it was the last.</summary>
+    private static async ValueTask SpendOneAsync(Player player, Item dye)
+    {
+        if (dye.Durability > 1)
+        {
+            dye.Durability--;
+            await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(dye, true)).ConfigureAwait(false);
+            return;
+        }
+
+        if (player.Inventory is not { } inventory)
+        {
+            return;
+        }
+
+        var slot = dye.ItemSlot;
+        await inventory.RemoveItemAsync(dye).ConfigureAwait(false);
+        await player.PersistenceContext.DeleteAsync(dye).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
     }
 
     private async ValueTask<(StarSmithResultCode Result, byte Refusal)> RunAsync(Player player, StarSmithAction action, byte slot, ReadOnlyMemory<byte> payload, int zenCost, byte dyeSlot, byte radiantSlot)
@@ -268,27 +292,6 @@ public class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefault, ISu
         }
 
         return (StarSmithResultCode.Done, 0);
-    }
-
-    /// <summary>Takes one dye from its stack, or the item when it was the last.</summary>
-    private static async ValueTask SpendOneAsync(Player player, Item dye)
-    {
-        if (dye.Durability > 1)
-        {
-            dye.Durability--;
-            await player.InvokeViewPlugInAsync<IItemDurabilityChangedPlugIn>(p => p.ItemDurabilityChangedAsync(dye, true)).ConfigureAwait(false);
-            return;
-        }
-
-        if (player.Inventory is not { } inventory)
-        {
-            return;
-        }
-
-        var slot = dye.ItemSlot;
-        await inventory.RemoveItemAsync(dye).ConfigureAwait(false);
-        await player.PersistenceContext.DeleteAsync(dye).ConfigureAwait(false);
-        await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
     }
 
     /// <summary>The bag item in a dye slot, if it is a dye (never the hammer or the item being recoloured).</summary>

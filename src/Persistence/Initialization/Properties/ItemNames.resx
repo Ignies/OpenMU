@@ -2340,4 +2340,49 @@
   <data name="StarSmithsHammer" xml:space="preserve">
     <value>Star Smith's Hammer</value>
   </data>
+  <data name="CrimsonDye" xml:space="preserve">
+    <value>Crimson Dye</value>
+  </data>
+  <data name="AmberDye" xml:space="preserve">
+    <value>Amber Dye</value>
+  </data>
+  <data name="GoldDye" xml:space="preserve">
+    <value>Gold Dye</value>
+  </data>
+  <data name="VerdantDye" xml:space="preserve">
+    <value>Verdant Dye</value>
+  </data>
+  <data name="AzureDye" xml:space="preserve">
+    <value>Azure Dye</value>
+  </data>
+  <data name="VioletDye" xml:space="preserve">
+    <value>Violet Dye</value>
+  </data>
+  <data name="IvoryDye" xml:space="preserve">
+    <value>Ivory Dye</value>
+  </data>
+  <data name="EbonyDye" xml:space="preserve">
+    <value>Ebony Dye</value>
+  </data>
+  <data name="BloodmoonDye" xml:space="preserve">
+    <value>Bloodmoon Dye</value>
+  </data>
+  <data name="FrostfireDye" xml:space="preserve">
+    <value>Frostfire Dye</value>
+  </data>
+  <data name="StarlightDye" xml:space="preserve">
+    <value>Starlight Dye</value>
+  </data>
+  <data name="AbyssalDye" xml:space="preserve">
+    <value>Abyssal Dye</value>
+  </data>
+  <data name="RoyalDye" xml:space="preserve">
+    <value>Royal Dye</value>
+  </data>
+  <data name="PrismaticDye" xml:space="preserve">
+    <value>Prismatic Dye</value>
+  </data>
+  <data name="RadiantDye" xml:space="preserve">
+    <value>Radiant Dye</value>
+  </data>
 </root>

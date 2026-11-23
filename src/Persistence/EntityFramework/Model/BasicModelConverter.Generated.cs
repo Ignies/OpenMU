@@ -841,6 +841,7 @@ internal sealed class BasicModelConverter
         target.ClaimedLevelRewards = source.ClaimedLevelRewards;
         target.StarSmithLevel = source.StarSmithLevel;
         target.StarSmithExperience = source.StarSmithExperience;
+        target.StarSmithGuidebook = source.StarSmithGuidebook;
         if (source.Attributes is { } attributesItems)
         {
             foreach (var item in attributesItems)

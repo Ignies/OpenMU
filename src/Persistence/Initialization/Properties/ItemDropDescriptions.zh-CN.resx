@@ -219,4 +219,7 @@
   <data name="SilverBoxMoney" xml:space="preserve">
     <value>银箱：金币</value>
   </data>
+  <data name="StarSmithDyes" xml:space="preserve">
+    <value>星匠染料</value>
+  </data>
 </root>

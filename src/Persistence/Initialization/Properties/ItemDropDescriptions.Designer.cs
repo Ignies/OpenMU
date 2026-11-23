@@ -531,5 +531,12 @@ namespace MUnique.OpenMU.Persistence.Initialization.Properties {
                 return ResourceManager.GetString("SilverBoxMoney", resourceCulture);
             }
         }
+
+        /// <summary>Gets StarSmithDyes from the configuration name resources.</summary>
+        public static string StarSmithDyes {
+            get {
+                return ResourceManager.GetString("StarSmithDyes", resourceCulture);
+            }
+        }
     }
 }

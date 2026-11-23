@@ -41,4 +41,13 @@ public enum StarSmithResultCode : byte
 
     /// <summary>The colour, strength, mode or glow is not one the dye allows.</summary>
     WrongDye,
+
+    /// <summary>A Forge start whose item and ingredients make no recipe.</summary>
+    NoRecipe,
+
+    /// <summary>A Forge start while an attempt is already running.</summary>
+    AttemptRunning,
+
+    /// <summary>A Forge start naming a wrong slot: empty, named twice, the hammer or the item worked on.</summary>
+    WrongSlot,
 }

@@ -25,6 +25,126 @@ public class PacketStructureTests
 {
 
     /// <summary>
+    /// Tests the structure size calculation for StarSmithGuidebookEntry.
+    /// </summary>
+    [Test]
+    public void StarSmithGuidebookEntry_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 69;
+        var actualLength = StarSmithGuidebookEntry.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Kind' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Kind' exceeds structure boundary");
+        
+        // Validate field 'Recipe' boundary
+        Assert.That(1 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Recipe' exceeds structure boundary");
+        
+        // Validate field 'Made' boundary
+        Assert.That(3 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Made' exceeds structure boundary");
+        
+        // Validate field 'Text' boundary
+        Assert.That(5 + 64, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Text' exceeds structure boundary");
+    }
+
+    /// <summary>
+    /// Tests the structure size calculation for StarSmithForgeSkyEntry.
+    /// </summary>
+    [Test]
+    public void StarSmithForgeSkyEntry_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 5;
+        var actualLength = StarSmithForgeSkyEntry.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Kind' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Kind' exceeds structure boundary");
+        
+        // Validate field 'A' boundary
+        Assert.That(1 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'A' exceeds structure boundary");
+        
+        // Validate field 'B' boundary
+        Assert.That(2 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'B' exceeds structure boundary");
+        
+        // Validate field 'C' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'C' exceeds structure boundary");
+        
+        // Validate field 'D' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'D' exceeds structure boundary");
+    }
+
+    /// <summary>
+    /// Tests the structure size calculation for StarSmithForgeGuidance.
+    /// </summary>
+    [Test]
+    public void StarSmithForgeGuidance_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 2;
+        var actualLength = StarSmithForgeGuidance.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Recipe' boundary
+        Assert.That(0 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Recipe' exceeds structure boundary");
+    }
+
+    /// <summary>
+    /// Tests the structure size calculation for StarSmithDyeEntry.
+    /// </summary>
+    [Test]
+    public void StarSmithDyeEntry_SizeValidation()
+    {
+        // Fixed-length structure validation
+        const int expectedLength = 30;
+        var actualLength = StarSmithDyeEntry.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Structure length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Group' boundary
+        Assert.That(0 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Group' exceeds structure boundary");
+        
+        // Validate field 'Number' boundary
+        Assert.That(1 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Number' exceeds structure boundary");
+        
+        // Validate field 'Flags' boundary
+        Assert.That(3 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Flags' exceeds structure boundary");
+        
+        // Validate field 'MaximumStrength' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'MaximumStrength' exceeds structure boundary");
+        
+        // Validate field 'SwatchCount' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'SwatchCount' exceeds structure boundary");
+        
+        // Validate field 'Swatches' boundary
+        Assert.That(6 + 24, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Swatches' exceeds structure boundary");
+    }
+
+    /// <summary>
     /// Tests the structure size calculation for CharacterClassCode.
     /// </summary>
     [Test]
@@ -1589,6 +1709,24 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for StarSmithGuidebook.
+    /// </summary>
+    [Test]
+    public void StarSmithGuidebook_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'Total' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Total' has invalid negative index");
+        
+        // Field 'EntryCount' starts at index 6 with size 1
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'EntryCount' has invalid negative index");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for StarSmithState.
     /// </summary>
     [Test]
@@ -1655,7 +1793,7 @@ public class PacketStructureTests
     public void StarSmithRecolorRequest_PacketSizeValidation()
     {
         // Fixed-length packet validation
-        const int expectedLength = 36;
+        const int expectedLength = 38;
         var actualLength = StarSmithRecolorRequestRef.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -1668,6 +1806,14 @@ public class PacketStructureTests
         // Validate field 'Look' boundary
         Assert.That(5 + 31, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Look' exceeds packet boundary");
+        
+        // Validate field 'DyeSlot' boundary
+        Assert.That(36 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'DyeSlot' exceeds packet boundary");
+        
+        // Validate field 'RadiantSlot' boundary
+        Assert.That(37 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'RadiantSlot' exceeds packet boundary");
     }
 
     /// <summary>
@@ -1760,6 +1906,238 @@ public class PacketStructureTests
         // Validate field 'ZenCost' boundary
         Assert.That(7 + 4, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'ZenCost' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithDyes.
+    /// </summary>
+    [Test]
+    public void StarSmithDyes_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'Count' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Count' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithForgeStart.
+    /// </summary>
+    [Test]
+    public void StarSmithForgeStart_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 21;
+        var actualLength = StarSmithForgeStartRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'TargetSlot' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'TargetSlot' exceeds packet boundary");
+        
+        // Validate field 'IngredientCount' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IngredientCount' exceeds packet boundary");
+        
+        // Validate field 'CatalystCount' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'CatalystCount' exceeds packet boundary");
+        
+        // Validate field 'IngredientSlots' boundary
+        Assert.That(7 + 10, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'IngredientSlots' exceeds packet boundary");
+        
+        // Validate field 'CatalystSlots' boundary
+        Assert.That(17 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'CatalystSlots' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithForgeStrike.
+    /// </summary>
+    [Test]
+    public void StarSmithForgeStrike_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 5;
+        var actualLength = StarSmithForgeStrikeRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Star' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Star' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithForgeSeal.
+    /// </summary>
+    [Test]
+    public void StarSmithForgeSeal_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 4;
+        var actualLength = StarSmithForgeSealRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithForgeAbandon.
+    /// </summary>
+    [Test]
+    public void StarSmithForgeAbandon_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 4;
+        var actualLength = StarSmithForgeAbandonRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithForgeSky.
+    /// </summary>
+    [Test]
+    public void StarSmithForgeSky_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'Result' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Result' has invalid negative index");
+        
+        // Field 'TargetSlot' starts at index 6 with size 1
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'TargetSlot' has invalid negative index");
+        
+        // Field 'Strikes' starts at index 7 with size 1
+        Assert.That(7, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Strikes' has invalid negative index");
+        
+        // Field 'Risk' starts at index 8 with size 1
+        Assert.That(8, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Risk' has invalid negative index");
+        
+        // Field 'StarCount' starts at index 9 with size 1
+        Assert.That(9, Is.GreaterThanOrEqualTo(0), 
+            "Field 'StarCount' has invalid negative index");
+        
+        // Field 'BeatIntervalMs' starts at index 10 with size 2
+        Assert.That(10, Is.GreaterThanOrEqualTo(0), 
+            "Field 'BeatIntervalMs' has invalid negative index");
+        
+        // Field 'FirstBeatMs' starts at index 12 with size 2
+        Assert.That(12, Is.GreaterThanOrEqualTo(0), 
+            "Field 'FirstBeatMs' has invalid negative index");
+        
+        // Field 'EntryCount' starts at index 14 with size 1
+        Assert.That(14, Is.GreaterThanOrEqualTo(0), 
+            "Field 'EntryCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithForgeStrikeResult.
+    /// </summary>
+    [Test]
+    public void StarSmithForgeStrikeResult_PacketSizeValidation()
+    {
+        // Basic packet validation
+        // Validate header type and field boundaries
+        
+        // Field 'Answer' starts at index 4 with size 1
+        Assert.That(4, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Answer' has invalid negative index");
+        
+        // Field 'Star' starts at index 5 with size 1
+        Assert.That(5, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Star' has invalid negative index");
+        
+        // Field 'Element' starts at index 6 with size 1
+        Assert.That(6, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Element' has invalid negative index");
+        
+        // Field 'Value' starts at index 7 with size 1
+        Assert.That(7, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Value' has invalid negative index");
+        
+        // Field 'Flags' starts at index 8 with size 1
+        Assert.That(8, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Flags' has invalid negative index");
+        
+        // Field 'Timing' starts at index 9 with size 1
+        Assert.That(9, Is.GreaterThanOrEqualTo(0), 
+            "Field 'Timing' has invalid negative index");
+        
+        // Field 'StrikesLeft' starts at index 10 with size 1
+        Assert.That(10, Is.GreaterThanOrEqualTo(0), 
+            "Field 'StrikesLeft' has invalid negative index");
+        
+        // Field 'GuidanceCount' starts at index 11 with size 1
+        Assert.That(11, Is.GreaterThanOrEqualTo(0), 
+            "Field 'GuidanceCount' has invalid negative index");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for StarSmithForgeResult.
+    /// </summary>
+    [Test]
+    public void StarSmithForgeResult_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 19;
+        var actualLength = StarSmithForgeResultRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Outcome' boundary
+        Assert.That(4 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Outcome' exceeds packet boundary");
+        
+        // Validate field 'Flags' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Flags' exceeds packet boundary");
+        
+        // Validate field 'Recipe' boundary
+        Assert.That(6 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Recipe' exceeds packet boundary");
+        
+        // Validate field 'Rarity' boundary
+        Assert.That(8 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Rarity' exceeds packet boundary");
+        
+        // Validate field 'Extension' boundary
+        Assert.That(9 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Extension' exceeds packet boundary");
+        
+        // Validate field 'Dominant' boundary
+        Assert.That(10 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Dominant' exceeds packet boundary");
+        
+        // Validate field 'Fate' boundary
+        Assert.That(11 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Fate' exceeds packet boundary");
+        
+        // Validate field 'ElementMix' boundary
+        Assert.That(12 + 5, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ElementMix' exceeds packet boundary");
+        
+        // Validate field 'CleanStrikes' boundary
+        Assert.That(17 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'CleanStrikes' exceeds packet boundary");
+        
+        // Validate field 'StrikeCount' boundary
+        Assert.That(18 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'StrikeCount' exceeds packet boundary");
     }
 
     /// <summary>

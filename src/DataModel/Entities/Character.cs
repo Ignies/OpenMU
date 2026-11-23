@@ -246,6 +246,12 @@ public class Character
     public long StarSmithExperience { get; set; }
 
     /// <summary>
+    /// Gets or sets the Star Smith's Guidebook: the recipes found, with how often each was made, as "number:made" pairs
+    /// joined by ';' (GameLogic/StarSmithing/StarSmithGuidebook.cs); null when none is found yet.
+    /// </summary>
+    public string? StarSmithGuidebook { get; set; }
+
+    /// <summary>
     /// Gets or sets the stat attributes.
     /// </summary>
     /// <remarks>

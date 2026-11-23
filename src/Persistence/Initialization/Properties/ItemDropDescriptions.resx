@@ -219,4 +219,7 @@
   <data name="SilverBoxMoney" xml:space="preserve">
     <value>Silver Box - Money</value>
   </data>
+  <data name="StarSmithDyes" xml:space="preserve">
+    <value>Star Smith dyes</value>
+  </data>
 </root>
