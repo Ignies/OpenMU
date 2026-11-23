@@ -247,6 +247,8 @@ public class StarSmithForgeWireTest
         Assert.That(StarSmithBoosts.Parse(record?.Boosts), Is.EqualTo(new[] { new StarSmithBoost(StarSmithBoostStat.Defense, expected) }));
         Assert.That(expected, Is.GreaterThan(200), "scaled by the smith level");
         Assert.That(record!.SmithLevel, Is.EqualTo(40));
+        Assert.That(StarSmithBoostBook.Get(record.ItemId), Is.EqualTo(StarSmithBoosts.Parse(record.Boosts)), "in play at once");
+        StarSmithBoostBook.Forget(record.ItemId);
     }
 
     /// <summary>

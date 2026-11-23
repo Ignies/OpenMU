@@ -231,6 +231,11 @@ public static class AttackableExtensions
             dmg = (int)(dmg * (1 + attacker.Attributes[Stats.FinalDamageIncreasePvm]) * (1 - defender.Attributes[Stats.FinalDamageReceiveDecrementPvm]));
             dmg = LevelPenaltyPlugIn.ApplyToDamage(attackerPlayer, attacker, defender, dmg);
         }
+        else
+        {
+            // Smithed boosts against players use their own, lower PvP values (StarSmithing/Readme.md).
+            dmg = (int)(dmg * (1 + attacker.Attributes[Stats.StarSmithDamageIncreasePvp]) * (1 - defender.Attributes[Stats.StarSmithDamageReceiveDecrementPvp]));
+        }
 
         if (skill != null)
         {

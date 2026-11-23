@@ -1001,6 +1001,16 @@ public class Stats
     public static AttributeDefinition FinalDamageIncreasePvp { get; } = new(new Guid("20BE9BFA-A2DC-4868-8ABF-B6DE4B51D4D2"), "Final Damage Increase (PvP)", string.Empty);
 
     /// <summary>
+    /// Gets the damage increase against players of smithed boosts (StarSmithing/Readme.md), a factor (0.03 = +3 %).
+    /// </summary>
+    public static AttributeDefinition StarSmithDamageIncreasePvp { get; } = new(new Guid("5E1A2C3D-7B6F-4E21-9C4A-2D8F1B3E6A01"), "Star Smith Damage Increase (PvP)", "The damage increase against players of smithed boosts, as a factor.");
+
+    /// <summary>
+    /// Gets the share of damage from players that smithed boosts absorb (StarSmithing/Readme.md), a factor (0.02 = -2 %).
+    /// </summary>
+    public static AttributeDefinition StarSmithDamageReceiveDecrementPvp { get; } = new(new Guid("5E1A2C3D-7B6F-4E21-9C4A-2D8F1B3E6A02"), "Star Smith Damage Absorbed (PvP)", "The share of damage from players that smithed boosts absorb, as a factor.");
+
+    /// <summary>
     /// Gets the defense base attribute definition.
     /// </summary>
     /// <remarks>

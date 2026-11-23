@@ -175,6 +175,7 @@ public partial class StarSmithingFeaturePlugIn
         await player.PersistenceContext.DeleteAsync(item).ConfigureAwait(false);
         await player.InvokeViewPlugInAsync<IItemRemovedPlugIn>(p => p.RemoveItemAsync(slot)).ConfigureAwait(false);
         ItemCustomizationCache.Forget(itemId);
+        StarSmithBoostBook.Forget(itemId);
     }
 
     /// <summary>The recipes in the smith's Guidebook, which guide the path and are no first completion.</summary>
@@ -337,6 +338,7 @@ public partial class StarSmithingFeaturePlugIn
                     c.Boosts = StarSmithBoosts.Format(roll?.Boosts ?? []);
                     c.SmithLevel = smithLevel;
                 }).ConfigureAwait(false);
+                ApplyBoosts(player, item, attempt.ItemId, roll?.Boosts ?? []);
                 await player.ForEachWorldObserverAsync<IStarSmithingViewPlugIn>(p => p.SendAnimationAsync(player, StarSmithAction.Forge, Strikes), true).ConfigureAwait(false);
                 break;
             case StarSmithForgeOutcome.Cracked when result.Fail == StarSmithOnFail.ItemDowngraded && existing is not null:
@@ -349,6 +351,7 @@ public partial class StarSmithingFeaturePlugIn
                     c.Boosts = null;
                     c.SmithLevel = 0;
                 }).ConfigureAwait(false);
+                ApplyBoosts(player, item, attempt.ItemId, []);
                 break;
             case StarSmithForgeOutcome.Cracked when result.Fail == StarSmithOnFail.ItemDestroyed && item is not null:
                 await DestroyAsync(player, item, attempt.ItemId).ConfigureAwait(false);

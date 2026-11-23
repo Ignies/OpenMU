@@ -58,8 +58,61 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
     /// <returns>The plugin, or null when Star Smithing is off.</returns>
     public static StarSmithingFeaturePlugIn? Get(IGameContext gameContext) => gameContext.FeaturePlugIns.GetPlugIn<StarSmithingFeaturePlugIn>();
 
+    /// <summary>Gets the balance tables the boosts in play are capped by.</summary>
+    public StarSmithBalance Balance => this.Settings.Balance;
+
     /// <inheritdoc />
     public object CreateDefaultConfig() => new StarSmithingConfiguration();
+
+    /// <summary>
+    /// Puts an item's boosts in play: the boost book learns them and, when the item is worn, its power-ups are made
+    /// again.
+    /// </summary>
+    /// <param name="player">The owner.</param>
+    /// <param name="item">The item.</param>
+    /// <param name="itemId">The item's persistent id.</param>
+    /// <param name="boosts">The boosts; none takes them out.</param>
+    internal static void ApplyBoosts(Player player, Item? item, Guid itemId, IReadOnlyList<StarSmithBoost> boosts)
+    {
+        StarSmithBoostBook.Set(itemId, boosts);
+        if (item is null || player.Attributes is not { } attributes || player.Inventory?.EquippedItems.Contains(item) != true)
+        {
+            return;
+        }
+
+        if (attributes.ItemPowerUps.Remove(item, out var old))
+        {
+            foreach (var powerUp in old)
+            {
+                powerUp.Dispose();
+            }
+        }
+
+        attributes.ItemPowerUps.Add(item, player.GameContext.ItemPowerUpFactory.GetPowerUps(item, attributes).ToList());
+    }
+
+    /// <summary>
+    /// Reads the boosts of every item a player carries into the boost book, and makes the worn ones' power-ups again.
+    /// </summary>
+    private static async ValueTask LoadBoostsAsync(Player player)
+    {
+        var items = player.Inventory?.Items
+            .Select(i => (Item: i, Id: i is MUnique.OpenMU.Persistence.IIdentifiable { Id: var id } ? id : Guid.Empty))
+            .Where(i => i.Id != Guid.Empty)
+            .ToList() ?? [];
+        if (items.Count == 0)
+        {
+            return;
+        }
+
+        var records = (await player.PersistenceContext.GetItemCustomizationsAsync(items.Select(i => i.Id).ToList()).ConfigureAwait(false))
+            .Where(r => !string.IsNullOrEmpty(r.Boosts))
+            .ToDictionary(r => r.ItemId);
+        foreach (var (item, id) in items.Where(i => records.ContainsKey(i.Id)))
+        {
+            ApplyBoosts(player, item, id, StarSmithBoosts.Parse(records[id].Boosts));
+        }
+    }
 
     /// <inheritdoc />
     public async ValueTask ObjectAddedToMapAsync(GameMap map, ILocateable addedObject)
@@ -72,6 +125,7 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
         if (!this._watched.TryGetValue(inventory, out _))
         {
             this._watched.Add(inventory, new object());
+            await LoadBoostsAsync(player).ConfigureAwait(false);
             inventory.EquippedItemsChanged += async args =>
             {
                 if (this.IsHammer(args.Item))
