@@ -194,3 +194,186 @@ path was on; an abandon or a timeout nothing. EE 91 shows the new level and expe
 
 Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRecipesTest.cs`, `StarSmithForgeTest.cs`, `StarSmithForgeWireTest.cs`,
 `StarSmithGuidebookTest.cs`; `tests/MUnique.OpenMU.Persistence.Initialization.Tests/StarSmithRecipesDataTest.cs`.
+
+## PR 6 contract
+
+The contract of PR 6 (Hidden-Babylon `docs/star_smithing.md` section 11), written before the code so the client and the
+site can build against it. Multi-byte numbers are little endian unless named big endian. A boost value on the wire is
+always the stat's value times 100, as a signed 32-bit integer (6.25% is 625, +300 HP is 30000).
+
+### Boost stats
+
+| Byte | JSON name | Unit | PvE attribute | PvP attribute |
+|---|---|---|---|---|
+| 0 | `damage` | % | `FinalDamageIncreasePvm` | `StarSmithDamageIncreasePvp` (new) |
+| 1 | `defense` | % | `DefensePvm` (multiplied) | `DefensePvp` (multiplied) |
+| 2 | `maxHealth` | flat | `MaximumHealth` | the same |
+| 3 | `maxMana` | flat | `MaximumMana` | the same |
+| 4 | `attackSpeed` | flat | `AttackSpeed` | the same |
+| 5 | `criticalRate` | % | `CriticalDamageChance` | the same |
+| 6 | `excellentRate` | % | `ExcellentDamageChance` | the same |
+| 7 | `damageAbsorbed` | % | `FinalDamageReceiveDecrementPvm` | `StarSmithDamageReceiveDecrementPvp` (new) |
+
+A stat that cannot tell a player from a monster (2 to 6) is capped by the lower of its PvE and PvP caps, so PvP never
+sees more than its table.
+
+### Outcomes
+
+- A recipe has 1 to 16 outcomes `{weight, tier, boosts}`; an outcome has 0 to 3 boosts `{stat, min, max}`.
+- A seal rolls one outcome by weight among those whose tier is at most the forge's rarity (none: the lowest tier
+  outcome). The roll uses the attempt's seed, so `Replay()` gives the same result.
+- Each boost of the outcome is rolled in `[min, max]`, multiplied by the seal's `MagnitudeFactor` (extension and smith
+  level: `1 + factor * (L / 100)^exponent`, balance `scaling`), then clamped to the PvE per-item cap. Only the first
+  `boostSlots` of the forge's rarity tier are kept.
+- The item's record keeps the forge's rarity (as in PR 5), the boosts, and the smith level at forging. A new seal
+  replaces the boosts. A downgrade clears them. The attunement (no recipe) gives no boost.
+- The Guidebook records which outcomes a smith has seen: `number:made:seen`, `seen` a bit mask of outcome indices
+  (a PR 5 pair `number:made` reads as seen 0).
+
+### Boosts in play
+
+A decorator over `IItemPowerUpFactory` adds a worn item's boosts. Each item's value is clamped to its per-item cap (PvE
+and PvP separately) and goes into a per-player pool attribute per stat and context; one capped element per pool feeds
+the real attribute, so the total across all worn items never passes the total cap, whichever item came first. Caps are
+clamped again to the code ceilings, whatever the configuration says. Two new attributes and one line in the PvP damage
+path carry the PvP damage and absorb.
+
+### Item record and EE 36
+
+`ItemCustomization` gains `SmithLevel` (short, 0 none) and `Boosts` (text, `stat:value` pairs joined by `;`, value x100,
+at most 3), migration `AddStarSmithBoosts`.
+
+`C2 EE 34 ItemCustomizations`: flag 32 = boosts waiting; the client asks `EE 35` for them as for the lore (flag 4).
+
+`C2 EE 36 ItemCustomizationDetail` grows from 433 to 451 bytes:
+
+| Index | Size | Field |
+|---|---|---|
+| 0-12 | | as before (header, storage, objectId big endian, slot, version) |
+| 13 | 420 | lore, as before |
+| 433 | 2 | smith level at forging (0 not forged) |
+| 435 | 1 | boost count (0 to 3) |
+| 436 | 3 x 5 | boosts: stat (1 byte, table above), value (int32, x100); unused ones zero |
+
+The value is the stored one (PvE per-item capped); the client shows it in the rarity colour under the name and lore.
+
+### EE 90 v2
+
+`C2 EE 90 StarSmithGuidebook`: 5 the recipe count (for "? of N found"), 6-7 the entry count (u16), then 75-byte entries.
+Each entry starts with its kind; a found row is followed by its lines (its ingredient lines, then its boost lines).
+
+| Kind 0 found / 1 sealed | Size | Field |
+|---|---|---|
+| 0 | 1 | kind |
+| 1 | 2 | recipe number (0 sealed) |
+| 3 | 2 | made count (0 sealed) |
+| 5 | 1 | shape length in stars (0 sealed) |
+| 6 | 1 | hint kind: 0 none, 1 riddle, 2 ingredient (found rows send 0) |
+| 7 | 1 | hint item group (ingredient hint; else 0) |
+| 8 | 2 | hint item number (ingredient hint; else 0) |
+| 10 | 1 | lines that follow (found: ingredient lines + boost lines; sealed 0) |
+| 11 | 64 | text, UTF-8 zero padded: a found recipe's name, a riddle's text, else empty |
+
+| Kind 2 ingredient line | Size | Field |
+|---|---|---|
+| 0 | 1 | kind 2 |
+| 1 | 1 | count in this line, 1 to 12 |
+| 2 | 12 x 5 | ingredients: group (1), number (2), minimum (1), maximum (1); the rest zero |
+
+| Kind 3 boost line | Size | Field |
+|---|---|---|
+| 0 | 1 | kind 3 |
+| 1 | 1 | count in this line, 1 to 8 |
+| 2 | 8 x 9 | boosts seen: stat (1), min (int32, x100), max (int32, x100): per stat the range over the outcomes the smith has seen, unscaled; the rest zero |
+
+Found rows come first by number, each followed by its lines; then a sealed row for each recipe not found, by number. A
+sealed row carries only its hint kind and the hint (text or item): no number, name, shape length, ingredients or
+boosts. The ingredient hint names one of the recipe's ingredients; the client writes "a recipe uses <item name>".
+
+### Beat ping
+
+| Packet | Direction | Layout |
+|---|---|---|
+| `C1 EE F3 ForkPing` | server to client | 8 bytes: 4-7 token (u32) |
+| `C1 EE F4 ForkPong` | client to server | 8 bytes: 4-7 the token of the ping it answers |
+
+The client answers a ping at once and sends nothing else. The server sends one with every EE 91 while Star Smithing is
+on, at most one outstanding and at most one per 2 seconds; a pong with another token or after 5 seconds is ignored. The
+round trip is the server's own clock from send to answer; the smith's round trip is the lowest of the last 3 samples
+(0 with none), and a forge start uses it (`StarSmithBeat.Window`, capped by `RoundTripCapMs`). The client never states
+a time.
+
+### Configuration JSON
+
+`StarSmithingConfiguration` gains `Balance`, and each recipe `HintKind`, `HintGroup`, `HintNumber`, `Catalysts` and
+`Outcomes`. The bridge speaks camelCase, enums as camelCase strings:
+
+```json
+{
+  "recipes": [{
+    "number": 6, "name": "Aegis Weave", "experience": 50,
+    "targets": ["armor"], "minimumItemLevel": 0, "excellent": null,
+    "ingredients": [{ "group": 12, "number": 7, "minimum": 0, "maximum": 10 }],
+    "baseChance": 6000, "maximumChance": 9500,
+    "catalysts": [{ "group": 14, "number": 13, "chance": 500 }],
+    "onFail": "ingredientsLost", "risky": false,
+    "shape": { "stars": [3, 4, 8, 7], "ordered": true, "match": "exact", "extensionPercent": 10, "maximumExtension": 3 },
+    "hint": { "kind": "riddle", "text": "Four plates lock over the heart.", "group": 0, "number": 0 },
+    "outcomes": [{ "weight": 60, "tier": "common", "boosts": [{ "stat": "defense", "min": 1, "max": 3 }] }]
+  }],
+  "balance": {
+    "tiers": [{ "name": "Common", "color": "#ffffff", "effectSlots": 0, "boostSlots": 1 }],
+    "levelCurve": { "base": 100, "exponent": 1.6 },
+    "scaling": { "factor": 0.5, "exponent": 0.8 },
+    "chance": { "perLevel": 15, "maximum": 1500 },
+    "caps": {
+      "pve": { "damage": { "perItem": 6, "total": 15 } },
+      "pvp": { "damage": { "perItem": 3, "total": 8 } }
+    }
+  }
+}
+```
+
+- `targets`: any of `weapon`, `armor`, `wings`, `pendant`, `ring`. `excellent`: true, false or null (either).
+- `onFail`: `ingredientsLost`, `itemDowngraded`, `itemDestroyed`. `match`: `exact`, `extendable`.
+- `hint.kind`: `none`, `riddle` (needs `text`), `ingredient` (needs `group` and `number` of one of the ingredients).
+- `tier`: `common`, `uncommon`, `rare`, `epic`, `legendary`, `mythic`. Chances in hundredths of a percent.
+- Boost `min`/`max` and the caps in the stat's unit (table above), decimals allowed, two places kept.
+- `caps` names every stat in both tables. Defaults (PvE per item / total, PvP per item / total, code ceiling):
+  damage 6/15, 3/8, 30; defense 6/15, 3/8, 30; maxHealth 300/800, 300/800, 3000; maxMana 300/800, 300/800, 3000;
+  attackSpeed 5/12, 5/12, 30; criticalRate 3/8, 2/5, 20; excellentRate 3/8, 2/5, 20; damageAbsorbed 4/10, 2/6, 25.
+- `tiers`: exactly 6, Common to Mythic; defaults white 0/1, green 0/2, blue 1/2, purple 1/3, orange 2/3, red 2/3.
+
+Validation (`StarSmithConfigValidator`, run at load and on every bridge write; at load a bad recipe is dropped and
+logged): at most 64 recipes, numbers 1 to 32767 and unique; name 1 to 64 UTF-8 bytes; targets not empty; minimum item
+level 0 to 15; 1 to 40 ingredients, each an existing item, none twice, minimum at most maximum at most 10; base chance 0
+to 10,000, maximum chance from the base to 10,000; at most 4 catalysts, each an existing item, chance 0 to 10,000;
+`itemDestroyed` only on a risky recipe; shape 2 to 12 distinct stars, each below the forge's star count, extension 0 to
+100 %, at most 6 extension links; 1 to 16 outcomes, weight 1 to 10,000, at most 3 boosts, no stat twice, 0 < min <= max
+<= the stat's ceiling; experience 0 to 100,000; hint text at most 64 UTF-8 bytes. Balance: 6 tiers, name 1 to 16
+characters, colour `#rrggbb`, effect slots 0 to 2, boost slots 0 to 3; level curve base 1 to 100,000, exponent 1 to 3;
+scaling factor 0 to 1, exponent 0.1 to 2; chance per level 0 to 100, maximum 0 to 3,000; each cap 0 <= per item <=
+total <= ceiling.
+
+### Bridge
+
+The design's `GET`/`POST admin/star-smithing/config` are site operations like `smithing.dyes`/`smithing.setDyes`
+(fork #32), called through the site's `POST admin/cfg/read` and `POST admin/cfg/write` with `{op, args, role}`:
+
+- `smithing.config` (read, role Viewer; site flag `smithing.view`), no arguments. Result:
+  `{ "config": {recipes, balance}, "ceilings": {stat: number}, "stats": [...], "items": [{group, number, name}] }`,
+  `items` naming every ingredient, catalyst and hint item the config uses.
+- `smithing.setConfig` (write, role Operator; site flag `smithing.edit`), arguments `config` (the JSON above as a
+  string; a missing `recipes` or `balance` keeps the current one), `apply`, `confirmationToken`. A preview answers
+  `{ "change": {kind: "config", recipesBefore, recipesAfter, balanceChanged}, "confirmationToken": ... }` as `setDyes`
+  does; the apply writes the plugin configuration, every other setting kept, and the game reads it at once.
+- A refusal is HTTP 400 `{ "ok": false, "error": "invalid", "message": "3 fields are wrong.", "fields": [{ "field":
+  "recipes[2].outcomes[0].boosts[1].max", "message": "At most 30 (the code ceiling)." }] }`. `field` is the JSON path
+  in the camelCase shape above; the site marks those inputs.
+
+### Default recipes
+
+The five weapon recipes get outcome tables. New, all with the skill orb and scroll family, a 60% base chance (95% at
+most) and hints: armour 6 Aegis Weave, 7 Bulwark Knot; wings 8 Featherfall, 9 Tempest Pinions; pendant 10 Heart of
+Embers; ring 11 Circle of Tides. `AddStarSmithItemRecipesUpdatePlugIn` adds every default number a database lacks and
+gives a stored default recipe without outcomes its default table; it never changes anything else.
