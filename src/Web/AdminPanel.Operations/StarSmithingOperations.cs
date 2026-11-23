@@ -99,6 +99,121 @@ public sealed class StarSmithingOperations(IPersistenceContextProvider persisten
             cancellationToken).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Reads the recipes and the balance in the bridge's camelCase shape (StarSmithing Readme.md, "PR 6 contract"), with
+    /// the code ceilings, the stats and the names of the items the recipes use.
+    /// </summary>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns><c>{config: {recipes, balance}, ceilings, stats, items}</c>.</returns>
+    [AdminOperation(AdminRole.Viewer)]
+    [NotExposedToAgents("The recipes are edited on the website (Admin > Star Smithing > Recipes and Balance).")]
+    public async ValueTask<JsonObject> ConfigAsync(CancellationToken cancellationToken)
+    {
+        var config = await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+        var plugin = config.PlugInConfigurations.SingleOrDefault(p => p.TypeId == typeof(StarSmithingFeaturePlugIn).GUID);
+        var smithing = (plugin is null ? null : Read(plugin)) ?? new StarSmithingConfiguration();
+        var used = smithing.Recipes
+            .SelectMany(r => r.Ingredients.Select(i => (i.Group, i.Number)).Concat(r.Catalysts.Select(c => (c.Group, c.Number))).Append((r.HintGroup, r.HintNumber)))
+            .ToHashSet();
+        var ceilings = new JsonObject();
+        foreach (var stat in Enum.GetValues<StarSmithBoostStat>())
+        {
+            ceilings[StarSmithConfigJson.Name(stat)] = StarSmithBalance.Ceiling(stat);
+        }
+
+        return new JsonObject
+        {
+            ["config"] = StarSmithConfigJson.Write(smithing),
+            ["ceilings"] = ceilings,
+            ["stats"] = new JsonArray(Enum.GetValues<StarSmithBoostStat>().Select(s => (JsonNode)StarSmithConfigJson.Name(s)).ToArray()),
+            ["items"] = new JsonArray(config.Items
+                .Where(i => used.Contains(((byte)i.Group, i.Number)))
+                .OrderBy(i => i.Group).ThenBy(i => i.Number)
+                .Select(i => (JsonNode)new JsonObject { ["group"] = (int)i.Group, ["number"] = (int)i.Number, ["name"] = i.Name.ValueInNeutralLanguage })
+                .ToArray()),
+        };
+    }
+
+    /// <summary>
+    /// Replaces the recipes and/or the balance, checked by <see cref="StarSmithConfigValidator.Validate"/>; a part left
+    /// out and every other setting stay. A refusal names each field at fault (<c>fields</c>).
+    /// </summary>
+    /// <param name="config">The JSON <c>{recipes?, balance?}</c> in the shape <see cref="ConfigAsync"/> reads.</param>
+    /// <param name="apply">Whether to apply the confirmed preview.</param>
+    /// <param name="confirmationToken">The preview token.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The preview or applied result.</returns>
+    [AdminOperation(AdminRole.Operator, ReadOnly = false)]
+    [NotExposedToAgents("The recipes are edited on the website (Admin > Star Smithing > Recipes and Balance).")]
+    public async ValueTask<JsonObject> SetConfigAsync(string config, bool apply, string? confirmationToken, CancellationToken cancellationToken)
+    {
+        var actor = await AdminChangeExecution.RequireAsync(executor, settings, AdminRoles.Operator, cancellationToken).ConfigureAwait(false);
+        var (recipes, balance, readErrors) = StarSmithConfigJson.Read(config);
+        if (readErrors.Count > 0 && recipes is null && balance is null)
+        {
+            throw Refusal(readErrors);
+        }
+
+        using var gate = apply ? await confirmations.Gate.LockAsync(cancellationToken).ConfigureAwait(false) : null;
+        var configId = (await configurations.GetOwnerAsync(cancellationToken: cancellationToken).ConfigureAwait(false)).GetId();
+        using var context = persistence.CreateNewContext();
+        if (apply && context is IConfigurationEditContext editContext)
+        {
+            await editContext.BeginConfigurationEditAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        var gameConfig = await context.GetByIdAsync<GameConfiguration>(configId, cancellationToken).ConfigureAwait(false)
+            ?? throw new AdminOperationException("The active configuration could not be loaded.");
+        var plugin = gameConfig.PlugInConfigurations.SingleOrDefault(p => p.TypeId == typeof(StarSmithingFeaturePlugIn).GUID)
+            ?? throw new AdminOperationException("The Star Smithing plugin is not installed yet. Start the game server once.");
+        var settingsNow = Read(plugin) ?? new StarSmithingConfiguration();
+        var recipesBefore = settingsNow.Recipes.Count;
+        var balanceBefore = JsonSerializer.Serialize(settingsNow.Balance);
+        settingsNow.Recipes = recipes ?? settingsNow.Recipes;
+        settingsNow.Balance = balance ?? settingsNow.Balance;
+        var errors = readErrors
+            .Concat(StarSmithConfigValidator.Validate(settingsNow, (group, number) => gameConfig.Items.Any(i => i.Group == group && i.Number == number)))
+            .GroupBy(e => e.Field)
+            .Select(g => g.First())
+            .ToList();
+        if (errors.Count > 0)
+        {
+            throw Refusal(errors);
+        }
+
+        var json = JsonSerializer.Serialize(settingsNow);
+        var change = new JsonObject
+        {
+            ["kind"] = "config",
+            ["recipesBefore"] = recipesBefore,
+            ["recipesAfter"] = settingsNow.Recipes.Count,
+            ["balanceChanged"] = balanceBefore != JsonSerializer.Serialize(settingsNow.Balance),
+        };
+        return await AdminChangeExecution.RunAsync(
+            executor,
+            confirmations,
+            actor,
+            AdminRoles.Operator,
+            "smithing_set_config",
+            new { recipes = settingsNow.Recipes.Count, fingerprint = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(json))) },
+            change,
+            apply,
+            confirmationToken,
+            async () =>
+            {
+                plugin.CustomConfiguration = json;
+                await AdminChangeExecution.SaveAsync(context, cancellationToken).ConfigureAwait(false);
+                await configurations.InvalidateAsync().ConfigureAwait(false);
+            },
+            cancellationToken).ConfigureAwait(false);
+    }
+
+    private static AdminOperationException Refusal(IReadOnlyCollection<StarSmithConfigError> errors)
+        => new(
+            errors.Count == 1 ? "1 field is wrong." : $"{errors.Count} fields are wrong.",
+            AdminOperationErrorKind.InvalidInput,
+            fields: new JsonArray(errors.Select(e => (JsonNode)new JsonObject { ["field"] = e.Field, ["message"] = e.Message }).ToArray()));
+
     private static StarSmithingConfiguration? Read(PlugInConfiguration plugin)
     {
         try

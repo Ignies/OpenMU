@@ -110,8 +110,13 @@ public static partial class SiteBridge
         }
         catch (AdminOperationException ex)
         {
-            return (ex.Kind switch { AdminOperationErrorKind.InvalidInput => 400, AdminOperationErrorKind.Forbidden => 403, AdminOperationErrorKind.Unavailable => 503, AdminOperationErrorKind.Uncertain => 500, _ => 409 },
-                Failure(ex.Kind switch { AdminOperationErrorKind.InvalidInput => "invalid", _ => ex.Kind.ToString().ToLowerInvariant() }, ex.Message));
+            var failure = Failure(ex.Kind switch { AdminOperationErrorKind.InvalidInput => "invalid", _ => ex.Kind.ToString().ToLowerInvariant() }, ex.Message);
+            if (ex.Fields is { } fields)
+            {
+                failure["fields"] = fields.DeepClone();
+            }
+
+            return (ex.Kind switch { AdminOperationErrorKind.InvalidInput => 400, AdminOperationErrorKind.Forbidden => 403, AdminOperationErrorKind.Unavailable => 503, AdminOperationErrorKind.Uncertain => 500, _ => 409 }, failure);
         }
         catch (ArgumentException ex)
         {

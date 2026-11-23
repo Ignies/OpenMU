@@ -8,7 +8,7 @@ Startup attaches it to the host when the admin panel runs (`SiteBridge.Attach`).
 
 ## Operations
 `ops` lists them: every `[AdminOperation]` method of the configuration, plugin, server, account, guild, mini game and
-audit operations and the item moderation of Star Smithing (`items.checkText`, `items.words`, `items.setWords`, `items.resetText`, `GameLogic/TextModeration/Readme.md`), named `area.method` (`config.search`, `plugins.list`, ...), with the role each needs. The site names
+audit operations and the item moderation of Star Smithing (`items.checkText`, `items.words`, `items.setWords`, `items.resetText`, `GameLogic/TextModeration/Readme.md`) and its editors (`smithing.dyes`, `smithing.setDyes`, `smithing.config`, `smithing.setConfig`, `GameLogic/StarSmithing/Readme.md`), named `area.method` (`config.search`, `plugins.list`, ...), with the role each needs. The site names
 the role of its admin; a call below the operation's role is refused. The single-object writes (`config_update`, ...)
 stay out: every site write is a changeset.
 
@@ -42,6 +42,11 @@ endpoints, the terrain).
 
 ## Demo
 `-demo` has no database: `TransientAdminAuditRepository` keeps the audit for the process, so history and revert work.
+
+## Refusals
+An `AdminOperationException` is 400 `invalid` (bad input), 403, 409, 503 or 500 with `{ok: false, error, message}`.
+One that names fields (`Fields`, as Star Smithing's config validator does) adds `fields: [{field, message}]`, each field
+the JSON path of the input at fault, so the site can mark it.
 
 ## Tests
 `tests/MUnique.OpenMU.Web.Tests/Site/SiteBridgeTests.cs`.
