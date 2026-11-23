@@ -44,12 +44,29 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
     /// <summary>The inventories watched for the hammer: a character entering the world gets a new one.</summary>
     private readonly ConditionalWeakTable<IInventoryStorage, object> _watched = new();
 
+    /// <summary>The configuration already checked by <see cref="StarSmithConfigValidator.Sanitize"/>.</summary>
+    private StarSmithingConfiguration? _checked;
+
     /// <summary>
     /// Gets or sets the configuration.
     /// </summary>
     public StarSmithingConfiguration? Configuration { get; set; }
 
-    private StarSmithingConfiguration Settings => this.Configuration ??= new StarSmithingConfiguration();
+    private StarSmithingConfiguration Settings
+    {
+        get
+        {
+            // A configuration is checked once when it comes in: broken recipes are dropped, a broken balance is the default.
+            var settings = this.Configuration ??= new StarSmithingConfiguration();
+            if (!ReferenceEquals(settings, this._checked))
+            {
+                StarSmithConfigValidator.Sanitize(settings);
+                this._checked = settings;
+            }
+
+            return settings;
+        }
+    }
 
     /// <summary>
     /// Gets the active plugin of a game context.

@@ -21,11 +21,12 @@ internal class StarSmithRecipesDataTest
 {
     private const string UpdateTypeName = "MUnique.OpenMU.Persistence.Initialization.Updates.AddStarSmithRecipesUpdatePlugIn, MUnique.OpenMU.Persistence.Initialization";
 
-    private static readonly string[] Names = ["The Serpent", "Twin Fangs", "Ember Ring", "Storm Spine", "Wyrm Coil"];
+    private static readonly string[] Names = ["The Serpent", "Twin Fangs", "Ember Ring", "Storm Spine", "Wyrm Coil", "Aegis Weave", "Bulwark Knot", "Featherfall", "Tempest Pinions", "Heart of Embers", "Circle of Tides"];
 
     /// <summary>
-    /// The default recipes: the design's five weapon shapes, every one a weapon recipe made from the skill orbs and
-    /// scrolls, with a name and experience, and every orb and scroll of the item data an ingredient.
+    /// The default recipes: the design's five weapon shapes, then armour, wings, a pendant and a ring, every one made
+    /// from the skill orbs and scrolls, with a name, experience, a hint and an outcome table, and every orb and scroll
+    /// of the item data an ingredient.
     /// </summary>
     [Test]
     public async Task TheDefaultRecipesAreTheDesignsAsync()
@@ -34,11 +35,17 @@ internal class StarSmithRecipesDataTest
         Assert.Multiple(() =>
         {
             Assert.That(recipes.Select(r => r.Name), Is.EqualTo(Names));
-            Assert.That(recipes.Select(r => r.Number), Is.EqualTo(new short[] { 1, 2, 3, 4, 5 }));
-            Assert.That(recipes.Select(r => r.Shape!.Stars), Is.EqualTo(new[] { new[] { 0, 1, 2, 3, 4, 5, 6 }, [9, 6, 10], [6, 7, 8], [6, 4, 2, 0], [1, 11, 3, 5] }));
-            Assert.That(recipes.All(r => r.Targets == StarSmithTargetKind.Weapon), Is.True);
-            Assert.That(recipes.All(r => r.Experience > 0 && r.BaseChance > 0), Is.True);
+            Assert.That(recipes.Select(r => r.Number), Is.EqualTo(Enumerable.Range(1, 11).Select(n => (short)n)));
+            Assert.That(recipes.Take(5).Select(r => r.Shape!.Stars), Is.EqualTo(new[] { new[] { 0, 1, 2, 3, 4, 5, 6 }, [9, 6, 10], [6, 7, 8], [6, 4, 2, 0], [1, 11, 3, 5] }));
+            Assert.That(recipes.Select(r => r.Targets), Is.EqualTo(new[]
+            {
+                StarSmithTargetKind.Weapon, StarSmithTargetKind.Weapon, StarSmithTargetKind.Weapon, StarSmithTargetKind.Weapon, StarSmithTargetKind.Weapon,
+                StarSmithTargetKind.Armor, StarSmithTargetKind.Armor, StarSmithTargetKind.Wings, StarSmithTargetKind.Wings, StarSmithTargetKind.Pendant, StarSmithTargetKind.Ring,
+            }));
+            Assert.That(recipes.All(r => r.Experience > 0 && r.BaseChance > 0 && r.Outcomes.Count > 0), Is.True);
+            Assert.That(recipes.Select(r => r.HintKind).Distinct(), Is.EquivalentTo(new[] { StarSmithHintKind.None, StarSmithHintKind.Riddle, StarSmithHintKind.Ingredient }), "every hint kind");
             Assert.That(recipes.Count(r => r.Risky), Is.EqualTo(1), "one risky recipe; the Guardian protects it");
+            Assert.That(recipes.All(r => StarSmithConfigValidator.Validate(new StarSmithingConfiguration { Recipes = [r] }, (_, _) => true).Count == 0), Is.True, "each one valid");
         });
 
         var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
@@ -85,6 +92,40 @@ internal class StarSmithRecipesDataTest
         smithing.SetConfiguration(own, null);
         await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
         Assert.That(Configuration(gameConfiguration).Recipes.Select(r => r.Number), Is.EqualTo(new short[] { 77 }));
+    }
+
+    /// <summary>
+    /// The PR 6 update adds the default recipes a database lacks by number and gives a stored default recipe without
+    /// outcomes its default table; the operator's own recipes and numbers stay as they are.
+    /// </summary>
+    [Test]
+    public async Task ItemRecipesUpdateAddsOnlyWhatIsMissingAsync()
+    {
+        var (context, gameConfiguration) = await CreateSeason6ConfigurationAsync().ConfigureAwait(false);
+        using var _ = context;
+        var smithing = PlugIn(gameConfiguration);
+        var old = Configuration(gameConfiguration);
+        old.Recipes = StarSmithingConfiguration.DefaultRecipes().Take(5).ToList();
+        old.Recipes.ForEach(r => r.Outcomes.Clear());
+        old.Recipes[1].Name = "Mine";
+        old.Recipes.Add(new StarSmithRecipe { Number = 6, Name = "Own six", Outcomes = [new StarSmithOutcome { Weight = 1 }] });
+        old.Recipes.Add(new StarSmithRecipe { Number = 77, Name = "Own" });
+        smithing.SetConfiguration(old, null);
+
+        var type = Type.GetType("MUnique.OpenMU.Persistence.Initialization.Updates.AddStarSmithItemRecipesUpdatePlugIn, MUnique.OpenMU.Persistence.Initialization");
+        Assert.That(type, Is.Not.Null, "The update AddStarSmithItemRecipesUpdatePlugIn is missing.");
+        var update = (UpdatePlugInBase)Activator.CreateInstance(type!)!;
+        Assert.That(update.IsMandatory, Is.True);
+        await update.ApplyUpdateAsync(context, gameConfiguration).ConfigureAwait(false);
+
+        var recipes = Configuration(gameConfiguration).Recipes;
+        var defaults = StarSmithingConfiguration.DefaultRecipes();
+        Assert.That(recipes.Select(r => r.Number), Is.EquivalentTo(new short[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 77 }));
+        Assert.That(recipes.Single(r => r.Number == 2).Name, Is.EqualTo("Mine"), "the operator's name stays");
+        Assert.That(recipes.Where(r => r.Number <= 5).All(r => r.Outcomes.Count == defaults.Single(d => d.Number == r.Number).Outcomes.Count), Is.True, "the default tables");
+        Assert.That(recipes.Single(r => r.Number == 6).Name, Is.EqualTo("Own six"), "never overwritten");
+        Assert.That(recipes.Single(r => r.Number == 77).Outcomes, Is.Empty, "not a default number: untouched");
+        Assert.That(recipes.Single(r => r.Number == 9).HintKind, Is.EqualTo(StarSmithHintKind.Ingredient));
     }
 
     private static PlugInConfiguration PlugIn(GameConfiguration gameConfiguration)
