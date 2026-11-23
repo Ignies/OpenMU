@@ -879,7 +879,7 @@
           <Index>8</Index>
           <Type>Byte</Type>
           <Name>Flags</Name>
-          <Description>1 look, 2 name, 4 lore waiting (ask ItemCustomizationDetailRequest), 8 aura, 16 particles.</Description>
+          <Description>1 look, 2 name, 4 lore waiting (ask ItemCustomizationDetailRequest), 8 aura, 16 particles, 32 boosts waiting (ask ItemCustomizationDetailRequest as for the lore).</Description>
         </Field>
         <Field>
           <Index>9</Index>
@@ -1904,10 +1904,10 @@
       <Code>EE</Code>
       <SubCode>36</SubCode>
       <Name>ItemCustomizationDetail</Name>
-      <Length>433</Length>
+      <Length>451</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>The answer to ItemCustomizationDetailRequest.</SentWhen>
-      <CausedReaction>The client shows the item's lore in its tooltip.</CausedReaction>
+      <CausedReaction>The client shows the item's lore, and a smithed item's boosts and smith level, in its tooltip.</CausedReaction>
       <Fields>
         <Field>
           <Index>5</Index>
@@ -1935,6 +1935,25 @@
           <Name>Lore</Name>
           <Description>The lore, UTF-8, at most 140 characters on at most 3 lines, zero padded; empty when the item has none.</Description>
           <Length>420</Length>
+        </Field>
+        <Field>
+          <Index>433</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>SmithLevel</Name>
+          <Description>The smith's level when the item was forged; 0 when it was not (Star Smithing).</Description>
+        </Field>
+        <Field>
+          <Index>435</Index>
+          <Type>Byte</Type>
+          <Name>BoostCount</Name>
+          <Description>The smithed boosts, 0 to 3.</Description>
+        </Field>
+        <Field>
+          <Index>436</Index>
+          <Type>Binary</Type>
+          <Name>Boosts</Name>
+          <Description>Three 5-byte boosts: the stat (0 damage %, 1 defense %, 2 max HP, 3 max mana, 4 attack speed, 5 critical rate %, 6 excellent rate %, 7 damage absorbed %), then its value times 100 (32-bit, little endian); unused ones zero.</Description>
+          <Length>15</Length>
         </Field>
       </Fields>
     </Packet>

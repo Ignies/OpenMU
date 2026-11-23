@@ -651,11 +651,14 @@ public static class ConnectionExtensions
     /// <param name="slot">The slot.</param>
     /// <param name="version">The version.</param>
     /// <param name="lore">The lore, UTF-8, at most 140 characters on at most 3 lines, zero padded; empty when the item has none.</param>
+    /// <param name="smithLevel">The smith's level when the item was forged; 0 when it was not (Star Smithing).</param>
+    /// <param name="boostCount">The smithed boosts, 0 to 3.</param>
+    /// <param name="boosts">Three 5-byte boosts: the stat (0 damage %, 1 defense %, 2 max HP, 3 max mana, 4 attack speed, 5 critical rate %, 6 excellent rate %, 7 damage absorbed %), then its value times 100 (32-bit, little endian); unused ones zero.</param>
     /// <remarks>
     /// Is sent by the server when: The answer to ItemCustomizationDetailRequest.
-    /// Causes reaction on client side: The client shows the item's lore in its tooltip.
+    /// Causes reaction on client side: The client shows the item's lore, and a smithed item's boosts and smith level, in its tooltip.
     /// </remarks>
-    public static async ValueTask SendItemCustomizationDetailAsync(this IConnection? connection, byte @storage, ushort @objectId, byte @slot, uint @version, Memory<byte> @lore)
+    public static async ValueTask SendItemCustomizationDetailAsync(this IConnection? connection, byte @storage, ushort @objectId, byte @slot, uint @version, Memory<byte> @lore, ushort @smithLevel, byte @boostCount, Memory<byte> @boosts)
     {
         if (connection is null)
         {
@@ -671,6 +674,9 @@ public static class ConnectionExtensions
             packet.Slot = @slot;
             packet.Version = @version;
             @lore.Span.CopyTo(packet.Lore);
+            packet.SmithLevel = @smithLevel;
+            packet.BoostCount = @boostCount;
+            @boosts.Span.CopyTo(packet.Boosts);
 
             return packet.Header.Length;
         }

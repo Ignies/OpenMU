@@ -1696,7 +1696,7 @@ public readonly ref struct ItemCustomizationEntryRef
     }
 
     /// <summary>
-    /// Gets or sets 1 look, 2 name, 4 lore waiting (ask ItemCustomizationDetailRequest), 8 aura, 16 particles.
+    /// Gets or sets 1 look, 2 name, 4 lore waiting (ask ItemCustomizationDetailRequest), 8 aura, 16 particles, 32 boosts waiting (ask ItemCustomizationDetailRequest as for the lore).
     /// </summary>
     public byte Flags
     {
@@ -5017,7 +5017,7 @@ public readonly ref struct ItemCustomizationDetailRequestRef
 
 /// <summary>
 /// Is sent by the server when: The answer to ItemCustomizationDetailRequest.
-/// Causes reaction on client side: The client shows the item's lore in its tooltip.
+/// Causes reaction on client side: The client shows the item's lore, and a smithed item's boosts and smith level, in its tooltip.
 /// </summary>
 public readonly ref struct ItemCustomizationDetailRef
 {
@@ -5069,7 +5069,7 @@ public readonly ref struct ItemCustomizationDetailRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 433;
+    public static int Length => 451;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -5118,6 +5118,32 @@ public readonly ref struct ItemCustomizationDetailRef
     public Span<byte> Lore
     {
         get => this._data.Slice(13, 420);
+    }
+
+    /// <summary>
+    /// Gets or sets the smith's level when the item was forged; 0 when it was not (Star Smithing).
+    /// </summary>
+    public ushort SmithLevel
+    {
+        get => ReadUInt16LittleEndian(this._data[433..]);
+        set => WriteUInt16LittleEndian(this._data[433..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the smithed boosts, 0 to 3.
+    /// </summary>
+    public byte BoostCount
+    {
+        get => this._data[435];
+        set => this._data[435] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets three 5-byte boosts: the stat (0 damage %, 1 defense %, 2 max HP, 3 max mana, 4 attack speed, 5 critical rate %, 6 excellent rate %, 7 damage absorbed %), then its value times 100 (32-bit, little endian); unused ones zero.
+    /// </summary>
+    public Span<byte> Boosts
+    {
+        get => this._data.Slice(436, 15);
     }
 
     /// <summary>

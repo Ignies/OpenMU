@@ -94,4 +94,25 @@ public class ItemCustomizationViewTest
         Assert.That((packet.Storage, packet.ObjectId, packet.Slot, packet.Version), Is.EqualTo(((byte)2, (ushort)0x0200, (byte)12, 7u)));
         Assert.That(Encoding.UTF8.GetString(packet.Lore).TrimEnd('\0'), Is.EqualTo("Forged in ice.\nNever thawed."));
     }
+
+    /// <summary>
+    /// Star Smithing PR 6: EE 36 grows to 451 bytes with the smith level (433) and up to three boosts (435 count, then
+    /// stat and value times 100); EE 34 sets flag 32 when an item has boosts, so the client asks for them.
+    /// </summary>
+    [Test]
+    public async ValueTask TheDetailCarriesTheBoostsAsync()
+    {
+        var smithed = new DataModel.Entities.ItemCustomization { Rarity = 3, Version = 9, Boosts = "0:625;2:30000", SmithLevel = 40 };
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(GameServer.BabylonClient.Version);
+        await new ItemCustomizationBabylonPlugIn(player).SendDetailAsync(new ItemCustomizationEntryData(ItemCustomizationStorage.Inventory, 0x0200, 12, smithed)).ConfigureAwait(false);
+
+        var bytes = output.ToArray();
+        Assert.That(bytes, Has.Length.EqualTo(451));
+        Assert.That(bytes.Take(3), Is.EqualTo(new byte[] { 0xC2, 0x01, 0xC3 }));
+        Assert.That(bytes.Skip(433).ToArray(), Is.EqualTo(new byte[] { 40, 0, 2, 0, 0x71, 0x02, 0, 0, 2, 0x30, 0x75, 0, 0, 0, 0, 0, 0, 0 }));
+
+        var (other, list) = CastleSiegeRemoteViewTestHelper.CreatePlayer(GameServer.BabylonClient.Version);
+        await new ItemCustomizationBabylonPlugIn(other).SendCustomizationsAsync([new ItemCustomizationEntryData(ItemCustomizationStorage.Inventory, 0x0200, 12, smithed)]).ConfigureAwait(false);
+        Assert.That(new ItemCustomizationsRef(list.ToArray())[0].Flags, Is.EqualTo((byte)32));
+    }
 }
