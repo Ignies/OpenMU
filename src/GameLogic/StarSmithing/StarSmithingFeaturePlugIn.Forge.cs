@@ -136,13 +136,36 @@ public partial class StarSmithingFeaturePlugIn
     {
         var recipes = this.Settings.Recipes.OrderBy(r => r.Number).ToList();
         var found = StarSmithGuidebook.Parse(player.SelectedCharacter?.StarSmithGuidebook);
+        var seen = StarSmithGuidebook.Seen(player.SelectedCharacter?.StarSmithGuidebook);
         var rows = recipes
             .Where(r => found.ContainsKey(r.Number))
-            .Select(r => StarSmithGuidebookEntry.Found(r.Number, found[r.Number], r.Name))
+            .Select(r => StarSmithGuidebookEntry.Found(r.Number, found[r.Number], r.Name) with
+            {
+                ShapeLength = r.Shape?.Stars.Count ?? 0,
+                Ingredients = r.Ingredients,
+                BoostsSeen = BoostsSeen(r, seen.GetValueOrDefault(r.Number)),
+            })
             .ToList();
-        rows.AddRange(recipes.Where(r => !found.ContainsKey(r.Number)).Select(r => StarSmithGuidebookEntry.Sealed(r.Hint)));
+        rows.AddRange(recipes.Where(r => !found.ContainsKey(r.Number)).Select(r => r.HintKind switch
+        {
+            StarSmithHintKind.Riddle => StarSmithGuidebookEntry.Sealed(StarSmithHintKind.Riddle, r.Hint, 0, 0),
+            StarSmithHintKind.Ingredient => StarSmithGuidebookEntry.Sealed(StarSmithHintKind.Ingredient, string.Empty, r.HintGroup, r.HintNumber),
+            _ => StarSmithGuidebookEntry.Sealed(StarSmithHintKind.None, string.Empty, 0, 0),
+        }));
         return rows;
     }
+
+    /// <summary>
+    /// Per stat, the range (unscaled, times 100) of a recipe's outcomes whose bit is in the seen mask.
+    /// </summary>
+    private static IReadOnlyList<StarSmithBoostSeen> BoostsSeen(StarSmithRecipe recipe, int seen)
+        => recipe.Outcomes
+            .Where((_, index) => index < 31 && (seen & (1 << index)) != 0)
+            .SelectMany(o => o.Boosts)
+            .GroupBy(b => b.Stat)
+            .OrderBy(g => g.Key)
+            .Select(g => new StarSmithBoostSeen(g.Key, (int)Math.Round(g.Min(b => Math.Min(b.Minimum, b.Maximum)) * 100), (int)Math.Round(g.Max(b => Math.Max(b.Minimum, b.Maximum)) * 100)))
+            .ToList();
 
     /// <summary>
     /// What a recipe's target rule reads of an item: its kind, level and excellent option.
@@ -187,7 +210,7 @@ public partial class StarSmithingFeaturePlugIn
     /// attunement a little), doubled on the first completion, which also writes the recipe into the Guidebook; a seal of
     /// a known recipe raises its made count; a crack gives 30% of the recipe it was on; an abandon or timeout nothing.
     /// </summary>
-    private static void Reward(Player player, StarSmithForgeOutcome outcome, StarSmithForgeResult result)
+    private static void Reward(Player player, StarSmithForgeOutcome outcome, StarSmithForgeResult result, int rolledOutcome)
     {
         if (player.SelectedCharacter is not { } character)
         {
@@ -202,7 +225,7 @@ public partial class StarSmithingFeaturePlugIn
         };
         if (outcome == StarSmithForgeOutcome.Sealed && result.Recipe is { } recipe)
         {
-            character.StarSmithGuidebook = StarSmithGuidebook.Record(character.StarSmithGuidebook, recipe.Number);
+            character.StarSmithGuidebook = StarSmithGuidebook.Record(character.StarSmithGuidebook, recipe.Number, rolledOutcome);
         }
 
         var (level, experience) = StarSmithLevels.Add(character.StarSmithLevel, character.StarSmithExperience, Math.Max(0, earned));
@@ -327,10 +350,11 @@ public partial class StarSmithingFeaturePlugIn
         player.StarSmithForge = null;
         var item = player.Inventory?.Items.FirstOrDefault(i => i is MUnique.OpenMU.Persistence.IIdentifiable { Id: var id } && id == attempt.ItemId);
         var existing = (await player.PersistenceContext.GetItemCustomizationsAsync([attempt.ItemId]).ConfigureAwait(false)).FirstOrDefault();
+        StarSmithRoll? roll = null;
         switch (outcome)
         {
             case StarSmithForgeOutcome.Sealed:
-                var roll = result.Recipe is { } sealedRecipe ? StarSmithOutcomes.Roll(sealedRecipe, result.Rarity, result.MagnitudeFactor, attempt.Seed, this.Settings.Balance) : null;
+                roll = result.Recipe is { } sealedRecipe ? StarSmithOutcomes.Roll(sealedRecipe, result.Rarity, result.MagnitudeFactor, attempt.Seed, this.Settings.Balance) : null;
                 var smithLevel = (short)Math.Clamp((int)(player.SelectedCharacter?.StarSmithLevel ?? 1), 1, StarSmithLevels.Maximum);
                 await SaveAsync(player, attempt.ItemId, existing, c =>
                 {
@@ -360,7 +384,7 @@ public partial class StarSmithingFeaturePlugIn
                 break;
         }
 
-        Reward(player, outcome, result);
+        Reward(player, outcome, result, roll?.OutcomeIndex ?? -1);
         await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeResultAsync(outcome, result)).ConfigureAwait(false);
         await this.SendStateAsync(player).ConfigureAwait(false);
     }

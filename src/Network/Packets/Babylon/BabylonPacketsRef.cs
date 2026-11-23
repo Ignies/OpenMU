@@ -16,7 +16,7 @@ using System;
 using static System.Buffers.Binary.BinaryPrimitives;
 
 /// <summary>
-/// A row of StarSmithGuidebook: a found recipe in full, or a sealed one with its hint only..
+/// An entry of StarSmithGuidebook (v2): a found recipe (kind 0) followed by its lines, or a sealed one (kind 1) with its hint only. The fields below are a row's; a line has other bytes after its kind. Kind 2, an ingredient line: 1 the count in the line (1 to 12), then from 2 five bytes per ingredient: group, number (2, little endian), minimum, maximum. Kind 3, a boost line: 1 the count (1 to 8), then from 2 nine bytes per stat: the stat, the least and the most value (each a 32-bit little endian integer, the value times 100) over the outcomes the smith has seen, unscaled. The rest of a line is zero..
 /// </summary>
 public readonly ref struct StarSmithGuidebookEntryRef
 {
@@ -34,10 +34,10 @@ public readonly ref struct StarSmithGuidebookEntryRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 69;
+    public static int Length => 75;
 
     /// <summary>
-    /// Gets or sets 0 a found recipe, 1 a sealed one.
+    /// Gets or sets 0 a found recipe, 1 a sealed one, 2 an ingredient line, 3 a boost line.
     /// </summary>
     public byte Kind
     {
@@ -64,12 +64,57 @@ public readonly ref struct StarSmithGuidebookEntryRef
     }
 
     /// <summary>
-    /// Gets or sets uTF-8, zero padded: a found recipe's name, a sealed row's hint.
+    /// Gets or sets the stars of a found recipe's shape; 0 for a sealed row.
+    /// </summary>
+    public byte ShapeLength
+    {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets a sealed row's hint: 0 none, 1 a riddle (the text), 2 an ingredient (the item below); 0 for a found row.
+    /// </summary>
+    public byte HintKind
+    {
+        get => this._data[6];
+        set => this._data[6] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the item group of an ingredient hint.
+    /// </summary>
+    public byte HintGroup
+    {
+        get => this._data[7];
+        set => this._data[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the item number of an ingredient hint.
+    /// </summary>
+    public ushort HintNumber
+    {
+        get => ReadUInt16LittleEndian(this._data[8..]);
+        set => WriteUInt16LittleEndian(this._data[8..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the ingredient and boost lines that follow a found row; 0 for a sealed row.
+    /// </summary>
+    public byte Lines
+    {
+        get => this._data[10];
+        set => this._data[10] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets uTF-8, zero padded: a found recipe's name, a sealed row's riddle; empty otherwise.
     /// </summary>
     public string Text
     {
-        get => this._data.ExtractString(5, 64, System.Text.Encoding.UTF8);
-        set => this._data.Slice(5, 64).WriteString(value, System.Text.Encoding.UTF8);
+        get => this._data.ExtractString(11, 64, System.Text.Encoding.UTF8);
+        set => this._data.Slice(11, 64).WriteString(value, System.Text.Encoding.UTF8);
     }
 }
 
@@ -5268,18 +5313,18 @@ public readonly ref struct StarSmithGuidebookRef
     }
 
     /// <summary>
-    /// Gets or sets the entry count.
+    /// Gets or sets the entries: rows and the lines of the found rows.
     /// </summary>
-    public byte EntryCount
+    public ushort EntryCount
     {
-        get => this._data[6];
-        set => this._data[6] = value;
+        get => ReadUInt16LittleEndian(this._data[6..]);
+        set => WriteUInt16LittleEndian(this._data[6..], value);
     }
 
     /// <summary>
     /// Gets the <see cref="StarSmithGuidebookEntryRef"/> of the specified index.
     /// </summary>
-        public StarSmithGuidebookEntryRef this[int index] => new (this._data[(7 + index * StarSmithGuidebookEntryRef.Length)..]);
+        public StarSmithGuidebookEntryRef this[int index] => new (this._data[(8 + index * StarSmithGuidebookEntryRef.Length)..]);
 
     /// <summary>
     /// Performs an implicit conversion from a Span of bytes to a <see cref="StarSmithGuidebook"/>.
@@ -5300,7 +5345,7 @@ public readonly ref struct StarSmithGuidebookRef
     /// </summary>
     /// <param name="entriesCount">The count of <see cref="StarSmithGuidebookEntryRef"/> from which the size will be calculated.</param>
         
-    public static int GetRequiredSize(int entriesCount) => entriesCount * StarSmithGuidebookEntryRef.Length + 7;
+    public static int GetRequiredSize(int entriesCount) => entriesCount * StarSmithGuidebookEntryRef.Length + 8;
 }
 
 

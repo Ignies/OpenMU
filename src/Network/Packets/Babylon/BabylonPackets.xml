@@ -4,14 +4,14 @@
   <Structures>
     <Structure>
       <Name>StarSmithGuidebookEntry</Name>
-      <Description>A row of StarSmithGuidebook: a found recipe in full, or a sealed one with its hint only.</Description>
-      <Length>69</Length>
+      <Description>An entry of StarSmithGuidebook (v2): a found recipe (kind 0) followed by its lines, or a sealed one (kind 1) with its hint only. The fields below are a row's; a line has other bytes after its kind. Kind 2, an ingredient line: 1 the count in the line (1 to 12), then from 2 five bytes per ingredient: group, number (2, little endian), minimum, maximum. Kind 3, a boost line: 1 the count (1 to 8), then from 2 nine bytes per stat: the stat, the least and the most value (each a 32-bit little endian integer, the value times 100) over the outcomes the smith has seen, unscaled. The rest of a line is zero.</Description>
+      <Length>75</Length>
       <Fields>
         <Field>
           <Index>0</Index>
           <Type>Byte</Type>
           <Name>Kind</Name>
-          <Description>0 a found recipe, 1 a sealed one.</Description>
+          <Description>0 a found recipe, 1 a sealed one, 2 an ingredient line, 3 a boost line.</Description>
         </Field>
         <Field>
           <Index>1</Index>
@@ -27,9 +27,39 @@
         </Field>
         <Field>
           <Index>5</Index>
+          <Type>Byte</Type>
+          <Name>ShapeLength</Name>
+          <Description>The stars of a found recipe's shape; 0 for a sealed row.</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>Byte</Type>
+          <Name>HintKind</Name>
+          <Description>A sealed row's hint: 0 none, 1 a riddle (the text), 2 an ingredient (the item below); 0 for a found row.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>HintGroup</Name>
+          <Description>The item group of an ingredient hint.</Description>
+        </Field>
+        <Field>
+          <Index>8</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>HintNumber</Name>
+          <Description>The item number of an ingredient hint.</Description>
+        </Field>
+        <Field>
+          <Index>10</Index>
+          <Type>Byte</Type>
+          <Name>Lines</Name>
+          <Description>The ingredient and boost lines that follow a found row; 0 for a sealed row.</Description>
+        </Field>
+        <Field>
+          <Index>11</Index>
           <Type>String</Type>
           <Name>Text</Name>
-          <Description>UTF-8, zero padded: a found recipe's name, a sealed row's hint.</Description>
+          <Description>UTF-8, zero padded: a found recipe's name, a sealed row's riddle; empty otherwise.</Description>
           <Length>64</Length>
         </Field>
       </Fields>
@@ -1957,11 +1987,12 @@
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>Byte</Type>
+          <Type>ShortLittleEndian</Type>
           <Name>EntryCount</Name>
+          <Description>The entries: rows and the lines of the found rows.</Description>
         </Field>
         <Field>
-          <Index>7</Index>
+          <Index>8</Index>
           <Type>Structure[]</Type>
           <TypeName>StarSmithGuidebookEntry</TypeName>
           <Name>Entries</Name>
