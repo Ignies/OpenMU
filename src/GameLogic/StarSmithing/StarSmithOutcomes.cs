@@ -55,10 +55,26 @@ public static class StarSmithOutcomes
         {
             var low = Math.Min(range.Minimum, range.Maximum);
             var rolled = low + (dice.NextDouble() * (Math.Max(range.Minimum, range.Maximum) - low));
-            var value = Math.Min(rolled * Math.Max(0, magnitudeFactor), balance.PerItem(range.Stat, pvp: false));
+            var cap = balance.PerItem(range.Stat, pvp: false);
+            var value = Math.Min(rolled * Math.Max(0, magnitudeFactor), cap);
+
+            // A flat stat is whole in play, so the stored value, the tooltip and the attribute agree.
+            if (IsFlat(range.Stat))
+            {
+                value = Math.Min(Math.Round(value), Math.Floor(cap));
+            }
+
             boosts.Add(new StarSmithBoost(range.Stat, (int)Math.Round(value * 100)));
         }
 
         return new StarSmithRoll(index, boosts);
     }
+
+    /// <summary>
+    /// Whether a stat is a flat, whole number in play (max HP, max mana, attack speed) rather than a percentage.
+    /// </summary>
+    /// <param name="stat">The stat.</param>
+    /// <returns>True for a flat stat.</returns>
+    public static bool IsFlat(StarSmithBoostStat stat)
+        => stat is StarSmithBoostStat.MaxHealth or StarSmithBoostStat.MaxMana or StarSmithBoostStat.AttackSpeed;
 }

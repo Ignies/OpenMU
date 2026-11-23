@@ -62,6 +62,25 @@ public class StarSmithOutcomesTest
     }
 
     /// <summary>
+    /// A flat stat (max HP, max mana, attack speed) is whole in play, so it is rolled and scaled to a whole number;
+    /// a percent stat keeps two decimals.
+    /// </summary>
+    [Test]
+    public void FlatStatsAreWholeNumbers()
+    {
+        var outcome = new StarSmithOutcome
+        {
+            Weight = 1,
+            Tier = StarSmithRarity.Common,
+            Boosts = [Range(StarSmithBoostStat.MaxHealth, 100, 200), Range(StarSmithBoostStat.AttackSpeed, 1, 3), Range(StarSmithBoostStat.Damage, 1, 2)],
+        };
+        var recipe = Recipe(outcome);
+        var rolls = Enumerable.Range(0, 200).Select(s => StarSmithOutcomes.Roll(recipe, StarSmithRarity.Epic, 1.17, s, Balance)!.Boosts).ToList();
+        Assert.That(rolls.SelectMany(b => b.Where(x => x.Stat != StarSmithBoostStat.Damage)).Select(b => b.Value % 100), Is.All.EqualTo(0));
+        Assert.That(rolls.Select(b => b.Single(x => x.Stat == StarSmithBoostStat.Damage).Value % 100).Distinct().Count(), Is.GreaterThan(10), "percent keeps its decimals");
+    }
+
+    /// <summary>
     /// The PvE per-item cap holds after scaling.
     /// </summary>
     [Test]
