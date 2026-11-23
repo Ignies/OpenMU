@@ -32,4 +32,11 @@ public class StarSmithForgeRules
 
     /// <summary>Gets or sets the item number of the Jewel of Guardian.</summary>
     public short GuardianNumber { get; set; } = 31;
+
+    /// <summary>
+    /// Gets or sets what a smith level adds to a recipe's chance; the plug-in sets it from the balance tables (not
+    /// stored here), null for the default.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public StarSmithChanceBonus? LevelChance { get; set; }
 }

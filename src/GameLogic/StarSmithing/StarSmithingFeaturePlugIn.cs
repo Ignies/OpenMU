@@ -44,6 +44,9 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
     /// <summary>The inventories watched for the hammer: a character entering the world gets a new one.</summary>
     private readonly ConditionalWeakTable<IInventoryStorage, object> _watched = new();
 
+    /// <summary>Each smith's measured round trip (the beat ping), gone with the player.</summary>
+    private readonly ConditionalWeakTable<Player, StarSmithRoundTrip> _roundTrips = new();
+
     /// <summary>The configuration already checked by <see cref="StarSmithConfigValidator.Sanitize"/>.</summary>
     private StarSmithingConfiguration? _checked;
 
@@ -61,6 +64,7 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
             if (!ReferenceEquals(settings, this._checked))
             {
                 StarSmithConfigValidator.Sanitize(settings);
+                settings.Forge.LevelChance = settings.Balance.Chance;
                 this._checked = settings;
             }
 
@@ -74,6 +78,20 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
     /// <param name="gameContext">The game context.</param>
     /// <returns>The plugin, or null when Star Smithing is off.</returns>
     public static StarSmithingFeaturePlugIn? Get(IGameContext gameContext) => gameContext.FeaturePlugIns.GetPlugIn<StarSmithingFeaturePlugIn>();
+
+    /// <summary>
+    /// Takes a client's answer to the beat ping (EE F4): a sample when it carries the token of the ping out.
+    /// </summary>
+    /// <param name="player">The smith.</param>
+    /// <param name="token">The token it carries.</param>
+    public void Pong(Player player, uint token) => this.RoundTripOf(player).Answer(token, this.Clock());
+
+    /// <summary>
+    /// The smith's measured round trip.
+    /// </summary>
+    /// <param name="player">The smith.</param>
+    /// <returns>The round trip.</returns>
+    internal StarSmithRoundTrip RoundTripOf(Player player) => this._roundTrips.GetValue(player, _ => new StarSmithRoundTrip());
 
     /// <summary>Gets the balance tables the boosts in play are capped by.</summary>
     public StarSmithBalance Balance => this.Settings.Balance;
@@ -190,9 +208,14 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
             hammer is not null && hammer.Durability < this.Settings.DurabilityPerAction,
             level,
             player.SelectedCharacter?.StarSmithExperience ?? 0,
-            StarSmithLevels.ToNext(level),
+            StarSmithLevels.ToNext(level, this.Settings.Balance.LevelCurve),
             (int)(hammer?.Durability ?? 0));
         await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendStateAsync(state)).ConfigureAwait(false);
+        if (this.RoundTripOf(player).Send(this.Clock()) is { } token)
+        {
+            await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendPingAsync(token)).ConfigureAwait(false);
+        }
+
         if (hammer is not null)
         {
             await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendDyesAsync(this.Settings.Dyes)).ConfigureAwait(false);

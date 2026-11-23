@@ -147,7 +147,13 @@ C1 0C EE F0  ForkHello (client)          C1 10 EE F1  ForkWelcome (server)
 C1 08 EE F2  ForkFeaturesChanged (server)  11 u8      ClassEncoding: 0 Season 6, 1 class code
   4  u32 LE  ActiveFeatures                12 u16 LE  MaximumLevel (the world's normal cap)
                                            14 u16 LE  MaximumStars (0 none, 0xFFFF no limit)
+C1 08 EE F3  ForkPing (server)           C1 08 EE F4  ForkPong (client)
+  4  u32 LE  Token                         4  u32 LE  Token of the ping it answers
 ```
+
+- **Ping.** The server sends `ForkPing` (today with Star Smithing's state, the Constellation Forge's beat window;
+  `GameLogic/StarSmithing/Readme.md`); the client answers at once with the token and nothing else. The server takes the
+  round trip from its own clock; a client never states a time.
 
 - **Feature bits** (`GameLogic/ForkFeatures.cs`, appended only): 0 `wire_w32`, 1 `class_codes`, 2 `classes_s21`,
   3 `evolutions_45`, 4 `enhance_tree`, 5 `ability_core`, 6 `mastery`, 7 `wing_grades`, 8 `sockets_10`,

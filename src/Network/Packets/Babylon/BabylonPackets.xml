@@ -1017,6 +1017,42 @@
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>EE</Code>
+      <SubCode>F3</SubCode>
+      <Name>ForkPing</Name>
+      <Length>8</Length>
+      <Direction>ServerToClient</Direction>
+      <SentWhen>With StarSmithState while Star Smithing is on, at most one out and at most one per 2 seconds.</SentWhen>
+      <CausedReaction>The client answers at once with ForkPong and the same token; the server measures the round trip on its own clock (the Constellation Forge's beat window).</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Token</Name>
+          <Description>The token the answer carries back.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>F4</SubCode>
+      <Name>ForkPong</Name>
+      <Length>8</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>At once on a ForkPing, and never otherwise.</SentWhen>
+      <CausedReaction>The server takes the time since its ping as a round trip sample; another token or an answer after 5 seconds is ignored.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Token</Name>
+          <Description>The token of the ping it answers.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
       <SubCode>10</SubCode>
       <Name>CreateCharacterWide</Name>
       <Length>15</Length>

@@ -156,6 +156,12 @@ public partial class StarSmithingFeaturePlugIn
     }
 
     /// <summary>
+    /// What a seal's rolls are multiplied by: the shape's counted extension and the balance's scaling of the smith level.
+    /// </summary>
+    private double MagnitudeOf(StarSmithRecipe recipe, StarSmithForgeResult result, int smithLevel)
+        => (1 + (result.Extension * (recipe.Shape?.ExtensionPercent ?? 0) / 100.0)) * this.Settings.Balance.LevelFactor(smithLevel);
+
+    /// <summary>
     /// Per stat, the range (unscaled, times 100) of a recipe's outcomes whose bit is in the seen mask.
     /// </summary>
     private static IReadOnlyList<StarSmithBoostSeen> BoostsSeen(StarSmithRecipe recipe, int seen)
@@ -210,7 +216,7 @@ public partial class StarSmithingFeaturePlugIn
     /// attunement a little), doubled on the first completion, which also writes the recipe into the Guidebook; a seal of
     /// a known recipe raises its made count; a crack gives 30% of the recipe it was on; an abandon or timeout nothing.
     /// </summary>
-    private static void Reward(Player player, StarSmithForgeOutcome outcome, StarSmithForgeResult result, int rolledOutcome)
+    private static void Reward(Player player, StarSmithForgeOutcome outcome, StarSmithForgeResult result, int rolledOutcome, StarSmithCurve levelCurve)
     {
         if (player.SelectedCharacter is not { } character)
         {
@@ -228,7 +234,7 @@ public partial class StarSmithingFeaturePlugIn
             character.StarSmithGuidebook = StarSmithGuidebook.Record(character.StarSmithGuidebook, recipe.Number, rolledOutcome);
         }
 
-        var (level, experience) = StarSmithLevels.Add(character.StarSmithLevel, character.StarSmithExperience, Math.Max(0, earned));
+        var (level, experience) = StarSmithLevels.Add(character.StarSmithLevel, character.StarSmithExperience, Math.Max(0, earned), levelCurve);
         character.StarSmithLevel = (short)level;
         character.StarSmithExperience = experience;
     }
@@ -282,8 +288,8 @@ public partial class StarSmithingFeaturePlugIn
         var level = Math.Clamp((int)(player.SelectedCharacter?.StarSmithLevel ?? 1), 1, StarSmithLevels.Maximum);
         var beat = this.ForgeBeat;
 
-        // OpenMU keeps no round trip measurement of its own, and a client claim is never trusted: no allowance.
-        const int roundTripMs = 0;
+        // Measured by the server's own beat ping (EE F3/F4); a client claim is never read. The beat caps it.
+        var roundTripMs = this.RoundTripOf(player).RoundTripMs;
         var attempt = StarSmithForgeAttempt.Start(
             this.NewSeed(),
             candidates,
@@ -354,8 +360,8 @@ public partial class StarSmithingFeaturePlugIn
         switch (outcome)
         {
             case StarSmithForgeOutcome.Sealed:
-                roll = result.Recipe is { } sealedRecipe ? StarSmithOutcomes.Roll(sealedRecipe, result.Rarity, result.MagnitudeFactor, attempt.Seed, this.Settings.Balance) : null;
                 var smithLevel = (short)Math.Clamp((int)(player.SelectedCharacter?.StarSmithLevel ?? 1), 1, StarSmithLevels.Maximum);
+                roll = result.Recipe is { } sealedRecipe ? StarSmithOutcomes.Roll(sealedRecipe, result.Rarity, this.MagnitudeOf(sealedRecipe, result, smithLevel), attempt.Seed, this.Settings.Balance) : null;
                 await SaveAsync(player, attempt.ItemId, existing, c =>
                 {
                     c.Rarity = (byte)result.Rarity;
@@ -384,7 +390,7 @@ public partial class StarSmithingFeaturePlugIn
                 break;
         }
 
-        Reward(player, outcome, result, roll?.OutcomeIndex ?? -1);
+        Reward(player, outcome, result, roll?.OutcomeIndex ?? -1, this.Settings.Balance.LevelCurve);
         await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeResultAsync(outcome, result)).ConfigureAwait(false);
         await this.SendStateAsync(player).ConfigureAwait(false);
     }

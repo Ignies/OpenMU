@@ -3233,6 +3233,12 @@
   <data name="StarSmithForgeSealHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles C1 EE 9B: a smith seals the drawn constellation.</value>
   </data>
+  <data name="ForkPongHandlerPlugIn_Name" xml:space="preserve">
+    <value>Beat ping answer handler (Babylon)</value>
+  </data>
+  <data name="ForkPongHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles C1 EE F4: the client's answer to the beat ping; the server measures the round trip on its own clock.</value>
+  </data>
   <data name="StarSmithForgeAbandonHandlerPlugIn_Name" xml:space="preserve">
     <value>Star Smithing Forge abandon handler (Babylon)</value>
   </data>

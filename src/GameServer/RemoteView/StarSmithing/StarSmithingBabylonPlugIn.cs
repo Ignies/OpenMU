@@ -274,6 +274,26 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
     }
 
     /// <inheritdoc />
+    public async ValueTask SendPingAsync(uint token)
+    {
+        if (this._player.Connection is not { } connection)
+        {
+            return;
+        }
+
+        int Write()
+        {
+            var size = ForkPingRef.Length;
+            var span = connection.Output.GetSpan(size)[..size];
+            span.Clear();
+            _ = new ForkPingRef(span) { Token = token };
+            return size;
+        }
+
+        await connection.SendAsync(Write).ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     public async ValueTask SendGuidebookAsync(int total, IReadOnlyList<GuidebookEntry> found)
     {
         if (this._player.Connection is not { } connection)

@@ -63,6 +63,13 @@ public interface IStarSmithingViewPlugIn : IViewPlugIn
     ValueTask SendForgeResultAsync(StarSmithForgeOutcome outcome, StarSmithForgeResult? result);
 
     /// <summary>
+    /// Sends the beat ping (EE F3); the client answers at once with the token (EE F4), and the server measures the
+    /// round trip on its own clock.
+    /// </summary>
+    /// <param name="token">The token the answer must carry.</param>
+    ValueTask SendPingAsync(uint token);
+
+    /// <summary>
     /// Sends the smith's Guidebook (EE 90): the recipe count, the found recipes in full and a sealed row with its hint
     /// for every other one.
     /// </summary>

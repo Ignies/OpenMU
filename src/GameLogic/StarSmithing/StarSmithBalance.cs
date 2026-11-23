@@ -106,6 +106,14 @@ public class StarSmithBalance
     public int BoostSlots(StarSmithRarity rarity)
         => Math.Clamp(this.Tiers.ElementAtOrDefault((int)rarity)?.BoostSlots ?? 0, 0, StarSmithBoosts.Maximum);
 
+    /// <summary>
+    /// The magnitude factor of a smith level: 1 + base * (L / 100)^exponent (at most x1.5 by default).
+    /// </summary>
+    /// <param name="smithLevel">The smith level.</param>
+    /// <returns>The factor.</returns>
+    public double LevelFactor(int smithLevel)
+        => 1 + (this.Scaling.Base * Math.Pow(Math.Clamp(smithLevel, 0, StarSmithLevels.Maximum) / (double)StarSmithLevels.Maximum, this.Scaling.Exponent));
+
     private double Cap(StarSmithBoostStat stat, bool pvp, Func<StarSmithCap, double> pick)
     {
         double Of(Dictionary<StarSmithBoostStat, StarSmithCap>? table) => table is not null && table.TryGetValue(stat, out var cap) ? pick(cap) : 0;

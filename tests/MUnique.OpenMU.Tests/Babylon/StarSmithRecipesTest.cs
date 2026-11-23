@@ -103,4 +103,41 @@ public class StarSmithRecipesTest
         Assert.That(StarSmithRecipes.Succeeds(roll: 3999, chance: 4000), Is.True);
         Assert.That(StarSmithRecipes.Succeeds(roll: 4000, chance: 4000), Is.False);
     }
+
+    /// <summary>
+    /// The balance decides the level's chance bonus, the level curve and the scaling (Readme.md "PR 6 contract").
+    /// </summary>
+    [Test]
+    public void TheBalanceTablesApply()
+    {
+        Assert.That(StarSmithRecipes.Chance(Ember, smithLevel: 100, catalysts: 0, new StarSmithChanceBonus { PerLevel = 10, Maximum = 500 }), Is.EqualTo(4500));
+        Assert.That(StarSmithLevels.ToNext(2, new StarSmithCurve { Base = 50, Exponent = 1 }), Is.EqualTo(100));
+        Assert.That(StarSmithLevels.Add(1, 0, 150, new StarSmithCurve { Base = 50, Exponent = 1 }), Is.EqualTo((3, 0L)));
+        Assert.That(new StarSmithBalance { Scaling = new StarSmithCurve { Base = 1, Exponent = 1 } }.LevelFactor(50), Is.EqualTo(1.5).Within(1e-9));
+    }
+
+    /// <summary>
+    /// A recipe's own catalysts add their chance when they are among the attempt's catalysts.
+    /// </summary>
+    [Test]
+    public void ARecipesCatalystsAddTheirChance()
+    {
+        var recipe = new StarSmithRecipe
+        {
+            Number = 1,
+            Targets = StarSmithTargetKind.Weapon,
+            Ingredients = [new() { Group = 12, Number = 7, Maximum = 10 }],
+            BaseChance = 0,
+            Shape = new StarSmithShape { Stars = [0, 1, 2, 3] },
+            Catalysts = [new StarSmithCatalyst { Group = 14, Number = 13, Chance = 10_000 }],
+        };
+        var sword = new StarSmithTarget(StarSmithTargetKind.Weapon, 0, false);
+        for (var seed = 0L; seed < 20; seed++)
+        {
+            var lucky = StarSmithSky.Deal(seed, [recipe], sword, 1, 1, [(14, 13)]);
+            Assert.That(recipe.Shape.Stars.Skip(1).Any(s => lucky.Stars[s].IsVoid), Is.False, "the catalyst makes it sure");
+        }
+
+        Assert.That(Enumerable.Range(0, 20).Count(seed => recipe.Shape.Stars.Skip(1).Any(s => StarSmithSky.Deal(seed, [recipe], sword, 1, 1, []).Stars[s].IsVoid)), Is.GreaterThan(15), "without it, almost always a void");
+    }
 }

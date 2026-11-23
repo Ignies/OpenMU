@@ -31,7 +31,7 @@ public class PacketStructureTests
     public void StarSmithGuidebookEntry_SizeValidation()
     {
         // Fixed-length structure validation
-        const int expectedLength = 69;
+        const int expectedLength = 75;
         var actualLength = StarSmithGuidebookEntry.Length;
         
         Assert.That(actualLength, Is.EqualTo(expectedLength), 
@@ -49,8 +49,28 @@ public class PacketStructureTests
         Assert.That(3 + 2, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Made' exceeds structure boundary");
         
+        // Validate field 'ShapeLength' boundary
+        Assert.That(5 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'ShapeLength' exceeds structure boundary");
+        
+        // Validate field 'HintKind' boundary
+        Assert.That(6 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'HintKind' exceeds structure boundary");
+        
+        // Validate field 'HintGroup' boundary
+        Assert.That(7 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'HintGroup' exceeds structure boundary");
+        
+        // Validate field 'HintNumber' boundary
+        Assert.That(8 + 2, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'HintNumber' exceeds structure boundary");
+        
+        // Validate field 'Lines' boundary
+        Assert.That(10 + 1, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Lines' exceeds structure boundary");
+        
         // Validate field 'Text' boundary
-        Assert.That(5 + 64, Is.LessThanOrEqualTo(expectedLength), 
+        Assert.That(11 + 64, Is.LessThanOrEqualTo(expectedLength), 
             "Field 'Text' exceeds structure boundary");
     }
 
@@ -967,6 +987,42 @@ public class PacketStructureTests
     }
 
     /// <summary>
+    /// Tests the packet size calculation for ForkPing.
+    /// </summary>
+    [Test]
+    public void ForkPing_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = ForkPingRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Token' boundary
+        Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Token' exceeds packet boundary");
+    }
+
+    /// <summary>
+    /// Tests the packet size calculation for ForkPong.
+    /// </summary>
+    [Test]
+    public void ForkPong_PacketSizeValidation()
+    {
+        // Fixed-length packet validation
+        const int expectedLength = 8;
+        var actualLength = ForkPongRef.Length;
+        
+        Assert.That(actualLength, Is.EqualTo(expectedLength), 
+            "Packet length mismatch: declared length does not match calculated size");
+        
+        // Validate field 'Token' boundary
+        Assert.That(4 + 4, Is.LessThanOrEqualTo(expectedLength), 
+            "Field 'Token' exceeds packet boundary");
+    }
+
+    /// <summary>
     /// Tests the packet size calculation for CreateCharacterWide.
     /// </summary>
     [Test]
@@ -1721,7 +1777,7 @@ public class PacketStructureTests
         Assert.That(5, Is.GreaterThanOrEqualTo(0), 
             "Field 'Total' has invalid negative index");
         
-        // Field 'EntryCount' starts at index 6 with size 1
+        // Field 'EntryCount' starts at index 6 with size 2
         Assert.That(6, Is.GreaterThanOrEqualTo(0), 
             "Field 'EntryCount' has invalid negative index");
     }

@@ -9264,6 +9264,24 @@ namespace MUnique.OpenMU.GameServer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Beat ping answer handler (Babylon).
+        /// </summary>
+        public static string ForkPongHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("ForkPongHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles C1 EE F4: the client's answer to the beat ping; the server measures the round trip on its own clock..
+        /// </summary>
+        public static string ForkPongHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("ForkPongHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to Star Smithing Forge seal handler (Babylon).
         /// </summary>
         public static string StarSmithForgeSealHandlerPlugIn_Name {
