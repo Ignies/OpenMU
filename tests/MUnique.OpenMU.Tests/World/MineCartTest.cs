@@ -70,6 +70,20 @@ public class MineCartTest
     }
 
     /// <summary>
+    /// A rider on the rail rolls at Kanturu's 17 (a step of 100 / 17 * 40 ms), off it the walk stays at 12.
+    /// </summary>
+    [Test]
+    public async ValueTask RiderRollsAtTheCartSpeedAsync()
+    {
+        var rider = await CreateAsync(124, new Point(180, 65)).ConfigureAwait(false);
+        var walker = await CreateAsync(124, new Point(191, 66)).ConfigureAwait(false);
+
+        Assert.That(rider.StepDelay.TotalMilliseconds, Is.EqualTo(100.0 / MineCartAction.RideSpeed * 40.0).Within(0.01));
+        Assert.That(MineCartAction.RideSpeed, Is.EqualTo(17));
+        Assert.That(walker.StepDelay.TotalMilliseconds, Is.EqualTo(100.0 / 12 * 40.0).Within(0.01));
+    }
+
+    /// <summary>
     /// The ride is new: its request handler is off until a world switches it on (Admin > Systems).
     /// </summary>
     [Test]

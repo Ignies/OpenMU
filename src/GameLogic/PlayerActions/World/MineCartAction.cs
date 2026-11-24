@@ -31,6 +31,11 @@ public class MineCartAction
     private const int BoardReach = 2;
 
     /// <summary>
+    /// The cart's speed on the rail, Kanturu's 17 (a walk is 12).
+    /// </summary>
+    public const int RideSpeed = 17;
+
+    /// <summary>
     /// The rail, east to west, as rows (y, first x, last x) of Terrain124.att.
     /// </summary>
     private static readonly (byte Y, byte From, byte To)[] Rail = [(65, 178, 189), (64, 177, 178), (63, 176, 177), (62, 169, 176)];
@@ -74,6 +79,11 @@ public class MineCartAction
         return true;
     }
 
-    private static bool IsInMine(Player player) =>
+    /// <summary>
+    /// Gets whether a player is on a Kubera Mine map.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <returns>True on maps 123-127.</returns>
+    public static bool IsInMine(Player player) =>
         player.CurrentMap?.Definition.Number is >= 123 and <= 127;
 }
