@@ -50,6 +50,16 @@ Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRulesTest.cs`, `StarSmithLev
 
 ## Constellation Forge
 
+> Since PR 7a the Forge plays by geometry: free nodes, shape matching, fault lines, stash and layers. The sky of 12
+> stars, links, hints and voids below is history; "PR 7a contract" at the end is what the code does now. The beat, the
+> recipes' targets and ingredients, the outcomes and boosts, the attunement, the Guidebook's rows and the experience
+> stay as written here. Code: `StarSmithGeometry`, `StarSmithAccuracy`, `StarSmithHull`, `StarSmithFaults`,
+> `StarSmithLayers`, `StarSmithForge`, `StarSmithForgeAttempt`, `StarSmithForgeAttemptMessage`; the item's layers are
+> `ItemCustomization.Layers` (migration `AddStarSmithLayers`); the update is `AddStarSmithConstellationsUpdatePlugIn`.
+> Tests: `StarSmithGeometryTest`, `StarSmithForgeTest`, `StarSmithForgeWireTest`, `StarSmithGuidebookTest`,
+> `StarSmithLayersTravelTest`, `StarSmithConfigValidatorTest`, `ItemCustomizationViewTest`, `StarSmithConstellationsTest`;
+> `StarSmithRecipesDataTest` (initialization), `StarSmithConstellationPacketsTest` (packets).
+
 Every recipe attempt is played as the Forge minigame (Hidden-Babylon `docs/star_smithing.md` section 10). This is its
 rule core, deterministic from a seed so the server can deal an attempt again and verify it, its wire, the recipes, the
 Guidebook and the experience (below). An attempt lives on the player; the Guidebook is stored on the character.
@@ -555,8 +565,8 @@ before.
   in the order banked: a new one is appended; a reseal raises its layer's tier and takes the new hull when the new tier
   is higher, and otherwise keeps the layer as it is (`kept`). With nothing banked and at least one node placed, the
   seal is the attunement (below). With no node placed it is refused (outcome 4).
-- **Crack** (a fault): every banked figure is lost. The fate is the onFail of the constellation the figure matches or
-  is a prefix of (the longest, then the lowest number), else of the first banked figure, else ingredients lost; a
+- **Crack** (a fault): every banked figure is lost. The fate is the onFail of the constellation the figure was on
+  before the cracking node, its match or a shape it is a prefix of (the longest, then the lowest number), else of the first banked figure, else ingredients lost; a
   destroy needs a risky recipe and no Guardian. A downgrade clears the record (name, lore, look, rarity, boosts, smith
   level) and its layers.
 - **Abandon** and the idle timeout: as before; the ingredients and the banked figures are lost, the item stays.

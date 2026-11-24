@@ -786,6 +786,12 @@
   <data name="AddStarSmithItemRecipesUpdatePlugIn_Description" xml:space="preserve">
     <value>This update adds the Star Smithing recipes for armour, wings, pendants and rings (numbers 6 to 11) and gives each default recipe without an outcome table its default table of boosts. Recipes the operator made or changed keep everything else; a number already taken is never overwritten.</value>
   </data>
+  <data name="AddStarSmithConstellationsUpdatePlugIn_Name" xml:space="preserve">
+    <value>Add the Star Smith constellations</value>
+  </data>
+  <data name="AddStarSmithConstellationsUpdatePlugIn_Description" xml:space="preserve">
+    <value>This update adds the 22 looks constellations of Star Smithing (numbers 101 to 122: Fire, Poison, Frost and the other elements, the metals and the chromas), each with its shape, and gives the default recipes 1 to 11 their shapes when they have none, since the Forge now matches drawn shapes. Recipes the operator made or changed stay; a number already taken is never overwritten.</value>
+  </data>
   <data name="AddSeason21NewPowerUpdatePlugIn_Name" xml:space="preserve">
     <value>Add the New Power of Season 21</value>
   </data>
