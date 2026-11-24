@@ -2072,6 +2072,34 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="MineCartRequest" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="action">0 board the cart, 1 leave it.</param>
+    /// <remarks>
+    /// Is sent by the client when: The player clicks the Kubera Mine cart beside it to ride, or the ride reaches the rail's end.
+    /// Causes reaction on server side: The server moves the player at once onto the rail (board) or past its end (leave), or does nothing.
+    /// </remarks>
+    public static async ValueTask SendMineCartRequestAsync(this IConnection? connection, byte @action)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = MineCartRequestRef.Length;
+            var packet = new MineCartRequestRef(connection.Output.GetSpan(length)[..length]);
+            packet.Action = @action;
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="RankingRequest" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>

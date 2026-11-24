@@ -3035,6 +3035,12 @@
   <data name="MiningRequestHandlerPlugIn_Description" xml:space="preserve">
     <value>Handles the mining request of the Babylon client: mines the next stage of a spot, or stops and collects.</value>
   </data>
+  <data name="MineCartRequestHandlerPlugIn_Name" xml:space="preserve">
+    <value>Mine cart request handler (Babylon)</value>
+  </data>
+  <data name="MineCartRequestHandlerPlugIn_Description" xml:space="preserve">
+    <value>Handles the Kubera Mine cart ride of the Babylon client: puts a player beside the cart onto the rail, and a rider past the rail's end.</value>
+  </data>
   <data name="HuntingRecordBabylonPlugIn_Name" xml:space="preserve">
     <value>Hunting record and ranking view (Babylon)</value>
   </data>

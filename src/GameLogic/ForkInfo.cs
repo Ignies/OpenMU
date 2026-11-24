@@ -97,6 +97,7 @@ public static class ForkInfo
         "gens",
         "item_custom",
         "star_smithing",
+        "mine_cart",
     ];
 
     /// <summary>

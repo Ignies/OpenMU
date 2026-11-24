@@ -53,6 +53,7 @@ public static class ForkFeatures
         "evolution_quests",
         "item_custom",
         "star_smithing",
+        "mine_cart",
     ];
 
     /// <summary>
