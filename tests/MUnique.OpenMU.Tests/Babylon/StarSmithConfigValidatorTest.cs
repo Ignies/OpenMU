@@ -36,7 +36,7 @@ public class StarSmithConfigValidatorTest
         bad.Name = new string('x', 65);
         bad.OnFail = StarSmithOnFail.ItemDestroyed;
         bad.Risky = false;
-        bad.Shape!.Stars = [0, 12];
+        bad.Geometry!.Nodes = 13;
         bad.Outcomes[0].Boosts[0].Maximum = 99;
         bad.HintKind = StarSmithHintKind.Ingredient;
         bad.HintGroup = 1;
@@ -52,7 +52,7 @@ public class StarSmithConfigValidatorTest
             "recipes[1].number",
             "recipes[1].name",
             "recipes[1].onFail",
-            "recipes[1].shape.stars[1]",
+            "recipes[1].geometry.nodes",
             "recipes[1].outcomes[0].boosts[0].max",
             "recipes[1].hint.number",
             "recipes[1].targets",
@@ -116,7 +116,7 @@ public class StarSmithConfigValidatorTest
     {
         var bad = StarSmithingConfiguration.DefaultRecipes()[1];
         bad.Outcomes[0].Boosts[0].Maximum = 99;
-        var plain = new StarSmithRecipe { Number = 3, Targets = StarSmithTargetKind.Weapon, Shape = new() { Stars = [0, 1] } };
+        var plain = new StarSmithRecipe { Number = 3, Targets = StarSmithTargetKind.Weapon, Geometry = StarSmithGeometry.Of(3, false, [45], [1, 3]) };
         var balance = new StarSmithBalance();
         balance.Tiers.Clear();
         var config = new StarSmithingConfiguration { Recipes = [StarSmithingConfiguration.DefaultRecipes()[0], bad, plain], Balance = balance };
@@ -126,5 +126,38 @@ public class StarSmithConfigValidatorTest
         Assert.That(config.Recipes.Select(r => r.Number), Is.EqualTo(new short[] { 1, 3 }));
         Assert.That(config.Balance.Tiers, Has.Count.EqualTo(6));
         Assert.That(dropped, Is.Not.Empty);
+    }
+
+    /// <summary>
+    /// PR 7a: a shape's counts, turns and lengths are checked, and a shape too close to another recipe's (with or
+    /// without the extension, on a shared item kind) is refused; at load the later one is dropped.
+    /// </summary>
+    [Test]
+    public void ShapesAreCheckedAndKeptApart()
+    {
+        var fire = StarSmithingConfiguration.DefaultRecipes().Single(r => r.Number == 101);
+        var broken = StarSmithingConfiguration.DefaultRecipes().Single(r => r.Number == 102);
+        broken.Geometry = new StarSmithGeometry { Nodes = 4, Turns = [5, 175, 60], Lengths = [2, 0.1, 1], Extension = new() { Turn = 0, Length = 9 } };
+        var near = StarSmithingConfiguration.DefaultRecipes().Single(r => r.Number == 103);
+        near.Geometry = StarSmithGeometry.Of(3, true, [112, 125], [1, 1.1, 0.9]);
+        var config = new StarSmithingConfiguration { Recipes = [fire, broken, near] };
+
+        var errors = StarSmithConfigValidator.Validate(config, AnyItem);
+        Assert.That(errors.Select(e => e.Field), Is.EquivalentTo(new[]
+        {
+            "recipes[1].geometry.turns",
+            "recipes[1].geometry.turns[0]",
+            "recipes[1].geometry.turns[1]",
+            "recipes[1].geometry.lengths[0]",
+            "recipes[1].geometry.lengths[1]",
+            "recipes[1].geometry.extension.turn",
+            "recipes[1].geometry.extension.length",
+            "recipes[2].geometry",
+        }));
+        Assert.That(errors.Single(e => e.Field == "recipes[2].geometry").Message, Does.Contain("101"));
+        Assert.That(StarSmithConfigValidator.Validate(new StarSmithingConfiguration(), AnyItem), Is.Empty, "the defaults are apart and valid");
+
+        StarSmithConfigValidator.Sanitize(config);
+        Assert.That(config.Recipes.Select(r => r.Number), Is.EqualTo(new short[] { 101 }));
     }
 }

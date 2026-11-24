@@ -27,10 +27,13 @@ using SmithState = MUnique.OpenMU.GameLogic.StarSmithing.StarSmithState;
 [MinimumClient(BabylonClient.MinimumSeason, BabylonClient.MinimumEpisode, ClientLanguage.Invariant)]
 public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
 {
-    /// <summary>The most guidance recipes one EE 9E holds.</summary>
-    private const int MaximumGuidance = 60;
+    /// <summary>The placements one EE 9E holds.</summary>
+    private const int MaximumPlacements = 12;
 
-    /// <summary>A dominant element or fate that is not there.</summary>
+    /// <summary>The kind of an EE 90 shape line (PR 7a).</summary>
+    private const byte ShapeLine = 4;
+
+    /// <summary>A timing, tier or fate that is not there.</summary>
     private const byte NoValue = 0xFF;
 
     /// <summary>Where the entries of EE 90 start.</summary>
@@ -158,39 +161,46 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
     }
 
     /// <inheritdoc />
-    public async ValueTask SendForgeSkyAsync(StarSmithForgeSkyMessage sky)
+    public async ValueTask SendForgeAttemptAsync(StarSmithForgeAttemptMessage message)
     {
         if (this._player.Connection is not { } connection)
         {
             return;
         }
 
-        var count = Math.Min(sky.Entries.Count, StarSmithForgeSkyMessage.MaximumEntries);
         int Write()
         {
-            var size = StarSmithForgeSkyRef.GetRequiredSize(count);
-            var packet = new StarSmithForgeSkyRef(connection.Output.GetSpan(size)[..size])
+            var size = StarSmithForgeAttemptRef.Length;
+            var span = connection.Output.GetSpan(size)[..size];
+            span.Clear();
+            var packet = new StarSmithForgeAttemptRef(span)
             {
-                Result = (byte)sky.Result,
-                TargetSlot = sky.TargetSlot,
-                Strikes = (byte)Math.Clamp(sky.Strikes, 0, byte.MaxValue),
-                Risk = (byte)sky.Risk,
-                StarCount = (byte)Math.Clamp(sky.StarCount, 0, byte.MaxValue),
-                BeatIntervalMs = (ushort)Math.Clamp(sky.BeatIntervalMs, 0, ushort.MaxValue),
-                FirstBeatMs = (ushort)Math.Clamp(sky.FirstBeatMs, 0, ushort.MaxValue),
-                EntryCount = (byte)count,
+                Result = (byte)message.Result,
+                TargetSlot = message.TargetSlot,
             };
-            for (var i = 0; i < count; i++)
+            if (message.Result != StarSmithResultCode.Done)
             {
-                var source = sky.Entries[i];
-                var entry = packet[i];
-                entry.Kind = source.Kind;
-                entry.A = source.A;
-                entry.B = source.B;
-                entry.C = source.C;
-                entry.D = source.D;
+                return size;
             }
 
+            packet.Strikes = (byte)Math.Clamp(message.Strikes, 0, byte.MaxValue);
+            packet.Risk = (byte)message.Risk;
+            packet.FreeSlots = (byte)Math.Clamp(message.FreeSlots, 0, byte.MaxValue);
+            packet.Slots = (byte)Math.Clamp(message.Slots, 0, byte.MaxValue);
+            packet.BeatIntervalMs = (ushort)Math.Clamp(message.BeatIntervalMs, 0, ushort.MaxValue);
+            packet.FirstBeatMs = (ushort)Math.Clamp(message.FirstBeatMs, 0, ushort.MaxValue);
+            if (message.RevealedFault is { } fault)
+            {
+                packet.Flags = 1;
+                StarSmithWire.WritePoint(packet.RevealedFault, fault.A);
+                StarSmithWire.WritePoint(packet.RevealedFault[4..], fault.B);
+            }
+
+            packet.FaultRadius = message.FaultRadius;
+            packet.CloseRadius = message.CloseRadius;
+            packet.NodeGap = message.NodeGap;
+            packet.FaultCount = (byte)Math.Clamp(message.FaultCount, 0, byte.MaxValue);
+            packet.LayerCount = (byte)StarSmithWire.WriteLayers(packet.Layers, message.Layers);
             return size;
         }
 
@@ -198,35 +208,59 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
     }
 
     /// <inheritdoc />
-    public async ValueTask SendForgeStrikeAsync(int star, StarSmithStrike strike, int strikesLeft, IReadOnlyList<short> guidance)
+    public async ValueTask SendForgeNodeAsync(StarSmithFigureAnswer answer)
     {
         if (this._player.Connection is not { } connection)
         {
             return;
         }
 
-        var struck = strike.Result is StarSmithStrikeResult.Linked or StarSmithStrikeResult.Cracked;
-        var count = struck ? Math.Min(guidance.Count, MaximumGuidance) : 0;
         int Write()
         {
-            var size = StarSmithForgeStrikeResultRef.GetRequiredSize(count);
-            var packet = new StarSmithForgeStrikeResultRef(connection.Output.GetSpan(size)[..size])
+            var size = StarSmithForgeNodeResultRef.Length;
+            var span = connection.Output.GetSpan(size)[..size];
+            span.Clear();
+            var packet = new StarSmithForgeNodeResultRef(span)
             {
-                Answer = (byte)strike.Result,
-                Star = (byte)Math.Clamp(star, 0, byte.MaxValue),
-                Element = struck ? (byte)strike.Star.Element : (byte)0,
-                Value = struck ? (byte)Math.Clamp(strike.Star.Value, 0, byte.MaxValue) : (byte)0,
-                Flags = struck && strike.Star.IsVoid ? (byte)1 : (byte)0,
-                Timing = (byte)strike.Timing,
-                StrikesLeft = (byte)Math.Clamp(strikesLeft, 0, byte.MaxValue),
-                GuidanceCount = (byte)count,
+                Kind = (byte)answer.Kind,
+                Answer = (byte)answer.Result,
+                Timing = answer.Timing is { } timing ? (byte)timing : NoValue,
+                StrikesLeft = (byte)Math.Clamp(answer.StrikesLeft, 0, byte.MaxValue),
+                Flags = (byte)answer.Flags,
+                FigurePlacements = (byte)Math.Clamp(answer.FigurePlacements, 0, byte.MaxValue),
+                Banked = (byte)Math.Clamp(answer.Banked, 0, byte.MaxValue),
+                Tier = answer.Measure is { } measure && answer.Match is not null ? (byte)measure.Tier : NoValue,
             };
-            for (var i = 0; i < count; i++)
+            if (answer.Result is not (StarSmithFigureResult.Done or StarSmithFigureResult.Cracked))
             {
-                var entry = packet[i];
-                entry.Recipe = (ushort)guidance[i];
+                return size;
             }
 
+            if (answer.Match is { } match)
+            {
+                packet.Match = (ushort)match.Number;
+                packet.Look = (byte)match.Look;
+                packet.Score = (ushort)Math.Clamp(answer.Measure?.Score ?? 0, 0, 1000);
+            }
+
+            packet.Turn = (ushort)(short)Math.Clamp(Math.Round(answer.Turn * 10, MidpointRounding.AwayFromZero), short.MinValue, short.MaxValue);
+            packet.Ratio = (ushort)Math.Clamp(Math.Round(answer.Ratio * 1000, MidpointRounding.AwayFromZero), 0, ushort.MaxValue);
+            var guide = answer.Guide.Take(StarSmithForge.MaximumGuide).ToList();
+            packet.GuideCount = (byte)guide.Count;
+            for (var i = 0; i < guide.Count; i++)
+            {
+                BinaryPrimitives.WriteUInt16LittleEndian(packet.Guide[(i * 2)..], (ushort)guide[i]);
+            }
+
+            var placements = answer.Placements.Take(MaximumPlacements).ToList();
+            for (var i = 0; i < placements.Count; i++)
+            {
+                var at = packet.Placements[(i * 3)..];
+                at[0] = (byte)placements[i].Timing;
+                BinaryPrimitives.WriteUInt16LittleEndian(at[1..], placements[i].Accuracy is { } accuracy ? (ushort)Math.Clamp(accuracy, 0, 1000) : ushort.MaxValue);
+            }
+
+            packet.HullCount = (byte)StarSmithWire.WritePoints(packet.Hull, answer.Hull);
             return size;
         }
 
@@ -234,7 +268,7 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
     }
 
     /// <inheritdoc />
-    public async ValueTask SendForgeResultAsync(StarSmithForgeOutcome outcome, ForgeResult? result)
+    public async ValueTask SendForgeResultAsync(StarSmithForgeOutcome outcome, ForgeResult? result, int experience, bool firstSeal)
     {
         if (this._player.Connection is not { } connection)
         {
@@ -249,22 +283,36 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
             var packet = new StarSmithForgeResultRef(span)
             {
                 Outcome = (byte)outcome,
-                Dominant = result?.Dominant is { } dominant ? (byte)dominant : NoValue,
-                Fate = result?.Fail is { } fail ? (byte)fail : NoValue,
+                Fate = result?.Fail is { } fail && result.State != StarSmithForgeState.Sealed ? (byte)fail : NoValue,
             };
-            if (result is not null)
+            if (result is null)
             {
-                packet.Flags = (byte)((result.Recipe is null && result.State == StarSmithForgeState.Sealed ? 1 : 0) | (result.FirstCompletion ? 2 : 0));
-                packet.Recipe = (ushort)(result.Recipe?.Number ?? 0);
-                packet.Rarity = (byte)result.Rarity;
-                packet.Extension = (byte)Math.Clamp(result.Extension, 0, byte.MaxValue);
-                foreach (var element in Enum.GetValues<StarSmithElement>())
-                {
-                    packet.ElementMix[(int)element] = (byte)Math.Clamp(result.ElementMix.GetValueOrDefault(element), 0, byte.MaxValue);
-                }
+                return size;
+            }
 
-                packet.CleanStrikes = (byte)Math.Clamp(result.CleanStrikes, 0, byte.MaxValue);
-                packet.StrikeCount = (byte)Math.Clamp(result.Path.Count, 0, byte.MaxValue);
+            packet.Flags = (byte)((result.Attunement ? 1 : 0) | (firstSeal ? 2 : 0));
+            packet.Rarity = (byte)result.Rarity;
+            packet.CleanPlacements = (byte)Math.Clamp(result.CleanPlacements, 0, byte.MaxValue);
+            packet.Placements = (byte)Math.Clamp(result.Placements, 0, byte.MaxValue);
+            packet.Experience = (uint)Math.Max(0, experience);
+            packet.FateConstellation = (ushort)(result.FateRecipe?.Number ?? 0);
+            if (result.State == StarSmithForgeState.Sealed)
+            {
+                var figures = result.Figures.Take(StarSmithSlots.Maximum).ToList();
+                packet.FigureCount = (byte)figures.Count;
+                for (var i = 0; i < figures.Count; i++)
+                {
+                    var at = packet.Figures[(i * 6)..];
+                    BinaryPrimitives.WriteUInt16LittleEndian(at, (ushort)figures[i].Recipe.Number);
+                    at[2] = (byte)figures[i].Tier;
+                    at[3] = (byte)figures[i].Recipe.Look;
+                    at[4] = (byte)figures[i].Change;
+                    at[5] = (byte)Math.Clamp(figures[i].LayerIndex, 0, byte.MaxValue);
+                }
+            }
+            else
+            {
+                packet.FigureCount = (byte)Math.Clamp(result.Lost, 0, byte.MaxValue);
             }
 
             return size;
@@ -303,7 +351,7 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
 
         // A found row is followed by its ingredient lines (12 a line) and boost lines (8 a line); the whole stays a C2.
         static int LinesOf(GuidebookEntry row) => row.Kind == StarSmithGuidebookEntryKind.Found
-            ? ((row.Ingredients.Count + IngredientsPerLine - 1) / IngredientsPerLine) + ((row.BoostsSeen.Count + BoostsPerLine - 1) / BoostsPerLine)
+            ? (row.Geometry is null ? 0 : 1) + ((row.Ingredients.Count + IngredientsPerLine - 1) / IngredientsPerLine) + ((row.BoostsSeen.Count + BoostsPerLine - 1) / BoostsPerLine)
             : 0;
         var rows = new List<GuidebookEntry>();
         var count = 0;
@@ -347,6 +395,30 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
                 entry.Made = (ushort)Math.Clamp(row.Made, 0, ushort.MaxValue);
                 entry.ShapeLength = (byte)Math.Clamp(row.ShapeLength, 0, byte.MaxValue);
                 entry.Lines = (byte)LinesOf(row);
+                if (row.Geometry is { } geometry)
+                {
+                    var line = span.Slice(GuidebookEntriesAt + (index++ * StarSmithGuidebookEntryRef.Length), StarSmithGuidebookEntryRef.Length);
+                    line[0] = ShapeLine;
+                    line[1] = (byte)Math.Clamp(geometry.Nodes, 0, byte.MaxValue);
+                    line[2] = (byte)((geometry.Closed ? 1 : 0) | (geometry.Extension is not null ? 2 : 0));
+                    line[3] = (byte)row.Look;
+                    for (var i = 0; i < Math.Min(geometry.Turns.Count, 11); i++)
+                    {
+                        BinaryPrimitives.WriteInt16LittleEndian(line[(6 + (i * 2))..], Tenths(geometry.Turns[i]));
+                    }
+
+                    for (var i = 0; i < Math.Min(geometry.Lengths.Count, 12); i++)
+                    {
+                        BinaryPrimitives.WriteUInt16LittleEndian(line[(28 + (i * 2))..], Permille(geometry.Lengths[i]));
+                    }
+
+                    if (geometry.Extension is { } extension)
+                    {
+                        BinaryPrimitives.WriteInt16LittleEndian(line[52..], Tenths(extension.Turn));
+                        BinaryPrimitives.WriteUInt16LittleEndian(line[54..], Permille(extension.Length));
+                    }
+                }
+
                 foreach (var chunk in row.Ingredients.Chunk(IngredientsPerLine))
                 {
                     var line = span.Slice(GuidebookEntriesAt + (index++ * StarSmithGuidebookEntryRef.Length), StarSmithGuidebookEntryRef.Length);
@@ -382,4 +454,8 @@ public class StarSmithingBabylonPlugIn : IStarSmithingViewPlugIn
 
         await connection.SendAsync(Write).ConfigureAwait(false);
     }
+
+    private static short Tenths(double degrees) => (short)Math.Clamp(Math.Round(degrees * 10, MidpointRounding.AwayFromZero), short.MinValue, short.MaxValue);
+
+    private static ushort Permille(double ratio) => (ushort)Math.Clamp(Math.Round(ratio * 1000, MidpointRounding.AwayFromZero), 0, ushort.MaxValue);
 }

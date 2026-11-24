@@ -6,7 +6,7 @@ The smith walks away from the running attempt.
 
 ## Causes the following actions on the server side
 
-Like a crack off every shape: the ingredients are lost and the item stays. Answered with StarSmithForgeResult (outcome 2).
+The ingredients and the stashed figures are lost and the item stays. Answered with StarSmithForgeResult (outcome 2).
 
 ## Structure
 

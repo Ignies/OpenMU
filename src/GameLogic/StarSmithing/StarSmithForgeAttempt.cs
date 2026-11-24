@@ -6,51 +6,48 @@ namespace MUnique.OpenMU.GameLogic.StarSmithing;
 
 /// <summary>
 /// A running Forge attempt, kept on the player (<see cref="Player.StarSmithForge"/>): the server's seed and every input
-/// of the deal, the forge, and each strike with the server time it arrived, so the attempt can be dealt and played
-/// again (<see cref="Replay"/>) to verify it. Thread safe: the idle timeout runs beside the smith's packets.
+/// of the start, the forge, and each accepted node with the server time it arrived and each stash, so the attempt can be
+/// played again (<see cref="Replay"/>) to verify it. Thread safe: the idle timeout runs beside the smith's packets.
 /// </summary>
 public sealed class StarSmithForgeAttempt
 {
     private readonly object _lock = new();
 
-    private readonly List<(int Star, long TimeMs)> _strikes = [];
+    private readonly List<(StarSmithPoint? Point, long TimeMs)> _actions = [];
 
     private readonly IReadOnlyList<StarSmithRecipe> _recipes;
-
-    private readonly StarSmithTarget _target;
 
     private readonly int _smithLevel;
 
     private readonly int _ingredientCount;
 
-    private readonly IReadOnlyCollection<(byte Group, short Number)> _catalysts;
+    private readonly bool _guarded;
 
     private readonly StarSmithForgeRules _rules;
 
-    private readonly StarSmithBeat _beat;
-
     private readonly IReadOnlySet<short> _known;
+
+    private readonly IReadOnlyList<StarSmithLayer> _layers;
 
     private StarSmithForgeState? _ending;
 
-    private StarSmithForgeAttempt(long seed, IReadOnlyList<StarSmithRecipe> recipes, StarSmithTarget target, int smithLevel, int ingredientCount, IReadOnlyCollection<(byte Group, short Number)> catalysts, StarSmithForgeRules rules, StarSmithBeat beat, long startMs, int roundTripMs, IReadOnlySet<short> known, byte targetSlot, Guid itemId)
+    private StarSmithForgeAttempt(long seed, IReadOnlyList<StarSmithRecipe> recipes, int smithLevel, int ingredientCount, bool guarded, StarSmithForgeRules rules, StarSmithBeat beat, long startMs, int roundTripMs, IReadOnlySet<short> known, IReadOnlyList<StarSmithLayer> layers, byte targetSlot, Guid itemId)
     {
         this.Seed = seed;
         this._recipes = recipes;
-        this._target = target;
         this._smithLevel = smithLevel;
         this._ingredientCount = ingredientCount;
-        this._catalysts = catalysts;
+        this._guarded = guarded;
         this._rules = rules;
-        this._beat = beat;
         this._known = known;
+        this._layers = layers;
+        this.Beat = beat;
         this.StartMs = startMs;
         this.LastActivityMs = startMs;
         this.RoundTripMs = roundTripMs;
         this.TargetSlot = targetSlot;
         this.ItemId = itemId;
-        this.Sky = StarSmithSky.Deal(seed, recipes, target, smithLevel, ingredientCount, catalysts, 0, rules);
-        this.Forge = StarSmithForge.Start(this.Sky, beat, startMs, roundTripMs, smithLevel, known);
+        this.Forge = StarSmithForge.Start(seed, recipes, smithLevel, ingredientCount, guarded, rules, beat, startMs, roundTripMs, known, layers);
     }
 
     /// <summary>Gets the seed the server chose.</summary>
@@ -59,7 +56,7 @@ public sealed class StarSmithForgeAttempt
     /// <summary>Gets the server time the attempt started; the beat counts from it.</summary>
     public long StartMs { get; }
 
-    /// <summary>Gets the server time of the last accepted strike, or of the start.</summary>
+    /// <summary>Gets the server time of the last accepted node or stash, or of the start.</summary>
     public long LastActivityMs { get; private set; }
 
     /// <summary>Gets the round trip the beat allows for, the server's own measurement.</summary>
@@ -71,79 +68,87 @@ public sealed class StarSmithForgeAttempt
     /// <summary>Gets the persistent id of the item worked on.</summary>
     public Guid ItemId { get; }
 
-    /// <summary>Gets the dealt sky. It holds hidden data: never send it as it is.</summary>
-    public StarSmithSky Sky { get; }
-
-    /// <summary>Gets the forge.</summary>
+    /// <summary>Gets the forge. It holds hidden data (the faults): never send it as it is.</summary>
     public StarSmithForge Forge { get; }
 
-    /// <summary>Gets or sets the stat an attunement seal (no recipe) boosts, from the ingredients' family.</summary>
+    /// <summary>Gets or sets the stat an attunement seal (no constellation) boosts, from the ingredients' family.</summary>
     public StarSmithBoostStat AttunementStat { get; set; }
 
     /// <summary>Gets the beat.</summary>
-    public StarSmithBeat Beat => this._beat;
-
-    /// <summary>Gets the accepted strikes with their server times, in order.</summary>
-    public IReadOnlyList<(int Star, long TimeMs)> Strikes
-    {
-        get
-        {
-            lock (this._lock)
-            {
-                return this._strikes.ToList();
-            }
-        }
-    }
+    public StarSmithBeat Beat { get; }
 
     /// <summary>
-    /// Deals the sky and starts the forge.
+    /// Starts an attempt on the constellations whose target rule fits the item.
     /// </summary>
     /// <param name="seed">The seed, chosen by the server.</param>
-    /// <param name="recipes">The recipes the item and ingredients can make.</param>
+    /// <param name="recipes">The recipes the ingredients allow.</param>
     /// <param name="target">The item worked on.</param>
     /// <param name="smithLevel">The smith's level.</param>
     /// <param name="ingredientCount">How many ingredients are in the grid.</param>
     /// <param name="catalysts">The catalysts by item.</param>
-    /// <param name="rules">The dealing rules.</param>
+    /// <param name="rules">The rules.</param>
     /// <param name="beat">The beat.</param>
     /// <param name="startMs">The server time it starts.</param>
     /// <param name="roundTripMs">The round trip, the server's own measurement (0 when there is none).</param>
-    /// <param name="known">The recipes in the smith's Guidebook.</param>
+    /// <param name="known">The constellations in the smith's Guidebook.</param>
+    /// <param name="layers">The item's layers.</param>
     /// <param name="targetSlot">The inventory slot of the item.</param>
     /// <param name="itemId">The item's persistent id.</param>
     /// <returns>The attempt, drafting.</returns>
-    public static StarSmithForgeAttempt Start(long seed, IReadOnlyList<StarSmithRecipe> recipes, StarSmithTarget target, int smithLevel, int ingredientCount, IReadOnlyCollection<(byte Group, short Number)> catalysts, StarSmithForgeRules rules, StarSmithBeat beat, long startMs, int roundTripMs, IReadOnlySet<short> known, byte targetSlot, Guid itemId)
-        => new(seed, recipes, target, smithLevel, ingredientCount, catalysts, rules, beat, startMs, roundTripMs, known, targetSlot, itemId);
+    public static StarSmithForgeAttempt Start(long seed, IReadOnlyList<StarSmithRecipe> recipes, StarSmithTarget target, int smithLevel, int ingredientCount, IReadOnlyCollection<(byte Group, short Number)> catalysts, StarSmithForgeRules rules, StarSmithBeat beat, long startMs, int roundTripMs, IReadOnlySet<short> known, IReadOnlyList<StarSmithLayer> layers, byte targetSlot, Guid itemId)
+    {
+        var fitting = recipes.Where(r => StarSmithRecipes.Fits(r, target)).ToList();
+        var guarded = catalysts.Any(c => c.Group == rules.GuardianGroup && c.Number == rules.GuardianNumber);
+        return new(seed, fitting, smithLevel, ingredientCount, guarded, rules, beat, startMs, roundTripMs, known, layers, targetSlot, itemId);
+    }
 
     /// <summary>
-    /// Strikes a star at a server time; an accepted strike is kept with its time.
+    /// Places a node at a server time; an accepted node is kept with its time.
     /// </summary>
-    /// <param name="star">The star's index.</param>
+    /// <param name="point">The point.</param>
     /// <param name="serverTimeMs">The server time it arrived.</param>
     /// <returns>The answer.</returns>
-    public StarSmithStrike Strike(int star, long serverTimeMs)
+    public StarSmithFigureAnswer Place(StarSmithPoint point, long serverTimeMs)
     {
         lock (this._lock)
         {
-            var strike = this.Forge.Strike(star, serverTimeMs);
-            if (strike.Result is StarSmithStrikeResult.Linked or StarSmithStrikeResult.Cracked)
+            var answer = this.Forge.Place(point, serverTimeMs);
+            if (answer.Result is StarSmithFigureResult.Done or StarSmithFigureResult.Cracked)
             {
-                this._strikes.Add((star, serverTimeMs));
+                this._actions.Add((point, serverTimeMs));
                 this.LastActivityMs = serverTimeMs;
-                if (strike.Result == StarSmithStrikeResult.Cracked)
+                if (answer.Result == StarSmithFigureResult.Cracked)
                 {
                     this._ending = StarSmithForgeState.Cracked;
                 }
             }
 
-            return strike;
+            return answer;
+        }
+    }
+
+    /// <summary>
+    /// Banks the figure being drawn.
+    /// </summary>
+    /// <returns>The answer.</returns>
+    public StarSmithFigureAnswer Stash()
+    {
+        lock (this._lock)
+        {
+            var answer = this.Forge.Stash();
+            if (answer.Result == StarSmithFigureResult.Done)
+            {
+                this._actions.Add((null, 0));
+            }
+
+            return answer;
         }
     }
 
     /// <summary>
     /// Seals the attempt.
     /// </summary>
-    /// <returns>The result, or null when nothing is struck or it is no longer drafting.</returns>
+    /// <returns>The result, or null when nothing is placed or it is no longer drafting.</returns>
     public StarSmithForgeResult? Seal()
     {
         lock (this._lock)
@@ -177,7 +182,7 @@ public sealed class StarSmithForgeAttempt
     }
 
     /// <summary>
-    /// Whether the attempt is still drafting and has had no strike for the timeout.
+    /// Whether the attempt is still drafting and has had no node for the timeout.
     /// </summary>
     /// <param name="nowMs">The server time.</param>
     /// <param name="timeoutMs">The idle timeout.</param>
@@ -191,37 +196,31 @@ public sealed class StarSmithForgeAttempt
     }
 
     /// <summary>
-    /// The guidance for the path so far, as recipe numbers.
-    /// </summary>
-    /// <returns>The numbers.</returns>
-    public IReadOnlyList<short> Guidance()
-    {
-        lock (this._lock)
-        {
-            return this.Forge.Guidance().Select(r => r.Number).ToList();
-        }
-    }
-
-    /// <summary>
-    /// Deals the sky again from the kept seed and inputs and plays the kept strikes and the ending again, to verify
-    /// the attempt.
+    /// Starts the forge again from the kept seed and inputs and plays the kept nodes, stashes and the ending again, to
+    /// verify the attempt.
     /// </summary>
     /// <returns>The replayed forge.</returns>
     public StarSmithForge Replay()
     {
-        List<(int Star, long TimeMs)> strikes;
+        List<(StarSmithPoint? Point, long TimeMs)> actions;
         StarSmithForgeState? ending;
         lock (this._lock)
         {
-            strikes = this._strikes.ToList();
+            actions = this._actions.ToList();
             ending = this._ending;
         }
 
-        var sky = StarSmithSky.Deal(this.Seed, this._recipes, this._target, this._smithLevel, this._ingredientCount, this._catalysts, 0, this._rules);
-        var forge = StarSmithForge.Start(sky, this._beat, this.StartMs, this.RoundTripMs, this._smithLevel, this._known);
-        foreach (var (star, time) in strikes)
+        var forge = StarSmithForge.Start(this.Seed, this._recipes, this._smithLevel, this._ingredientCount, this._guarded, this._rules, this.Beat, this.StartMs, this.RoundTripMs, this._known, this._layers);
+        foreach (var (point, time) in actions)
         {
-            forge.Strike(star, time);
+            if (point is { } at)
+            {
+                forge.Place(at, time);
+            }
+            else
+            {
+                forge.Stash();
+            }
         }
 
         if (ending == StarSmithForgeState.Sealed)

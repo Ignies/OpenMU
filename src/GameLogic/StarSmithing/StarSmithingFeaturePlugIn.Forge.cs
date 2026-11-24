@@ -10,10 +10,11 @@ using MUnique.OpenMU.GameLogic.Views.Inventory;
 using MUnique.OpenMU.GameLogic.Views.StarSmithing;
 
 /// <summary>
-/// The Constellation Forge on the wire (Readme.md "Constellation Forge", "Wire"): a start (EE 99) checks the smith, the
-/// item and the slots, deals the sky from a seed of the server's own, spends the ingredients, the catalysts and the
-/// hammer's durability, and answers with EE 9D; strikes (EE 9A) are stamped with the server's clock and answered with
-/// EE 9E; a seal (EE 9B), a crack, an abandon (EE 9C) or the idle timeout ends the attempt with EE 9F and applies it.
+/// The Constellation Forge on the wire (Readme.md "PR 7a contract"): a start (EE 99) checks the smith, the item and the
+/// slots, starts the forge from a seed of the server's own, spends the ingredients, the catalysts and the hammer's
+/// durability, and answers with EE 9D; nodes (EE 9A) are stamped with the server's clock and answered with EE 9E, a
+/// first find goes into the Guidebook at once; a stash (EE 9B action 1) is answered with EE 9E; a seal (EE 9B), a
+/// crack, an abandon (EE 9C) or the idle timeout ends the attempt with EE 9F and applies it.
 /// </summary>
 public partial class StarSmithingFeaturePlugIn
 {
@@ -26,7 +27,7 @@ public partial class StarSmithingFeaturePlugIn
     /// <summary>The most catalyst slots of EE 99.</summary>
     private const int MaximumCatalysts = 4;
 
-    /// <summary>The smith experience a sealed attunement (no recipe) gives, so experimenting is never a dead end.</summary>
+    /// <summary>The smith experience a sealed attunement (no constellation) gives, so experimenting is never a dead end.</summary>
     private const int AttunementExperience = 10;
 
     /// <summary>The share of a recipe's experience a crack gives, in percent (design section 3, step 6).</summary>
@@ -43,7 +44,7 @@ public partial class StarSmithingFeaturePlugIn
     private int IdleTimeoutMs => Math.Max(1, this.Settings.ForgeIdleTimeoutSeconds) * 1000;
 
     /// <summary>
-    /// Starts a recipe attempt and answers with the sky (EE 9D).
+    /// Starts a recipe attempt and answers with EE 9D.
     /// </summary>
     /// <param name="player">The smith.</param>
     /// <param name="targetSlot">The inventory slot of the item worked on.</param>
@@ -51,8 +52,8 @@ public partial class StarSmithingFeaturePlugIn
     /// <param name="catalystSlots">The inventory slots of the catalysts (0xFF unused).</param>
     public async ValueTask StartForgeAsync(Player player, byte targetSlot, IReadOnlyList<byte> ingredientSlots, IReadOnlyList<byte> catalystSlots)
     {
-        var (sky, attempt) = await this.TryStartForgeAsync(player, targetSlot, ingredientSlots, catalystSlots).ConfigureAwait(false);
-        await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeSkyAsync(sky)).ConfigureAwait(false);
+        var (message, attempt) = await this.TryStartForgeAsync(player, targetSlot, ingredientSlots, catalystSlots).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeAttemptAsync(message)).ConfigureAwait(false);
         if (attempt is not null)
         {
             await this.SendStateAsync(player).ConfigureAwait(false);
@@ -61,31 +62,47 @@ public partial class StarSmithingFeaturePlugIn
     }
 
     /// <summary>
-    /// Strikes a star of the running attempt at the server's time and answers it (EE 9E); a crack ends the attempt.
+    /// Places a node of the running attempt at the server's time and answers it (EE 9E); a first find goes into the
+    /// Guidebook, a crack ends the attempt.
     /// </summary>
     /// <param name="player">The smith.</param>
-    /// <param name="star">The star's index.</param>
-    public async ValueTask StrikeForgeAsync(Player player, byte star)
+    /// <param name="point">The point in the item's box.</param>
+    public async ValueTask PlaceForgeNodeAsync(Player player, StarSmithPoint point)
     {
         if (player.StarSmithForge is not { } attempt)
         {
-            var none = new StarSmithStrike(StarSmithStrikeResult.NotDrafting, StarSmithTiming.Late, default);
-            await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeStrikeAsync(star, none, 0, [])).ConfigureAwait(false);
+            var none = StarSmithFigureAnswer.Refused(StarSmithFigureKind.Node, StarSmithFigureResult.NoAttempt, 0, 0, 0);
+            await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeNodeAsync(none)).ConfigureAwait(false);
             return;
         }
 
-        var strike = attempt.Strike(star, this.Clock());
-        var left = attempt.Forge.StrikesLeft;
-        var guidance = attempt.Guidance();
-        await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeStrikeAsync(star, strike, left, guidance)).ConfigureAwait(false);
-        if (strike.Result == StarSmithStrikeResult.Cracked && attempt.Forge.Result is { } result)
+        var answer = attempt.Place(point, this.Clock());
+        if (answer.Flags.HasFlag(StarSmithFigureFlags.Found) && answer.Match is { } found && player.SelectedCharacter is { } character)
+        {
+            character.StarSmithGuidebook = StarSmithGuidebook.Find(character.StarSmithGuidebook, found.Number);
+        }
+
+        await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeNodeAsync(answer)).ConfigureAwait(false);
+        if (answer.Result == StarSmithFigureResult.Cracked && attempt.Forge.Result is { } result)
         {
             await this.EndForgeAsync(player, attempt, StarSmithForgeOutcome.Cracked, result).ConfigureAwait(false);
         }
     }
 
     /// <summary>
-    /// Seals the running attempt and applies it; refused (EE 9F outcome 4) without one or before the first strike.
+    /// Banks the figure being drawn and answers it (EE 9E, kind 1).
+    /// </summary>
+    /// <param name="player">The smith.</param>
+    public async ValueTask StashForgeAsync(Player player)
+    {
+        var answer = player.StarSmithForge is { } attempt
+            ? attempt.Stash()
+            : StarSmithFigureAnswer.Refused(StarSmithFigureKind.Stash, StarSmithFigureResult.NoAttempt, 0, 0, 0);
+        await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeNodeAsync(answer)).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Seals the running attempt and applies it; refused (EE 9F outcome 4) without one or before the first node.
     /// </summary>
     /// <param name="player">The smith.</param>
     public async ValueTask SealForgeAsync(Player player)
@@ -96,11 +113,11 @@ public partial class StarSmithingFeaturePlugIn
             return;
         }
 
-        await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeResultAsync(StarSmithForgeOutcome.Refused, null)).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeResultAsync(StarSmithForgeOutcome.Refused, null, 0, false)).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Abandons the running attempt: the ingredients are lost, the item stays.
+    /// Abandons the running attempt: the ingredients and the stashed figures are lost, the item stays.
     /// </summary>
     /// <param name="player">The smith.</param>
     public async ValueTask AbandonForgeAsync(Player player)
@@ -111,11 +128,11 @@ public partial class StarSmithingFeaturePlugIn
             return;
         }
 
-        await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeResultAsync(StarSmithForgeOutcome.Refused, null)).ConfigureAwait(false);
+        await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeResultAsync(StarSmithForgeOutcome.Refused, null, 0, false)).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Ends the running attempt like an abandon when it had no strike for the idle timeout.
+    /// Ends the running attempt like an abandon when it had no node for the idle timeout.
     /// </summary>
     /// <param name="player">The smith.</param>
     internal async ValueTask TimeOutIdleForgeAsync(Player player)
@@ -127,8 +144,8 @@ public partial class StarSmithingFeaturePlugIn
     }
 
     /// <summary>
-    /// The smith's Guidebook rows for EE 90: the found recipes in full, by number (a stored recipe the world no longer
-    /// has is left out), then a sealed row with its hint only for every recipe not found yet, by number.
+    /// The smith's Guidebook rows for EE 90: the found constellations in full with their shapes, by number (a stored
+    /// one the world no longer has is left out), then a sealed row with its hint only for every one not found yet.
     /// </summary>
     /// <param name="player">The smith.</param>
     /// <returns>The rows.</returns>
@@ -141,7 +158,9 @@ public partial class StarSmithingFeaturePlugIn
             .Where(r => found.ContainsKey(r.Number))
             .Select(r => StarSmithGuidebookEntry.Found(r.Number, found[r.Number], r.Name) with
             {
-                ShapeLength = r.Shape?.Stars.Count ?? 0,
+                ShapeLength = r.Geometry?.Placements ?? 0,
+                Geometry = r.Geometry,
+                Look = r.Look,
                 Ingredients = r.Ingredients,
                 BoostsSeen = BoostsSeen(r, seen.GetValueOrDefault(r.Number)),
             })
@@ -154,12 +173,6 @@ public partial class StarSmithingFeaturePlugIn
         }));
         return rows;
     }
-
-    /// <summary>
-    /// What a seal's rolls are multiplied by: the shape's counted extension and the balance's scaling of the smith level.
-    /// </summary>
-    private double MagnitudeOf(StarSmithRecipe recipe, StarSmithForgeResult result, int smithLevel)
-        => (1 + (result.Extension * (recipe.Shape?.ExtensionPercent ?? 0) / 100.0)) * this.Settings.Balance.LevelFactor(smithLevel);
 
     /// <summary>
     /// Per stat, the range (unscaled, times 100) of a recipe's outcomes whose bit is in the seen mask.
@@ -207,43 +220,54 @@ public partial class StarSmithingFeaturePlugIn
         StarSmithBoostBook.Forget(itemId);
     }
 
-    /// <summary>The recipes in the smith's Guidebook, which guide the path and are no first completion.</summary>
+    /// <summary>The constellations in the smith's Guidebook (found, sealed or not), which guide and are no find.</summary>
     private static IReadOnlySet<short> KnownRecipes(Player player)
         => StarSmithGuidebook.Parse(player.SelectedCharacter?.StarSmithGuidebook).Keys.ToHashSet();
 
     /// <summary>
-    /// The smith's reward of an ended attempt (design section 3, step 6): a seal gives the recipe's experience (an
-    /// attunement a little), doubled on the first completion, which also writes the recipe into the Guidebook; a seal of
-    /// a known recipe raises its made count; a crack gives 30% of the recipe it was on; an abandon or timeout nothing.
+    /// The smith's reward of an ended attempt (design section 3, step 6): a seal gives each sealed constellation's
+    /// experience, doubled when the smith had never sealed it, and raises its made count (the attunement gives a
+    /// little); a crack gives 30% of the constellation whose fate decided; an abandon or timeout nothing.
     /// </summary>
-    private static void Reward(Player player, StarSmithForgeOutcome outcome, StarSmithForgeResult result, int rolledOutcome, StarSmithCurve levelCurve)
+    /// <returns>The experience and whether a first seal doubled it.</returns>
+    private static (int Experience, bool FirstSeal) Reward(Player player, StarSmithForgeOutcome outcome, StarSmithForgeResult result, int rolledOutcome, StarSmithCurve levelCurve)
     {
         if (player.SelectedCharacter is not { } character)
         {
-            return;
+            return (0, false);
         }
 
-        var earned = outcome switch
+        var earned = 0;
+        var first = false;
+        if (outcome == StarSmithForgeOutcome.Sealed)
         {
-            StarSmithForgeOutcome.Sealed => (result.Recipe?.Experience ?? AttunementExperience) * (result.FirstCompletion ? 2 : 1),
-            StarSmithForgeOutcome.Cracked => (result.Recipe?.Experience ?? 0) * CrackExperiencePercent / 100,
-            _ => 0,
-        };
-        if (outcome == StarSmithForgeOutcome.Sealed && result.Recipe is { } recipe)
+            earned = result.Attunement ? AttunementExperience : 0;
+            foreach (var figure in result.Figures)
+            {
+                var made = StarSmithGuidebook.Parse(character.StarSmithGuidebook).GetValueOrDefault(figure.Recipe.Number);
+                var doubled = made == 0;
+                first |= doubled;
+                earned += figure.Recipe.Experience * (doubled ? 2 : 1);
+                var rolled = ReferenceEquals(figure.Recipe, result.BoostRecipe) ? rolledOutcome : -1;
+                character.StarSmithGuidebook = StarSmithGuidebook.Record(character.StarSmithGuidebook, figure.Recipe.Number, rolled);
+            }
+        }
+        else if (outcome == StarSmithForgeOutcome.Cracked)
         {
-            character.StarSmithGuidebook = StarSmithGuidebook.Record(character.StarSmithGuidebook, recipe.Number, rolledOutcome);
+            earned = (result.FateRecipe?.Experience ?? 0) * CrackExperiencePercent / 100;
         }
 
         var (level, experience) = StarSmithLevels.Add(character.StarSmithLevel, character.StarSmithExperience, Math.Max(0, earned), levelCurve);
         character.StarSmithLevel = (short)level;
         character.StarSmithExperience = experience;
+        return (Math.Max(0, earned), first);
     }
 
-    private async ValueTask<(StarSmithForgeSkyMessage Sky, StarSmithForgeAttempt? Attempt)> TryStartForgeAsync(Player player, byte targetSlot, IReadOnlyList<byte> ingredientSlots, IReadOnlyList<byte> catalystSlots)
+    private async ValueTask<(StarSmithForgeAttemptMessage Message, StarSmithForgeAttempt? Attempt)> TryStartForgeAsync(Player player, byte targetSlot, IReadOnlyList<byte> ingredientSlots, IReadOnlyList<byte> catalystSlots)
     {
         if (player.StarSmithForge is not null)
         {
-            return (StarSmithForgeSkyMessage.Refused(StarSmithResultCode.AttemptRunning, targetSlot), null);
+            return (StarSmithForgeAttemptMessage.Refused(StarSmithResultCode.AttemptRunning, targetSlot), null);
         }
 
         var hammer = this.HammerOf(player);
@@ -263,7 +287,7 @@ public partial class StarSmithingFeaturePlugIn
         var result = StarSmithRules.Check(StarSmithAction.Forge, check);
         if (result != StarSmithResultCode.Done)
         {
-            return (StarSmithForgeSkyMessage.Refused(result, targetSlot), null);
+            return (StarSmithForgeAttemptMessage.Refused(result, targetSlot), null);
         }
 
         var named = new HashSet<byte> { targetSlot };
@@ -271,13 +295,13 @@ public partial class StarSmithingFeaturePlugIn
         var catalysts = this.SlotItems(player, catalystSlots, MaximumCatalysts, named, hammer);
         if (ingredients is null || catalysts is null)
         {
-            return (StarSmithForgeSkyMessage.Refused(StarSmithResultCode.WrongSlot, targetSlot), null);
+            return (StarSmithForgeAttemptMessage.Refused(StarSmithResultCode.WrongSlot, targetSlot), null);
         }
 
         // Catalysts (jewels) never count as ingredients.
         if (ingredients.Count == 0)
         {
-            return (StarSmithForgeSkyMessage.Refused(StarSmithResultCode.NoIngredients, targetSlot), null);
+            return (StarSmithForgeAttemptMessage.Refused(StarSmithResultCode.NoIngredients, targetSlot), null);
         }
 
         var target = TargetOf(item!);
@@ -285,9 +309,9 @@ public partial class StarSmithingFeaturePlugIn
             .GroupBy(i => ((byte)i.Definition!.Group, i.Definition.Number))
             .Select(g => (g.Key.Item1, g.Key.Number, g.Count()))
             .ToList();
-        // No fitting recipe is no refusal: the sky has no shape and a seal attunes (design section 3).
-        var candidates = StarSmithRecipes.Candidates(this.Settings.Recipes, target, counts);
 
+        // No fitting constellation is no refusal: nothing can match and a seal attunes (design section 3).
+        var candidates = StarSmithRecipes.Candidates(this.Settings.Recipes, target, counts);
         var level = Math.Clamp((int)(player.SelectedCharacter?.StarSmithLevel ?? 1), 1, StarSmithLevels.Maximum);
         var beat = this.ForgeBeat;
 
@@ -305,6 +329,7 @@ public partial class StarSmithingFeaturePlugIn
             this.Clock(),
             roundTripMs,
             KnownRecipes(player),
+            StarSmithLayers.Parse(record?.Layers),
             targetSlot,
             itemId);
         attempt.AttunementStat = StarSmithOutcomes.AttunementStat(ingredients.Select(i => (byte)i.Definition!.Group));
@@ -323,7 +348,7 @@ public partial class StarSmithingFeaturePlugIn
         }
 
         var firstBeatMs = (int)Math.Clamp(attempt.StartMs + beat.IntervalMs - this.Clock(), 0, beat.IntervalMs);
-        return (StarSmithForgeSkyMessage.From(attempt.Sky, targetSlot, beat, firstBeatMs), attempt);
+        return (StarSmithForgeAttemptMessage.From(attempt.Forge, targetSlot, beat, firstBeatMs, this.Settings.Forge), attempt);
     }
 
     /// <summary>
@@ -347,8 +372,9 @@ public partial class StarSmithingFeaturePlugIn
 
     /// <summary>
     /// Ends an attempt once: applies it to the item, answers EE 9F and sends the smith's state. A seal writes the
-    /// rarity and shows the hammering to everyone who sees the smith; a crack applies the recipe's fate; an abandon or a
-    /// timeout leaves the item as it is (the ingredients were spent at the start).
+    /// layers and the rarity, rolls the boosts of a sealed boost constellation (or the attunement's) and shows the
+    /// hammering to everyone who sees the smith; a crack applies the fate; an abandon or a timeout leaves the item as it
+    /// is (the ingredients were spent at the start).
     /// </summary>
     private async ValueTask EndForgeAsync(Player player, StarSmithForgeAttempt attempt, StarSmithForgeOutcome outcome, StarSmithForgeResult result)
     {
@@ -365,16 +391,31 @@ public partial class StarSmithingFeaturePlugIn
         {
             case StarSmithForgeOutcome.Sealed:
                 var smithLevel = (short)Math.Clamp((int)(player.SelectedCharacter?.StarSmithLevel ?? 1), 1, StarSmithLevels.Maximum);
-                roll = result.Recipe is { } sealedRecipe
-                    ? StarSmithOutcomes.Roll(sealedRecipe, result.Rarity, this.MagnitudeOf(sealedRecipe, result, smithLevel), attempt.Seed, this.Settings.Balance)
-                    : StarSmithOutcomes.Roll(StarSmithOutcomes.Attunement(attempt.AttunementStat), result.Rarity, this.Settings.Balance.LevelFactor(smithLevel), attempt.Seed, this.Settings.Balance);
+                var factor = this.Settings.Balance.LevelFactor(smithLevel);
+                if (result.BoostRecipe is { } boosted)
+                {
+                    roll = StarSmithOutcomes.Roll(boosted, (StarSmithRarity)result.BoostTier, factor, attempt.Seed, this.Settings.Balance);
+                }
+                else if (result.Attunement)
+                {
+                    roll = StarSmithOutcomes.Roll(StarSmithOutcomes.Attunement(attempt.AttunementStat), result.Rarity, factor, attempt.Seed, this.Settings.Balance);
+                }
+
                 await SaveAsync(player, attempt.ItemId, existing, c =>
                 {
                     c.Rarity = (byte)result.Rarity;
-                    c.Boosts = StarSmithBoosts.Format(roll?.Boosts ?? []);
+                    c.Layers = StarSmithLayers.Format(result.Layers);
                     c.SmithLevel = smithLevel;
+                    if (roll is not null)
+                    {
+                        c.Boosts = StarSmithBoosts.Format(roll.Boosts);
+                    }
                 }).ConfigureAwait(false);
-                ApplyBoosts(player, item, attempt.ItemId, roll?.Boosts ?? []);
+                if (roll is not null)
+                {
+                    ApplyBoosts(player, item, attempt.ItemId, roll.Boosts);
+                }
+
                 await player.ForEachWorldObserverAsync<IStarSmithingViewPlugIn>(p => p.SendAnimationAsync(player, StarSmithAction.Forge, Strikes), true).ConfigureAwait(false);
                 break;
             case StarSmithForgeOutcome.Cracked when result.Fail == StarSmithOnFail.ItemDowngraded && existing is not null:
@@ -385,6 +426,7 @@ public partial class StarSmithingFeaturePlugIn
                     c.Look = null;
                     c.Rarity = 0;
                     c.Boosts = null;
+                    c.Layers = null;
                     c.SmithLevel = 0;
                 }).ConfigureAwait(false);
                 ApplyBoosts(player, item, attempt.ItemId, []);
@@ -396,13 +438,13 @@ public partial class StarSmithingFeaturePlugIn
                 break;
         }
 
-        Reward(player, outcome, result, roll?.OutcomeIndex ?? -1, this.Settings.Balance.LevelCurve);
-        await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeResultAsync(outcome, result)).ConfigureAwait(false);
+        var (experience, firstSeal) = Reward(player, outcome, result, roll?.OutcomeIndex ?? -1, this.Settings.Balance.LevelCurve);
+        await player.InvokeViewPlugInAsync<IStarSmithingViewPlugIn>(p => p.SendForgeResultAsync(outcome, result, experience, firstSeal)).ConfigureAwait(false);
         await this.SendStateAsync(player).ConfigureAwait(false);
     }
 
     /// <summary>
-    /// Waits for the attempt's idle timeout and ends it then, unless strikes kept it going or it ended before.
+    /// Waits for the attempt's idle timeout and ends it then, unless nodes kept it going or it ended before.
     /// </summary>
     private async Task WatchIdleAsync(Player player, StarSmithForgeAttempt attempt)
     {

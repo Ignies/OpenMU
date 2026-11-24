@@ -40,10 +40,26 @@ public static class StarSmithGuidebook
         var found = Read(text);
         var (made, seen) = found.GetValueOrDefault(recipe);
         found[recipe] = (made + 1, outcome is >= 0 and < 31 ? seen | (1 << outcome) : seen);
-        return string.Join(';', found.OrderBy(f => f.Key).Select(f => f.Value.Seen == 0
+        return Write(found);
+    }
+
+    /// <summary>
+    /// Finds a constellation (PR 7a): its first match adds it with made 0; a known one stays as it is.
+    /// </summary>
+    /// <param name="text">The stored text.</param>
+    /// <param name="recipe">The constellation's number.</param>
+    /// <returns>The new text.</returns>
+    public static string Find(string? text, short recipe)
+    {
+        var found = Read(text);
+        found.TryAdd(recipe, (0, 0));
+        return Write(found);
+    }
+
+    private static string Write(Dictionary<short, (int Made, int Seen)> found)
+        => string.Join(';', found.OrderBy(f => f.Key).Select(f => f.Value.Seen == 0
             ? string.Create(CultureInfo.InvariantCulture, $"{f.Key}:{f.Value.Made}")
             : string.Create(CultureInfo.InvariantCulture, $"{f.Key}:{f.Value.Made}:{f.Value.Seen}")));
-    }
 
     private static Dictionary<short, (int Made, int Seen)> Read(string? text)
     {
@@ -55,7 +71,7 @@ public static class StarSmithGuidebook
             if (pair.Length is 2 or 3
                 && short.TryParse(pair[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out var recipe)
                 && int.TryParse(pair[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out var made)
-                && made > 0
+                && made >= 0
                 && (pair.Length == 2 || int.TryParse(pair[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out seen)))
             {
                 found[recipe] = (made, Math.Max(0, seen));

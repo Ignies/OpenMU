@@ -12,7 +12,7 @@ using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Handles a Constellation Forge strike (EE 9A); the server stamps the time on arrival. A no-op while Star Smithing is off.
+/// Handles a Constellation Forge node (EE 9A, a point in the item's box); the server stamps the time on arrival. A no-op while Star Smithing is off.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.StarSmithForgeStrikeHandlerPlugIn_Name), Description = nameof(PlugInResources.StarSmithForgeStrikeHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -25,17 +25,17 @@ internal class StarSmithForgeStrikeHandlerPlugIn : ISubPacketHandlerPlugIn
     public bool IsEncryptionExpected => false;
 
     /// <inheritdoc/>
-    public byte Key => StarSmithForgeStrike.SubCode;
+    public byte Key => StarSmithForgeNode.SubCode;
 
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        if (packet.Length < StarSmithForgeStrike.Length || StarSmithingFeaturePlugIn.Get(player.GameContext) is not { } smithing)
+        if (packet.Length < StarSmithForgeNode.Length || StarSmithingFeaturePlugIn.Get(player.GameContext) is not { } smithing)
         {
             return;
         }
 
-        StarSmithForgeStrike message = packet;
-        await smithing.StrikeForgeAsync(player, message.Star).ConfigureAwait(false);
+        StarSmithForgeNode message = packet;
+        await smithing.PlaceForgeNodeAsync(player, new StarSmithPoint(message.X, message.Y)).ConfigureAwait(false);
     }
 }

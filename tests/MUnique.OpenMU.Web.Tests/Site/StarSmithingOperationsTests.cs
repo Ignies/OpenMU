@@ -136,7 +136,10 @@ public sealed class StarSmithingOperationsTests
         Assert.That(status, Is.EqualTo(200), body.ToJsonString());
         var result = body["result"]!;
         var recipes = result["config"]!["recipes"]!.AsArray();
-        Assert.That(recipes, Has.Count.EqualTo(11));
+        Assert.That(recipes, Has.Count.EqualTo(33));
+        Assert.That(recipes[11]!["look"]!.GetValue<string>(), Is.EqualTo("fire"));
+        Assert.That(recipes[11]!["geometry"]!["turns"]!.AsArray().Select(t => t!.GetValue<double>()), Is.EqualTo(new[] { 120.0, 120.0 }));
+        Assert.That(recipes[11]!["geometry"]!["extension"]!["turn"]!.GetValue<double>(), Is.EqualTo(-90));
         Assert.That(recipes[0]!["targets"]!.AsArray().Select(t => t!.GetValue<string>()), Is.EqualTo(new[] { "weapon" }));
         Assert.That(recipes[0]!["onFail"]!.GetValue<string>(), Is.EqualTo("itemDowngraded"));
         Assert.That(recipes[0]!["outcomes"]![0]!["tier"]!.GetValue<string>(), Is.EqualTo("common"));
@@ -218,7 +221,8 @@ public sealed class StarSmithingOperationsTests
         ["catalysts"] = new JsonArray(),
         ["onFail"] = "ingredientsLost",
         ["risky"] = false,
-        ["shape"] = new JsonObject { ["stars"] = new JsonArray(0, 1, 2), ["ordered"] = true, ["match"] = "exact", ["extensionPercent"] = 10, ["maximumExtension"] = 3 },
+        ["look"] = "none",
+        ["geometry"] = new JsonObject { ["nodes"] = 7, ["closed"] = false, ["turns"] = new JsonArray(45, -45, 135, -135, 20), ["lengths"] = new JsonArray(1, 0.5, 3, 0.5, 2, 0.75), ["extension"] = null },
         ["hint"] = new JsonObject { ["kind"] = "riddle", ["text"] = "A riddle.", ["group"] = 0, ["number"] = 0 },
         ["outcomes"] = new JsonArray(new JsonObject { ["weight"] = 1, ["tier"] = "common", ["boosts"] = new JsonArray(new JsonObject { ["stat"] = "defense", ["min"] = 1, ["max"] = 2.5 }) }),
     };

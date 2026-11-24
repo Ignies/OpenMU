@@ -12,7 +12,7 @@ using MUnique.OpenMU.Network.PlugIns;
 using MUnique.OpenMU.PlugIns;
 
 /// <summary>
-/// Handles the Constellation Forge seal (EE 9B); a no-op while Star Smithing is off.
+/// Handles the Constellation Forge seal or stash (EE 9B, action 0 or 1; a 4-byte packet seals); a no-op while Star Smithing is off.
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.StarSmithForgeSealHandlerPlugIn_Name), Description = nameof(PlugInResources.StarSmithForgeSealHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
@@ -21,6 +21,9 @@ using MUnique.OpenMU.PlugIns;
 [BelongsToGroup(BabylonGroupHandlerPlugIn.GroupKey)]
 internal class StarSmithForgeSealHandlerPlugIn : ISubPacketHandlerPlugIn
 {
+    /// <summary>The action byte of a stash.</summary>
+    private const byte StashAction = 1;
+
     /// <inheritdoc/>
     public bool IsEncryptionExpected => false;
 
@@ -30,8 +33,15 @@ internal class StarSmithForgeSealHandlerPlugIn : ISubPacketHandlerPlugIn
     /// <inheritdoc/>
     public async ValueTask HandlePacketAsync(Player player, Memory<byte> packet)
     {
-        if (packet.Length < StarSmithForgeSeal.Length || StarSmithingFeaturePlugIn.Get(player.GameContext) is not { } smithing)
+        if (packet.Length < 4 || StarSmithingFeaturePlugIn.Get(player.GameContext) is not { } smithing)
         {
+            return;
+        }
+
+        // A 4-byte PR 5/6 seal has no action byte: it is a seal.
+        if (packet.Length >= StarSmithForgeSeal.Length && packet.Span[4] == StashAction)
+        {
+            await smithing.StashForgeAsync(player).ConfigureAwait(false);
             return;
         }
 

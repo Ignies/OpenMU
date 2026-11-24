@@ -65,55 +65,6 @@
       </Fields>
     </Structure>
     <Structure>
-      <Name>StarSmithForgeSkyEntry</Name>
-      <Description>One entry of StarSmithForgeSky: a star, a link or a hint.</Description>
-      <Length>5</Length>
-      <Fields>
-        <Field>
-          <Index>0</Index>
-          <Type>Byte</Type>
-          <Name>Kind</Name>
-          <Description>0 a star, 1 a link, 2 a hint.</Description>
-        </Field>
-        <Field>
-          <Index>1</Index>
-          <Type>Byte</Type>
-          <Name>A</Name>
-          <Description>A star: its index. A link or hint: one star.</Description>
-        </Field>
-        <Field>
-          <Index>2</Index>
-          <Type>Byte</Type>
-          <Name>B</Name>
-          <Description>A star: X, 0 to 255 across the item's box (a layout hint). A link or hint: the other star.</Description>
-        </Field>
-        <Field>
-          <Index>3</Index>
-          <Type>Byte</Type>
-          <Name>C</Name>
-          <Description>A star: Y, 0 to 255 down the item's box. A hint: its clarity, 0 to 255. A link: 0.</Description>
-        </Field>
-        <Field>
-          <Index>4</Index>
-          <Type>Byte</Type>
-          <Name>D</Name>
-          <Description>A star: flags, 1 a void revealed by a Jewel of Guardian. Else 0.</Description>
-        </Field>
-      </Fields>
-    </Structure>
-    <Structure>
-      <Name>StarSmithForgeGuidance</Name>
-      <Description>A recipe number of the guidance in StarSmithForgeStrikeResult.</Description>
-      <Length>2</Length>
-      <Fields>
-        <Field>
-          <Index>0</Index>
-          <Type>ShortLittleEndian</Type>
-          <Name>Recipe</Name>
-        </Field>
-      </Fields>
-    </Structure>
-    <Structure>
       <Name>StarSmithDyeEntry</Name>
       <Description>One dye of StarSmithDyes: the item, what it allows and its swatches.</Description>
       <Length>30</Length>
@@ -1904,7 +1855,7 @@
       <Code>EE</Code>
       <SubCode>36</SubCode>
       <Name>ItemCustomizationDetail</Name>
-      <Length>451</Length>
+      <Length>600</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>The answer to ItemCustomizationDetailRequest.</SentWhen>
       <CausedReaction>The client shows the item's lore, and a smithed item's boosts and smith level, in its tooltip.</CausedReaction>
@@ -1954,6 +1905,19 @@
           <Name>Boosts</Name>
           <Description>Three 5-byte boosts: the stat (0 damage %, 1 defense %, 2 max HP, 3 max mana, 4 attack speed, 5 critical rate %, 6 excellent rate %, 7 damage absorbed %), then its value times 100 (32-bit, little endian); unused ones zero.</Description>
           <Length>15</Length>
+        </Field>
+        <Field>
+          <Index>451</Index>
+          <Type>Byte</Type>
+          <Name>LayerCount</Name>
+          <Description>The item's constellation layers, 0 to 4 (Star Smithing PR 7a).</Description>
+        </Field>
+        <Field>
+          <Index>452</Index>
+          <Type>Binary</Type>
+          <Name>Layers</Name>
+          <Description>4 layers of 37 bytes: number (u16 little endian), tier (0 Faint to 5 Chroma), look, hull point count (3 to 8), 8 points (x, y u16 little endian each, 0 to 65535 in the item's box); unused zero.</Description>
+          <Length>148</Length>
         </Field>
       </Fields>
     </Packet>
@@ -2295,7 +2259,7 @@
       <Length>21</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The smith starts a recipe attempt in the Constellation Forge.</SentWhen>
-      <CausedReaction>The server checks the slots again, deals the sky from a seed of its own, starts the beat on its clock and answers with StarSmithForgeSky.</CausedReaction>
+      <CausedReaction>The server checks the slots again, starts the attempt (its fault lines) from a seed of its own, starts the beat on its clock and answers with StarSmithForgeAttempt.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
@@ -2326,7 +2290,7 @@
           <Index>17</Index>
           <Type>Binary</Type>
           <Name>CatalystSlots</Name>
-          <Description>4 inventory slots of catalysts (a Jewel of Guardian reveals a void and protects the item); the unused ones are 0xFF.</Description>
+          <Description>4 inventory slots of catalysts (a Jewel of Guardian reveals a fault and protects the item); the unused ones are 0xFF.</Description>
           <Length>4</Length>
         </Field>
       </Fields>
@@ -2335,17 +2299,23 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>EE</Code>
       <SubCode>9A</SubCode>
-      <Name>StarSmithForgeStrike</Name>
-      <Length>5</Length>
+      <Name>StarSmithForgeNode</Name>
+      <Length>8</Length>
       <Direction>ClientToServer</Direction>
-      <SentWhen>The smith strikes a star of the running attempt.</SentWhen>
-      <CausedReaction>The server stamps the time on arrival, judges it against the beat and answers with StarSmithForgeStrikeResult (and StarSmithForgeResult on a crack).</CausedReaction>
+      <SentWhen>The smith places a node of the running attempt (PR 7a).</SentWhen>
+      <CausedReaction>The server stamps the time on arrival, checks the node (a close, too near, a fault), judges it against the beat, matches the figure and answers with StarSmithForgeNodeResult (and StarSmithForgeResult on a crack).</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
-          <Type>Byte</Type>
-          <Name>Star</Name>
-          <Description>The star's index in the sky.</Description>
+          <Type>ShortLittleEndian</Type>
+          <Name>X</Name>
+          <Description>The point in the item's square picture box, 0 (left) to 65535 (right).</Description>
+        </Field>
+        <Field>
+          <Index>6</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Y</Name>
+          <Description>0 (top) to 65535 (bottom).</Description>
         </Field>
       </Fields>
     </Packet>
@@ -2354,11 +2324,18 @@
       <Code>EE</Code>
       <SubCode>9B</SubCode>
       <Name>StarSmithForgeSeal</Name>
-      <Length>4</Length>
+      <Length>5</Length>
       <Direction>ClientToServer</Direction>
-      <SentWhen>The smith seals the drawn constellation.</SentWhen>
-      <CausedReaction>The server applies the result and answers with StarSmithForgeResult; refused (outcome 4) without a running attempt or before the first strike.</CausedReaction>
-      <Fields />
+      <SentWhen>The smith seals the attempt or stashes the figure being drawn.</SentWhen>
+      <CausedReaction>A seal applies the result and answers with StarSmithForgeResult (refused, outcome 4, without a running attempt or before the first node); a stash answers with StarSmithForgeNodeResult (kind 1). A 4-byte packet is a seal.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Action</Name>
+          <Description>0 seal, 1 stash.</Description>
+        </Field>
+      </Fields>
     </Packet>
     <Packet>
       <HeaderType>C1HeaderWithSubCode</HeaderType>
@@ -2368,45 +2345,53 @@
       <Length>4</Length>
       <Direction>ClientToServer</Direction>
       <SentWhen>The smith walks away from the running attempt.</SentWhen>
-      <CausedReaction>Like a crack off every shape: the ingredients are lost and the item stays. Answered with StarSmithForgeResult (outcome 2).</CausedReaction>
+      <CausedReaction>The ingredients and the stashed figures are lost and the item stays. Answered with StarSmithForgeResult (outcome 2).</CausedReaction>
       <Fields />
     </Packet>
     <Packet>
-      <HeaderType>C2HeaderWithSubCode</HeaderType>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>EE</Code>
       <SubCode>9D</SubCode>
-      <Name>StarSmithForgeSky</Name>
+      <Name>StarSmithForgeAttempt</Name>
+      <Length>179</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen>The answer to StarSmithForgeStart: the dealt sky, or why there is none.</SentWhen>
-      <CausedReaction>The client lays the stars out over the item's silhouette and starts the beat. Element, value and void of a star are never sent before it is struck, except the void a Jewel of Guardian reveals.</CausedReaction>
+      <SentWhen>The answer to StarSmithForgeStart: the attempt, or why there is none.</SentWhen>
+      <CausedReaction>The client starts the beat and the drawing over the item. The faults are never sent, except the one a Jewel of Guardian reveals.</CausedReaction>
       <Fields>
         <Field>
-          <Index>5</Index>
+          <Index>4</Index>
           <Type>Byte</Type>
           <Name>Result</Name>
-          <Description>0 started; else the StarSmithResult codes (1 no hammer, 2 hammer broken, 3 locked, 4 not here, 5 no such item, 8 off), 11 no recipe for these ingredients, 12 an attempt is already running, 13 a slot is wrong (empty, used twice, the hammer or the item). Only the header is filled when not 0.</Description>
+          <Description>0 started; else the StarSmithResult codes (1 no hammer, 2 hammer broken, 3 locked, 4 not here, 5 no such item, 8 off), 12 an attempt is already running, 13 a slot is wrong (empty, used twice, the hammer or the item), 14 no ingredients. Only the result and the target slot are filled when not 0.</Description>
         </Field>
         <Field>
-          <Index>6</Index>
+          <Index>5</Index>
           <Type>Byte</Type>
           <Name>TargetSlot</Name>
         </Field>
         <Field>
-          <Index>7</Index>
+          <Index>6</Index>
           <Type>Byte</Type>
           <Name>Strikes</Name>
-          <Description>How many stars may be struck.</Description>
+          <Description>How many nodes may be placed.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Risk</Name>
+          <Description>The worst fate among the attempt's constellations after protection: 0 the ingredients are lost, 1 the item is downgraded, 2 the item is destroyed.</Description>
         </Field>
         <Field>
           <Index>8</Index>
           <Type>Byte</Type>
-          <Name>Risk</Name>
-          <Description>The worst fate among the sky's recipes after protection: 0 the ingredients are lost, 1 the item is downgraded, 2 the item is destroyed.</Description>
+          <Name>FreeSlots</Name>
+          <Description>The constellation slots still free on this item.</Description>
         </Field>
         <Field>
           <Index>9</Index>
           <Type>Byte</Type>
-          <Name>StarCount</Name>
+          <Name>Slots</Name>
+          <Description>The smith's slots by level, 1 to 4.</Description>
         </Field>
         <Field>
           <Index>10</Index>
@@ -2422,15 +2407,51 @@
         <Field>
           <Index>14</Index>
           <Type>Byte</Type>
-          <Name>EntryCount</Name>
+          <Name>Flags</Name>
+          <Description>1 a fault is revealed.</Description>
         </Field>
         <Field>
           <Index>15</Index>
-          <Type>Structure[]</Type>
-          <TypeName>StarSmithForgeSkyEntry</TypeName>
-          <Name>Entries</Name>
-          <ItemCountField>EntryCount</ItemCountField>
-          <Description>The stars (in index order), then the links, then the hints.</Description>
+          <Type>Binary</Type>
+          <Name>RevealedFault</Name>
+          <Description>x1, y1, x2, y2 in box units (u16 little endian each); zero when none.</Description>
+          <Length>8</Length>
+        </Field>
+        <Field>
+          <Index>23</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>FaultRadius</Name>
+          <Description>In box units.</Description>
+        </Field>
+        <Field>
+          <Index>25</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>CloseRadius</Name>
+          <Description>In box units.</Description>
+        </Field>
+        <Field>
+          <Index>27</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>NodeGap</Name>
+          <Description>In box units.</Description>
+        </Field>
+        <Field>
+          <Index>29</Index>
+          <Type>Byte</Type>
+          <Name>FaultCount</Name>
+        </Field>
+        <Field>
+          <Index>30</Index>
+          <Type>Byte</Type>
+          <Name>LayerCount</Name>
+          <Description>The item's constellation layers, 0 to 4.</Description>
+        </Field>
+        <Field>
+          <Index>31</Index>
+          <Type>Binary</Type>
+          <Name>Layers</Name>
+          <Description>4 layers of 37 bytes: number (u16), tier, look, hull point count, 8 points (x, y u16 each); unused zero.</Description>
+          <Length>148</Length>
         </Field>
       </Fields>
     </Packet>
@@ -2438,63 +2459,115 @@
       <HeaderType>C1HeaderWithSubCode</HeaderType>
       <Code>EE</Code>
       <SubCode>9E</SubCode>
-      <Name>StarSmithForgeStrikeResult</Name>
+      <Name>StarSmithForgeNodeResult</Name>
+      <Length>107</Length>
       <Direction>ServerToClient</Direction>
-      <SentWhen>The answer to StarSmithForgeStrike.</SentWhen>
-      <CausedReaction>The client draws the link (or the crack) and shows the struck star's element and value. A refused strike changes nothing; its star fields are 0.</CausedReaction>
+      <SentWhen>The answer to StarSmithForgeNode, or to a stash (StarSmithForgeSeal action 1).</SentWhen>
+      <CausedReaction>The client draws the node (or the crack), the live match, the guide and the accuracy per node; a first find plays the "Constellation of {Element} found." popup. A refusal changes nothing.</CausedReaction>
       <Fields>
         <Field>
           <Index>4</Index>
           <Type>Byte</Type>
-          <Name>Answer</Name>
-          <Description>0 linked, 1 cracked, 2 refused: no attempt running, 3 refused: no such star, 4 refused: no strikes left, 5 refused: the star is struck, 6 refused: not linked to the last star.</Description>
+          <Name>Kind</Name>
+          <Description>0 node, 1 stash.</Description>
         </Field>
         <Field>
           <Index>5</Index>
           <Type>Byte</Type>
-          <Name>Star</Name>
+          <Name>Answer</Name>
+          <Description>Node: 0 placed, 1 cracked, 2 no attempt, 3 no strikes left, 4 too near a node, 5 figure full. Stash: 0 banked, 2 no attempt, 6 no match, 7 overlap, 8 no free slot.</Description>
         </Field>
         <Field>
           <Index>6</Index>
           <Type>Byte</Type>
-          <Name>Element</Name>
-          <Description>0 fire, 1 frost, 2 storm, 3 shadow, 4 light.</Description>
+          <Name>Timing</Name>
+          <Description>0 clean, 1 shaky, 2 late; 0xFF on a refusal and on a stash.</Description>
         </Field>
         <Field>
           <Index>7</Index>
           <Type>Byte</Type>
-          <Name>Value</Name>
-          <Description>1 to 5.</Description>
+          <Name>StrikesLeft</Name>
         </Field>
         <Field>
           <Index>8</Index>
           <Type>Byte</Type>
           <Name>Flags</Name>
-          <Description>1 the star is a void.</Description>
+          <Description>1 the node closed the figure, 2 it hit a fault, 4 the figure's hull overlaps a used hull, 8 a first find, 16 the match counts its extension, 32 the match is a reseal of the item's layer.</Description>
         </Field>
         <Field>
           <Index>9</Index>
           <Type>Byte</Type>
-          <Name>Timing</Name>
-          <Description>0 clean, 1 shaky, 2 late.</Description>
+          <Name>FigurePlacements</Name>
         </Field>
         <Field>
           <Index>10</Index>
           <Type>Byte</Type>
-          <Name>StrikesLeft</Name>
+          <Name>Banked</Name>
         </Field>
         <Field>
           <Index>11</Index>
-          <Type>Byte</Type>
-          <Name>GuidanceCount</Name>
+          <Type>ShortLittleEndian</Type>
+          <Name>Match</Name>
+          <Description>The constellation the figure matches (on a stash, the banked one); 0 none.</Description>
         </Field>
         <Field>
-          <Index>12</Index>
-          <Type>Structure[]</Type>
-          <TypeName>StarSmithForgeGuidance</TypeName>
-          <Name>Guidance</Name>
-          <ItemCountField>GuidanceCount</ItemCountField>
-          <Description>The smith's known recipes the path is still a prefix of, at most 60.</Description>
+          <Index>13</Index>
+          <Type>Byte</Type>
+          <Name>Look</Name>
+        </Field>
+        <Field>
+          <Index>14</Index>
+          <Type>Byte</Type>
+          <Name>Tier</Name>
+          <Description>0 Faint to 5 Chroma; 0xFF none.</Description>
+        </Field>
+        <Field>
+          <Index>15</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Score</Name>
+        </Field>
+        <Field>
+          <Index>17</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Turn</Name>
+          <Description>The node's measured turn, signed tenths of a degree (two's complement), left positive.</Description>
+        </Field>
+        <Field>
+          <Index>19</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>Ratio</Name>
+          <Description>The node's measured length ratio, permille of the first segment.</Description>
+        </Field>
+        <Field>
+          <Index>21</Index>
+          <Type>Byte</Type>
+          <Name>GuideCount</Name>
+        </Field>
+        <Field>
+          <Index>22</Index>
+          <Type>Binary</Type>
+          <Name>Guide</Name>
+          <Description>8 known constellations (u16) the figure is a prefix of; unused zero.</Description>
+          <Length>16</Length>
+        </Field>
+        <Field>
+          <Index>38</Index>
+          <Type>Binary</Type>
+          <Name>Placements</Name>
+          <Description>12 x 3 bytes per placement of the figure: timing, accuracy (u16; 0xFFFF none).</Description>
+          <Length>36</Length>
+        </Field>
+        <Field>
+          <Index>74</Index>
+          <Type>Byte</Type>
+          <Name>HullCount</Name>
+        </Field>
+        <Field>
+          <Index>75</Index>
+          <Type>Binary</Type>
+          <Name>Hull</Name>
+          <Description>8 points, x and y u16 each, in box units; unused zero.</Description>
+          <Length>32</Length>
         </Field>
       </Fields>
     </Packet>
@@ -2503,7 +2576,7 @@
       <Code>EE</Code>
       <SubCode>9F</SubCode>
       <Name>StarSmithForgeResult</Name>
-      <Length>19</Length>
+      <Length>41</Length>
       <Direction>ServerToClient</Direction>
       <SentWhen>An attempt ends (sealed, cracked, abandoned or timed out), or a seal is refused.</SentWhen>
       <CausedReaction>The client shows the result; the item's new customisation follows as ItemCustomization (EE 39).</CausedReaction>
@@ -2512,60 +2585,59 @@
           <Index>4</Index>
           <Type>Byte</Type>
           <Name>Outcome</Name>
-          <Description>0 sealed, 1 cracked, 2 abandoned, 3 timed out (as abandoned), 4 seal refused (no attempt running or nothing struck; nothing else is filled).</Description>
+          <Description>0 sealed, 1 cracked, 2 abandoned, 3 timed out (as abandoned), 4 seal refused (no attempt running or nothing placed; nothing else is filled).</Description>
         </Field>
         <Field>
           <Index>5</Index>
           <Type>Byte</Type>
           <Name>Flags</Name>
-          <Description>1 the attunement (no recipe), 2 the smith's first completion of the recipe.</Description>
+          <Description>1 the attunement (nothing sealed as a layer), 2 a first seal doubled experience.</Description>
         </Field>
         <Field>
           <Index>6</Index>
-          <Type>ShortLittleEndian</Type>
-          <Name>Recipe</Name>
-          <Description>The recipe's number (on a crack, the one the path was on); 0 for the attunement.</Description>
+          <Type>Byte</Type>
+          <Name>Rarity</Name>
+          <Description>The item's rarity after it, 0 Common to 5 Mythic.</Description>
+        </Field>
+        <Field>
+          <Index>7</Index>
+          <Type>Byte</Type>
+          <Name>Fate</Name>
+          <Description>0 the ingredients are lost, 1 the item is downgraded, 2 the item is destroyed; 0xFF when sealed.</Description>
         </Field>
         <Field>
           <Index>8</Index>
           <Type>Byte</Type>
-          <Name>Rarity</Name>
-          <Description>0 Common to 5 Mythic (Common on a crack).</Description>
+          <Name>CleanPlacements</Name>
         </Field>
         <Field>
           <Index>9</Index>
           <Type>Byte</Type>
-          <Name>Extension</Name>
-          <Description>The links past an extendable shape.</Description>
+          <Name>Placements</Name>
         </Field>
         <Field>
           <Index>10</Index>
-          <Type>Byte</Type>
-          <Name>Dominant</Name>
-          <Description>The dominant element (0 fire to 4 light), 0xFF none.</Description>
+          <Type>IntegerLittleEndian</Type>
+          <Name>Experience</Name>
         </Field>
         <Field>
-          <Index>11</Index>
-          <Type>Byte</Type>
-          <Name>Fate</Name>
-          <Description>The item's fate when not sealed: 0 the ingredients are lost, 1 the item is downgraded, 2 the item is destroyed; 0xFF when sealed.</Description>
+          <Index>14</Index>
+          <Type>ShortLittleEndian</Type>
+          <Name>FateConstellation</Name>
+          <Description>On a crack, the constellation whose onFail decided; 0 none.</Description>
         </Field>
         <Field>
-          <Index>12</Index>
-          <Type>Binary</Type>
-          <Name>ElementMix</Name>
-          <Description>The struck stars' values summed by element: fire, frost, storm, shadow, light.</Description>
-          <Length>5</Length>
+          <Index>16</Index>
+          <Type>Byte</Type>
+          <Name>FigureCount</Name>
+          <Description>The sealed figures; on a crack or an abandon the stashed ones lost.</Description>
         </Field>
         <Field>
           <Index>17</Index>
-          <Type>Byte</Type>
-          <Name>CleanStrikes</Name>
-        </Field>
-        <Field>
-          <Index>18</Index>
-          <Type>Byte</Type>
-          <Name>StrikeCount</Name>
+          <Type>Binary</Type>
+          <Name>Figures</Name>
+          <Description>4 x 6 bytes: number (u16), tier, look, result (0 added, 1 raised, 2 kept), the layer's index on the item.</Description>
+          <Length>24</Length>
         </Field>
       </Fields>
     </Packet>

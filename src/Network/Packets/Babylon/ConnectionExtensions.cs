@@ -654,11 +654,13 @@ public static class ConnectionExtensions
     /// <param name="smithLevel">The smith's level when the item was forged; 0 when it was not (Star Smithing).</param>
     /// <param name="boostCount">The smithed boosts, 0 to 3.</param>
     /// <param name="boosts">Three 5-byte boosts: the stat (0 damage %, 1 defense %, 2 max HP, 3 max mana, 4 attack speed, 5 critical rate %, 6 excellent rate %, 7 damage absorbed %), then its value times 100 (32-bit, little endian); unused ones zero.</param>
+    /// <param name="layerCount">The item's constellation layers, 0 to 4 (Star Smithing PR 7a).</param>
+    /// <param name="layers">4 layers of 37 bytes: number (u16 little endian), tier (0 Faint to 5 Chroma), look, hull point count (3 to 8), 8 points (x, y u16 little endian each, 0 to 65535 in the item's box); unused zero.</param>
     /// <remarks>
     /// Is sent by the server when: The answer to ItemCustomizationDetailRequest.
     /// Causes reaction on client side: The client shows the item's lore, and a smithed item's boosts and smith level, in its tooltip.
     /// </remarks>
-    public static async ValueTask SendItemCustomizationDetailAsync(this IConnection? connection, byte @storage, ushort @objectId, byte @slot, uint @version, Memory<byte> @lore, ushort @smithLevel, byte @boostCount, Memory<byte> @boosts)
+    public static async ValueTask SendItemCustomizationDetailAsync(this IConnection? connection, byte @storage, ushort @objectId, byte @slot, uint @version, Memory<byte> @lore, ushort @smithLevel, byte @boostCount, Memory<byte> @boosts, byte @layerCount, Memory<byte> @layers)
     {
         if (connection is null)
         {
@@ -677,6 +679,8 @@ public static class ConnectionExtensions
             packet.SmithLevel = @smithLevel;
             packet.BoostCount = @boostCount;
             @boosts.Span.CopyTo(packet.Boosts);
+            packet.LayerCount = @layerCount;
+            @layers.Span.CopyTo(packet.Layers);
 
             return packet.Header.Length;
         }
@@ -976,10 +980,10 @@ public static class ConnectionExtensions
     /// <param name="ingredientCount">How many of the ingredient slots are used, at most 10.</param>
     /// <param name="catalystCount">How many of the catalyst slots are used, at most 4.</param>
     /// <param name="ingredientSlots">10 inventory slots of ingredients; the unused ones are 0xFF. Each slot is one unit of its item (a stack gives one).</param>
-    /// <param name="catalystSlots">4 inventory slots of catalysts (a Jewel of Guardian reveals a void and protects the item); the unused ones are 0xFF.</param>
+    /// <param name="catalystSlots">4 inventory slots of catalysts (a Jewel of Guardian reveals a fault and protects the item); the unused ones are 0xFF.</param>
     /// <remarks>
     /// Is sent by the client when: The smith starts a recipe attempt in the Constellation Forge.
-    /// Causes reaction on server side: The server checks the slots again, deals the sky from a seed of its own, starts the beat on its clock and answers with StarSmithForgeSky.
+    /// Causes reaction on server side: The server checks the slots again, starts the attempt (its fault lines) from a seed of its own, starts the beat on its clock and answers with StarSmithForgeAttempt.
     /// </remarks>
     public static async ValueTask SendStarSmithForgeStartAsync(this IConnection? connection, byte @targetSlot, byte @ingredientCount, byte @catalystCount, Memory<byte> @ingredientSlots, Memory<byte> @catalystSlots)
     {
@@ -1005,15 +1009,16 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
-    /// Sends a <see cref="StarSmithForgeStrike" /> to this connection.
+    /// Sends a <see cref="StarSmithForgeNode" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="star">The star's index in the sky.</param>
+    /// <param name="x">The point in the item's square picture box, 0 (left) to 65535 (right).</param>
+    /// <param name="y">0 (top) to 65535 (bottom).</param>
     /// <remarks>
-    /// Is sent by the client when: The smith strikes a star of the running attempt.
-    /// Causes reaction on server side: The server stamps the time on arrival, judges it against the beat and answers with StarSmithForgeStrikeResult (and StarSmithForgeResult on a crack).
+    /// Is sent by the client when: The smith places a node of the running attempt (PR 7a).
+    /// Causes reaction on server side: The server stamps the time on arrival, checks the node (a close, too near, a fault), judges it against the beat, matches the figure and answers with StarSmithForgeNodeResult (and StarSmithForgeResult on a crack).
     /// </remarks>
-    public static async ValueTask SendStarSmithForgeStrikeAsync(this IConnection? connection, byte @star)
+    public static async ValueTask SendStarSmithForgeNodeAsync(this IConnection? connection, ushort @x, ushort @y)
     {
         if (connection is null)
         {
@@ -1022,9 +1027,10 @@ public static class ConnectionExtensions
 
         int WritePacket()
         {
-            var length = StarSmithForgeStrikeRef.Length;
-            var packet = new StarSmithForgeStrikeRef(connection.Output.GetSpan(length)[..length]);
-            packet.Star = @star;
+            var length = StarSmithForgeNodeRef.Length;
+            var packet = new StarSmithForgeNodeRef(connection.Output.GetSpan(length)[..length]);
+            packet.X = @x;
+            packet.Y = @y;
 
             return packet.Header.Length;
         }
@@ -1036,11 +1042,12 @@ public static class ConnectionExtensions
     /// Sends a <see cref="StarSmithForgeSeal" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
+    /// <param name="action">0 seal, 1 stash.</param>
     /// <remarks>
-    /// Is sent by the client when: The smith seals the drawn constellation.
-    /// Causes reaction on server side: The server applies the result and answers with StarSmithForgeResult; refused (outcome 4) without a running attempt or before the first strike.
+    /// Is sent by the client when: The smith seals the attempt or stashes the figure being drawn.
+    /// Causes reaction on server side: A seal applies the result and answers with StarSmithForgeResult (refused, outcome 4, without a running attempt or before the first node); a stash answers with StarSmithForgeNodeResult (kind 1). A 4-byte packet is a seal.
     /// </remarks>
-    public static async ValueTask SendStarSmithForgeSealAsync(this IConnection? connection)
+    public static async ValueTask SendStarSmithForgeSealAsync(this IConnection? connection, byte @action)
     {
         if (connection is null)
         {
@@ -1051,6 +1058,8 @@ public static class ConnectionExtensions
         {
             var length = StarSmithForgeSealRef.Length;
             var packet = new StarSmithForgeSealRef(connection.Output.GetSpan(length)[..length]);
+            packet.Action = @action;
+
             return packet.Header.Length;
         }
 
@@ -1063,7 +1072,7 @@ public static class ConnectionExtensions
     /// <param name="connection">The connection.</param>
     /// <remarks>
     /// Is sent by the client when: The smith walks away from the running attempt.
-    /// Causes reaction on server side: Like a crack off every shape: the ingredients are lost and the item stays. Answered with StarSmithForgeResult (outcome 2).
+    /// Causes reaction on server side: The ingredients and the stashed figures are lost and the item stays. Answered with StarSmithForgeResult (outcome 2).
     /// </remarks>
     public static async ValueTask SendStarSmithForgeAbandonAsync(this IConnection? connection)
     {
@@ -1083,24 +1092,144 @@ public static class ConnectionExtensions
     }
 
     /// <summary>
+    /// Sends a <see cref="StarSmithForgeAttempt" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="result">0 started; else the StarSmithResult codes (1 no hammer, 2 hammer broken, 3 locked, 4 not here, 5 no such item, 8 off), 12 an attempt is already running, 13 a slot is wrong (empty, used twice, the hammer or the item), 14 no ingredients. Only the result and the target slot are filled when not 0.</param>
+    /// <param name="targetSlot">The target slot.</param>
+    /// <param name="strikes">How many nodes may be placed.</param>
+    /// <param name="risk">The worst fate among the attempt's constellations after protection: 0 the ingredients are lost, 1 the item is downgraded, 2 the item is destroyed.</param>
+    /// <param name="freeSlots">The constellation slots still free on this item.</param>
+    /// <param name="slots">The smith's slots by level, 1 to 4.</param>
+    /// <param name="beatIntervalMs">The beat interval ms.</param>
+    /// <param name="firstBeatMs">The time from sending this packet to the first beat, in milliseconds.</param>
+    /// <param name="flags">1 a fault is revealed.</param>
+    /// <param name="revealedFault">x1, y1, x2, y2 in box units (u16 little endian each); zero when none.</param>
+    /// <param name="faultRadius">In box units.</param>
+    /// <param name="closeRadius">In box units.</param>
+    /// <param name="nodeGap">In box units.</param>
+    /// <param name="faultCount">The fault count.</param>
+    /// <param name="layerCount">The item's constellation layers, 0 to 4.</param>
+    /// <param name="layers">4 layers of 37 bytes: number (u16), tier, look, hull point count, 8 points (x, y u16 each); unused zero.</param>
+    /// <remarks>
+    /// Is sent by the server when: The answer to StarSmithForgeStart: the attempt, or why there is none.
+    /// Causes reaction on client side: The client starts the beat and the drawing over the item. The faults are never sent, except the one a Jewel of Guardian reveals.
+    /// </remarks>
+    public static async ValueTask SendStarSmithForgeAttemptAsync(this IConnection? connection, byte @result, byte @targetSlot, byte @strikes, byte @risk, byte @freeSlots, byte @slots, ushort @beatIntervalMs, ushort @firstBeatMs, byte @flags, Memory<byte> @revealedFault, ushort @faultRadius, ushort @closeRadius, ushort @nodeGap, byte @faultCount, byte @layerCount, Memory<byte> @layers)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = StarSmithForgeAttemptRef.Length;
+            var packet = new StarSmithForgeAttemptRef(connection.Output.GetSpan(length)[..length]);
+            packet.Result = @result;
+            packet.TargetSlot = @targetSlot;
+            packet.Strikes = @strikes;
+            packet.Risk = @risk;
+            packet.FreeSlots = @freeSlots;
+            packet.Slots = @slots;
+            packet.BeatIntervalMs = @beatIntervalMs;
+            packet.FirstBeatMs = @firstBeatMs;
+            packet.Flags = @flags;
+            @revealedFault.Span.CopyTo(packet.RevealedFault);
+            packet.FaultRadius = @faultRadius;
+            packet.CloseRadius = @closeRadius;
+            packet.NodeGap = @nodeGap;
+            packet.FaultCount = @faultCount;
+            packet.LayerCount = @layerCount;
+            @layers.Span.CopyTo(packet.Layers);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Sends a <see cref="StarSmithForgeNodeResult" /> to this connection.
+    /// </summary>
+    /// <param name="connection">The connection.</param>
+    /// <param name="kind">0 node, 1 stash.</param>
+    /// <param name="answer">Node: 0 placed, 1 cracked, 2 no attempt, 3 no strikes left, 4 too near a node, 5 figure full. Stash: 0 banked, 2 no attempt, 6 no match, 7 overlap, 8 no free slot.</param>
+    /// <param name="timing">0 clean, 1 shaky, 2 late; 0xFF on a refusal and on a stash.</param>
+    /// <param name="strikesLeft">The strikes left.</param>
+    /// <param name="flags">1 the node closed the figure, 2 it hit a fault, 4 the figure's hull overlaps a used hull, 8 a first find, 16 the match counts its extension, 32 the match is a reseal of the item's layer.</param>
+    /// <param name="figurePlacements">The figure placements.</param>
+    /// <param name="banked">The banked.</param>
+    /// <param name="match">The constellation the figure matches (on a stash, the banked one); 0 none.</param>
+    /// <param name="look">The look.</param>
+    /// <param name="tier">0 Faint to 5 Chroma; 0xFF none.</param>
+    /// <param name="score">The score.</param>
+    /// <param name="turn">The node's measured turn, signed tenths of a degree (two's complement), left positive.</param>
+    /// <param name="ratio">The node's measured length ratio, permille of the first segment.</param>
+    /// <param name="guideCount">The guide count.</param>
+    /// <param name="guide">8 known constellations (u16) the figure is a prefix of; unused zero.</param>
+    /// <param name="placements">12 x 3 bytes per placement of the figure: timing, accuracy (u16; 0xFFFF none).</param>
+    /// <param name="hullCount">The hull count.</param>
+    /// <param name="hull">8 points, x and y u16 each, in box units; unused zero.</param>
+    /// <remarks>
+    /// Is sent by the server when: The answer to StarSmithForgeNode, or to a stash (StarSmithForgeSeal action 1).
+    /// Causes reaction on client side: The client draws the node (or the crack), the live match, the guide and the accuracy per node; a first find plays the "Constellation of {Element} found." popup. A refusal changes nothing.
+    /// </remarks>
+    public static async ValueTask SendStarSmithForgeNodeResultAsync(this IConnection? connection, byte @kind, byte @answer, byte @timing, byte @strikesLeft, byte @flags, byte @figurePlacements, byte @banked, ushort @match, byte @look, byte @tier, ushort @score, ushort @turn, ushort @ratio, byte @guideCount, Memory<byte> @guide, Memory<byte> @placements, byte @hullCount, Memory<byte> @hull)
+    {
+        if (connection is null)
+        {
+            return;
+        }
+
+        int WritePacket()
+        {
+            var length = StarSmithForgeNodeResultRef.Length;
+            var packet = new StarSmithForgeNodeResultRef(connection.Output.GetSpan(length)[..length]);
+            packet.Kind = @kind;
+            packet.Answer = @answer;
+            packet.Timing = @timing;
+            packet.StrikesLeft = @strikesLeft;
+            packet.Flags = @flags;
+            packet.FigurePlacements = @figurePlacements;
+            packet.Banked = @banked;
+            packet.Match = @match;
+            packet.Look = @look;
+            packet.Tier = @tier;
+            packet.Score = @score;
+            packet.Turn = @turn;
+            packet.Ratio = @ratio;
+            packet.GuideCount = @guideCount;
+            @guide.Span.CopyTo(packet.Guide);
+            @placements.Span.CopyTo(packet.Placements);
+            packet.HullCount = @hullCount;
+            @hull.Span.CopyTo(packet.Hull);
+
+            return packet.Header.Length;
+        }
+
+        await connection.SendAsync(WritePacket).ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Sends a <see cref="StarSmithForgeResult" /> to this connection.
     /// </summary>
     /// <param name="connection">The connection.</param>
-    /// <param name="outcome">0 sealed, 1 cracked, 2 abandoned, 3 timed out (as abandoned), 4 seal refused (no attempt running or nothing struck; nothing else is filled).</param>
-    /// <param name="flags">1 the attunement (no recipe), 2 the smith's first completion of the recipe.</param>
-    /// <param name="recipe">The recipe's number (on a crack, the one the path was on); 0 for the attunement.</param>
-    /// <param name="rarity">0 Common to 5 Mythic (Common on a crack).</param>
-    /// <param name="extension">The links past an extendable shape.</param>
-    /// <param name="dominant">The dominant element (0 fire to 4 light), 0xFF none.</param>
-    /// <param name="fate">The item's fate when not sealed: 0 the ingredients are lost, 1 the item is downgraded, 2 the item is destroyed; 0xFF when sealed.</param>
-    /// <param name="elementMix">The struck stars' values summed by element: fire, frost, storm, shadow, light.</param>
-    /// <param name="cleanStrikes">The clean strikes.</param>
-    /// <param name="strikeCount">The strike count.</param>
+    /// <param name="outcome">0 sealed, 1 cracked, 2 abandoned, 3 timed out (as abandoned), 4 seal refused (no attempt running or nothing placed; nothing else is filled).</param>
+    /// <param name="flags">1 the attunement (nothing sealed as a layer), 2 a first seal doubled experience.</param>
+    /// <param name="rarity">The item's rarity after it, 0 Common to 5 Mythic.</param>
+    /// <param name="fate">0 the ingredients are lost, 1 the item is downgraded, 2 the item is destroyed; 0xFF when sealed.</param>
+    /// <param name="cleanPlacements">The clean placements.</param>
+    /// <param name="placements">The placements.</param>
+    /// <param name="experience">The experience.</param>
+    /// <param name="fateConstellation">On a crack, the constellation whose onFail decided; 0 none.</param>
+    /// <param name="figureCount">The sealed figures; on a crack or an abandon the stashed ones lost.</param>
+    /// <param name="figures">4 x 6 bytes: number (u16), tier, look, result (0 added, 1 raised, 2 kept), the layer's index on the item.</param>
     /// <remarks>
     /// Is sent by the server when: An attempt ends (sealed, cracked, abandoned or timed out), or a seal is refused.
     /// Causes reaction on client side: The client shows the result; the item's new customisation follows as ItemCustomization (EE 39).
     /// </remarks>
-    public static async ValueTask SendStarSmithForgeResultAsync(this IConnection? connection, byte @outcome, byte @flags, ushort @recipe, byte @rarity, byte @extension, byte @dominant, byte @fate, Memory<byte> @elementMix, byte @cleanStrikes, byte @strikeCount)
+    public static async ValueTask SendStarSmithForgeResultAsync(this IConnection? connection, byte @outcome, byte @flags, byte @rarity, byte @fate, byte @cleanPlacements, byte @placements, uint @experience, ushort @fateConstellation, byte @figureCount, Memory<byte> @figures)
     {
         if (connection is null)
         {
@@ -1113,14 +1242,14 @@ public static class ConnectionExtensions
             var packet = new StarSmithForgeResultRef(connection.Output.GetSpan(length)[..length]);
             packet.Outcome = @outcome;
             packet.Flags = @flags;
-            packet.Recipe = @recipe;
             packet.Rarity = @rarity;
-            packet.Extension = @extension;
-            packet.Dominant = @dominant;
             packet.Fate = @fate;
-            @elementMix.Span.CopyTo(packet.ElementMix);
-            packet.CleanStrikes = @cleanStrikes;
-            packet.StrikeCount = @strikeCount;
+            packet.CleanPlacements = @cleanPlacements;
+            packet.Placements = @placements;
+            packet.Experience = @experience;
+            packet.FateConstellation = @fateConstellation;
+            packet.FigureCount = @figureCount;
+            @figures.Span.CopyTo(packet.Figures);
 
             return packet.Header.Length;
         }

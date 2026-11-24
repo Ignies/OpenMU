@@ -5,36 +5,55 @@
 namespace MUnique.OpenMU.GameLogic.StarSmithing;
 
 /// <summary>
-/// The result of a Constellation Forge attempt (section 10, rule 5).
+/// What a seal did to a layer (EE 9F).
 /// </summary>
-/// <param name="State">Sealed or cracked.</param>
-/// <param name="Recipe">The recipe the shape makes (or, cracked, the one it was on); null for the attunement.</param>
-/// <param name="Path">The struck stars, in order.</param>
-/// <param name="ElementMix">The struck stars' values summed by element, the effect's flavour.</param>
-/// <param name="Dominant">The element with the most value (the lower element on a tie), or null when nothing is mixed.</param>
-/// <param name="CleanStrikes">How many strikes were clean.</param>
-/// <param name="Rarity">The rarity tier (Common when cracked).</param>
-/// <param name="Extension">The links past an extendable shape that make the effect bigger.</param>
-/// <param name="MagnitudeFactor">What a rolled magnitude is multiplied by: the extension and the smith level (0 when cracked).</param>
-/// <param name="FirstCompletion">Whether this is the smith's first completion of the recipe, for the Guidebook.</param>
-/// <param name="Fail">What happens to the item when cracked, by the recipe's onFail; null when sealed.</param>
+public enum StarSmithLayerChange : byte
+{
+    /// <summary>A new layer.</summary>
+    Added,
+
+    /// <summary>A reseal raised the layer's tier and took the new hull.</summary>
+    Raised,
+
+    /// <summary>A reseal that was not higher kept the layer as it was.</summary>
+    Kept,
+}
+
+/// <summary>
+/// One sealed figure.
+/// </summary>
+/// <param name="Recipe">The constellation.</param>
+/// <param name="Tier">The figure's own tier.</param>
+/// <param name="Score">The figure's score.</param>
+/// <param name="Change">What it did to the item's layers.</param>
+/// <param name="LayerIndex">The layer's index on the item.</param>
+public sealed record StarSmithSealedFigure(StarSmithRecipe Recipe, StarSmithSignTier Tier, int Score, StarSmithLayerChange Change, int LayerIndex);
+
+/// <summary>
+/// The end of a Forge attempt (Readme.md "PR 7a contract", "Stash, seal and slots").
+/// </summary>
+/// <param name="State">Sealed, cracked or abandoned.</param>
+/// <param name="Figures">The sealed figures, in the order banked.</param>
+/// <param name="Lost">The banked figures a crack or an abandon lost.</param>
+/// <param name="FateRecipe">On a crack, the constellation whose onFail decided; else null.</param>
+/// <param name="Fail">What happens to the item when cracked or abandoned; null when sealed.</param>
+/// <param name="Placements">All accepted placements.</param>
+/// <param name="CleanPlacements">The clean ones.</param>
+/// <param name="Attunement">Whether the seal is the attunement (nothing banked).</param>
+/// <param name="Rarity">The item's rarity after a seal: the best of the seal and every layer.</param>
+/// <param name="Layers">The item's layers after a seal.</param>
+/// <param name="BoostRecipe">The sealed constellation with an outcome table that rolls the boosts, or null.</param>
+/// <param name="BoostTier">Its tier.</param>
 public sealed record StarSmithForgeResult(
     StarSmithForgeState State,
-    StarSmithRecipe? Recipe,
-    IReadOnlyList<int> Path,
-    IReadOnlyDictionary<StarSmithElement, int> ElementMix,
-    StarSmithElement? Dominant,
-    int CleanStrikes,
+    IReadOnlyList<StarSmithSealedFigure> Figures,
+    int Lost,
+    StarSmithRecipe? FateRecipe,
+    StarSmithOnFail? Fail,
+    int Placements,
+    int CleanPlacements,
+    bool Attunement,
     StarSmithRarity Rarity,
-    int Extension,
-    double MagnitudeFactor,
-    bool FirstCompletion,
-    StarSmithOnFail? Fail)
-{
-    /// <summary>
-    /// Scales a magnitude rolled from the recipe's outcome.
-    /// </summary>
-    /// <param name="rolled">The rolled magnitude.</param>
-    /// <returns>The magnitude.</returns>
-    public double Magnitude(double rolled) => rolled * this.MagnitudeFactor;
-}
+    IReadOnlyList<StarSmithLayer> Layers,
+    StarSmithRecipe? BoostRecipe,
+    StarSmithSignTier BoostTier);
