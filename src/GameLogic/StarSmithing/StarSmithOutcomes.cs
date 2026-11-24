@@ -71,6 +71,35 @@ public static class StarSmithOutcomes
     }
 
     /// <summary>
+    /// The attunement's outcome table (design section 3: no recipe matched or no shape was completed): one Common
+    /// outcome with one small boost of the stat at its lowest range.
+    /// </summary>
+    /// <param name="stat">The stat, from <see cref="AttunementStat"/>.</param>
+    /// <returns>A recipe holding only that table.</returns>
+    public static StarSmithRecipe Attunement(StarSmithBoostStat stat)
+    {
+        var (minimum, maximum) = stat == StarSmithBoostStat.MaxHealth ? (30.0, 60.0) : (0.5, 1.0);
+        return new StarSmithRecipe
+        {
+            Outcomes = [new StarSmithOutcome { Weight = 1, Tier = StarSmithRarity.Common, Boosts = [new StarSmithBoostRange { Stat = stat, Minimum = minimum, Maximum = maximum }] }],
+        };
+    }
+
+    /// <summary>
+    /// The stat an attunement boosts, by the ingredients' family (the group most of them belong to): the skill orbs
+    /// damage, the scrolls max HP, anything else defense.
+    /// </summary>
+    /// <param name="ingredientGroups">The item groups of the ingredients.</param>
+    /// <returns>The stat.</returns>
+    public static StarSmithBoostStat AttunementStat(IEnumerable<byte> ingredientGroups)
+        => ingredientGroups.GroupBy(g => g).OrderByDescending(g => g.Count()).ThenBy(g => g.Key).FirstOrDefault()?.Key switch
+        {
+            12 => StarSmithBoostStat.Damage,
+            15 => StarSmithBoostStat.MaxHealth,
+            _ => StarSmithBoostStat.Defense,
+        };
+
+    /// <summary>
     /// Whether a stat is a flat, whole number in play (max HP, max mana, attack speed) rather than a percentage.
     /// </summary>
     /// <param name="stat">The stat.</param>

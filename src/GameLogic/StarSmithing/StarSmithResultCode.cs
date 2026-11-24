@@ -50,4 +50,7 @@ public enum StarSmithResultCode : byte
 
     /// <summary>A Forge start naming a wrong slot: empty, named twice, the hammer or the item worked on.</summary>
     WrongSlot,
+
+    /// <summary>A Forge start without an ingredient (catalysts, such as jewels, never count as one).</summary>
+    NoIngredients,
 }

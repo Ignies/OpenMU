@@ -77,6 +77,9 @@ public sealed class StarSmithForgeAttempt
     /// <summary>Gets the forge.</summary>
     public StarSmithForge Forge { get; }
 
+    /// <summary>Gets or sets the stat an attunement seal (no recipe) boosts, from the ingredients' family.</summary>
+    public StarSmithBoostStat AttunementStat { get; set; }
+
     /// <summary>Gets the beat.</summary>
     public StarSmithBeat Beat => this._beat;
 

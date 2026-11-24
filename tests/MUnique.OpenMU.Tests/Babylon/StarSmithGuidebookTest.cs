@@ -234,7 +234,7 @@ public class StarSmithGuidebookTest
         await AddAsync(player, 14, 12, 7).ConfigureAwait(false);
 
         await plugIn.StartForgeAsync(player, TargetSlot, [], []).ConfigureAwait(false);
-        view.Verify(v => v.SendForgeSkyAsync(It.Is<StarSmithForgeSkyMessage>(m => m.Result == StarSmithResultCode.NoRecipe)), Times.Once);
+        view.Verify(v => v.SendForgeSkyAsync(It.Is<StarSmithForgeSkyMessage>(m => m.Result == StarSmithResultCode.NoIngredients)), Times.Once);
 
         await plugIn.StartForgeAsync(player, TargetSlot, [14], []).ConfigureAwait(false);
         view.Verify(v => v.SendForgeSkyAsync(It.Is<StarSmithForgeSkyMessage>(m => m.Result == StarSmithResultCode.Done && m.Strikes == 3)), Times.Once);
