@@ -3593,6 +3593,24 @@
       </Fields>
     </Packet>
     <Packet>
+      <HeaderType>C1HeaderWithSubCode</HeaderType>
+      <Code>EE</Code>
+      <SubCode>AA</SubCode>
+      <Name>MineCartRequest</Name>
+      <Length>5</Length>
+      <Direction>ClientToServer</Direction>
+      <SentWhen>The player clicks the Kubera Mine cart beside it to ride, or the ride reaches the rail's end.</SentWhen>
+      <CausedReaction>The server moves the player at once onto the rail (board) or past its end (leave), or does nothing.</CausedReaction>
+      <Fields>
+        <Field>
+          <Index>4</Index>
+          <Type>Byte</Type>
+          <Name>Action</Name>
+          <Description>0 board the cart, 1 leave it.</Description>
+        </Field>
+      </Fields>
+    </Packet>
+    <Packet>
       <HeaderType>C2HeaderWithSubCode</HeaderType>
       <Code>EE</Code>
       <SubCode>D0</SubCode>

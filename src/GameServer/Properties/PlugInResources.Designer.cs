@@ -8677,7 +8677,25 @@ namespace MUnique.OpenMU.GameServer.Properties {
                 return ResourceManager.GetString("MiningRequestHandlerPlugIn_Description", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Mine cart request handler (Babylon).
+        /// </summary>
+        public static string MineCartRequestHandlerPlugIn_Name {
+            get {
+                return ResourceManager.GetString("MineCartRequestHandlerPlugIn_Name", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Handles the Kubera Mine cart ride of the Babylon client: puts a player beside the cart onto the rail, and a rider past the rail&apos;s end..
+        /// </summary>
+        public static string MineCartRequestHandlerPlugIn_Description {
+            get {
+                return ResourceManager.GetString("MineCartRequestHandlerPlugIn_Description", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Hunting record and ranking view (Babylon).
         /// </summary>

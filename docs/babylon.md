@@ -80,6 +80,7 @@ Rules:
 | `pentagram_elements` | The elements: elemental damage and defense of characters and monsters, pentagrams, errtels and the elemental refinery (update "Add the elements, pentagrams and errtels", plugin "Elements (Season 21)", section "Elements, pentagrams and earrings") |
 | `earrings` | The earrings with their slots, options and links (update "Add the earrings", same section) |
 | `muun` | The Muuns of Season 21: the Muun inventory with two equipped Muuns, their options on the owner, level up, evolution, the energy converter, Monica's exchange and the mounts (update "Add the Muuns of Season 21", plugin "Muuns of Season 21", `src/GameLogic/Muuns`) |
+| `mine_cart` | The Kubera Mine cart ride as the Kanturu client has it: board beside the cart, ride the rail (an island of walkable tiles), get set down past its end (plugin "Mine cart request handler", `GameLogic/PlayerActions/World/MineCartAction.cs`) |
 | `mining` | The Pandora mining: 51 spots in the safe zones of six maps, five stages, Jewels of Bless (update "Add the mining of Season 21", plugin "Mining (Season 21)", `src/GameLogic/Mining`) |
 | `golden_invasions_s21` | The golden invasion of Season 21: the ten later golden monsters 493-502 with their Box of Kundun, the Golden Derkon in Elbeland, 19 kinds every four hours from 00:25 for 10 minutes (update "Add the golden invasion of Season 21"; the Season 6 plugin "Golden Invasion" runs it) |
 | `ranking` | The hunting record (time, kills, experience and damage per character, map and day on the 59 hunting maps, kept 7 days) and the in-game ranking by total level and by the kills and hunting experience of the week (update "Add the hunting record of Season 21", plugin "Hunting record and ranking (Season 21)", `src/GameLogic/HuntingRecord`) |
@@ -159,7 +160,7 @@ C1 08 EE F3  ForkPing (server)           C1 08 EE F4  ForkPong (client)
   3 `evolutions_45`, 4 `enhance_tree`, 5 `ability_core`, 6 `mastery`, 7 `wing_grades`, 8 `sockets_10`,
   9 `pentagram_elements`, 10 `earrings`, 11 `muun`, 12 `gremory`, 13 `ruud`, 14 `mining`, 15 `elite_zones`,
   16 `world_bosses`, 17 `events_s21`, 18 `muquest`, 19 `helper_plus`, 20 `ranking`, 21 `battle_pass`,
-  22 `artifacts`, 23 `legendary_craft`, 24 `evolution_quests`, 25 `item_custom`, 26 `star_smithing`, 27-31 reserved. A bit is available when `fork.json`
+  22 `artifacts`, 23 `legendary_craft`, 24 `evolution_quests`, 25 `item_custom`, 26 `star_smithing`, 27 `mine_cart`, 28-31 reserved. A bit is available when `fork.json`
   lists the id of the same name. `fork_protocol` (no bit) says the fork speaks this protocol at all.
 - **Head code 0xEE**, always with a sub code (not 0xFB: the Babylon proxy relays its map pings on C1 FB, and FA-FD are its own), reserved by range so tracks never collide: F0-F7 core, 10-1F
   characters, 20-2F appearance, 30-3F items, 40-4F skill trees, 50-5F Muun, 60-6F Gremory Case, 70-7F currency
@@ -284,6 +285,9 @@ Season 6 packets (golden notices for a spawn, a kill and a lost battle, blue not
   jewels lost, 3 collected, 4 no pickaxe, 5 pickaxe worn, 6 no spot in reach, 7 another player mines it, 8 off), stage at 7,
   jewels (u16 LE) at 8, jackpot (u16 LE) at 10. Sent when the character talks to a spot (result 0) and after each request.
 - A4 stays kept for the invasion notice.
+- `C1 EE AA MineCartRequest` (client, 5): action at 4 (0 board the Kubera Mine cart, 1 leave it). No answer: the server
+  moves the player at once (an instant move, `MineCartAction`) or does nothing. Board: on maps 123-127 within two tiles
+  of the cart tile 190,65, onto the rail at 189,65. Leave: from any rail tile, down at 167,62.
 - `C2 EE A5 SoulConverterState` (server): tier at 5 (0 none), activations left this week at 6, expiry (u32 LE, UTC seconds, 0 none)
   at 7, count at 11, then per mission 8 bytes: map, monster, souls, required souls (u16 LE each). Sent on activation, on
   every absorbed soul, after a claim, on entering a map with an active converter and on `C1 EE A8 SoulConverterStateRequest`.
