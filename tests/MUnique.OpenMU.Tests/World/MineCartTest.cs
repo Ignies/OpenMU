@@ -69,6 +69,18 @@ public class MineCartTest
         Assert.That(player.Position, Is.EqualTo(new Point(166, 62)));
     }
 
+    /// <summary>
+    /// The ride is new: its request handler is off until a world switches it on (Admin > Systems).
+    /// </summary>
+    [Test]
+    public void RequestHandlerIsOffByDefault()
+    {
+        var handler = typeof(MUnique.OpenMU.GameServer.GameServer).Assembly.GetType("MUnique.OpenMU.GameServer.MessageHandler.Babylon.MineCartRequestHandlerPlugIn");
+
+        Assert.That(handler, Is.Not.Null);
+        Assert.That(handler!.IsAssignableTo(typeof(IDisabledByDefault)), Is.True);
+    }
+
     private static async ValueTask<Player> CreateAsync(short map, Point position)
     {
         var player = await PlayerTestHelper.CreatePlayerAsync().ConfigureAwait(false);

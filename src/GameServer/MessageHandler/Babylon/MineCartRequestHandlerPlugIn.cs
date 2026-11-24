@@ -13,13 +13,14 @@ using MUnique.OpenMU.PlugIns;
 
 /// <summary>
 /// Handles the <see cref="MineCartRequest"/> of the Babylon client: boarding or leaving the Kubera Mine cart.
+/// Off until a world switches the ride on (Hidden-Babylon Admin > Systems "Kubera mine cart ride").
 /// </summary>
 [PlugIn]
 [Display(Name = nameof(PlugInResources.MineCartRequestHandlerPlugIn_Name), Description = nameof(PlugInResources.MineCartRequestHandlerPlugIn_Description), ResourceType = typeof(PlugInResources))]
 [Guid("6D1C8E52-3A7F-4B09-9E24-B5F80C3A71D6")]
 [MinimumClient(BabylonClient.MinimumSeason, BabylonClient.MinimumEpisode, ClientLanguage.Invariant)]
 [BelongsToGroup(BabylonGroupHandlerPlugIn.GroupKey)]
-internal class MineCartRequestHandlerPlugIn : ISubPacketHandlerPlugIn
+internal class MineCartRequestHandlerPlugIn : ISubPacketHandlerPlugIn, IDisabledByDefault
 {
     private readonly MineCartAction _action = new();
 
