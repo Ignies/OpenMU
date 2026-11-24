@@ -101,7 +101,7 @@ The client sends:
 - `C1 EE 99 StarSmithForgeStart`, 21 bytes: 4 target slot, 5 ingredient count, 6 catalyst count, 7-16 ten ingredient
   slots, 17-20 four catalyst slots (0xFF unused). Checked in this order: an attempt already running (12), then
   `StarSmithRules.Check` for the new action `Forge` (5): hammer, durability, place, item, lock; then the slots (13: empty,
-  named twice, the hammer or the item); then the recipes the item and ingredients make (11 none). Each ingredient slot
+  named twice, the hammer or the item); then at least one ingredient (14 `NoIngredients`; catalysts never count as one). Ingredients no recipe takes still start, the attunement below; 11 `NoRecipe` is no longer sent. Each ingredient slot
   is one unit of its item (a stack gives one); a Jewel of Guardian (14/31) among the catalysts reveals a void and
   protects the item. On a start the ingredients, the catalysts (one each, like a dye: off the stack, or the item when it
   was the last) and the hammer's durability are spent at once, so leaving or losing the connection never keeps them.
@@ -153,7 +153,7 @@ Decided for the wire step:
   The beat settings are on `StarSmithingConfiguration` (800, 90, cap 150).
 - Timeout: an attempt with no strike for `ForgeIdleTimeoutSeconds` (60) ends as an abandon (outcome 3), the safe choice:
   an idle seal could hand out a result nobody played for, an idle crack could destroy an item.
-- A start needs at least one ingredient (11 otherwise).
+- A start needs at least one ingredient (14 `NoIngredients`, appended so the other codes keep their numbers; jewels are catalysts, never ingredients). With ingredients and no fitting recipe the attempt starts anyway: a sky with no recipe shape (only the exploration voids), and a seal attunes ("Attunement" below).
 
 ### Recipes
 
@@ -204,6 +204,15 @@ A recipe's own `Catalysts` add their chance when they are among the attempt's ca
   are two new attributes (`Stats.StarSmithDamageIncreasePvp`, `StarSmithDamageReceiveDecrementPvp`) applied in the PvP
   branch of `AttackableExtensions`.
 - The tooltip gets them through EE 36 (`ItemCustomizationDetail`, 451 bytes); EE 34 sets flag 32 when an item has any.
+
+### Attunement
+
+Experimenting is never a dead end (design section 3). A seal that completes no shape, and every seal of an attempt whose
+ingredients fit no recipe (its sky then has no shape, no recipe void and no hint), is the attunement: no recipe, at
+most Uncommon, `AttunementExperience` (10), nothing in the Guidebook, and one small boost from the ingredients' family
+(`StarSmithOutcomes.AttunementStat`: the group most ingredients belong to; skill orbs damage 0.5-1%, scrolls max HP
+30-60, anything else defense 0.5-1%), rolled by `StarSmithOutcomes.Attunement` and scaled by the smith level and capped
+like any outcome. A void still cracks it: the ingredients are lost, the item stays.
 
 ### Configuration and the bridge
 
