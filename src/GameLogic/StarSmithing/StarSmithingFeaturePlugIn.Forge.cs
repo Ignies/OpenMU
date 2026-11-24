@@ -274,16 +274,19 @@ public partial class StarSmithingFeaturePlugIn
             return (StarSmithForgeSkyMessage.Refused(StarSmithResultCode.WrongSlot, targetSlot), null);
         }
 
+        // Catalysts (jewels) never count as ingredients.
+        if (ingredients.Count == 0)
+        {
+            return (StarSmithForgeSkyMessage.Refused(StarSmithResultCode.NoIngredients, targetSlot), null);
+        }
+
         var target = TargetOf(item!);
         var counts = ingredients
             .GroupBy(i => ((byte)i.Definition!.Group, i.Definition.Number))
             .Select(g => (g.Key.Item1, g.Key.Number, g.Count()))
             .ToList();
+        // No fitting recipe is no refusal: the sky has no shape and a seal attunes (design section 3).
         var candidates = StarSmithRecipes.Candidates(this.Settings.Recipes, target, counts);
-        if (candidates.Count == 0 || ingredients.Count == 0)
-        {
-            return (StarSmithForgeSkyMessage.Refused(StarSmithResultCode.NoRecipe, targetSlot), null);
-        }
 
         var level = Math.Clamp((int)(player.SelectedCharacter?.StarSmithLevel ?? 1), 1, StarSmithLevels.Maximum);
         var beat = this.ForgeBeat;
@@ -304,6 +307,7 @@ public partial class StarSmithingFeaturePlugIn
             KnownRecipes(player),
             targetSlot,
             itemId);
+        attempt.AttunementStat = StarSmithOutcomes.AttunementStat(ingredients.Select(i => (byte)i.Definition!.Group));
         player.StarSmithForge = attempt;
 
         // Spent at the start, so leaving (or losing the connection) can never keep them.
@@ -361,7 +365,9 @@ public partial class StarSmithingFeaturePlugIn
         {
             case StarSmithForgeOutcome.Sealed:
                 var smithLevel = (short)Math.Clamp((int)(player.SelectedCharacter?.StarSmithLevel ?? 1), 1, StarSmithLevels.Maximum);
-                roll = result.Recipe is { } sealedRecipe ? StarSmithOutcomes.Roll(sealedRecipe, result.Rarity, this.MagnitudeOf(sealedRecipe, result, smithLevel), attempt.Seed, this.Settings.Balance) : null;
+                roll = result.Recipe is { } sealedRecipe
+                    ? StarSmithOutcomes.Roll(sealedRecipe, result.Rarity, this.MagnitudeOf(sealedRecipe, result, smithLevel), attempt.Seed, this.Settings.Balance)
+                    : StarSmithOutcomes.Roll(StarSmithOutcomes.Attunement(attempt.AttunementStat), result.Rarity, this.Settings.Balance.LevelFactor(smithLevel), attempt.Seed, this.Settings.Balance);
                 await SaveAsync(player, attempt.ItemId, existing, c =>
                 {
                     c.Rarity = (byte)result.Rarity;

@@ -380,11 +380,72 @@ public class StarSmithForgeWireTest
         await plugIn.StartForgeAsync(player, TargetSlot, [TargetSlot], []).ConfigureAwait(false);
         await plugIn.StartForgeAsync(player, 40, [IngredientSlot], []).ConfigureAwait(false);
 
-        view.Verify(v => v.SendForgeSkyAsync(It.Is<StarSmithForgeSkyMessage>(m => m.Result == StarSmithResultCode.NoRecipe)), Times.Once);
+        view.Verify(v => v.SendForgeSkyAsync(It.Is<StarSmithForgeSkyMessage>(m => m.Result == StarSmithResultCode.NoIngredients)), Times.Once);
         view.Verify(v => v.SendForgeSkyAsync(It.Is<StarSmithForgeSkyMessage>(m => m.Result == StarSmithResultCode.WrongSlot)), Times.Exactly(2));
         view.Verify(v => v.SendForgeSkyAsync(It.Is<StarSmithForgeSkyMessage>(m => m.Result == StarSmithResultCode.NoItem)), Times.Once);
         Assert.That(player.StarSmithForge, Is.Null);
         Assert.That(player.Inventory!.GetItem(IngredientSlot), Is.Not.Null, "nothing is spent by a refused start");
+    }
+
+    /// <summary>
+    /// Jewels are catalysts, never ingredients: a start with catalysts only is refused as NoIngredients (14), and
+    /// nothing is spent.
+    /// </summary>
+    [Test]
+    public async ValueTask CatalystsAloneAreNoIngredientsAsync()
+    {
+        var (player, plugIn, _) = await SmithAsync(Sure(7)).ConfigureAwait(false);
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IStarSmithingViewPlugIn>()!);
+
+        await plugIn.StartForgeAsync(player, TargetSlot, [], [IngredientSlot]).ConfigureAwait(false);
+
+        view.Verify(v => v.SendForgeSkyAsync(It.Is<StarSmithForgeSkyMessage>(m => m.Result == StarSmithResultCode.NoIngredients)), Times.Once);
+        Assert.That((byte)StarSmithResultCode.NoIngredients, Is.EqualTo(14), "appended, the wire values stay");
+        Assert.That(player.StarSmithForge, Is.Null);
+        Assert.That(player.Inventory!.GetItem(IngredientSlot), Is.Not.Null);
+    }
+
+    /// <summary>
+    /// Ingredients no recipe takes still start the Forge (design section 3, the attunement): a sky with no recipe
+    /// shape, and a seal gives the attunement, at most Uncommon, its experience and one small boost of the
+    /// ingredients' family (the skill orbs: damage).
+    /// </summary>
+    [Test]
+    public async ValueTask NoMatchingRecipeAttunesAsync()
+    {
+        var (player, plugIn, _) = await SmithAsync(Sure(7)).ConfigureAwait(false);
+        await AddAsync(player, 14, 12, 7).ConfigureAwait(false);
+        var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IStarSmithingViewPlugIn>()!);
+
+        await plugIn.StartForgeAsync(player, TargetSlot, [14], []).ConfigureAwait(false);
+
+        view.Verify(v => v.SendForgeSkyAsync(It.Is<StarSmithForgeSkyMessage>(m => m.Result == StarSmithResultCode.Done)), Times.Once);
+        var attempt = player.StarSmithForge!;
+        Assert.That(attempt.Sky.Recipes, Is.Empty);
+        var star = Enumerable.Range(0, attempt.Sky.Stars.Count).First(s => !attempt.Sky.Stars[s].IsVoid);
+        this._now += 800;
+        await plugIn.StrikeForgeAsync(player, (byte)star).ConfigureAwait(false);
+        await plugIn.SealForgeAsync(player).ConfigureAwait(false);
+
+        view.Verify(v => v.SendForgeResultAsync(StarSmithForgeOutcome.Sealed, It.Is<StarSmithForgeResult>(r => r.Recipe == null && r.Rarity <= StarSmithRarity.Uncommon)), Times.Once);
+        var boosts = StarSmithBoosts.Parse((await CustomizationAsync(player).ConfigureAwait(false))?.Boosts);
+        Assert.That(boosts.Select(b => b.Stat), Is.EqualTo(new[] { StarSmithBoostStat.Damage }));
+        Assert.That(boosts[0].Value, Is.InRange(1, 600));
+        Assert.That(player.SelectedCharacter!.StarSmithExperience, Is.EqualTo(10));
+        StarSmithBoostBook.Forget(((MUnique.OpenMU.Persistence.IIdentifiable)player.Inventory!.GetItem(TargetSlot)!).Id);
+    }
+
+    /// <summary>
+    /// A sky dealt for no recipe has no shape, no recipe void and no hint; only the exploration voids.
+    /// </summary>
+    [Test]
+    public void AnEmptySkyDeals()
+    {
+        var sky = StarSmithSky.Deal(42, [], Sword, 1, 1, []);
+        Assert.That(sky.Recipes, Is.Empty);
+        Assert.That(sky.Hints, Is.Empty);
+        Assert.That(sky.Stars.Count(s => s.IsVoid), Is.LessThanOrEqualTo(2));
+        Assert.That(sky.Strikes, Is.EqualTo(3));
     }
 
     private static StarSmithRecipe Sure(short number) => new()
