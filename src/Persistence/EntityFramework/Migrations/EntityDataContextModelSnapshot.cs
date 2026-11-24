@@ -2591,6 +2591,9 @@ namespace MUnique.OpenMU.Persistence.EntityFramework.Migrations
                     b.Property<Guid>("ItemId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Layers")
+                        .HasColumnType("text");
+
                     b.Property<bool>("Locked")
                         .HasColumnType("boolean");
 

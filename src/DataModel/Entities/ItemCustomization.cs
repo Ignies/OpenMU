@@ -56,6 +56,12 @@ public class ItemCustomization
     public short SmithLevel { get; set; }
 
     /// <summary>
+    /// Gets or sets the item's constellation layers (Star Smithing PR 7a): up to 4 entries joined by ';', each
+    /// "number:tier:look:x1,y1,x2,y2,..." with the hull in box units; null for none.
+    /// </summary>
+    public string? Layers { get; set; }
+
+    /// <summary>
     /// Gets or sets the version, which goes up on every change; clients keep the lore by it.
     /// </summary>
     public int Version { get; set; }
