@@ -507,7 +507,7 @@ internal sealed class PlayerMovement : IDisposable
         // A diagonal neighbour tile is always ~1.41 tiles away, e.g. when the client turns. The lag bound
         // is lower than that right after a step, so the rounding tolerance is the lower limit.
         var maxOffset = Math.Max(NextTileDistance, isOnCurrentWalk ? this.GetMaxAllowedLagOffset() : this.GetMaxAllowedWalkStartOffset());
-        if (offset > maxOffset)
+        if (offset > maxOffset && !MineCartAction.MayStartOnRail(this._player, clientPosition))
         {
             this._player.Logger.LogWarning(
                 "Client reported a walk position {0} which is {1:F1} tiles away from the server position {2}, exceeding the allowed offset of {3:F1}. Keeping the server position.",

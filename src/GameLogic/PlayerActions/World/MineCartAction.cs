@@ -4,6 +4,7 @@
 
 namespace MUnique.OpenMU.GameLogic.PlayerActions.World;
 
+using System.Runtime.CompilerServices;
 using MUnique.OpenMU.Pathfinding;
 
 /// <summary>
@@ -41,11 +42,27 @@ public class MineCartAction
     private static readonly (byte Y, byte From, byte To)[] Rail = [(65, 178, 189), (64, 177, 178), (63, 176, 177), (62, 169, 176)];
 
     /// <summary>
+    /// The players who boarded (EE AA) and have not left yet.
+    /// </summary>
+    private static readonly ConditionalWeakTable<Player, object> Riders = new();
+
+    /// <summary>
     /// Gets whether a tile is on the rail.
     /// </summary>
     /// <param name="tile">The tile.</param>
     /// <returns>True on the rail.</returns>
     public static bool IsOnRail(Point tile) => Rail.Any(r => tile.Y == r.Y && tile.X >= r.From && tile.X <= r.To);
+
+    /// <summary>
+    /// Gets whether a walk of <paramref name="player"/> may start at <paramref name="clientTile"/> however far the
+    /// server lags: a rider who boarded, standing on the rail and reporting a rail tile. A ride runs longer than one
+    /// walk packet, and at the cart's speed the server is about two tiles behind when the next packet comes.
+    /// </summary>
+    /// <param name="player">The player.</param>
+    /// <param name="clientTile">The walk start the client reports.</param>
+    /// <returns>True for a boarded rider's rail tile.</returns>
+    public static bool MayStartOnRail(Player player, Point clientTile) =>
+        Riders.TryGetValue(player, out _) && IsInMine(player) && IsOnRail(player.Position) && IsOnRail(clientTile);
 
     /// <summary>
     /// Boards the cart: a player beside it on a Kubera Mine map is put on the rail at once.
@@ -60,6 +77,7 @@ public class MineCartAction
         }
 
         await player.MoveAsync(RailStart).ConfigureAwait(false);
+        Riders.AddOrUpdate(player, Riders);
         return true;
     }
 
@@ -75,6 +93,7 @@ public class MineCartAction
             return false;
         }
 
+        Riders.Remove(player);
         await player.MoveAsync(RailExit).ConfigureAwait(false);
         return true;
     }
