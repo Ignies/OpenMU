@@ -6,6 +6,7 @@ namespace MUnique.OpenMU.GameLogic;
 
 using System.Threading;
 using MUnique.OpenMU.GameLogic.Attributes;
+using MUnique.OpenMU.GameLogic.PlayerActions.World;
 using MUnique.OpenMU.GameLogic.PlugIns;
 using MUnique.OpenMU.GameLogic.Views.World;
 using MUnique.OpenMU.Pathfinding;
@@ -598,6 +599,12 @@ internal sealed class PlayerMovement : IDisposable
 
     private double GetClientMovementSpeed(Point? position = null)
     {
+        // A rider on the Kubera Mine rail rolls at the cart's speed, whatever it wears.
+        if (MineCartAction.IsInMine(this._player) && MineCartAction.IsOnRail(position ?? this._player.Position))
+        {
+            return MineCartAction.RideSpeed;
+        }
+
         if (this.IsInClientSafezone(position))
         {
             return this.ApplyMovementSpeedFactor(WalkMovementSpeed);
