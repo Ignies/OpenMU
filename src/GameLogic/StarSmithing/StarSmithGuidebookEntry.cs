@@ -13,7 +13,7 @@ namespace MUnique.OpenMU.GameLogic.StarSmithing;
 /// <param name="Text">A found recipe's name, a sealed row's riddle; empty otherwise.</param>
 public readonly record struct StarSmithGuidebookEntry(StarSmithGuidebookEntryKind Kind, short Recipe, int Made, string Text)
 {
-    /// <summary>Gets a found recipe's shape length in stars; 0 for a sealed row.</summary>
+    /// <summary>Gets a found constellation's base placements; 0 for a sealed row.</summary>
     public int ShapeLength { get; init; }
 
     /// <summary>Gets a sealed row's hint kind; none for a found row.</summary>
@@ -27,6 +27,12 @@ public readonly record struct StarSmithGuidebookEntry(StarSmithGuidebookEntryKin
 
     /// <summary>Gets a found recipe's ingredients; empty for a sealed row.</summary>
     public IReadOnlyList<StarSmithIngredient> Ingredients { get; init; } = [];
+
+    /// <summary>Gets a found constellation's shape (PR 7a); null for a sealed row.</summary>
+    public StarSmithGeometry? Geometry { get; init; }
+
+    /// <summary>Gets a found constellation's look (PR 7a).</summary>
+    public StarSmithLook Look { get; init; }
 
     /// <summary>Gets, per stat, the range of the outcomes the smith has seen of a found recipe; empty for a sealed row.</summary>
     public IReadOnlyList<StarSmithBoostSeen> BoostsSeen { get; init; } = [];

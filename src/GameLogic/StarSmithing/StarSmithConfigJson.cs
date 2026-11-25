@@ -96,13 +96,14 @@ public static class StarSmithConfigJson
         ["catalysts"] = new JsonArray(r.Catalysts.Select(c => (JsonNode)new JsonObject { ["group"] = (int)c.Group, ["number"] = (int)c.Number, ["chance"] = c.Chance }).ToArray()),
         ["onFail"] = Name(r.OnFail),
         ["risky"] = r.Risky,
-        ["shape"] = r.Shape is not { } shape ? null : new JsonObject
+        ["look"] = Name(r.Look),
+        ["geometry"] = r.Geometry is not { } g ? null : new JsonObject
         {
-            ["stars"] = new JsonArray(shape.Stars.Select(s => (JsonNode)s).ToArray()),
-            ["ordered"] = shape.Ordered,
-            ["match"] = Name(shape.Match),
-            ["extensionPercent"] = shape.ExtensionPercent,
-            ["maximumExtension"] = shape.MaximumExtension,
+            ["nodes"] = g.Nodes,
+            ["closed"] = g.Closed,
+            ["turns"] = new JsonArray(g.Turns.Select(t => (JsonNode)t).ToArray()),
+            ["lengths"] = new JsonArray(g.Lengths.Select(l => (JsonNode)l).ToArray()),
+            ["extension"] = g.Extension is not { } e ? null : new JsonObject { ["turn"] = e.Turn, ["length"] = e.Length },
         },
         ["hint"] = new JsonObject { ["kind"] = Name(r.HintKind), ["text"] = r.Hint, ["group"] = (int)r.HintGroup, ["number"] = (int)r.HintNumber },
         ["outcomes"] = new JsonArray(r.Outcomes.Select(o => (JsonNode)new JsonObject
@@ -180,13 +181,16 @@ public static class StarSmithConfigJson
                     : this.Fail<StarSmithCatalyst>(p, "A catalyst object.")),
                 OnFail = this.Choice(o, "onFail", at, StarSmithOnFail.IngredientsLost),
                 Risky = this.Bool(o, "risky", at),
-                Shape = o["shape"] is JsonObject s ? new StarSmithShape
+                Look = this.Choice(o, "look", at, StarSmithLook.None),
+                Geometry = o["geometry"] is JsonObject g ? new StarSmithGeometry
                 {
-                    Stars = this.List(s["stars"], $"{at}.shape.stars", (n, p) => this.IntOf(n, p, 0)),
-                    Ordered = s["ordered"] is null || this.Bool(s, "ordered", $"{at}.shape"),
-                    Match = this.Choice(s, "match", $"{at}.shape", StarSmithShapeMatch.Exact),
-                    ExtensionPercent = this.Int(s, "extensionPercent", $"{at}.shape", 10),
-                    MaximumExtension = this.Int(s, "maximumExtension", $"{at}.shape", 3),
+                    Nodes = this.Int(g, "nodes", $"{at}.geometry", 0, 0, 64),
+                    Closed = g["closed"] is not null && this.Bool(g, "closed", $"{at}.geometry"),
+                    Turns = this.List(g["turns"], $"{at}.geometry.turns", (n, p) => this.NumberOf(n, p, 1)),
+                    Lengths = this.List(g["lengths"], $"{at}.geometry.lengths", (n, p) => this.NumberOf(n, p, 2)),
+                    Extension = g["extension"] is JsonObject e
+                        ? new StarSmithExtension { Turn = Math.Round(this.Number(e, "turn", $"{at}.geometry.extension", 0), 1), Length = this.Number(e, "length", $"{at}.geometry.extension", 0) }
+                        : null,
                 } : null,
                 HintKind = hint is null ? StarSmithHintKind.None : this.Choice(hint, "kind", $"{at}.hint", StarSmithHintKind.None),
                 Hint = hint is null ? string.Empty : this.Text(hint, "text", $"{at}.hint"),
@@ -297,6 +301,17 @@ public static class StarSmithConfigJson
 
         private int Int(JsonObject o, string name, string at, int fallback, int minimum = int.MinValue, int maximum = int.MaxValue)
             => o[name] is null ? fallback : this.IntOf(o[name], $"{at}.{name}", fallback, minimum, maximum);
+
+        private double NumberOf(JsonNode? node, string at, int digits)
+        {
+            if (node is JsonValue value && value.TryGetValue<double>(out var number) && double.IsFinite(number))
+            {
+                return Math.Round(number, digits);
+            }
+
+            errors.Add(new(at, "A number."));
+            return 0;
+        }
 
         private double Number(JsonObject o, string name, string at, double fallback)
         {

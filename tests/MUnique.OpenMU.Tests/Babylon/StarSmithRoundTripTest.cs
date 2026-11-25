@@ -85,7 +85,7 @@ public class StarSmithRoundTripTest
         await AddAsync(player, 0, 2, 1000, 255).ConfigureAwait(false);
         await AddAsync(player, 12, 0, 1).ConfigureAwait(false);
         await AddAsync(player, 13, 14, 13).ConfigureAwait(false);
-        var recipe = new StarSmithRecipe { Number = 7, Targets = StarSmithTargetKind.Weapon, Ingredients = [new StarSmithIngredient { Group = 14, Number = 13 }], BaseChance = 10_000, Shape = new() { Stars = [0, 1, 2] } };
+        var recipe = new StarSmithRecipe { Number = 7, Targets = StarSmithTargetKind.Weapon, Ingredients = [new StarSmithIngredient { Group = 14, Number = 13 }], BaseChance = 10_000, Look = StarSmithLook.Fire, Geometry = StarSmithGeometry.Of(3, true, [120, 120], [1, 1, 1]) };
         var plugIn = new StarSmithingFeaturePlugIn { Configuration = new StarSmithingConfiguration { Recipes = [recipe] }, Clock = () => this._now, NewSeed = () => 4711 };
         var view = Mock.Get(player.ViewPlugIns.GetPlugIn<IStarSmithingViewPlugIn>()!);
         uint? sent = null;

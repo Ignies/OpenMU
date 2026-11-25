@@ -64,7 +64,6 @@ public partial class StarSmithingFeaturePlugIn : IFeaturePlugIn, IDisabledByDefa
             if (!ReferenceEquals(settings, this._checked))
             {
                 StarSmithConfigValidator.Sanitize(settings);
-                settings.Forge.LevelChance = settings.Balance.Chance;
                 this._checked = settings;
             }
 

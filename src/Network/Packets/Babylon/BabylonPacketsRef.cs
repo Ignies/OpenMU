@@ -120,106 +120,6 @@ public readonly ref struct StarSmithGuidebookEntryRef
 
 
 /// <summary>
-/// One entry of StarSmithForgeSky: a star, a link or a hint..
-/// </summary>
-public readonly ref struct StarSmithForgeSkyEntryRef
-{
-    private readonly Span<byte> _data;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="StarSmithForgeSkyEntryRef"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    public StarSmithForgeSkyEntryRef(Span<byte> data)
-    {
-        this._data = data;
-    }
-
-    /// <summary>
-    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-    /// </summary>
-    public static int Length => 5;
-
-    /// <summary>
-    /// Gets or sets 0 a star, 1 a link, 2 a hint.
-    /// </summary>
-    public byte Kind
-    {
-        get => this._data[0];
-        set => this._data[0] = value;
-    }
-
-    /// <summary>
-    /// Gets or sets a star: its index. A link or hint: one star.
-    /// </summary>
-    public byte A
-    {
-        get => this._data[1];
-        set => this._data[1] = value;
-    }
-
-    /// <summary>
-    /// Gets or sets a star: X, 0 to 255 across the item's box (a layout hint). A link or hint: the other star.
-    /// </summary>
-    public byte B
-    {
-        get => this._data[2];
-        set => this._data[2] = value;
-    }
-
-    /// <summary>
-    /// Gets or sets a star: Y, 0 to 255 down the item's box. A hint: its clarity, 0 to 255. A link: 0.
-    /// </summary>
-    public byte C
-    {
-        get => this._data[3];
-        set => this._data[3] = value;
-    }
-
-    /// <summary>
-    /// Gets or sets a star: flags, 1 a void revealed by a Jewel of Guardian. Else 0.
-    /// </summary>
-    public byte D
-    {
-        get => this._data[4];
-        set => this._data[4] = value;
-    }
-}
-
-
-/// <summary>
-/// A recipe number of the guidance in StarSmithForgeStrikeResult..
-/// </summary>
-public readonly ref struct StarSmithForgeGuidanceRef
-{
-    private readonly Span<byte> _data;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="StarSmithForgeGuidanceRef"/> struct.
-    /// </summary>
-    /// <param name="data">The underlying data.</param>
-    public StarSmithForgeGuidanceRef(Span<byte> data)
-    {
-        this._data = data;
-    }
-
-    /// <summary>
-    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
-    /// </summary>
-    public static int Length => 2;
-
-    /// <summary>
-    /// Gets or sets the recipe.
-    /// </summary>
-    public ushort Recipe
-    {
-        get => ReadUInt16LittleEndian(this._data);
-        set => WriteUInt16LittleEndian(this._data, value);
-    }
-}
-
-
-/// <summary>
 /// One dye of StarSmithDyes: the item, what it allows and its swatches..
 /// </summary>
 public readonly ref struct StarSmithDyeEntryRef
@@ -5069,7 +4969,7 @@ public readonly ref struct ItemCustomizationDetailRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 451;
+    public static int Length => 600;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -5144,6 +5044,23 @@ public readonly ref struct ItemCustomizationDetailRef
     public Span<byte> Boosts
     {
         get => this._data.Slice(436, 15);
+    }
+
+    /// <summary>
+    /// Gets or sets the item's constellation layers, 0 to 4 (Star Smithing PR 7a).
+    /// </summary>
+    public byte LayerCount
+    {
+        get => this._data[451];
+        set => this._data[451] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 4 layers of 37 bytes: number (u16 little endian), tier (0 Faint to 5 Chroma), look, hull point count (3 to 8), 8 points (x, y u16 little endian each, 0 to 65535 in the item's box); unused zero.
+    /// </summary>
+    public Span<byte> Layers
+    {
+        get => this._data.Slice(452, 148);
     }
 
     /// <summary>
@@ -6367,7 +6284,7 @@ public readonly ref struct StarSmithDyesRef
 
 /// <summary>
 /// Is sent by the client when: The smith starts a recipe attempt in the Constellation Forge.
-/// Causes reaction on server side: The server checks the slots again, deals the sky from a seed of its own, starts the beat on its clock and answers with StarSmithForgeSky.
+/// Causes reaction on server side: The server checks the slots again, starts the attempt (its fault lines) from a seed of its own, starts the beat on its clock and answers with StarSmithForgeAttempt.
 /// </summary>
 public readonly ref struct StarSmithForgeStartRef
 {
@@ -6462,7 +6379,7 @@ public readonly ref struct StarSmithForgeStartRef
     }
 
     /// <summary>
-    /// Gets or sets 4 inventory slots of catalysts (a Jewel of Guardian reveals a void and protects the item); the unused ones are 0xFF.
+    /// Gets or sets 4 inventory slots of catalysts (a Jewel of Guardian reveals a fault and protects the item); the unused ones are 0xFF.
     /// </summary>
     public Span<byte> CatalystSlots
     {
@@ -6486,28 +6403,28 @@ public readonly ref struct StarSmithForgeStartRef
 
 
 /// <summary>
-/// Is sent by the client when: The smith strikes a star of the running attempt.
-/// Causes reaction on server side: The server stamps the time on arrival, judges it against the beat and answers with StarSmithForgeStrikeResult (and StarSmithForgeResult on a crack).
+/// Is sent by the client when: The smith places a node of the running attempt (PR 7a).
+/// Causes reaction on server side: The server stamps the time on arrival, checks the node (a close, too near, a fault), judges it against the beat, matches the figure and answers with StarSmithForgeNodeResult (and StarSmithForgeResult on a crack).
 /// </summary>
-public readonly ref struct StarSmithForgeStrikeRef
+public readonly ref struct StarSmithForgeNodeRef
 {
     private readonly Span<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="StarSmithForgeStrikeRef"/> struct.
+    /// Initializes a new instance of the <see cref="StarSmithForgeNodeRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public StarSmithForgeStrikeRef(Span<byte> data)
+    public StarSmithForgeNodeRef(Span<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="StarSmithForgeStrikeRef"/> struct.
+    /// Initializes a new instance of the <see cref="StarSmithForgeNodeRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private StarSmithForgeStrikeRef(Span<byte> data, bool initialize)
+    private StarSmithForgeNodeRef(Span<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -6539,7 +6456,7 @@ public readonly ref struct StarSmithForgeStrikeRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 5;
+    public static int Length => 8;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -6547,33 +6464,42 @@ public readonly ref struct StarSmithForgeStrikeRef
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets the star's index in the sky.
+    /// Gets or sets the point in the item's square picture box, 0 (left) to 65535 (right).
     /// </summary>
-    public byte Star
+    public ushort X
     {
-        get => this._data[4];
-        set => this._data[4] = value;
+        get => ReadUInt16LittleEndian(this._data[4..]);
+        set => WriteUInt16LittleEndian(this._data[4..], value);
     }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="StarSmithForgeStrike"/>.
+    /// Gets or sets 0 (top) to 65535 (bottom).
+    /// </summary>
+    public ushort Y
+    {
+        get => ReadUInt16LittleEndian(this._data[6..]);
+        set => WriteUInt16LittleEndian(this._data[6..], value);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="StarSmithForgeNode"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator StarSmithForgeStrikeRef(Span<byte> packet) => new (packet, false);
+    public static implicit operator StarSmithForgeNodeRef(Span<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="StarSmithForgeStrike"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="StarSmithForgeNode"/> to a Span of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(StarSmithForgeStrikeRef packet) => packet._data; 
+    public static implicit operator Span<byte>(StarSmithForgeNodeRef packet) => packet._data; 
 }
 
 
 /// <summary>
-/// Is sent by the client when: The smith seals the drawn constellation.
-/// Causes reaction on server side: The server applies the result and answers with StarSmithForgeResult; refused (outcome 4) without a running attempt or before the first strike.
+/// Is sent by the client when: The smith seals the attempt or stashes the figure being drawn.
+/// Causes reaction on server side: A seal applies the result and answers with StarSmithForgeResult (refused, outcome 4, without a running attempt or before the first node); a stash answers with StarSmithForgeNodeResult (kind 1). A 4-byte packet is a seal.
 /// </summary>
 public readonly ref struct StarSmithForgeSealRef
 {
@@ -6625,12 +6551,21 @@ public readonly ref struct StarSmithForgeSealRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 4;
+    public static int Length => 5;
 
     /// <summary>
     /// Gets the header of this packet.
     /// </summary>
     public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets 0 seal, 1 stash.
+    /// </summary>
+    public byte Action
+    {
+        get => this._data[4];
+        set => this._data[4] = value;
+    }
 
     /// <summary>
     /// Performs an implicit conversion from a Span of bytes to a <see cref="StarSmithForgeSeal"/>.
@@ -6650,7 +6585,7 @@ public readonly ref struct StarSmithForgeSealRef
 
 /// <summary>
 /// Is sent by the client when: The smith walks away from the running attempt.
-/// Causes reaction on server side: Like a crack off every shape: the ingredients are lost and the item stays. Answered with StarSmithForgeResult (outcome 2).
+/// Causes reaction on server side: The ingredients and the stashed figures are lost and the item stays. Answered with StarSmithForgeResult (outcome 2).
 /// </summary>
 public readonly ref struct StarSmithForgeAbandonRef
 {
@@ -6726,28 +6661,28 @@ public readonly ref struct StarSmithForgeAbandonRef
 
 
 /// <summary>
-/// Is sent by the server when: The answer to StarSmithForgeStart: the dealt sky, or why there is none.
-/// Causes reaction on client side: The client lays the stars out over the item's silhouette and starts the beat. Element, value and void of a star are never sent before it is struck, except the void a Jewel of Guardian reveals.
+/// Is sent by the server when: The answer to StarSmithForgeStart: the attempt, or why there is none.
+/// Causes reaction on client side: The client starts the beat and the drawing over the item. The faults are never sent, except the one a Jewel of Guardian reveals.
 /// </summary>
-public readonly ref struct StarSmithForgeSkyRef
+public readonly ref struct StarSmithForgeAttemptRef
 {
     private readonly Span<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="StarSmithForgeSkyRef"/> struct.
+    /// Initializes a new instance of the <see cref="StarSmithForgeAttemptRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public StarSmithForgeSkyRef(Span<byte> data)
+    public StarSmithForgeAttemptRef(Span<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="StarSmithForgeSkyRef"/> struct.
+    /// Initializes a new instance of the <see cref="StarSmithForgeAttemptRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private StarSmithForgeSkyRef(Span<byte> data, bool initialize)
+    private StarSmithForgeAttemptRef(Span<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -6755,7 +6690,7 @@ public readonly ref struct StarSmithForgeSkyRef
             var header = this.Header;
             header.Type = HeaderType;
             header.Code = Code;
-            header.Length = (ushort)data.Length;
+            header.Length = (byte)Math.Min(data.Length, Length);
             header.SubCode = SubCode;
         }
     }
@@ -6763,7 +6698,7 @@ public readonly ref struct StarSmithForgeSkyRef
     /// <summary>
     /// Gets the header type of this data packet.
     /// </summary>
-    public static byte HeaderType => 0xC2;
+    public static byte HeaderType => 0xC1;
 
     /// <summary>
     /// Gets the operation code of this data packet.
@@ -6777,17 +6712,22 @@ public readonly ref struct StarSmithForgeSkyRef
     public static byte SubCode => 0x9D;
 
     /// <summary>
-    /// Gets the header of this packet.
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public C2HeaderWithSubCodeRef Header => new (this._data);
+    public static int Length => 179;
 
     /// <summary>
-    /// Gets or sets 0 started; else the StarSmithResult codes (1 no hammer, 2 hammer broken, 3 locked, 4 not here, 5 no such item, 8 off), 11 no recipe for these ingredients, 12 an attempt is already running, 13 a slot is wrong (empty, used twice, the hammer or the item). Only the header is filled when not 0.
+    /// Gets the header of this packet.
+    /// </summary>
+    public C1HeaderWithSubCodeRef Header => new (this._data);
+
+    /// <summary>
+    /// Gets or sets 0 started; else the StarSmithResult codes (1 no hammer, 2 hammer broken, 3 locked, 4 not here, 5 no such item, 8 off), 12 an attempt is already running, 13 a slot is wrong (empty, used twice, the hammer or the item), 14 no ingredients. Only the result and the target slot are filled when not 0.
     /// </summary>
     public byte Result
     {
-        get => this._data[5];
-        set => this._data[5] = value;
+        get => this._data[4];
+        set => this._data[4] = value;
     }
 
     /// <summary>
@@ -6795,32 +6735,41 @@ public readonly ref struct StarSmithForgeSkyRef
     /// </summary>
     public byte TargetSlot
     {
+        get => this._data[5];
+        set => this._data[5] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets how many nodes may be placed.
+    /// </summary>
+    public byte Strikes
+    {
         get => this._data[6];
         set => this._data[6] = value;
     }
 
     /// <summary>
-    /// Gets or sets how many stars may be struck.
+    /// Gets or sets the worst fate among the attempt's constellations after protection: 0 the ingredients are lost, 1 the item is downgraded, 2 the item is destroyed.
     /// </summary>
-    public byte Strikes
+    public byte Risk
     {
         get => this._data[7];
         set => this._data[7] = value;
     }
 
     /// <summary>
-    /// Gets or sets the worst fate among the sky's recipes after protection: 0 the ingredients are lost, 1 the item is downgraded, 2 the item is destroyed.
+    /// Gets or sets the constellation slots still free on this item.
     /// </summary>
-    public byte Risk
+    public byte FreeSlots
     {
         get => this._data[8];
         set => this._data[8] = value;
     }
 
     /// <summary>
-    /// Gets or sets the star count.
+    /// Gets or sets the smith's slots by level, 1 to 4.
     /// </summary>
-    public byte StarCount
+    public byte Slots
     {
         get => this._data[9];
         set => this._data[9] = value;
@@ -6845,65 +6794,114 @@ public readonly ref struct StarSmithForgeSkyRef
     }
 
     /// <summary>
-    /// Gets or sets the entry count.
+    /// Gets or sets 1 a fault is revealed.
     /// </summary>
-    public byte EntryCount
+    public byte Flags
     {
         get => this._data[14];
         set => this._data[14] = value;
     }
 
     /// <summary>
-    /// Gets the <see cref="StarSmithForgeSkyEntryRef"/> of the specified index.
+    /// Gets or sets x1, y1, x2, y2 in box units (u16 little endian each); zero when none.
     /// </summary>
-        public StarSmithForgeSkyEntryRef this[int index] => new (this._data[(15 + index * StarSmithForgeSkyEntryRef.Length)..]);
+    public Span<byte> RevealedFault
+    {
+        get => this._data.Slice(15, 8);
+    }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="StarSmithForgeSky"/>.
+    /// Gets or sets in box units.
+    /// </summary>
+    public ushort FaultRadius
+    {
+        get => ReadUInt16LittleEndian(this._data[23..]);
+        set => WriteUInt16LittleEndian(this._data[23..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets in box units.
+    /// </summary>
+    public ushort CloseRadius
+    {
+        get => ReadUInt16LittleEndian(this._data[25..]);
+        set => WriteUInt16LittleEndian(this._data[25..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets in box units.
+    /// </summary>
+    public ushort NodeGap
+    {
+        get => ReadUInt16LittleEndian(this._data[27..]);
+        set => WriteUInt16LittleEndian(this._data[27..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the fault count.
+    /// </summary>
+    public byte FaultCount
+    {
+        get => this._data[29];
+        set => this._data[29] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the item's constellation layers, 0 to 4.
+    /// </summary>
+    public byte LayerCount
+    {
+        get => this._data[30];
+        set => this._data[30] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 4 layers of 37 bytes: number (u16), tier, look, hull point count, 8 points (x, y u16 each); unused zero.
+    /// </summary>
+    public Span<byte> Layers
+    {
+        get => this._data.Slice(31, 148);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="StarSmithForgeAttempt"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator StarSmithForgeSkyRef(Span<byte> packet) => new (packet, false);
+    public static implicit operator StarSmithForgeAttemptRef(Span<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="StarSmithForgeSky"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="StarSmithForgeAttempt"/> to a Span of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(StarSmithForgeSkyRef packet) => packet._data; 
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified count of <see cref="StarSmithForgeSkyEntryRef"/>.
-    /// </summary>
-    /// <param name="entriesCount">The count of <see cref="StarSmithForgeSkyEntryRef"/> from which the size will be calculated.</param>
-        
-    public static int GetRequiredSize(int entriesCount) => entriesCount * StarSmithForgeSkyEntryRef.Length + 15;
+    public static implicit operator Span<byte>(StarSmithForgeAttemptRef packet) => packet._data; 
 }
 
 
 /// <summary>
-/// Is sent by the server when: The answer to StarSmithForgeStrike.
-/// Causes reaction on client side: The client draws the link (or the crack) and shows the struck star's element and value. A refused strike changes nothing; its star fields are 0.
+/// Is sent by the server when: The answer to StarSmithForgeNode, or to a stash (StarSmithForgeSeal action 1).
+/// Causes reaction on client side: The client draws the node (or the crack), the live match, the guide and the accuracy per node; a first find plays the "Constellation of {Element} found." popup. A refusal changes nothing.
 /// </summary>
-public readonly ref struct StarSmithForgeStrikeResultRef
+public readonly ref struct StarSmithForgeNodeResultRef
 {
     private readonly Span<byte> _data;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="StarSmithForgeStrikeResultRef"/> struct.
+    /// Initializes a new instance of the <see cref="StarSmithForgeNodeResultRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
-    public StarSmithForgeStrikeResultRef(Span<byte> data)
+    public StarSmithForgeNodeResultRef(Span<byte> data)
         : this(data, true)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="StarSmithForgeStrikeResultRef"/> struct.
+    /// Initializes a new instance of the <see cref="StarSmithForgeNodeResultRef"/> struct.
     /// </summary>
     /// <param name="data">The underlying data.</param>
     /// <param name="initialize">If set to <c>true</c>, the header data is automatically initialized and written to the underlying span.</param>
-    private StarSmithForgeStrikeResultRef(Span<byte> data, bool initialize)
+    private StarSmithForgeNodeResultRef(Span<byte> data, bool initialize)
     {
         this._data = data;
         if (initialize)
@@ -6911,7 +6909,7 @@ public readonly ref struct StarSmithForgeStrikeResultRef
             var header = this.Header;
             header.Type = HeaderType;
             header.Code = Code;
-            header.Length = (byte)data.Length;
+            header.Length = (byte)Math.Min(data.Length, Length);
             header.SubCode = SubCode;
         }
     }
@@ -6933,48 +6931,53 @@ public readonly ref struct StarSmithForgeStrikeResultRef
     public static byte SubCode => 0x9E;
 
     /// <summary>
+    /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
+    /// </summary>
+    public static int Length => 107;
+
+    /// <summary>
     /// Gets the header of this packet.
     /// </summary>
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets 0 linked, 1 cracked, 2 refused: no attempt running, 3 refused: no such star, 4 refused: no strikes left, 5 refused: the star is struck, 6 refused: not linked to the last star.
+    /// Gets or sets 0 node, 1 stash.
     /// </summary>
-    public byte Answer
+    public byte Kind
     {
         get => this._data[4];
         set => this._data[4] = value;
     }
 
     /// <summary>
-    /// Gets or sets the star.
+    /// Gets or sets node: 0 placed, 1 cracked, 2 no attempt, 3 no strikes left, 4 too near a node, 5 figure full. Stash: 0 banked, 2 no attempt, 6 no match, 7 overlap, 8 no free slot.
     /// </summary>
-    public byte Star
+    public byte Answer
     {
         get => this._data[5];
         set => this._data[5] = value;
     }
 
     /// <summary>
-    /// Gets or sets 0 fire, 1 frost, 2 storm, 3 shadow, 4 light.
+    /// Gets or sets 0 clean, 1 shaky, 2 late; 0xFF on a refusal and on a stash.
     /// </summary>
-    public byte Element
+    public byte Timing
     {
         get => this._data[6];
         set => this._data[6] = value;
     }
 
     /// <summary>
-    /// Gets or sets 1 to 5.
+    /// Gets or sets the strikes left.
     /// </summary>
-    public byte Value
+    public byte StrikesLeft
     {
         get => this._data[7];
         set => this._data[7] = value;
     }
 
     /// <summary>
-    /// Gets or sets 1 the star is a void.
+    /// Gets or sets 1 the node closed the figure, 2 it hit a fault, 4 the figure's hull overlaps a used hull, 8 a first find, 16 the match counts its extension, 32 the match is a reseal of the item's layer.
     /// </summary>
     public byte Flags
     {
@@ -6983,57 +6986,132 @@ public readonly ref struct StarSmithForgeStrikeResultRef
     }
 
     /// <summary>
-    /// Gets or sets 0 clean, 1 shaky, 2 late.
+    /// Gets or sets the figure placements.
     /// </summary>
-    public byte Timing
+    public byte FigurePlacements
     {
         get => this._data[9];
         set => this._data[9] = value;
     }
 
     /// <summary>
-    /// Gets or sets the strikes left.
+    /// Gets or sets the banked.
     /// </summary>
-    public byte StrikesLeft
+    public byte Banked
     {
         get => this._data[10];
         set => this._data[10] = value;
     }
 
     /// <summary>
-    /// Gets or sets the guidance count.
+    /// Gets or sets the constellation the figure matches (on a stash, the banked one); 0 none.
     /// </summary>
-    public byte GuidanceCount
+    public ushort Match
     {
-        get => this._data[11];
-        set => this._data[11] = value;
+        get => ReadUInt16LittleEndian(this._data[11..]);
+        set => WriteUInt16LittleEndian(this._data[11..], value);
     }
 
     /// <summary>
-    /// Gets the <see cref="StarSmithForgeGuidanceRef"/> of the specified index.
+    /// Gets or sets the look.
     /// </summary>
-        public StarSmithForgeGuidanceRef this[int index] => new (this._data[(12 + index * StarSmithForgeGuidanceRef.Length)..]);
+    public byte Look
+    {
+        get => this._data[13];
+        set => this._data[13] = value;
+    }
 
     /// <summary>
-    /// Performs an implicit conversion from a Span of bytes to a <see cref="StarSmithForgeStrikeResult"/>.
+    /// Gets or sets 0 Faint to 5 Chroma; 0xFF none.
+    /// </summary>
+    public byte Tier
+    {
+        get => this._data[14];
+        set => this._data[14] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the score.
+    /// </summary>
+    public ushort Score
+    {
+        get => ReadUInt16LittleEndian(this._data[15..]);
+        set => WriteUInt16LittleEndian(this._data[15..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the node's measured turn, signed tenths of a degree (two's complement), left positive.
+    /// </summary>
+    public ushort Turn
+    {
+        get => ReadUInt16LittleEndian(this._data[17..]);
+        set => WriteUInt16LittleEndian(this._data[17..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the node's measured length ratio, permille of the first segment.
+    /// </summary>
+    public ushort Ratio
+    {
+        get => ReadUInt16LittleEndian(this._data[19..]);
+        set => WriteUInt16LittleEndian(this._data[19..], value);
+    }
+
+    /// <summary>
+    /// Gets or sets the guide count.
+    /// </summary>
+    public byte GuideCount
+    {
+        get => this._data[21];
+        set => this._data[21] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 8 known constellations (u16) the figure is a prefix of; unused zero.
+    /// </summary>
+    public Span<byte> Guide
+    {
+        get => this._data.Slice(22, 16);
+    }
+
+    /// <summary>
+    /// Gets or sets 12 x 3 bytes per placement of the figure: timing, accuracy (u16; 0xFFFF none).
+    /// </summary>
+    public Span<byte> Placements
+    {
+        get => this._data.Slice(38, 36);
+    }
+
+    /// <summary>
+    /// Gets or sets the hull count.
+    /// </summary>
+    public byte HullCount
+    {
+        get => this._data[74];
+        set => this._data[74] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets 8 points, x and y u16 each, in box units; unused zero.
+    /// </summary>
+    public Span<byte> Hull
+    {
+        get => this._data.Slice(75, 32);
+    }
+
+    /// <summary>
+    /// Performs an implicit conversion from a Span of bytes to a <see cref="StarSmithForgeNodeResult"/>.
     /// </summary>
     /// <param name="packet">The packet as span.</param>
     /// <returns>The packet as struct.</returns>
-    public static implicit operator StarSmithForgeStrikeResultRef(Span<byte> packet) => new (packet, false);
+    public static implicit operator StarSmithForgeNodeResultRef(Span<byte> packet) => new (packet, false);
 
     /// <summary>
-    /// Performs an implicit conversion from <see cref="StarSmithForgeStrikeResult"/> to a Span of bytes.
+    /// Performs an implicit conversion from <see cref="StarSmithForgeNodeResult"/> to a Span of bytes.
     /// </summary>
     /// <param name="packet">The packet as struct.</param>
     /// <returns>The packet as byte span.</returns>
-    public static implicit operator Span<byte>(StarSmithForgeStrikeResultRef packet) => packet._data; 
-
-    /// <summary>
-    /// Calculates the size of the packet for the specified count of <see cref="StarSmithForgeGuidanceRef"/>.
-    /// </summary>
-    /// <param name="guidanceCount">The count of <see cref="StarSmithForgeGuidanceRef"/> from which the size will be calculated.</param>
-        
-    public static int GetRequiredSize(int guidanceCount) => guidanceCount * StarSmithForgeGuidanceRef.Length + 12;
+    public static implicit operator Span<byte>(StarSmithForgeNodeResultRef packet) => packet._data; 
 }
 
 
@@ -7091,7 +7169,7 @@ public readonly ref struct StarSmithForgeResultRef
     /// <summary>
     /// Gets the initial length of this data packet. When the size is dynamic, this value may be bigger than actually needed.
     /// </summary>
-    public static int Length => 19;
+    public static int Length => 41;
 
     /// <summary>
     /// Gets the header of this packet.
@@ -7099,7 +7177,7 @@ public readonly ref struct StarSmithForgeResultRef
     public C1HeaderWithSubCodeRef Header => new (this._data);
 
     /// <summary>
-    /// Gets or sets 0 sealed, 1 cracked, 2 abandoned, 3 timed out (as abandoned), 4 seal refused (no attempt running or nothing struck; nothing else is filled).
+    /// Gets or sets 0 sealed, 1 cracked, 2 abandoned, 3 timed out (as abandoned), 4 seal refused (no attempt running or nothing placed; nothing else is filled).
     /// </summary>
     public byte Outcome
     {
@@ -7108,7 +7186,7 @@ public readonly ref struct StarSmithForgeResultRef
     }
 
     /// <summary>
-    /// Gets or sets 1 the attunement (no recipe), 2 the smith's first completion of the recipe.
+    /// Gets or sets 1 the attunement (nothing sealed as a layer), 2 a first seal doubled experience.
     /// </summary>
     public byte Flags
     {
@@ -7117,74 +7195,74 @@ public readonly ref struct StarSmithForgeResultRef
     }
 
     /// <summary>
-    /// Gets or sets the recipe's number (on a crack, the one the path was on); 0 for the attunement.
+    /// Gets or sets the item's rarity after it, 0 Common to 5 Mythic.
     /// </summary>
-    public ushort Recipe
+    public byte Rarity
     {
-        get => ReadUInt16LittleEndian(this._data[6..]);
-        set => WriteUInt16LittleEndian(this._data[6..], value);
+        get => this._data[6];
+        set => this._data[6] = value;
     }
 
     /// <summary>
-    /// Gets or sets 0 Common to 5 Mythic (Common on a crack).
+    /// Gets or sets 0 the ingredients are lost, 1 the item is downgraded, 2 the item is destroyed; 0xFF when sealed.
     /// </summary>
-    public byte Rarity
+    public byte Fate
+    {
+        get => this._data[7];
+        set => this._data[7] = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the clean placements.
+    /// </summary>
+    public byte CleanPlacements
     {
         get => this._data[8];
         set => this._data[8] = value;
     }
 
     /// <summary>
-    /// Gets or sets the links past an extendable shape.
+    /// Gets or sets the placements.
     /// </summary>
-    public byte Extension
+    public byte Placements
     {
         get => this._data[9];
         set => this._data[9] = value;
     }
 
     /// <summary>
-    /// Gets or sets the dominant element (0 fire to 4 light), 0xFF none.
+    /// Gets or sets the experience.
     /// </summary>
-    public byte Dominant
+    public uint Experience
     {
-        get => this._data[10];
-        set => this._data[10] = value;
+        get => ReadUInt32LittleEndian(this._data[10..]);
+        set => WriteUInt32LittleEndian(this._data[10..], value);
     }
 
     /// <summary>
-    /// Gets or sets the item's fate when not sealed: 0 the ingredients are lost, 1 the item is downgraded, 2 the item is destroyed; 0xFF when sealed.
+    /// Gets or sets on a crack, the constellation whose onFail decided; 0 none.
     /// </summary>
-    public byte Fate
+    public ushort FateConstellation
     {
-        get => this._data[11];
-        set => this._data[11] = value;
+        get => ReadUInt16LittleEndian(this._data[14..]);
+        set => WriteUInt16LittleEndian(this._data[14..], value);
     }
 
     /// <summary>
-    /// Gets or sets the struck stars' values summed by element: fire, frost, storm, shadow, light.
+    /// Gets or sets the sealed figures; on a crack or an abandon the stashed ones lost.
     /// </summary>
-    public Span<byte> ElementMix
+    public byte FigureCount
     {
-        get => this._data.Slice(12, 5);
+        get => this._data[16];
+        set => this._data[16] = value;
     }
 
     /// <summary>
-    /// Gets or sets the clean strikes.
+    /// Gets or sets 4 x 6 bytes: number (u16), tier, look, result (0 added, 1 raised, 2 kept), the layer's index on the item.
     /// </summary>
-    public byte CleanStrikes
+    public Span<byte> Figures
     {
-        get => this._data[17];
-        set => this._data[17] = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the strike count.
-    /// </summary>
-    public byte StrikeCount
-    {
-        get => this._data[18];
-        set => this._data[18] = value;
+        get => this._data.Slice(17, 24);
     }
 
     /// <summary>

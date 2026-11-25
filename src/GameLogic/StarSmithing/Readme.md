@@ -50,6 +50,16 @@ Tests: `tests/MUnique.OpenMU.Tests/Babylon/StarSmithRulesTest.cs`, `StarSmithLev
 
 ## Constellation Forge
 
+> Since PR 7a the Forge plays by geometry: free nodes, shape matching, fault lines, stash and layers. The sky of 12
+> stars, links, hints and voids below is history; "PR 7a contract" at the end is what the code does now. The beat, the
+> recipes' targets and ingredients, the outcomes and boosts, the attunement, the Guidebook's rows and the experience
+> stay as written here. Code: `StarSmithGeometry`, `StarSmithAccuracy`, `StarSmithHull`, `StarSmithFaults`,
+> `StarSmithLayers`, `StarSmithForge`, `StarSmithForgeAttempt`, `StarSmithForgeAttemptMessage`; the item's layers are
+> `ItemCustomization.Layers` (migration `AddStarSmithLayers`); the update is `AddStarSmithConstellationsUpdatePlugIn`.
+> Tests: `StarSmithGeometryTest`, `StarSmithForgeTest`, `StarSmithForgeWireTest`, `StarSmithGuidebookTest`,
+> `StarSmithLayersTravelTest`, `StarSmithConfigValidatorTest`, `ItemCustomizationViewTest`, `StarSmithConstellationsTest`;
+> `StarSmithRecipesDataTest` (initialization), `StarSmithConstellationPacketsTest` (packets).
+
 Every recipe attempt is played as the Forge minigame (Hidden-Babylon `docs/star_smithing.md` section 10). This is its
 rule core, deterministic from a seed so the server can deal an attempt again and verify it, its wire, the recipes, the
 Guidebook and the experience (below). An attempt lives on the player; the Guidebook is stored on the character.
@@ -433,3 +443,358 @@ The five weapon recipes get outcome tables. New, all with the skill orb and scro
 most) and hints: armour 6 Aegis Weave, 7 Bulwark Knot; wings 8 Featherfall, 9 Tempest Pinions; pendant 10 Heart of
 Embers; ring 11 Circle of Tides. `AddStarSmithItemRecipesUpdatePlugIn` adds every default number a database lacks and
 gives a stored default recipe without outcomes its default table; it never changes anything else.
+
+## PR 7a contract
+
+The contract of PR 7a (Hidden-Babylon `docs/star_smithing.md` sections 12 to 14 and 16, catalogue
+`docs/star_constellations.md`), written before the code so the client and the site can build against it. It replaces
+the sky of 12 dealt stars, links, hints and voids with free nodes, shape matching, fault lines and layers. Multi-byte
+numbers are little endian unless named big endian.
+
+### The box
+
+Every point is in the item's picture box: x from 0 (left) to 65535 (right), y from 0 (top) to 65535 (bottom), as an
+unsigned 16-bit number ("box units"). The server reads a point as `(x / 65535, y / 65535)` and measures in that unit
+square, so the client draws the picture in a square box (letterboxed when the picture is not square); otherwise
+angles are not true.
+
+### A constellation's shape
+
+A constellation (a recipe with a geometry) is drawn as a chain of **placements**, one node per beat:
+
+| Field | Meaning |
+|---|---|
+| `nodes` (n) | the corners of the shape, 3 to 12 |
+| `closed` | the last corner joins the first: the figure needs one more placement, back on its first node, so it has n + 1 placements |
+| `turns` | the turn at each inner corner, signed degrees, left positive: n - 2 for an open shape (at nodes 1 to n - 2), n - 1 for a closed one (at nodes 1 to n - 1) |
+| `lengths` | each segment's length over the first: n - 1 for an open shape, n for a closed one; the first is always 1 |
+| `extension` | optional: one more placement at its own turn (from the last segment) and length (over the first); needed for Chroma |
+
+- A **turn** at a node is the change of heading from the segment into it to the segment out of it, in degrees in
+  (-180, 180]. Left is counterclockwise as seen on the screen and positive: with the heading vectors `a` and `b` in box
+  coordinates (y down), `turn = -atan2(a.x * b.y - a.y * b.x, a.x * b.x + a.y * b.y)` in degrees. So heading right and
+  then up the screen is +90 (90L).
+- A **length ratio** is a segment's length over the figure's first segment.
+- Rotation and size are free; mirroring is not (a mirrored figure has every turn's sign flipped). The drawing order is
+  part of the shape: a figure is matched from its first node, forwards only. A closed shape starts at its own first
+  node (no cyclic start); the default closed shapes are regular, so any corner works for them, but only drawn
+  counterclockwise (their turns are left turns).
+- The extension of a closed shape starts at the closing placement (the first node), its turn measured from the closing
+  segment.
+
+### Placing a node
+
+`C1 EE 9A` carries one point. The server checks, in this order (a refused node changes nothing and spends no strike):
+
+1. an attempt is running (else answer 2);
+2. the figure is not full: after a closing placement only one more node (the extension) is taken (else 5);
+3. a strike is left (else 3);
+4. **closing:** the figure has at least 3 placements, is not closed, and the point is within `closeRadius` (0.04) of
+   the figure's first node: the node is a closing placement, and its point becomes exactly the first node's;
+5. otherwise **too near:** a point within `nodeGap` (0.03) of any node of the attempt (the figure and the banked
+   figures) is refused (4);
+6. the node is accepted: a strike is spent, the server stamps its clock and judges the timing on the beat as before
+   (`StarSmithBeat`: clean, shaky, late; a second node on one beat is late);
+7. **fault:** a point within `faultRadius` (0.025) of a fault segment cracks the attempt (answer 1);
+8. the figure is matched (below), a first match is found (discovery), and the answer goes out.
+
+A figure is the nodes since the start or the last stash. Every placement costs a strike, the closing one too: Fire is
+4 placements, its Chroma 5. Strikes: 2 + the ingredient count, at most 12.
+
+### Accuracy, score and tier
+
+For a figure measured against a shape (P base placements: n open, n + 1 closed):
+
+- Placements 0 and 1 have no geometry (they set the position, heading and scale). From placement 2 on, placement k
+  measures the turn at node k - 1 and the length ratio of segment k (the closing placement: the turn at the last
+  corner and the closing segment).
+- Per measured placement, the angle error `ea = |wrap(turn - target)|` in degrees and the length error
+  `el = |ratio - target| / target`, each on the curve `f(e, perfect, miss)`: 1000 when `e <= perfect`, 0 when
+  `e >= miss`, else `round(1000 * (1 + cos(pi * (e - perfect) / (miss - perfect))) / 2)` (midpoint away from zero).
+  Angle: perfect 2 degrees, miss 15. Length: perfect 0.02, miss 0.20. The placement's **accuracy** is
+  `g = min(f(ea, 2, 15), f(el, 0.02, 0.20))`.
+- A placement's **timing weight** `w`: clean 1000, shaky 500, late 0.
+- The figure **matches** a shape when it has exactly P placements (or P + 1 with the shape's extension), a closed
+  shape's last base placement is a closing placement, and every measured placement, the extension included, has
+  `g > 0`.
+- **Score** `S = (sum of g over the m measured base placements) * (sum of w over all P base placements) /
+  (m * P * 1000)`, in 64-bit integers, rounded down (0 to 1000). The extension counts in neither sum.
+- **Tier** (section 13's ladder; the item rarity of the same number):
+
+  | Tier | Byte | Rarity | Score |
+  |---|---|---|---|
+  | Faint | 0 | Common | under 400 |
+  | Hue | 1 | Uncommon | 400 to 599 |
+  | Lustre | 2 | Rare | 600 to 799 |
+  | Venom | 3 | Epic | 800 to 899 |
+  | Virulent | 4 | Legendary | 900 and more |
+  | Chroma | 5 | Mythic | Virulent, and the extension placed with `g = 1000` and clean |
+
+  The smith's level never changes the tier: the same drawing on the same beat gives the same tier. A drawing with an
+  extension that is not perfect and clean keeps its base tier (at most Virulent).
+- Two shapes can only match one figure when, at every measured placement, their targets lie within twice the miss of
+  each other. The validator keeps them apart: two shapes (or extended shapes) with the same placement count, whose
+  target kinds share a kind, must differ at some placement by at least 30 degrees or by a length factor of at least
+  1.5. Should a figure still match two, the higher score wins, then the lower number.
+- A figure is a **prefix** of a longer shape when it has at least 3 placements, fewer than the shape's P, and every
+  measured placement so far has `g > 0` against that shape.
+
+### Fault lines
+
+Each attempt deals `faultCount` (3) short segments from its seed (`StarSmithDice` on the attempt's seed, nothing drawn
+before them): per fault, in this order, `x1 = m + u * (1 - 2m)`, `y1 = m + u * (1 - 2m)` (`m` = `faultMargin`, 0.1),
+the angle `a = u * pi`, the length `L = min + u * (max - min)` (0.06 to 0.12); `x2 = clamp(x1 + L cos a, 0, 1)`,
+`y2 = clamp(y1 + L sin a, 0, 1)`; each `u` is the next `NextDouble()`, and the ends are kept in box units
+(`round(v * 65535)`). With a Jewel of Guardian (14/31) among the catalysts one fault is then revealed:
+`Next(faultCount)`. Only the revealed fault is ever sent. The Guardian also turns a destroy into ingredients lost, as
+before.
+
+### Stash, seal and slots
+
+- **Slots** by the smith's level: 1 (levels 1 to 20), 2 (21 to 49), 3 (50 to 79), 4 (80 to 100). An item holds at most
+  4 layers.
+- **Stash** (`EE 9B`, action 1) banks the figure: refused when no attempt runs (2), the figure matches nothing (6), its
+  hull overlaps a used hull (7), or no slot is free (8). Otherwise the figure is banked with its match, tier, score and
+  hull, and the next node starts a new figure.
+- **Used hulls:** the item's layers and the banked figures. A hull that overlaps exactly one item layer, of the same
+  constellation, and nothing else, is a **reseal** of that layer and needs no slot; any other overlap refuses.
+- **Free slots:** the level's slots minus the item's layers (never below 0); each banked figure that is not a reseal
+  takes one.
+- **Seal** (`EE 9B`, action 0; a 4-byte PR 5/6 `EE 9B` reads as a seal) first banks the figure being drawn when it
+  would be accepted as a stash; a figure that would be refused is dropped. Then every banked figure becomes a layer,
+  in the order banked: a new one is appended; a reseal raises its layer's tier and takes the new hull when the new tier
+  is higher, and otherwise keeps the layer as it is (`kept`). With nothing banked and at least one node placed, the
+  seal is the attunement (below). With no node placed it is refused (outcome 4).
+- **Crack** (a fault): every banked figure is lost. The fate is the onFail of the constellation the figure was on
+  before the cracking node, its match or a shape it is a prefix of (the longest, then the lowest number), else of the first banked figure, else ingredients lost; a
+  destroy needs a risky recipe and no Guardian. A downgrade clears the record (name, lore, look, rarity, boosts, smith
+  level) and its layers.
+- **Abandon** and the idle timeout: as before; the ingredients and the banked figures are lost, the item stays.
+- **After a seal** the item's rarity is the highest of the seal's own rarity (the best sealed tier, or the
+  attunement's) and every layer's tier. A sealed constellation with an outcome table (recipes 1 to 11) rolls its
+  outcome as in PR 6, with its tier as the rarity, and replaces the item's boosts; with several, the highest tier rolls
+  (the first banked on a tie). Looks constellations leave the boosts as they are.
+- **Attunement:** no layer; the boost from the ingredients' family as in #35, at most Uncommon: Hue when the mean
+  timing weight of all placements is 400 or more, else Faint.
+- **Experience** of a seal: each sealed figure its recipe's experience, doubled when the smith had never sealed it
+  before (made 0); the attunement 10. A crack: 30% of the fate's recipe. Abandon and timeout: nothing.
+
+### Discovery
+
+The first time a figure matches a constellation the smith has not found, it is found: the Guidebook gets it with made 0
+(`number:0`; a found row is any entry, made 0 included), and the node's answer sets flag 8 with the constellation's
+number and look, for the "Constellation of {Element} found." popup. A find is kept even when the attempt later
+cracks. Nothing names an unfound constellation: the guide lists known ones only, and a match is a find.
+
+### The hull and the layer record
+
+- The **hull** of a figure is the convex hull of its distinct placements (the extension included), in box units:
+  Andrew's monotone chain over the points sorted by x then y, collinear points dropped, in order around the hull,
+  starting at the point with the least x (least y on a tie). More than 8 points: drop the point whose triangle with its
+  two neighbours has the least area (the first in order on a tie), until 8 remain.
+- **Overlap:** two hulls overlap when no edge normal of either separates them (separating axes, integer arithmetic);
+  hulls that only touch do not overlap. A two-point hull is a segment.
+- `ItemCustomization.Layers` (text, migration `AddStarSmithLayers`): up to 4 entries joined by `;`, in the order
+  sealed, each `number:tier:look:x1,y1,x2,y2,...` (decimal; the hull's 3 to 8 points in box units). The look is stored,
+  so a layer keeps its look when the recipe changes or goes. It travels with the item like the rest of the record.
+
+### Looks
+
+A recipe's `look` (byte): 0 none, then the catalogue's numbers: 1 Fire, 2 Poison, 3 Frost, 4 Storm, 5 Shadow,
+6 Light, 7 Blood, 8 Earth, 9 Water, 10 Wind, 11 Arcane, 12 Nature, 13 Gold, 14 Silver, 15 Obsidian, 16 Jade,
+17 Crimson Steel, 18 Starlight, 19 Prism, 20 Chroma, 21 Pearl, 22 Bronze. The client draws a layer by its look and
+tier: the colour family on the hull's part, from Venom the effect, at Chroma the chroma chrome. Look 0 (the boost
+recipes 1 to 11) has no colour of its own.
+
+### Default constellations
+
+Recipe numbers 101 to 122 are the catalogue's 1 to 22 plus 100. Every default extension is one more node turning 90
+degrees against the shape's last turn, at half the first length. All take the skill orb and scroll family like the
+other recipes, fit every item kind, lose the ingredients on a fail, have no hint and no outcome table, and give 10
+experience per base placement.
+
+| # | Look | Shape (nodes, turns, lengths) | Extension | Exp |
+|---|---|---|---|---|
+| 101 | 1 Fire | 3 closed · 120L 120L · 1 : 1 : 1 | 90R 0.5 | 40 |
+| 102 | 2 Poison | 4 · 60L 60R · 1 : 1 : 1 | 90L 0.5 | 40 |
+| 103 | 3 Frost | 5 · 90L 90L 90L · 1 : 0.5 : 1 : 0.5 | 90R 0.5 | 50 |
+| 104 | 4 Storm | 4 · 150L 150R · 1 : 1 : 1 | 90L 0.5 | 40 |
+| 105 | 5 Shadow | 4 · 90R 30L · 1 : 2 : 1.5 | 90R 0.5 | 40 |
+| 106 | 6 Light | 6 closed · 60L 60L 60L 60L 60L · 1 : 1 : 1 : 1 : 1 : 1 | 90R 0.5 | 70 |
+| 107 | 7 Blood | 4 · 120L 150L · 1 : 0.5 : 2 | 90R 0.5 | 40 |
+| 108 | 8 Earth | 3 · 120R · 1 : 2 | 90L 0.5 | 30 |
+| 109 | 9 Water | 3 · 60R · 1 : 0.5 | 90L 0.5 | 30 |
+| 110 | 10 Wind | 3 · 60L · 1 : 2 | 90R 0.5 | 30 |
+| 111 | 11 Arcane | 4 · 90L 150R · 1 : 1.5 : 1 | 90L 0.5 | 40 |
+| 112 | 12 Nature | 3 · 120L · 1 : 0.5 | 90R 0.5 | 30 |
+| 113 | 13 Gold | 4 closed · 90L 90L 90L · 1 : 1 : 1 : 1 | 90R 0.5 | 50 |
+| 114 | 14 Silver | 4 · 120R 150R · 1 : 1.5 : 1.5 | 90L 0.5 | 40 |
+| 115 | 15 Obsidian | 4 · 120L 120L · 1 : 1.5 : 0.5 | 90R 0.5 | 40 |
+| 116 | 16 Jade | 3 · 90R · 1 : 2 | 90L 0.5 | 30 |
+| 117 | 17 Crimson Steel | 3 · 120L · 1 : 1.5 | 90R 0.5 | 30 |
+| 118 | 18 Starlight | 3 · 30R · 1 : 1.5 | 90L 0.5 | 30 |
+| 119 | 19 Prism | 4 · 60R 90L · 1 : 1.5 : 1 | 90R 0.5 | 40 |
+| 120 | 20 Chroma | 4 · 90R 150R · 1 : 1.5 : 1.5 | 90L 0.5 | 40 |
+| 121 | 21 Pearl | 3 · 90R · 1 : 1 | 90L 0.5 | 30 |
+| 122 | 22 Bronze | 3 · 90L · 1 : 0.5 | 90R 0.5 | 30 |
+
+Frost's fifth node lands on its first: it is placed as a closing placement and still matches the open shape (an open
+shape does not care whether its last placement closes).
+
+The boost recipes 1 to 11 keep their numbers, names, outcomes and fates and get shapes of their own, apart from the
+whole catalogue (all 121 shapes and the extensions), so 7b adds its constellations without a clash:
+
+| # | Name | Shape | Extension |
+|---|---|---|---|
+| 1 | The Serpent | 6 · 120L 120R 60R 30L · 1 : 1 : 1.5 : 0.5 : 2 | 90R 0.5 |
+| 2 | Twin Fangs | 3 · 150L · 1 : 2 | 90R 0.5 |
+| 3 | Ember Ring | 3 · 150L · 1 : 0.5 | 90R 0.5 |
+| 4 | Storm Spine | 4 · 120R 150L · 1 : 2 : 1 | 90R 0.5 |
+| 5 | Wyrm Coil | 4 · 120R 30L · 1 : 1.5 : 1.5 | 90R 0.5 |
+| 6 | Aegis Weave | 4 · 60L 150L · 1 : 1 : 0.5 | 90R 0.5 |
+| 7 | Bulwark Knot | 3 · 150R · 1 : 0.5 | 90L 0.5 |
+| 8 | Featherfall | 4 · 60L 60L · 1 : 0.5 : 0.5 | 90R 0.5 |
+| 9 | Tempest Pinions | 5 · 120R 60L 30R · 1 : 2 : 2 : 1.5 | 90L 0.5 |
+| 10 | Heart of Embers | 3 · 60L · 1 : 0.5 | 90R 0.5 |
+| 11 | Circle of Tides | 3 · 120R · 1 : 0.5 | 90L 0.5 |
+
+`AddStarSmithConstellationsUpdatePlugIn` adds every default number a world lacks and gives a stored default recipe 1
+to 11 without a geometry its default one; an operator's own recipe is never changed.
+
+### Wire
+
+Same sub codes as PR 5/6 (the crafting range 90-9F is full), new layouts. A layer on the wire is 37 bytes:
+
+| Index | Size | Field |
+|---|---|---|
+| 0 | 2 | constellation number |
+| 2 | 1 | tier, 0 to 5 |
+| 3 | 1 | look |
+| 4 | 1 | hull point count, 3 to 8 |
+| 5 | 32 | 8 points, x then y, u16 each, in box units; unused zero |
+
+The client sends:
+
+- `C1 EE 99 StarSmithForgeStart`, 21 bytes: unchanged.
+- `C1 EE 9A StarSmithForgeNode`, 8 bytes: 4-5 x, 6-7 y (box units). A 5-byte PR 5/6 strike is too short and ignored.
+- `C1 EE 9B StarSmithForgeSeal`, 5 bytes: 4 action, 0 seal, 1 stash.
+- `C1 EE 9C StarSmithForgeAbandon`, 4 bytes: unchanged.
+
+The client receives:
+
+- `C1 EE 9D StarSmithForgeAttempt`, 179 bytes (was the C2 sky):
+
+  | Index | Size | Field |
+  |---|---|---|
+  | 4 | 1 | result: 0 started, else the EE 97 codes, 12 attempt running, 13 wrong slot, 14 no ingredients (then only 4-5 are filled) |
+  | 5 | 1 | target slot |
+  | 6 | 1 | strikes |
+  | 7 | 1 | risk: 0 ingredients lost, 1 downgraded, 2 destroyed (the worst fate among the attempt's constellations) |
+  | 8 | 1 | free slots on this item |
+  | 9 | 1 | the smith's slots by level, 1 to 4 |
+  | 10 | 2 | beat interval, ms |
+  | 12 | 2 | ms to the first beat |
+  | 14 | 1 | flags: 1 a fault is revealed |
+  | 15 | 8 | the revealed fault: x1, y1, x2, y2 (box units); zero when none |
+  | 23 | 2 | fault radius (box units) |
+  | 25 | 2 | close radius (box units) |
+  | 27 | 2 | node gap (box units) |
+  | 29 | 1 | fault count |
+  | 30 | 1 | the item's layer count, 0 to 4 |
+  | 31 | 148 | the item's layers, 4 x 37; unused zero |
+
+- `C1 EE 9E StarSmithForgeNodeResult`, 107 bytes, the answer to a node or a stash:
+
+  | Index | Size | Field |
+  |---|---|---|
+  | 4 | 1 | kind: 0 node, 1 stash |
+  | 5 | 1 | answer. Node: 0 placed, 1 cracked, 2 no attempt, 3 no strikes left, 4 too near a node, 5 figure full. Stash: 0 banked, 2 no attempt, 6 no match, 7 overlap, 8 no free slot |
+  | 6 | 1 | timing of the node: 0 clean, 1 shaky, 2 late; 0xFF on a refusal and on a stash |
+  | 7 | 1 | strikes left |
+  | 8 | 1 | flags: 1 the node closed the figure, 2 it hit a fault, 4 the figure's hull overlaps a used hull, 8 a first find, 16 the match counts its extension, 32 the match is a reseal of the item's layer |
+  | 9 | 1 | the figure's placements (0 after a stash) |
+  | 10 | 1 | banked figures |
+  | 11 | 2 | match: the constellation number (0 none); on a stash, the banked one |
+  | 13 | 1 | the match's look |
+  | 14 | 1 | the match's tier (0xFF none) |
+  | 15 | 2 | the match's score, 0 to 1000 |
+  | 17 | 2 | the node's measured turn, signed tenths of a degree, left positive (0 for placements 0 and 1) |
+  | 19 | 2 | the node's measured length ratio, permille of the first segment (0 for placement 0) |
+  | 21 | 1 | guide count, 0 to 8 |
+  | 22 | 16 | guide: known constellations the figure is a prefix of, 8 x u16, by number; unused zero |
+  | 38 | 36 | per placement of the figure, 12 x 3: timing (1), accuracy (u16, `g` against the match, else the first guide; 1000 for placements 0 and 1; 0xFFFF with neither) |
+  | 74 | 1 | hull point count (the figure's; on a stash the banked one's) |
+  | 75 | 32 | hull points, 8 x (x, y) u16 |
+
+  A refused node or stash fills only 4-7 and 9-10. The found popup is flag 8: the number at 11, the look at 13.
+
+- `C1 EE 9F StarSmithForgeResult`, 41 bytes:
+
+  | Index | Size | Field |
+  |---|---|---|
+  | 4 | 1 | outcome: 0 sealed, 1 cracked, 2 abandoned, 3 timed out, 4 refused (nothing else filled) |
+  | 5 | 1 | flags: 1 the attunement, 2 a first seal doubled experience |
+  | 6 | 1 | the item's rarity after it |
+  | 7 | 1 | fate: 0 ingredients lost, 1 downgraded, 2 destroyed; 0xFF sealed |
+  | 8 | 1 | clean placements |
+  | 9 | 1 | placements |
+  | 10 | 4 | experience earned (u32) |
+  | 14 | 2 | the fate's constellation (cracked; 0 none) |
+  | 16 | 1 | figures: the sealed ones, or on a crack or abandon the banked ones lost |
+  | 17 | 24 | sealed figures, 4 x 6: number (u16), tier, look, result (0 added, 1 raised, 2 kept), layer index on the item |
+
+  Then EE 91, EE 90 and the item's EE 39 as before.
+
+- `C2 EE 36 ItemCustomizationDetail` grows from 451 to 600 bytes: 451 the layer count (0 to 4), 452 the layers
+  (4 x 37). `C2 EE 34` (and EE 39) set flag 64 when an item has layers; a viewer asks EE 35 for them as for the lore,
+  so worn layers are drawn for everyone.
+- `C2 EE 90 StarSmithGuidebook` v3: a found row's byte 5 is the shape's base placement count (P), and its lines start
+  with a shape line (counted in byte 10), 75 bytes:
+
+  | Index | Size | Field |
+  |---|---|---|
+  | 0 | 1 | kind 4 |
+  | 1 | 1 | nodes (n) |
+  | 2 | 1 | flags: 1 closed, 2 has an extension |
+  | 3 | 1 | look |
+  | 4 | 2 | zero |
+  | 6 | 22 | turns, 11 x i16, tenths of a degree, left positive; unused zero |
+  | 28 | 24 | lengths, 12 x u16, permille of the first; unused zero |
+  | 52 | 2 | the extension's turn (i16 tenths) |
+  | 54 | 2 | the extension's length (u16 permille) |
+  | 56 | 19 | zero |
+
+  A found constellation never sealed (made 0) is a found row with made 0. Sealed rows are unchanged; the default
+  constellations have no hint (kind 0).
+
+**PR 5/6 clients:** keeping them would mean running both Forges side by side; that is not cheap, so they are not
+kept. A PR 5/6 client still recolours, names, inscribes, locks, reads the Guidebook's rows and the boosts (EE 36 grows
+at its end), but cannot play the Forge: its strikes are ignored and it misreads EE 9D, 9E and 9F. Client and fork ship
+together.
+
+### Configuration JSON
+
+A recipe's `shape` (stars) becomes `geometry`, and it gains `look`:
+
+```json
+{
+  "number": 101, "name": "Fire", "look": "fire",
+  "geometry": { "nodes": 3, "closed": true, "turns": [120, 120], "lengths": [1, 1, 1],
+                "extension": { "turn": -90, "length": 0.5 } },
+  "outcomes": []
+}
+```
+
+- `look`: `none` or the camelCase names above (`crimsonSteel`). `turns` in degrees, left positive, one decimal kept;
+  `lengths` two decimals kept; `extension` may be null.
+- Validation: nodes 3 to 12 open, 3 to 11 closed; the turn and length counts above; each turn 10 to 170 degrees
+  either way; the first length 1, each length 0.25 to 4; the extension's turn and length the same; P plus the
+  extension at most 12; shapes kept apart as said above (field `recipes[i].geometry`, naming the other recipe); 0 to 16
+  outcomes, at least one outcome or a look. A recipe without a geometry is dropped at load (logged) and refused by
+  the bridge.
+- `StarSmithingConfiguration.Forge` (not in the bridge): `FaultCount` 3 (0 to 8), `FaultMargin` 0.1,
+  `FaultMinLength` 0.06, `FaultMaxLength` 0.12, `FaultRadius` 0.025, `CloseRadius` 0.04, `NodeGap` 0.03,
+  `BaseStrikes` 2, `MaxStrikes` 12, the Guardian 14/31. The PR 5 sky settings (star count, exploration voids,
+  neighbours, spacing) are gone.
+- A recipe's chance and catalysts no longer roll anything in the Forge (the faults are the risk); they stay in the
+  configuration for the editor and a later use.

@@ -27,6 +27,9 @@ public class ItemCustomizationBabylonPlugIn : IItemCustomizationViewPlugIn
     /// <summary>The EE 34 flag of an item with smithed boosts, which EE 36 carries.</summary>
     private const byte BoostsWaiting = 32;
 
+    /// <summary>The EE 34 flag of an item with constellation layers (PR 7a), which EE 36 carries.</summary>
+    private const byte LayersWaiting = 64;
+
     /// <summary>The bytes of one boost in EE 36: the stat and its value times 100.</summary>
     private const int BoostBytes = 5;
 
@@ -93,6 +96,7 @@ public class ItemCustomizationBabylonPlugIn : IItemCustomizationViewPlugIn
                 BinaryPrimitives.WriteInt32LittleEndian(at[1..], boosts[i].Value);
             }
 
+            packet.LayerCount = (byte)MUnique.OpenMU.GameServer.RemoteView.StarSmithing.StarSmithWire.WriteLayers(packet.Layers, StarSmithLayers.Parse(entry.Customization.Layers));
             return size;
         }
 
@@ -151,6 +155,6 @@ public class ItemCustomizationBabylonPlugIn : IItemCustomizationViewPlugIn
         entry.Rarity = c.Rarity;
         var hasLook = ItemLookBytes.TryWrite(c.Look, entry.Look);
         ItemCustomizationText.WriteName(c.Name, entry.Name);
-        entry.Flags = (byte)(ItemCustomizationText.Flags(hasLook, c.Name, c.Lore) | (string.IsNullOrEmpty(c.Boosts) ? 0 : BoostsWaiting));
+        entry.Flags = (byte)(ItemCustomizationText.Flags(hasLook, c.Name, c.Lore) | (string.IsNullOrEmpty(c.Boosts) ? 0 : BoostsWaiting) | (string.IsNullOrEmpty(c.Layers) ? 0 : LayersWaiting));
     }
 }

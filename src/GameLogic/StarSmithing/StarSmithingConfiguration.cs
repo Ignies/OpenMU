@@ -9,6 +9,9 @@ namespace MUnique.OpenMU.GameLogic.StarSmithing;
 /// </summary>
 public class StarSmithingConfiguration
 {
+    /// <summary>Every item kind a recipe can work on.</summary>
+    public const StarSmithTargetKind AnyItem = StarSmithTargetKind.Weapon | StarSmithTargetKind.Armor | StarSmithTargetKind.Wings | StarSmithTargetKind.Pendant | StarSmithTargetKind.Ring;
+
     /// <summary>Gets or sets the item group of the Star Smith's Hammer.</summary>
     public byte HammerGroup { get; set; } = 2;
 
@@ -76,16 +79,16 @@ public class StarSmithingConfiguration
     }
 
     /// <summary>
-    /// The default recipes (Readme.md "Recipes"): the design's five weapon shapes (Hidden-Babylon docs/star_smithing.md
-    /// section 10), two for armour, two for wings, one for pendants and one for rings, each with a hint and an outcome
-    /// table. All take the same family of ingredients, any mix of the Season 6 skill orbs and scrolls, so one sky holds
-    /// every shape of its item kind and exploring finds the hidden ones. A 60% base chance (95% at most); Storm Spine
-    /// is the one risky recipe.
+    /// The default recipes (Readme.md "PR 7a contract", "Default constellations"): the boost recipes 1 to 11 (five for
+    /// weapons, two for armour, two for wings, one for pendants, one for rings, each with a hint and an outcome table)
+    /// and the 22 looks constellations 101 to 122 of Hidden-Babylon docs/star_constellations.md, each with its shape.
+    /// All take the same family of ingredients, any mix of the Season 6 skill orbs and scrolls. Storm Spine is the one
+    /// risky recipe.
     /// </summary>
     /// <returns>The recipes.</returns>
     public static List<StarSmithRecipe> DefaultRecipes()
     {
-        StarSmithRecipe Make(StarSmithTargetKind targets, short number, string name, string hint, int experience, int[] stars, StarSmithOutcome[] outcomes, StarSmithShapeMatch match = StarSmithShapeMatch.Exact, StarSmithOnFail onFail = StarSmithOnFail.IngredientsLost, bool risky = false) => new()
+        StarSmithRecipe Make(StarSmithTargetKind targets, short number, string name, string hint, int experience, StarSmithGeometry geometry, StarSmithOutcome[] outcomes, StarSmithOnFail onFail = StarSmithOnFail.IngredientsLost, bool risky = false) => new()
         {
             Number = number,
             Name = name,
@@ -96,32 +99,64 @@ public class StarSmithingConfiguration
             Ingredients = SkillOrbsAndScrolls(),
             BaseChance = 6000,
             MaximumChance = 9500,
-            Shape = new StarSmithShape { Stars = [.. stars], Match = match },
+            Geometry = geometry,
             OnFail = onFail,
             Risky = risky,
             Outcomes = [.. outcomes],
         };
 
+        StarSmithRecipe Looks(StarSmithLook look, string name, StarSmithGeometry geometry)
+        {
+            var recipe = Make(AnyItem, (short)(100 + (int)look), name, string.Empty, 10 * geometry.Placements, geometry, []);
+            recipe.Look = look;
+            return recipe;
+        }
+
+        static StarSmithGeometry Open(double[] turns, params double[] lengths) => StarSmithGeometry.Of(turns.Length + 2, false, turns, lengths);
+        static StarSmithGeometry Closed(double[] turns, params double[] lengths) => StarSmithGeometry.Of(turns.Length + 1, true, turns, lengths);
+
         const StarSmithTargetKind weapon = StarSmithTargetKind.Weapon;
         const StarSmithBoostStat dmg = StarSmithBoostStat.Damage, def = StarSmithBoostStat.Defense, hp = StarSmithBoostStat.MaxHealth, mana = StarSmithBoostStat.MaxMana;
         const StarSmithBoostStat speed = StarSmithBoostStat.AttackSpeed, crit = StarSmithBoostStat.CriticalRate, exc = StarSmithBoostStat.ExcellentRate, absorb = StarSmithBoostStat.DamageAbsorbed;
-        var tempest = Make(StarSmithTargetKind.Wings, 9, "Tempest Pinions", string.Empty, 70, [11, 3, 9, 5, 8], [Out(50, StarSmithRarity.Common, (speed, 1, 2)), Out(30, StarSmithRarity.Rare, (speed, 2, 3), (dmg, 1, 2)), Out(10, StarSmithRarity.Legendary, (speed, 2, 4), (dmg, 1.5, 3), (mana, 50, 150))]);
+        var tempest = Make(StarSmithTargetKind.Wings, 9, "Tempest Pinions", string.Empty, 70, Open([-120, 60, -30], 1, 2, 2, 1.5), [Out(50, StarSmithRarity.Common, (speed, 1, 2)), Out(30, StarSmithRarity.Rare, (speed, 2, 3), (dmg, 1, 2)), Out(10, StarSmithRarity.Legendary, (speed, 2, 4), (dmg, 1.5, 3), (mana, 50, 150))]);
         tempest.HintKind = StarSmithHintKind.Ingredient;
         tempest.HintGroup = 12;
         tempest.HintNumber = 7;
         return
         [
-            Make(weapon, 1, "The Serpent", "Seven scales, from the point down to the hand.", 120, [0, 1, 2, 3, 4, 5, 6], [Out(50, StarSmithRarity.Common, (dmg, 1, 2)), Out(30, StarSmithRarity.Uncommon, (dmg, 1.5, 3), (crit, 0.5, 1)), Out(15, StarSmithRarity.Rare, (dmg, 2, 4), (exc, 1, 2)), Out(5, StarSmithRarity.Epic, (dmg, 3, 5), (crit, 1, 2), (speed, 2, 4))], onFail: StarSmithOnFail.ItemDowngraded),
-            Make(weapon, 2, "Twin Fangs", "Two fangs bite across the guard.", 40, [9, 6, 10], [Out(60, StarSmithRarity.Common, (crit, 0.5, 1)), Out(30, StarSmithRarity.Uncommon, (crit, 1, 2), (dmg, 0.5, 1.5)), Out(10, StarSmithRarity.Epic, (crit, 1.5, 3), (dmg, 1, 2), (exc, 0.5, 1))], StarSmithShapeMatch.Extendable),
-            Make(weapon, 3, "Ember Ring", "A ring of embers wraps the grip.", 40, [6, 7, 8], [Out(60, StarSmithRarity.Common, (speed, 1, 2)), Out(30, StarSmithRarity.Uncommon, (speed, 1, 3), (dmg, 0.5, 1.5)), Out(10, StarSmithRarity.Epic, (speed, 2, 4), (dmg, 1, 2), (mana, 30, 80))], StarSmithShapeMatch.Extendable),
-            Make(weapon, 4, "Storm Spine", "Lightning climbs the blade in leaps.", 60, [6, 4, 2, 0], [Out(60, StarSmithRarity.Common, (dmg, 2, 3)), Out(30, StarSmithRarity.Rare, (dmg, 3, 5), (speed, 2, 3)), Out(10, StarSmithRarity.Legendary, (dmg, 4, 6), (speed, 3, 5), (crit, 1.5, 3))], onFail: StarSmithOnFail.ItemDestroyed, risky: true),
-            Make(weapon, 5, "Wyrm Coil", "Four stars knot themselves around the blade.", 60, [1, 11, 3, 5], [Out(60, StarSmithRarity.Common, (exc, 0.5, 1)), Out(30, StarSmithRarity.Uncommon, (exc, 1, 2), (dmg, 0.5, 1)), Out(10, StarSmithRarity.Epic, (exc, 1.5, 3), (dmg, 1, 2), (crit, 0.5, 1.5))]),
-            Make(StarSmithTargetKind.Armor, 6, "Aegis Weave", "Four plates lock over the heart.", 50, [3, 4, 8, 7], [Out(60, StarSmithRarity.Common, (def, 1, 2)), Out(30, StarSmithRarity.Uncommon, (def, 1.5, 3), (hp, 30, 80)), Out(10, StarSmithRarity.Epic, (def, 2, 4), (hp, 60, 150), (absorb, 0.5, 1.5))]),
-            Make(StarSmithTargetKind.Armor, 7, "Bulwark Knot", "A knot of three holds where the blows land.", 40, [2, 9, 6], [Out(60, StarSmithRarity.Common, (absorb, 0.5, 1)), Out(30, StarSmithRarity.Uncommon, (absorb, 1, 2), (def, 0.5, 1.5)), Out(10, StarSmithRarity.Epic, (absorb, 1.5, 3), (def, 1, 2), (hp, 50, 120))], StarSmithShapeMatch.Extendable),
-            Make(StarSmithTargetKind.Wings, 8, "Featherfall", "Four feathers drift and never touch the ground.", 60, [1, 10, 4, 7], [Out(60, StarSmithRarity.Common, (hp, 40, 100)), Out(30, StarSmithRarity.Uncommon, (hp, 60, 150), (absorb, 0.5, 1)), Out(10, StarSmithRarity.Epic, (hp, 100, 220), (absorb, 1, 2), (dmg, 1, 2))]),
+            Make(weapon, 1, "The Serpent", "Seven scales, from the point down to the hand.", 120, Open([120, -120, -60, 30], 1, 1, 1.5, 0.5, 2), [Out(50, StarSmithRarity.Common, (dmg, 1, 2)), Out(30, StarSmithRarity.Uncommon, (dmg, 1.5, 3), (crit, 0.5, 1)), Out(15, StarSmithRarity.Rare, (dmg, 2, 4), (exc, 1, 2)), Out(5, StarSmithRarity.Epic, (dmg, 3, 5), (crit, 1, 2), (speed, 2, 4))], onFail: StarSmithOnFail.ItemDowngraded),
+            Make(weapon, 2, "Twin Fangs", "Two fangs bite across the guard.", 40, Open([150], 1, 2), [Out(60, StarSmithRarity.Common, (crit, 0.5, 1)), Out(30, StarSmithRarity.Uncommon, (crit, 1, 2), (dmg, 0.5, 1.5)), Out(10, StarSmithRarity.Epic, (crit, 1.5, 3), (dmg, 1, 2), (exc, 0.5, 1))]),
+            Make(weapon, 3, "Ember Ring", "A ring of embers wraps the grip.", 40, Open([150], 1, 0.5), [Out(60, StarSmithRarity.Common, (speed, 1, 2)), Out(30, StarSmithRarity.Uncommon, (speed, 1, 3), (dmg, 0.5, 1.5)), Out(10, StarSmithRarity.Epic, (speed, 2, 4), (dmg, 1, 2), (mana, 30, 80))]),
+            Make(weapon, 4, "Storm Spine", "Lightning climbs the blade in leaps.", 60, Open([-120, 150], 1, 2, 1), [Out(60, StarSmithRarity.Common, (dmg, 2, 3)), Out(30, StarSmithRarity.Rare, (dmg, 3, 5), (speed, 2, 3)), Out(10, StarSmithRarity.Legendary, (dmg, 4, 6), (speed, 3, 5), (crit, 1.5, 3))], onFail: StarSmithOnFail.ItemDestroyed, risky: true),
+            Make(weapon, 5, "Wyrm Coil", "Four stars knot themselves around the blade.", 60, Open([-120, 30], 1, 1.5, 1.5), [Out(60, StarSmithRarity.Common, (exc, 0.5, 1)), Out(30, StarSmithRarity.Uncommon, (exc, 1, 2), (dmg, 0.5, 1)), Out(10, StarSmithRarity.Epic, (exc, 1.5, 3), (dmg, 1, 2), (crit, 0.5, 1.5))]),
+            Make(StarSmithTargetKind.Armor, 6, "Aegis Weave", "Four plates lock over the heart.", 50, Open([60, 150], 1, 1, 0.5), [Out(60, StarSmithRarity.Common, (def, 1, 2)), Out(30, StarSmithRarity.Uncommon, (def, 1.5, 3), (hp, 30, 80)), Out(10, StarSmithRarity.Epic, (def, 2, 4), (hp, 60, 150), (absorb, 0.5, 1.5))]),
+            Make(StarSmithTargetKind.Armor, 7, "Bulwark Knot", "A knot of three holds where the blows land.", 40, Open([-150], 1, 0.5), [Out(60, StarSmithRarity.Common, (absorb, 0.5, 1)), Out(30, StarSmithRarity.Uncommon, (absorb, 1, 2), (def, 0.5, 1.5)), Out(10, StarSmithRarity.Epic, (absorb, 1.5, 3), (def, 1, 2), (hp, 50, 120))]),
+            Make(StarSmithTargetKind.Wings, 8, "Featherfall", "Four feathers drift and never touch the ground.", 60, Open([60, 60], 1, 0.5, 0.5), [Out(60, StarSmithRarity.Common, (hp, 40, 100)), Out(30, StarSmithRarity.Uncommon, (hp, 60, 150), (absorb, 0.5, 1)), Out(10, StarSmithRarity.Epic, (hp, 100, 220), (absorb, 1, 2), (dmg, 1, 2))]),
             tempest,
-            Make(StarSmithTargetKind.Pendant, 10, "Heart of Embers", string.Empty, 40, [6, 2, 10], [Out(60, StarSmithRarity.Common, (mana, 40, 100)), Out(30, StarSmithRarity.Uncommon, (mana, 60, 150), (dmg, 0.5, 1.5)), Out(10, StarSmithRarity.Epic, (mana, 100, 220), (dmg, 1, 2), (exc, 0.5, 1.5))], StarSmithShapeMatch.Extendable),
-            Make(StarSmithTargetKind.Ring, 11, "Circle of Tides", "Three tides meet and never end.", 40, [0, 4, 8], [Out(60, StarSmithRarity.Common, (hp, 30, 80)), Out(30, StarSmithRarity.Uncommon, (hp, 50, 120), (mana, 30, 80)), Out(10, StarSmithRarity.Epic, (hp, 80, 180), (mana, 50, 120), (crit, 0.5, 1.5))], StarSmithShapeMatch.Extendable),
+            Make(StarSmithTargetKind.Pendant, 10, "Heart of Embers", string.Empty, 40, Open([60], 1, 0.5), [Out(60, StarSmithRarity.Common, (mana, 40, 100)), Out(30, StarSmithRarity.Uncommon, (mana, 60, 150), (dmg, 0.5, 1.5)), Out(10, StarSmithRarity.Epic, (mana, 100, 220), (dmg, 1, 2), (exc, 0.5, 1.5))]),
+            Make(StarSmithTargetKind.Ring, 11, "Circle of Tides", "Three tides meet and never end.", 40, Open([-120], 1, 0.5), [Out(60, StarSmithRarity.Common, (hp, 30, 80)), Out(30, StarSmithRarity.Uncommon, (hp, 50, 120), (mana, 30, 80)), Out(10, StarSmithRarity.Epic, (hp, 80, 180), (mana, 50, 120), (crit, 0.5, 1.5))]),
+            Looks(StarSmithLook.Fire, "Fire", Closed([120, 120], 1, 1, 1)),
+            Looks(StarSmithLook.Poison, "Poison", Open([60, -60], 1, 1, 1)),
+            Looks(StarSmithLook.Frost, "Frost", Open([90, 90, 90], 1, 0.5, 1, 0.5)),
+            Looks(StarSmithLook.Storm, "Storm", Open([150, -150], 1, 1, 1)),
+            Looks(StarSmithLook.Shadow, "Shadow", Open([-90, 30], 1, 2, 1.5)),
+            Looks(StarSmithLook.Light, "Light", Closed([60, 60, 60, 60, 60], 1, 1, 1, 1, 1, 1)),
+            Looks(StarSmithLook.Blood, "Blood", Open([120, 150], 1, 0.5, 2)),
+            Looks(StarSmithLook.Earth, "Earth", Open([-120], 1, 2)),
+            Looks(StarSmithLook.Water, "Water", Open([-60], 1, 0.5)),
+            Looks(StarSmithLook.Wind, "Wind", Open([60], 1, 2)),
+            Looks(StarSmithLook.Arcane, "Arcane", Open([90, -150], 1, 1.5, 1)),
+            Looks(StarSmithLook.Nature, "Nature", Open([120], 1, 0.5)),
+            Looks(StarSmithLook.Gold, "Gold", Closed([90, 90, 90], 1, 1, 1, 1)),
+            Looks(StarSmithLook.Silver, "Silver", Open([-120, -150], 1, 1.5, 1.5)),
+            Looks(StarSmithLook.Obsidian, "Obsidian", Open([120, 120], 1, 1.5, 0.5)),
+            Looks(StarSmithLook.Jade, "Jade", Open([-90], 1, 2)),
+            Looks(StarSmithLook.CrimsonSteel, "Crimson Steel", Open([120], 1, 1.5)),
+            Looks(StarSmithLook.Starlight, "Starlight", Open([-30], 1, 1.5)),
+            Looks(StarSmithLook.Prism, "Prism", Open([-60, 90], 1, 1.5, 1)),
+            Looks(StarSmithLook.Chroma, "Chroma", Open([-90, -150], 1, 1.5, 1.5)),
+            Looks(StarSmithLook.Pearl, "Pearl", Open([-90], 1, 1)),
+            Looks(StarSmithLook.Bronze, "Bronze", Open([90], 1, 0.5)),
         ];
     }
 

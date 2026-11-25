@@ -28,6 +28,21 @@ public static class StarSmithConfigValidator
     /// <summary>The most bytes of a name or hint (the Guidebook's text field).</summary>
     public const int MaximumTextBytes = 64;
 
+    /// <summary>The most placements of a shape, its extension included (PR 7a).</summary>
+    public const int MaximumNodes = 12;
+
+    /// <summary>The least turn of a shape, in degrees either way.</summary>
+    public const double MinimumTurn = 10;
+
+    /// <summary>The most turn of a shape, in degrees either way.</summary>
+    public const double MaximumTurn = 170;
+
+    /// <summary>The least length ratio of a segment.</summary>
+    public const double MinimumLength = 0.25;
+
+    /// <summary>The most length ratio of a segment.</summary>
+    public const double MaximumLength = 4;
+
     /// <summary>
     /// Checks a configuration's recipes and balance.
     /// </summary>
@@ -45,7 +60,14 @@ public static class StarSmithConfigValidator
         var numbers = new HashSet<short>();
         for (var i = 0; i < config.Recipes.Count; i++)
         {
-            ValidateRecipe(config.Recipes[i], $"recipes[{i}]", numbers, config.Forge.StarCount, itemExists, errors);
+            ValidateRecipe(config.Recipes[i], $"recipes[{i}]", numbers, itemExists, errors);
+            for (var j = 0; j < i; j++)
+            {
+                if (Clash(config.Recipes[j], config.Recipes[i]))
+                {
+                    errors.Add(new($"recipes[{i}].geometry", $"Too close to recipe {config.Recipes[j].Number}: one drawing could match both."));
+                }
+            }
         }
 
         ValidateBalance(config.Balance, errors);
@@ -61,7 +83,7 @@ public static class StarSmithConfigValidator
     /// <returns>The errors of what was dropped.</returns>
     public static IReadOnlyList<StarSmithConfigError> Sanitize(StarSmithingConfiguration config)
     {
-        string[] critical = ["number", "baseChance", "maximumChance", "catalysts[", "onFail", "shape", "outcomes["];
+        string[] critical = ["number", "baseChance", "maximumChance", "catalysts[", "onFail", "geometry", "outcomes["];
         var dropped = new List<StarSmithConfigError>();
         var numbers = new HashSet<short>();
         var kept = new List<StarSmithRecipe>();
@@ -69,8 +91,13 @@ public static class StarSmithConfigValidator
         {
             var at = $"recipes[{i}].";
             var errors = new List<StarSmithConfigError>();
-            ValidateRecipe(config.Recipes[i], at[..^1], numbers, config.Forge.StarCount, (_, _) => true, errors);
+            ValidateRecipe(config.Recipes[i], at[..^1], numbers, (_, _) => true, errors);
             errors.RemoveAll(e => !critical.Any(c => e.Field[at.Length..].StartsWith(c, StringComparison.Ordinal)));
+            if (kept.FirstOrDefault(k => Clash(k, config.Recipes[i])) is { } other)
+            {
+                errors.Add(new($"{at}geometry", $"Too close to recipe {other.Number}: one drawing could match both."));
+            }
+
             if (errors.Count == 0)
             {
                 kept.Add(config.Recipes[i]);
@@ -98,7 +125,7 @@ public static class StarSmithConfigValidator
     /// <returns>Its camelCase name.</returns>
     public static string JsonName(StarSmithBoostStat stat) => char.ToLowerInvariant(stat.ToString()[0]) + stat.ToString()[1..];
 
-    private static void ValidateRecipe(StarSmithRecipe recipe, string at, HashSet<short> numbers, int starCount, Func<byte, short, bool> itemExists, List<StarSmithConfigError> errors)
+    private static void ValidateRecipe(StarSmithRecipe recipe, string at, HashSet<short> numbers, Func<byte, short, bool> itemExists, List<StarSmithConfigError> errors)
     {
         void Error(string field, string message) => errors.Add(new($"{at}.{field}", message));
 
@@ -188,12 +215,21 @@ public static class StarSmithConfigValidator
             Error("onFail", "Only a risky recipe destroys an item.");
         }
 
-        ValidateShape(recipe.Shape, at, starCount, errors);
+        ValidateGeometry(recipe.Geometry, at, errors);
         ValidateHint(recipe, at, errors);
 
-        if (recipe.Outcomes.Count is 0 or > MaximumOutcomes)
+        if (!Enum.IsDefined(recipe.Look))
         {
-            Error("outcomes", $"1 to {MaximumOutcomes} outcomes.");
+            Error("look", "none or one of the 22 looks.");
+        }
+
+        if (recipe.Outcomes.Count > MaximumOutcomes)
+        {
+            Error("outcomes", $"At most {MaximumOutcomes} outcomes.");
+        }
+        else if (recipe.Outcomes.Count == 0 && recipe.Look == StarSmithLook.None)
+        {
+            Error("outcomes", "At least one outcome, or a look.");
         }
 
         for (var i = 0; i < recipe.Outcomes.Count; i++)
@@ -207,38 +243,102 @@ public static class StarSmithConfigValidator
         }
     }
 
-    private static void ValidateShape(StarSmithShape? shape, string at, int starCount, List<StarSmithConfigError> errors)
+    /// <summary>
+    /// Whether two recipes could match one figure: their target kinds share a kind and their shapes (with or without
+    /// the extension) are not apart.
+    /// </summary>
+    /// <param name="a">One recipe.</param>
+    /// <param name="b">The other.</param>
+    /// <returns>True when they clash.</returns>
+    public static bool Clash(StarSmithRecipe a, StarSmithRecipe b)
     {
-        if (shape is null || shape.Stars.Count is < 2 or > 12)
+        if ((a.Targets & b.Targets) == 0 || a.Geometry is not { IsWellFormed: true } left || b.Geometry is not { IsWellFormed: true } right)
         {
-            errors.Add(new($"{at}.shape.stars", "2 to 12 stars."));
-            return;
+            return false;
         }
 
-        var seen = new HashSet<int>();
-        for (var i = 0; i < shape.Stars.Count; i++)
+        foreach (var leftExtended in new[] { false, true })
         {
-            if (shape.Stars[i] < 0 || shape.Stars[i] >= starCount || !seen.Add(shape.Stars[i]))
+            foreach (var rightExtended in new[] { false, true })
             {
-                errors.Add(new($"{at}.shape.stars[{i}]", $"A star from 0 to {starCount - 1}, each once."));
+                if ((!leftExtended || left.Extension is not null) && (!rightExtended || right.Extension is not null)
+                    && !StarSmithGeometry.Apart(left, leftExtended, right, rightExtended))
+                {
+                    return true;
+                }
             }
         }
 
-        if (!Enum.IsDefined(shape.Match))
+        return false;
+    }
+
+    private static void ValidateGeometry(StarSmithGeometry? geometry, string at, List<StarSmithConfigError> errors)
+    {
+        void Error(string field, string message) => errors.Add(new($"{at}.geometry{field}", message));
+
+        if (geometry is null)
         {
-            errors.Add(new($"{at}.shape.match", "exact or extendable."));
+            Error(string.Empty, "A shape: nodes, turns and lengths.");
+            return;
         }
 
-        if (shape.ExtensionPercent is < 0 or > 100)
+        var most = geometry.Closed ? MaximumNodes - 1 : MaximumNodes;
+        if (geometry.Nodes < 3 || geometry.Nodes > most)
         {
-            errors.Add(new($"{at}.shape.extensionPercent", "From 0 to 100."));
+            Error(".nodes", $"3 to {most} nodes.");
+            return;
         }
 
-        if (shape.MaximumExtension is < 0 or > 6)
+        var turns = geometry.Closed ? geometry.Nodes - 1 : geometry.Nodes - 2;
+        if (geometry.Turns.Count != turns)
         {
-            errors.Add(new($"{at}.shape.maximumExtension", "From 0 to 6."));
+            Error(".turns", $"{turns} turns.");
+        }
+
+        for (var i = 0; i < geometry.Turns.Count; i++)
+        {
+            if (!IsTurn(geometry.Turns[i]))
+            {
+                Error($".turns[{i}]", $"{MinimumTurn} to {MaximumTurn} degrees either way.");
+            }
+        }
+
+        var lengths = geometry.Closed ? geometry.Nodes : geometry.Nodes - 1;
+        if (geometry.Lengths.Count != lengths)
+        {
+            Error(".lengths", $"{lengths} lengths.");
+        }
+
+        for (var i = 0; i < geometry.Lengths.Count; i++)
+        {
+            if (i == 0 ? geometry.Lengths[i] != 1 : !IsLength(geometry.Lengths[i]))
+            {
+                Error($".lengths[{i}]", i == 0 ? "The first length is 1." : $"From {MinimumLength} to {MaximumLength}.");
+            }
+        }
+
+        if (geometry.Extension is { } extension)
+        {
+            if (!IsTurn(extension.Turn))
+            {
+                Error(".extension.turn", $"{MinimumTurn} to {MaximumTurn} degrees either way.");
+            }
+
+            if (!IsLength(extension.Length))
+            {
+                Error(".extension.length", $"From {MinimumLength} to {MaximumLength}.");
+            }
+
+            if (geometry.Placements + 1 > MaximumNodes)
+            {
+                Error(".extension", $"At most {MaximumNodes} placements with the extension.");
+            }
         }
     }
+
+    private static bool IsTurn(double turn) => double.IsFinite(turn) && Math.Abs(turn) is >= MinimumTurn and <= MaximumTurn;
+
+    private static bool IsLength(double length) => double.IsFinite(length) && length is >= MinimumLength and <= MaximumLength;
 
     private static void ValidateHint(StarSmithRecipe recipe, string at, List<StarSmithConfigError> errors)
     {

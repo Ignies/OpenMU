@@ -40,8 +40,11 @@ public class StarSmithRecipe
     /// <summary>Gets or sets the highest chance it reaches, in hundredths of a percent.</summary>
     public int MaximumChance { get; set; } = 10_000;
 
-    /// <summary>Gets or sets its constellation in the Forge (section 10), or null when it has none.</summary>
-    public StarSmithShape? Shape { get; set; }
+    /// <summary>Gets or sets its constellation's shape in the Forge (Readme.md "PR 7a contract"), or null when it has none.</summary>
+    public StarSmithGeometry? Geometry { get; set; }
+
+    /// <summary>Gets or sets the look its layer gives an item (none for the boost recipes).</summary>
+    public StarSmithLook Look { get; set; }
 
     /// <summary>Gets or sets what a failure does to the item.</summary>
     public StarSmithOnFail OnFail { get; set; }

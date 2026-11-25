@@ -96,7 +96,7 @@ public class ItemCustomizationViewTest
     }
 
     /// <summary>
-    /// Star Smithing PR 6: EE 36 grows to 451 bytes with the smith level (433) and up to three boosts (435 count, then
+    /// Star Smithing PR 6: EE 36 has the smith level (433) and up to three boosts (435 count, then
     /// stat and value times 100); EE 34 sets flag 32 when an item has boosts, so the client asks for them.
     /// </summary>
     [Test]
@@ -107,12 +107,38 @@ public class ItemCustomizationViewTest
         await new ItemCustomizationBabylonPlugIn(player).SendDetailAsync(new ItemCustomizationEntryData(ItemCustomizationStorage.Inventory, 0x0200, 12, smithed)).ConfigureAwait(false);
 
         var bytes = output.ToArray();
-        Assert.That(bytes, Has.Length.EqualTo(451));
-        Assert.That(bytes.Take(3), Is.EqualTo(new byte[] { 0xC2, 0x01, 0xC3 }));
-        Assert.That(bytes.Skip(433).ToArray(), Is.EqualTo(new byte[] { 40, 0, 2, 0, 0x71, 0x02, 0, 0, 2, 0x30, 0x75, 0, 0, 0, 0, 0, 0, 0 }));
+        Assert.That(bytes, Has.Length.EqualTo(600));
+        Assert.That(bytes.Take(3), Is.EqualTo(new byte[] { 0xC2, 0x02, 0x58 }));
+        Assert.That(bytes.Skip(433).Take(18).ToArray(), Is.EqualTo(new byte[] { 40, 0, 2, 0, 0x71, 0x02, 0, 0, 2, 0x30, 0x75, 0, 0, 0, 0, 0, 0, 0 }));
 
         var (other, list) = CastleSiegeRemoteViewTestHelper.CreatePlayer(GameServer.BabylonClient.Version);
         await new ItemCustomizationBabylonPlugIn(other).SendCustomizationsAsync([new ItemCustomizationEntryData(ItemCustomizationStorage.Inventory, 0x0200, 12, smithed)]).ConfigureAwait(false);
         Assert.That(new ItemCustomizationsRef(list.ToArray())[0].Flags, Is.EqualTo((byte)32));
+    }
+
+    /// <summary>
+    /// Star Smithing PR 7a: EE 36 grows to 600 bytes with the layer count (451) and 4 layers of 37 bytes (number, tier,
+    /// look, hull point count, 8 points); EE 34 sets flag 64 when an item has layers, so every viewer asks for them.
+    /// </summary>
+    [Test]
+    public async ValueTask TheDetailCarriesTheLayersAsync()
+    {
+        var smithed = new DataModel.Entities.ItemCustomization { Rarity = 5, Version = 2, Layers = "101:5:1:1,2,300,4,5,600;113:1:13:10,10,20,10,20,20,10,20" };
+        var (player, output) = CastleSiegeRemoteViewTestHelper.CreatePlayer(GameServer.BabylonClient.Version);
+        await new ItemCustomizationBabylonPlugIn(player).SendDetailAsync(new ItemCustomizationEntryData(ItemCustomizationStorage.Inventory, 0x0200, 12, smithed)).ConfigureAwait(false);
+
+        var bytes = output.ToArray();
+        Assert.Multiple(() =>
+        {
+            Assert.That(bytes, Has.Length.EqualTo(600));
+            Assert.That(bytes[451], Is.EqualTo(2));
+            Assert.That(bytes[452..470], Is.EqualTo(new byte[] { 101, 0, 5, 1, 3, 1, 0, 2, 0, 0x2C, 1, 4, 0, 5, 0, 0x58, 2, 0 }));
+            Assert.That(bytes[489..495], Is.EqualTo(new byte[] { 113, 0, 1, 13, 4, 10 }));
+            Assert.That(bytes[526..], Is.All.EqualTo(0));
+        });
+
+        var (other, list) = CastleSiegeRemoteViewTestHelper.CreatePlayer(GameServer.BabylonClient.Version);
+        await new ItemCustomizationBabylonPlugIn(other).SendCustomizationsAsync([new ItemCustomizationEntryData(ItemCustomizationStorage.Inventory, 0x0200, 12, smithed)]).ConfigureAwait(false);
+        Assert.That(new ItemCustomizationsRef(list.ToArray())[0].Flags, Is.EqualTo((byte)64));
     }
 }

@@ -1973,6 +1973,7 @@ internal sealed class BasicModelConverter
         target.Look = source.Look;
         target.Boosts = source.Boosts;
         target.SmithLevel = source.SmithLevel;
+        target.Layers = source.Layers;
         target.Version = source.Version;
         target.Locked = source.Locked;
         target.LockedAt = source.LockedAt;
