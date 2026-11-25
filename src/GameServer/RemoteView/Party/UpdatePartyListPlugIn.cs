@@ -55,7 +55,10 @@ public class UpdatePartyListPlugIn : IUpdatePartyListPlugIn
                 var partyMemberBlock = packet[i];
                 partyMemberBlock.Index = i;
                 partyMemberBlock.Name = partyMember.Name;
-                partyMemberBlock.MapId = (byte)(partyMember.CurrentMap?.MapId ?? 0);
+                // A map past 255 (a square of the continent): its high byte goes in the padding after the position.
+                var mapId = partyMember.CurrentMap?.MapId ?? 0;
+                partyMemberBlock.MapId = (byte)mapId;
+                partyMemberBlock.MapIdHigh = (byte)(mapId >> 8);
                 partyMemberBlock.PositionX = partyMember.Position.X;
                 partyMemberBlock.PositionY = partyMember.Position.Y;
                 partyMemberBlock.CurrentHealth = partyMember.CurrentHealth;

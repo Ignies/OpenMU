@@ -4808,6 +4808,15 @@ public readonly ref struct PartyMemberRef
     }
 
     /// <summary>
+    /// Gets or sets the high byte of the map id, for a map past 255; 0 otherwise. The original leaves this byte as padding.
+    /// </summary>
+    public byte MapIdHigh
+    {
+        get => this._data[14];
+        set => this._data[14] = value;
+    }
+
+    /// <summary>
     /// Gets or sets the current health.
     /// </summary>
     public uint CurrentHealth
