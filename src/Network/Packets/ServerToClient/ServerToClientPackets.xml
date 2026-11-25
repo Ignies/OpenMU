@@ -1821,6 +1821,12 @@
               <Name>PositionY</Name>
             </Field>
             <Field>
+              <Index>14</Index>
+              <Type>Byte</Type>
+              <Name>MapIdHigh</Name>
+              <Description>The high byte of the map id, for a map past 255; 0 otherwise. The original leaves this byte as padding.</Description>
+            </Field>
+            <Field>
               <Index>16</Index>
               <Type>IntegerLittleEndian</Type>
               <Name>CurrentHealth</Name>

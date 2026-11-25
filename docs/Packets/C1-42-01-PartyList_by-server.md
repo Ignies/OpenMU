@@ -32,5 +32,6 @@ Length: 24 Bytes
 | 11 | 1 | Byte |  | MapId |
 | 12 | 1 | Byte |  | PositionX |
 | 13 | 1 | Byte |  | PositionY |
+| 14 | 1 | Byte |  | MapIdHigh; The high byte of the map id, for a map past 255; 0 otherwise. The original leaves this byte as padding. |
 | 16 | 4 | IntegerLittleEndian |  | CurrentHealth |
 | 20 | 4 | IntegerLittleEndian |  | MaximumHealth |
